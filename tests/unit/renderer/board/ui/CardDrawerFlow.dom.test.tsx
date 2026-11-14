@@ -113,6 +113,24 @@ const DRAWER_COLUMNS = studioColumns().filter((column) =>
   ].includes(column.key)
 );
 
+const withWorkspace = (path: string) =>
+  bridge.projectGet.mockResolvedValue({
+    project_id: 'p1',
+    name: 'Alpha',
+    explorer: {
+      workspace_pe_id: 'pe1',
+      entries: [{ pe_id: 'pe1', role: 'workspace', display_path: path, order_index: 0, runtime_status: 'available' }],
+    },
+  });
+
+/** Open the Assign dialog on the Team tab. */
+const openTeamAssign = async (dialog: HTMLElement) => {
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Assign' }));
+  const modal = await screen.findByRole('dialog', { name: 'Assign TASK-1' });
+  fireEvent.click(within(modal).getByRole('radio', { name: 'Team' }));
+  return modal;
+};
+
 const renderAt = (summary: BoardCardSummary, detail = makeDetail(fullCard(summary))) => {
   bridge.get.mockResolvedValue(makeSnapshot({ columns: DRAWER_COLUMNS, cards: [summary] }));
   bridge.getCard.mockResolvedValue(detail);
@@ -353,11 +371,9 @@ describe('assign, brainstorm and conversations', () => {
   it('maps "already linked" to its message', async () => {
     bridge.assign.mockRejectedValue(backendError(409, 'board_already_linked'));
     bridge.teamList.mockResolvedValue([{ id: 't1', name: 'Council', workspace: '/x' }]);
+    withWorkspace('/x');
     renderAt(summary);
-    const dialog = await openDrawer(1, 'Dark mode');
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Assign' }));
-    const modal = await screen.findByRole('dialog', { name: 'Assign TASK-1' });
-    fireEvent.click(within(modal).getByRole('radio', { name: 'Team' }));
+    const modal = await openTeamAssign(await openDrawer(1, 'Dark mode'));
     fireEvent.click(await within(modal).findByRole('combobox', { name: 'Team' }));
     fireEvent.click(await screen.findByRole('option', { name: 'Council' }));
     fireEvent.click(within(modal).getByRole('button', { name: 'Assign' }));
@@ -367,6 +383,33 @@ describe('assign, brainstorm and conversations', () => {
         content: 'This team is already linked to the card.',
       })
     );
+  });
+
+  it('offers only the teams of the project workspace', async () => {
+    bridge.teamList.mockResolvedValue([
+      { id: 't1', name: 'Council', workspace: '/x/' },
+      { id: 't2', name: 'Elsewhere', workspace: '/y' },
+    ]);
+    withWorkspace('/x');
+    renderAt(summary);
+    const modal = await openTeamAssign(await openDrawer(1, 'Dark mode'));
+    fireEvent.click(await within(modal).findByRole('combobox', { name: 'Team' }));
+    expect(await screen.findByRole('option', { name: 'Council' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Elsewhere' })).not.toBeInTheDocument();
+  });
+
+  it('offers no team while the project workspace is unknown, and none for a project without one', async () => {
+    bridge.teamList.mockResolvedValue([{ id: 't1', name: 'Council', workspace: '/x' }]);
+    let answer: (value: unknown) => void = () => {};
+    bridge.projectGet.mockReturnValue(new Promise((resolve) => (answer = resolve)));
+    renderAt(summary);
+    const modal = await openTeamAssign(await openDrawer(1, 'Dark mode'));
+    expect(within(modal).queryByRole('combobox', { name: 'Team' })).not.toBeInTheDocument();
+    expect(within(modal).queryByText('This project has no team yet.')).not.toBeInTheDocument();
+
+    answer({ project_id: 'p1', name: 'Alpha', explorer: { workspace_pe_id: '', entries: [] } });
+    expect(await within(modal).findByText('This project has no team yet.')).toBeInTheDocument();
+    expect(within(modal).queryByRole('combobox', { name: 'Team' })).not.toBeInTheDocument();
   });
 
   it('lists linked conversations: opens one in one click, marks removed ones, resends a failed packet', async () => {

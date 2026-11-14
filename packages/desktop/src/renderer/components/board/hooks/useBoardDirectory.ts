@@ -17,12 +17,21 @@ import { ipcBridge } from '@/common';
 import { boardErrorKey } from '../utils/boardErrors';
 
 /** Workspace path of a project (its `role=workspace` root), for matching the project's teams. */
-export const useProjectWorkspace = (projectId: string): string | null => {
-  const { data } = useSWR(projectId ? ['board-project', projectId] : null, ([, id]: [string, string]) =>
+export type ProjectWorkspace = {
+  /** The workspace root path; null while unknown or when the project has none. */
+  workspace: string | null;
+  /** The project lookup answered (successfully or not). */
+  loaded: boolean;
+};
+
+export const useProjectWorkspace = (projectId: string): ProjectWorkspace => {
+  const { data, error } = useSWR(projectId ? ['board-project', projectId] : null, ([, id]: [string, string]) =>
     ipcBridge.project.get.invoke({ project_id: id })
   );
-  if (!data) return null;
-  return data.explorer.entries.find((entry) => entry.pe_id === data.explorer.workspace_pe_id)?.display_path ?? null;
+  const workspace = data
+    ? (data.explorer.entries.find((entry) => entry.pe_id === data.explorer.workspace_pe_id)?.display_path ?? null)
+    : null;
+  return { workspace, loaded: Boolean(data) || Boolean(error) };
 };
 
 /** Enabled assistants, as the rest of the app lists them. */

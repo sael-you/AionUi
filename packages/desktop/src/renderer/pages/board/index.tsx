@@ -52,7 +52,7 @@ export const BoardPage: React.FC<{ projectId: string }> = ({ projectId }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const board = useBoard(projectId, { includeArchived, onOpenCard: setOpenCardId });
   // The project's colour identity follows its workspace (the sidebar's colour key).
-  const project = useProjectTheme(useProjectWorkspace(projectId));
+  const project = useProjectTheme(useProjectWorkspace(projectId).workspace);
   const { data: projectDetail } = useSWR(projectId ? ['board-project', projectId] : null, ([, id]: [string, string]) =>
     ipcBridge.project.get.invoke({ project_id: id })
   );

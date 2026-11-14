@@ -12,7 +12,7 @@
  * conversation.
  */
 
-import { Button, Modal, Radio } from '@arco-design/web-react';
+import { Button, Modal, Radio, Spin } from '@arco-design/web-react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
@@ -40,15 +40,19 @@ const AssignForm: React.FC<{
   const { t } = useTranslation();
   const { user } = useAuth();
   const assistants = useAssistantOptions();
-  const workspace = useProjectWorkspace(card.project_id);
+  const { workspace, loaded: workspaceLoaded } = useProjectWorkspace(card.project_id);
   const { data: teams } = useSWR(
     TEAM_MODE_ENABLED && user ? ['board-teams', user.id] : null,
     ([, id]: [string, string]) => ipcBridge.team.list.invoke({ user_id: id })
   );
+  // Only the teams of this project's workspace: none until the workspace is known,
+  // none at all for a project without one.
   const projectTeams = useMemo(() => {
-    const key = workspace ? normalizeWorkspace(workspace) : null;
-    return (teams ?? []).filter((team) => !key || normalizeWorkspace(team.workspace) === key);
+    if (!workspace) return [];
+    const key = normalizeWorkspace(workspace);
+    return (teams ?? []).filter((team) => normalizeWorkspace(team.workspace) === key);
   }, [teams, workspace]);
+  const teamsLoading = !workspaceLoaded || (Boolean(workspace) && teams === undefined);
 
   const [target, setTarget] = useState<Target>('assistant');
   const [assistantId, setAssistantId] = useState<string | undefined>();
@@ -105,6 +109,8 @@ const AssignForm: React.FC<{
           onChange={change((value: string) => setAssistantId(value))}
           options={assistants}
         />
+      ) : teamsLoading ? (
+        <Spin size={16} />
       ) : projectTeams.length === 0 ? (
         <p className='m-0 text-13px text-t-secondary'>{t('board.assign.noTeams')}</p>
       ) : (
