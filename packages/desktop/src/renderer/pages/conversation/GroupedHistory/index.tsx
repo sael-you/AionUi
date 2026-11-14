@@ -40,7 +40,7 @@ import {
   useProjectColors,
   useProjectTheme,
 } from '@/renderer/components/workspace/ProjectIdentity';
-import { normalizeWorkspace } from './utils/standardProjects';
+import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
 import type { ConversationRowProps, WorkspaceGroupedHistoryProps } from './types';
 import {
   buildConversationTree,

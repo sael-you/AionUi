@@ -12,6 +12,18 @@
 const splitPathSegments = (targetPath: string): string[] => targetPath.split(/[\\/]+/).filter(Boolean);
 
 /**
+ * Normalise a workspace for comparison and as a colour key: forward slashes
+ * (Windows `C:\x` and `C:/x` match) and no trailing slash, except for a root
+ * (`/` or `C:/`).
+ */
+export const normalizeWorkspace = (workspace: string): string => {
+  const slashed = workspace.replace(/\\/g, '/');
+  const trimmed = slashed.replace(/\/+$/, '');
+  if (trimmed === '') return slashed ? '/' : '';
+  return /^[A-Za-z]:$/.test(trimmed) ? `${trimmed}/` : trimmed;
+};
+
+/**
  * Get the display name for a workspace path.
  *
  * When `isTemporaryWorkspace` is true, returns the localized "Temporary

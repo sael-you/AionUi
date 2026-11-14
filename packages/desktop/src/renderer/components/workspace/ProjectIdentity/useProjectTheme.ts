@@ -6,12 +6,12 @@
 
 import type { ThemeAppearance } from '@/common/theme/types';
 import { useThemeAppearance } from '@/renderer/hooks/context/ThemeContext';
-import { normalizeWorkspace } from '@/renderer/pages/conversation/GroupedHistory/utils/standardProjects';
-import { getWorkspaceDisplayName } from '@/renderer/utils/workspace/workspace';
+import { getWorkspaceDisplayName, normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
 import type { CSSProperties } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 import { resolveProjectColor, type ProjectColorId } from './projectColors';
 import { buildProjectTheme, projectThemeStyle, type ProjectThemeTokens } from './projectTheme';
+import { useThemeSurfaces } from './themeSurfaces';
 import { useProjectColors } from './useProjectColors';
 
 const MORE_CONTRAST_QUERY = '(prefers-contrast: more)';
@@ -57,11 +57,12 @@ export const useProjectTheme = (workspace: string | null | undefined): ProjectTh
   const { overrides } = useProjectColors();
   const appearance = useThemeAppearance();
   const highContrast = usePrefersMoreContrast();
+  const surfaces = useThemeSurfaces(appearance);
   return useMemo(() => {
     const key = workspace ? normalizeWorkspace(workspace) : '';
     if (!key) return null;
     const color = resolveProjectColor(key, overrides);
-    const tokens = buildProjectTheme(color, appearance, { highContrast });
+    const tokens = buildProjectTheme(color, appearance, { highContrast, surfaces });
     return {
       workspace: key,
       name: getWorkspaceDisplayName(key, false),
@@ -71,5 +72,5 @@ export const useProjectTheme = (workspace: string | null | undefined): ProjectTh
       style: projectThemeStyle(tokens),
       dataAttributes: { 'data-project-color': color.id, 'data-project-appearance': appearance },
     };
-  }, [workspace, overrides, appearance, highContrast]);
+  }, [workspace, overrides, appearance, highContrast, surfaces]);
 };

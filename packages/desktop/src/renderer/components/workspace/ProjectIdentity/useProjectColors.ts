@@ -53,70 +53,121 @@ const writeRemote = (overrides: ProjectColorOverrides) => {
 // colour change shows everywhere at once.
 let overrides: ProjectColorOverrides = readLocal();
 let hydration: 'idle' | 'pending' | 'done' = 'idle';
-/** A choice made while the backend copy was loading wins over that (older) copy. */
-let changedWhileLoading = false;
+/**
+ * Choices made before the backend copy is loaded (workspace → id, `null` =
+ * reset). They are replayed over the backend map once it arrives, so a stale
+ * local copy never overwrites colours this browser has not seen yet.
+ */
+const pendingEdits = new Map<string, ProjectColorId | null>();
 const listeners = new Set<() => void>();
+
+/** Retry delays after a failed backend load (bounded: the last one repeats). */
+export const PROJECT_COLORS_RETRY_DELAYS_MS = [2_000, 5_000, 15_000, 30_000, 60_000] as const;
+let retryAttempt = 0;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
 const publish = (next: ProjectColorOverrides) => {
   overrides = next;
   for (const listener of listeners) listener();
 };
 
+const applyEdits = (base: ProjectColorOverrides, edits: ReadonlyMap<string, ProjectColorId | null>) => {
+  const next = { ...base };
+  for (const [workspace, id] of edits) {
+    if (id) next[workspace] = id;
+    else delete next[workspace];
+  }
+  return next;
+};
+
+const clearRetry = () => {
+  if (retryTimer !== null) clearTimeout(retryTimer);
+  retryTimer = null;
+};
+
+const scheduleRetry = () => {
+  if (listeners.size === 0 || retryTimer !== null) return;
+  const delay = PROJECT_COLORS_RETRY_DELAYS_MS[Math.min(retryAttempt, PROJECT_COLORS_RETRY_DELAYS_MS.length - 1)];
+  retryAttempt += 1;
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    hydrate();
+  }, delay);
+};
+
 /**
- * Load the backend copy once. The backend is the source of truth (same colours
- * on every device); when it has none yet, this browser's legacy localStorage
- * choices are migrated to it. A failed load keeps the local copy and retries on
- * the next subscription.
+ * Load the backend copy. The backend is the source of truth (same colours on
+ * every device); when it has none yet, this browser's legacy localStorage
+ * choices are migrated to it. Edits made meanwhile are replayed on top. A failed
+ * load keeps the local copy and retries with bounded backoff, or at once when the
+ * browser comes back online, while any consumer is mounted.
  */
 const hydrate = () => {
   if (hydration !== 'idle') return;
   hydration = 'pending';
-  changedWhileLoading = false;
+  clearRetry();
   Promise.resolve()
     .then(() => configService.whenReady())
     .then(() => {
       hydration = 'done';
-      if (changedWhileLoading) return;
+      retryAttempt = 0;
       const remote: unknown = configService.get(PROJECT_COLORS_SETTING_KEY);
-      if (remote === undefined || remote === null) {
-        if (Object.keys(overrides).length > 0) writeRemote(overrides);
-        return;
-      }
-      const next = sanitizeProjectColorOverrides(remote);
+      const hasRemote = remote !== undefined && remote !== null;
+      const edits = new Map(pendingEdits);
+      pendingEdits.clear();
+      // No backend copy yet: migrate this browser's choices (edits already included).
+      const next = hasRemote ? applyEdits(sanitizeProjectColorOverrides(remote), edits) : overrides;
       writeLocal(next);
       publish(next);
+      if (edits.size > 0 || (!hasRemote && Object.keys(next).length > 0)) writeRemote(next);
     })
     .catch(() => {
       hydration = 'idle';
+      scheduleRetry();
     });
 };
 
 const onStorage = (event: StorageEvent) => {
   // Another tab of this browser changed the colours (it also wrote the backend).
-  if (event.key === STORAGE_KEYS.PROJECT_COLORS) publish(readLocal());
+  if (event.key === STORAGE_KEYS.PROJECT_COLORS) publish(applyEdits(readLocal(), pendingEdits));
+};
+
+const onOnline = () => {
+  if (hydration !== 'idle') return;
+  clearRetry();
+  hydrate();
 };
 
 const subscribe = (listener: () => void) => {
-  if (listeners.size === 0) window.addEventListener('storage', onStorage);
+  if (listeners.size === 0) {
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('online', onOnline);
+  }
   listeners.add(listener);
   hydrate();
   return () => {
     listeners.delete(listener);
-    if (listeners.size === 0) window.removeEventListener('storage', onStorage);
+    if (listeners.size === 0) {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('online', onOnline);
+      clearRetry();
+    }
   };
 };
 
 const getSnapshot = () => overrides;
 
-/** Set (or with `null`, reset to automatic) the colour of a workspace. Write-through: memory, localStorage, backend. */
+/**
+ * Set (or with `null`, reset to automatic) the colour of a workspace.
+ * Write-through: memory, localStorage, and the backend — once the backend copy
+ * is loaded; before that the edit is buffered and merged into it.
+ */
 export const setProjectColorOverride = (workspace: string, id: ProjectColorId | null) => {
-  if (hydration === 'pending') changedWhileLoading = true;
-  const next = { ...overrides };
-  if (id) next[workspace] = id;
-  else delete next[workspace];
+  const next = applyEdits(overrides, new Map([[workspace, id]]));
   writeLocal(next);
-  writeRemote(next);
   publish(next);
+  if (hydration === 'done') writeRemote(next);
+  else pendingEdits.set(workspace, id);
 };
 
 /**
@@ -139,7 +190,10 @@ export const useProjectColors = () => {
 export const resetProjectColorsForTest = () => {
   overrides = readLocal();
   hydration = 'idle';
-  changedWhileLoading = false;
+  pendingEdits.clear();
+  retryAttempt = 0;
+  clearRetry();
   listeners.clear();
   window.removeEventListener('storage', onStorage);
+  window.removeEventListener('online', onOnline);
 };
