@@ -38,6 +38,7 @@ import styles from './ConversationRow.module.css';
 import type { ConversationRowProps } from './types';
 import { MAX_CONVERSATION_DEPTH } from './utils/conversationTree';
 import { isConversationPinned } from './utils/groupingHelpers';
+import { BoardKeeperBadge } from '@/renderer/components/board/BoardKeeperBadge';
 
 /** Horizontal indent added per nesting level, in px. */
 const DEPTH_INDENT_PX = 14;
@@ -342,6 +343,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
                   )}
                 </span>
               )}
+              <BoardKeeperBadge conversation={conversation} compact />
               {forkLineage && (
                 <Tooltip
                   content={

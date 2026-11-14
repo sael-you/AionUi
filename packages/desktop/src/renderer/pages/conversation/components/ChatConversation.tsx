@@ -40,6 +40,7 @@ import { resolveConversationBackend } from '../utils/conversationAssistantIdenti
 import LegacyReadOnlyConversation from '../platforms/legacy/LegacyReadOnlyConversation';
 import SingleChatEmptyState from './SingleChatEmptyState';
 import { useActiveLease } from '../hooks/useActiveLease';
+import { BoardKeeperBadge } from '@/renderer/components/board/BoardKeeperBadge';
 // import SkillRuleGenerator from './components/SkillRuleGenerator'; // Temporarily hidden
 
 const configErrorMessageKey = (error: unknown) => {
@@ -210,6 +211,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
     sider: <ChatSlider conversation={conversation} />,
     headerExtra: (
       <div className='flex items-center gap-8px'>
+        <BoardKeeperBadge conversation={conversation} />
         <ParentBreadcrumb conversation={conversation} />
         <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />
         {!isMobile && (
@@ -411,6 +413,7 @@ const ChatConversation: React.FC<{
 
   const headerExtraNode = (
     <div className='flex items-center gap-8px'>
+      <BoardKeeperBadge conversation={conversation} />
       <ParentBreadcrumb conversation={conversation} />
       {conversation && (
         <div className='shrink-0'>

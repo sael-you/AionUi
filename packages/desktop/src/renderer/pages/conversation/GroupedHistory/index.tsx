@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import WorkspaceCollapse from '../components/WorkspaceCollapse';
+import { SidebarBoardButton } from '@/renderer/components/board/SidebarBoardButton';
 import ConversationChildren from './components/ConversationChildren';
 import MoveUnderModal from './components/MoveUnderModal';
 import ConversationRow from './ConversationRow';
@@ -741,6 +742,13 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                               <Plus theme='outline' size='14' fill='currentColor' className='block leading-none' />
                             </span>
                           </Tooltip>
+                          {group.projectId && (
+                            <SidebarBoardButton
+                              projectId={group.projectId}
+                              projectName={group.displayName}
+                              touch={isMobile}
+                            />
+                          )}
                           <Dropdown
                             droplist={projectMenu}
                             trigger='click'
