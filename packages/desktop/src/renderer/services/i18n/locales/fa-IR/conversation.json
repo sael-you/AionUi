@@ -89,7 +89,23 @@
     "archiveProject": "Archive project",
     "archiveProjectTitle": "Archive project",
     "archiveProjectConfirm": "Archive project \"{{name}}\"? Its {{count}} conversation(s) will be archived too. You can restore or delete them from Archived in Settings.",
-    "archiving": "Archiving..."
+    "archiving": "Archiving...",
+    "projectColor": "رنگ",
+    "projectColorAuto": "خودکار",
+    "projectColors": {
+      "red": "قرمز",
+      "orange": "نارنجی",
+      "amber": "کهربایی",
+      "lime": "لیمویی",
+      "green": "سبز",
+      "teal": "سبزآبی",
+      "cyan": "فیروزه‌ای",
+      "blue": "آبی",
+      "indigo": "نیلی",
+      "violet": "بنفش",
+      "pink": "صورتی",
+      "slate": "خاکستری"
+    }
   },
   "historySearch": {
     "tooltip": "جستجوی پیام‌ها",

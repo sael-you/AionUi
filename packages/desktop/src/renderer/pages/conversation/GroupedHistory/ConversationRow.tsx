@@ -58,6 +58,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     selected,
     menuVisible,
     dimIcon = false,
+    accentColor,
     dragHandle,
     depth = 0,
     treeInfo,
@@ -230,7 +231,15 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
         onKeyDown={handleTreeKeyDown}
         onClick={handleRowClick}
         onContextMenu={handleRowContextMenu}
+        data-project-accent={accentColor}
       >
+        {accentColor && (
+          <span
+            aria-hidden='true'
+            className='absolute inset-y-0 start-0 w-2px pointer-events-none'
+            style={{ background: accentColor }}
+          />
+        )}
         {batchMode && (
           <span
             className='me-8px flex-center'

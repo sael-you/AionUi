@@ -89,7 +89,23 @@
     "archiveProject": "Archive project",
     "archiveProjectTitle": "Archive project",
     "archiveProjectConfirm": "Archive project \"{{name}}\"? Its {{count}} conversation(s) will be archived too. You can restore or delete them from Archived in Settings.",
-    "archiving": "Archiving..."
+    "archiving": "Archiving...",
+    "projectColor": "색상",
+    "projectColorAuto": "자동",
+    "projectColors": {
+      "red": "빨강",
+      "orange": "주황",
+      "amber": "앰버",
+      "lime": "라임",
+      "green": "초록",
+      "teal": "청록",
+      "cyan": "시안",
+      "blue": "파랑",
+      "indigo": "남색",
+      "violet": "보라",
+      "pink": "분홍",
+      "slate": "슬레이트"
+    }
   },
   "historySearch": {
     "tooltip": "메시지 검색",

@@ -12,6 +12,8 @@ export type WorkspaceGroup = {
   workspace: string;
   display_name: string;
   conversations: TChatConversation[];
+  /** Backend project id, known for projects listed by the backend (e.g. empty ones). */
+  project_id?: string;
 };
 
 export type TimelineItem = {
@@ -85,6 +87,8 @@ export type ConversationRowProps = {
   resolveConversationName?: (conversation_id: string) => string | undefined;
   /** When true, the agent icon is dimmed by default and only shows full color on hover. Used inside project folders to reduce visual weight. */
   dimIcon?: boolean;
+  /** Project colour of the row; drawn as a thin bar at the inline start (moves with drag, RTL-aware). */
+  accentColor?: string;
   /** Nesting depth for sub-conversation rows (0 / undefined = top-level row). */
   depth?: number;
   /** Present only when this row has sub-conversations. */

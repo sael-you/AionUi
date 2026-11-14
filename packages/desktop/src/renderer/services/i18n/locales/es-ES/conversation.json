@@ -89,7 +89,23 @@
     "archiveProject": "Archive project",
     "archiveProjectTitle": "Archive project",
     "archiveProjectConfirm": "Archive project \"{{name}}\"? Its {{count}} conversation(s) will be archived too. You can restore or delete them from Archived in Settings.",
-    "archiving": "Archiving..."
+    "archiving": "Archiving...",
+    "projectColor": "Color",
+    "projectColorAuto": "Automático",
+    "projectColors": {
+      "red": "Rojo",
+      "orange": "Naranja",
+      "amber": "Ámbar",
+      "lime": "Lima",
+      "green": "Verde",
+      "teal": "Verde azulado",
+      "cyan": "Cian",
+      "blue": "Azul",
+      "indigo": "Índigo",
+      "violet": "Violeta",
+      "pink": "Rosa",
+      "slate": "Pizarra"
+    }
   },
   "historySearch": {
     "tooltip": "Buscar mensajes",

@@ -23,6 +23,9 @@ export const STORAGE_KEYS = {
   /** Expanded parent conversations in the sidebar hierarchy / 侧边栏层级会话展开状态 */
   CONVERSATION_TREE_EXPANSION: 'aionui_conversation_tree_expansion',
 
+  /** User-chosen sidebar project colours (workspace → palette id) / 侧边栏项目颜色 */
+  PROJECT_COLORS: 'aionui_project_colors',
+
   /** Theme preference / 主题偏好 */
   THEME: 'aionui_theme',
 

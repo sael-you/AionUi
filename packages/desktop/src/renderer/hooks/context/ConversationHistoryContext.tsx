@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConversationListSync } from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
+import { useStandardProjects } from '@/renderer/pages/conversation/GroupedHistory/hooks/useStandardProjects';
 import type { GroupedHistoryResult } from '@/renderer/pages/conversation/GroupedHistory/types';
 import { buildGroupedHistory } from '@/renderer/pages/conversation/GroupedHistory/utils/groupingHelpers';
 
@@ -19,10 +20,12 @@ const ConversationHistoryContext = createContext<ConversationHistoryContextValue
 export const ConversationHistoryProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
   const conversationListSync = useConversationListSync();
+  // Reload when the number of conversations changes: a new folder chat creates a project.
+  const standardProjects = useStandardProjects(conversationListSync.conversations.length);
 
   const groupedHistory = useMemo(() => {
-    return buildGroupedHistory(conversationListSync.conversations, t);
-  }, [conversationListSync.conversations, t]);
+    return buildGroupedHistory(conversationListSync.conversations, t, standardProjects);
+  }, [conversationListSync.conversations, t, standardProjects]);
 
   const value = useMemo<ConversationHistoryContextValue>(() => {
     return {

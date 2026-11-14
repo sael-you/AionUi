@@ -8,6 +8,7 @@ import type { TChatConversation } from '@/common/config/storage';
 import { getActivityTime } from '@/renderer/utils/chat/timeline';
 import { getWorkspaceDisplayName } from '@/renderer/utils/workspace/workspace';
 import { getWorkspaceUpdateTime } from '@/renderer/utils/workspace/workspaceHistory';
+import { normalizeWorkspace, type StandardProject } from './standardProjects';
 
 import type { GroupedHistoryResult, TimelineItem, TimelineSection } from '../types';
 import { partitionConversationHierarchy } from './conversationTreeIndex';
@@ -28,7 +29,8 @@ export const getConversationPinnedAt = (conversation: TChatConversation): number
 
 export const groupConversationsByWorkspace = (
   conversations: TChatConversation[],
-  t: (key: string) => string
+  t: (key: string) => string,
+  standardProjects: StandardProject[] = []
 ): TimelineSection[] => {
   const allWorkspaceGroups = new Map<string, TChatConversation[]>();
   const withoutWorkspaceConvs: TChatConversation[] = [];
@@ -69,6 +71,25 @@ export const groupConversationsByWorkspace = (
     });
   });
 
+  // Standard projects with no visible conversation (all archived, or all pinned)
+  // still get their folder in the Projects section, empty.
+  const shownWorkspaces = new Set([...allWorkspaceGroups.keys()].map(normalizeWorkspace));
+  for (const project of standardProjects) {
+    const workspace = normalizeWorkspace(project.workspace);
+    if (shownWorkspaces.has(workspace)) continue;
+    shownWorkspaces.add(workspace);
+    items.push({
+      type: 'workspace',
+      time: getWorkspaceUpdateTime(workspace),
+      workspaceGroup: {
+        workspace,
+        display_name: getWorkspaceDisplayName(workspace, false, t),
+        conversations: [],
+        project_id: project.project_id,
+      },
+    });
+  }
+
   withoutWorkspaceConvs.forEach((conv) => {
     items.push({
       type: 'conversation',
@@ -97,7 +118,8 @@ const isTeamConversation = (conversation: TChatConversation): boolean => {
 
 export const buildGroupedHistory = (
   conversations: TChatConversation[],
-  t: (key: string) => string
+  t: (key: string) => string,
+  standardProjects: StandardProject[] = []
 ): GroupedHistoryResult => {
   // Filter out team-owned conversations; they are only visible via the Teams panel
   const allVisible = conversations.filter((conv) => !isTeamConversation(conv));
@@ -120,7 +142,7 @@ export const buildGroupedHistory = (
 
   return {
     pinnedConversations,
-    timelineSections: groupConversationsByWorkspace(normalConversations, t),
+    timelineSections: groupConversationsByWorkspace(normalConversations, t, standardProjects),
     descendantsByRoot,
   };
 };

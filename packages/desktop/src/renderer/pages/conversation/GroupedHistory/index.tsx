@@ -7,6 +7,7 @@
 import type { TChatConversation } from '@/common/config/storage';
 import AionModal from '@/renderer/components/base/AionModal';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
+import { useThemeContext } from '@/renderer/hooks/context/ThemeContext';
 import { useCronJobsMap } from '@/renderer/pages/cron';
 import { restrictToVerticalAxis } from '@/renderer/utils/ui/dndModifiers';
 import { DndContext, closestCenter } from '@dnd-kit/core';
@@ -29,6 +30,9 @@ import { useConversationHierarchyActions } from './hooks/useConversationHierarch
 import { useConversationTreeExpansion } from './hooks/useConversationTreeExpansion';
 import { useConversations } from './hooks/useConversations';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
+import { useProjectColors } from './hooks/useProjectColors';
+import { PROJECT_COLORS, isProjectColorId, projectAccent, resolveProjectColor } from './utils/projectColors';
+import { normalizeWorkspace } from './utils/standardProjects';
 import type { ConversationRowProps, WorkspaceGroupedHistoryProps } from './types';
 import {
   buildConversationTree,
@@ -52,6 +56,14 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   const navigate = useNavigate();
   const layout = useLayoutContext();
   const isMobile = layout?.isMobile ?? false;
+  const { theme } = useThemeContext();
+  const { overrides: projectColorOverrides, setProjectColor } = useProjectColors();
+  /** Accent of a project (user choice or automatic), for the active theme. */
+  const projectAccentOf = useCallback(
+    (workspace: string) =>
+      projectAccent(resolveProjectColor(normalizeWorkspace(workspace), projectColorOverrides), theme),
+    [projectColorOverrides, theme]
+  );
   const { getJobStatus, markAsRead, setActiveConversation } = useCronJobsMap();
 
   const {
@@ -352,16 +364,20 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
 
   // Render a root row; when it has sub-conversations, wrap it with its (expandable) subtree.
   const renderConversationRow = (conversation: TChatConversation, dimIcon: boolean, sortable: boolean) => {
+    // Rows of a project (in its folder or pinned) carry the project colour; the
+    // whole sub-conversation tree shares the root's colour.
+    const projectWorkspace = conversation.extra?.custom_workspace ? conversation.extra?.workspace : undefined;
+    const accentColor = projectWorkspace ? projectAccentOf(projectWorkspace) : undefined;
     const tree = treesByRoot.get(conversation.id);
     if (!tree) {
-      const rowProps = getConversationRowProps(conversation);
+      const rowProps = { ...getConversationRowProps(conversation), accentColor };
       return sortable ? (
         <SortableConversationRow key={conversation.id} {...rowProps} />
       ) : (
         <ConversationRow key={conversation.id} {...rowProps} dimIcon={dimIcon} />
       );
     }
-    const rootProps = getTreeRowProps(tree);
+    const rootProps = { ...getTreeRowProps(tree), accentColor };
     const showChildren = !collapsed && isTreeExpanded(conversation.id);
     return (
       <div key={conversation.id} role='tree' className='min-w-0'>
@@ -371,7 +387,12 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
             nodes={tree.children}
             isExpanded={isTreeExpanded}
             renderRow={(node) => (
-              <ConversationRow key={node.conversation.id} {...getTreeRowProps(node)} dimIcon={dimIcon} />
+              <ConversationRow
+                key={node.conversation.id}
+                {...getTreeRowProps(node)}
+                dimIcon={dimIcon}
+                accentColor={accentColor}
+              />
             )}
           />
         )}
@@ -389,7 +410,11 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   // Projects section: collect all workspace groups across timeline sections, ordered by recency.
   const projectGroups = useMemo(() => {
     const seen = new Set<string>();
-    const groups: Array<{ workspace: string; displayName: string; conversations: TChatConversation[] }> = [];
+    const groups: Array<{
+      workspace: string;
+      displayName: string;
+      conversations: TChatConversation[];
+    }> = [];
     for (const section of timelineSections) {
       for (const item of section.items) {
         if (item.type === 'workspace' && item.workspaceGroup && !seen.has(item.workspaceGroup.workspace)) {
@@ -592,15 +617,53 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
             {!collapsed && <SectionLabel sectionKey='projects' label={t('conversation.history.projectsSection')} />}
             {!collapsedSections.has('projects') &&
               projectGroups.map((group) => {
+                const accent = projectAccentOf(group.workspace);
+                const colorKey = normalizeWorkspace(group.workspace);
+                const chosenColor = projectColorOverrides[colorKey];
                 const projectMenu = (
                   <Menu
                     onClickMenuItem={(key) => {
                       if (key === 'archive') {
                         handleArchiveProject(group.displayName, group.conversations);
+                      } else if (key === 'color:auto') {
+                        setProjectColor(colorKey, null);
+                      } else if (key.startsWith('color:')) {
+                        const colorId = key.slice('color:'.length);
+                        if (isProjectColorId(colorId)) setProjectColor(colorKey, colorId);
                       }
                     }}
                   >
-                    <Menu.Item key='archive'>
+                    <Menu.SubMenu
+                      key='color'
+                      title={
+                        <span className='flex items-center gap-8px'>
+                          <span className='size-10px rd-full shrink-0' style={{ background: accent }} />
+                          {t('conversation.history.projectColor')}
+                        </span>
+                      }
+                    >
+                      <Menu.Item key='color:auto'>
+                        <span className='flex items-center gap-8px'>
+                          <span className='size-10px rd-full shrink-0 border border-solid border-[var(--color-border-3)]' />
+                          {t('conversation.history.projectColorAuto')}
+                          {!chosenColor && <span className='ms-auto text-t-secondary'>✓</span>}
+                        </span>
+                      </Menu.Item>
+                      {PROJECT_COLORS.map((color) => (
+                        <Menu.Item key={`color:${color.id}`}>
+                          <span className='flex items-center gap-8px'>
+                            <span
+                              className='size-10px rd-full shrink-0'
+                              style={{ background: projectAccent(color, theme) }}
+                            />
+                            {t(`conversation.history.projectColors.${color.id}`)}
+                            {chosenColor === color.id && <span className='ms-auto text-t-secondary'>✓</span>}
+                          </span>
+                        </Menu.Item>
+                      ))}
+                    </Menu.SubMenu>
+                    {/* A folder with no visible conversation has nothing to archive here. */}
+                    <Menu.Item key='archive' disabled={group.conversations.length === 0}>
                       <span className='flex items-center gap-8px'>
                         <FolderClose theme='outline' size='14' />
                         {t('conversation.history.archiveProject')}
@@ -616,6 +679,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       siderCollapsed={collapsed}
                       stickyHeader
                       stickyTop={28}
+                      iconColor={accent}
                       header={
                         <span className='text-14px font-[500] truncate flex-1 text-t-primary min-w-0'>
                           {group.displayName}
