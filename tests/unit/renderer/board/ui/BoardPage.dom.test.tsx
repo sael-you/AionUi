@@ -12,8 +12,11 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/common', async (importOriginal) =>
-  (await import('./boardTestUtils')).mockCommonModule(await importOriginal())
+  (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
+// Each test drives the whole board page (and often the drawer) on a shared, busy CPU.
+vi.setConfig({ testTimeout: 60000 });
+
 vi.mock('@/renderer/hooks/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'u1', username: 'me' } }) }));
 
 import { BoardPage } from '@/renderer/pages/board';
@@ -26,8 +29,8 @@ import {
   makeSnapshot,
   renderWithBoard,
   resetBridge,
-  simpleColumns,
-} from './boardTestUtils';
+  flowColumns,
+} from '../boardTestUtils';
 
 const renderPage = () => renderWithBoard(<BoardPage projectId='p1' />);
 const region = (name: RegExp) => screen.getByRole('region', { name });
@@ -65,7 +68,7 @@ describe('board page states', () => {
     expect(await screen.findByText("Couldn't load the board")).toBeInTheDocument();
     expect(screen.getByText(/Can't reach AionUi/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByRole('region', { name: /^Backlog/ })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: /^Ideas/ })).toBeInTheDocument();
   });
 
   it('shows "not found" for a project without a board', async () => {
@@ -75,13 +78,14 @@ describe('board page states', () => {
     expect(screen.getByRole('button', { name: 'Back to chats' })).toBeInTheDocument();
   });
 
-  it('offers "Turn on the board" with the simple template when the board is off and empty', async () => {
+  it('offers "Turn on the board" with the department flow when the board is off and empty', async () => {
     bridge.get.mockResolvedValue(makeSnapshot({ settings: makeSettings({ enabled: false, version: 0 }), columns: [] }));
     bridge.updateSettings.mockResolvedValue(makeSettings());
     renderPage();
 
     expect(await screen.findByRole('heading', { name: 'Turn on the board' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: /Simple/ })).toBeChecked();
+    expect(screen.getByText('Department flow')).toBeInTheDocument();
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Turn on the board' }));
 
     await waitFor(() =>
@@ -89,23 +93,23 @@ describe('board page states', () => {
         project_id: 'p1',
         version: 0,
         enabled: true,
-        template: 'simple',
+        template: 'studio',
       })
     );
   });
 
   it('keeps an off board with cards usable and offers to turn it on', async () => {
     bridge.get.mockResolvedValue(
-      makeSnapshot({ settings: makeSettings({ enabled: false }), cards: [makeCard(1, 'todo', 1)] })
+      makeSnapshot({ settings: makeSettings({ enabled: false }), cards: [makeCard(1, 'triage', 1)] })
     );
     renderPage();
     expect(await screen.findByText(/The board is off/)).toBeInTheDocument();
-    expect(within(region(/^To do/)).getByText('Card 1')).toBeInTheDocument();
+    expect(within(region(/^Triage/)).getByText('Card 1')).toBeInTheDocument();
   });
 
   it('is read-only for an archived project and can be reactivated', async () => {
     bridge.get.mockResolvedValue(
-      makeSnapshot({ settings: makeSettings({ archived_at: 5 }), cards: [makeCard(1, 'todo', 1)] })
+      makeSnapshot({ settings: makeSettings({ archived_at: 5 }), cards: [makeCard(1, 'triage', 1)] })
     );
     bridge.unarchiveProject.mockResolvedValue(undefined);
     renderPage();
@@ -120,7 +124,7 @@ describe('board page states', () => {
 
   it('shows the offline banner', async () => {
     renderPage();
-    await screen.findByRole('region', { name: /^Backlog/ });
+    await screen.findByRole('region', { name: /^Ideas/ });
     setOnline(false);
     expect(screen.getByText(/You're offline/)).toBeInTheDocument();
   });
@@ -136,45 +140,45 @@ describe('board columns', () => {
   it('lays columns out in order with their names, counts and WIP state (text + icon)', async () => {
     bridge.get.mockResolvedValue(
       makeSnapshot({
-        columns: simpleColumns({ in_progress: { wip_limit: 2, name: 'Doing' }, todo: { wip_limit: 3 } }),
-        cards: [makeCard(1, 'in_progress', 1), makeCard(2, 'in_progress', 2), makeCard(3, 'todo', 1)],
+        columns: flowColumns({ building: { wip_limit: 2, name: 'Doing' }, triage: { wip_limit: 3 } }),
+        cards: [makeCard(1, 'building', 1), makeCard(2, 'building', 2), makeCard(3, 'triage', 1)],
       })
     );
     renderPage();
 
     const regions = await screen.findAllByRole('region');
     expect(regions.map((node) => node.getAttribute('aria-label'))).toEqual([
-      'Backlog, 0 cards',
-      'To do, 1 card',
+      'Ideas, 0 cards',
+      'Triage, 1 card',
       'Doing, 2 cards',
       'Done, 0 cards',
     ]);
     expect(within(region(/^Doing/)).getByLabelText('2 of 2 cards, work-in-progress limit, Full')).toHaveTextContent(
       '2/2 Full'
     );
-    expect(within(region(/^To do/)).getByLabelText('1 of 3 cards, work-in-progress limit')).toHaveTextContent('1/3');
+    expect(within(region(/^Triage/)).getByLabelText('1 of 3 cards, work-in-progress limit')).toHaveTextContent('1/3');
   });
 
   it('adds a card from the column’s quick add', async () => {
-    bridge.createCard.mockResolvedValue({ ...makeCard(10, 'todo', 1), description: '' });
+    bridge.createCard.mockResolvedValue({ ...makeCard(10, 'triage', 1), description: '' });
     renderPage();
-    const input = await screen.findByRole('textbox', { name: 'Add a card to To do' });
+    const input = await screen.findByRole('textbox', { name: 'Add a card to Triage' });
 
     fireEvent.change(input, { target: { value: '  Write docs ' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', keyCode: 13, which: 13 });
 
     await waitFor(() =>
-      expect(bridge.createCard).toHaveBeenCalledWith({ project_id: 'p1', title: 'Write docs', column_key: 'todo' })
+      expect(bridge.createCard).toHaveBeenCalledWith({ project_id: 'p1', title: 'Write docs', column_key: 'triage' })
     );
-    expect(await within(region(/^To do/)).findByText('Card 10')).toBeInTheDocument();
+    expect(await within(region(/^Triage/)).findByText('Card 10')).toBeInTheDocument();
   });
 
   it('virtualises a column with more than 100 cards', async () => {
-    const many = Array.from({ length: 150 }, (_, index) => makeCard(index + 1, 'backlog', (index + 1) * 1024));
+    const many = Array.from({ length: 150 }, (_, index) => makeCard(index + 1, 'ideas', (index + 1) * 1024));
     bridge.get.mockResolvedValue(makeSnapshot({ cards: many }));
     renderPage();
 
-    const backlog = await screen.findByRole('region', { name: 'Backlog, 150 cards' });
+    const backlog = await screen.findByRole('region', { name: 'Ideas, 150 cards' });
     expect(backlog.querySelector('[data-virtualized="true"]')).not.toBeNull();
     expect(backlog.querySelectorAll('[data-board-card]').length).toBeLessThan(150);
   });
@@ -185,8 +189,8 @@ describe('filters', () => {
     bridge.get.mockResolvedValue(
       makeSnapshot({
         cards: [
-          makeCard(1, 'todo', 1, { title: 'Fix login', type: 'bug', labels: ['auth'] }),
-          makeCard(2, 'todo', 2, { title: 'Dark mode', blocked: true }),
+          makeCard(1, 'triage', 1, { title: 'Fix login', type: 'bug', labels: ['auth'] }),
+          makeCard(2, 'triage', 2, { title: 'Dark mode', blocked: true }),
           makeCard(3, 'done', 1, { title: 'Docs', creator_kind: 'agent', creator_ref: 'assistant:a@b' }),
         ],
       })
@@ -238,8 +242,8 @@ describe('column settings dialog', () => {
     renderPage();
     fireEvent.click(await screen.findByRole('button', { name: 'Column settings' }));
 
-    fireEvent.change(await screen.findByRole('textbox', { name: 'To do · Name' }), { target: { value: 'Next' } });
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'In progress · WIP limit' }), { target: { value: '3' } });
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Triage · Name' }), { target: { value: 'Next' } });
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Building · WIP limit' }), { target: { value: '3' } });
     fireEvent.click(screen.getByRole('button', { name: 'Move Done up' }));
     fireEvent.change(screen.getByRole('textbox', { name: 'New column name' }), { target: { value: 'Review' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add column' }));
@@ -254,10 +258,10 @@ describe('column settings dialog', () => {
     expect(
       request.columns.map((column) => [column.key.startsWith('col_') ? 'new' : column.key, column.position])
     ).toEqual([
-      ['backlog', 0],
-      ['todo', 1],
+      ['ideas', 0],
+      ['triage', 1],
       ['done', 2],
-      ['in_progress', 3],
+      ['building', 3],
       ['new', 4],
     ]);
     expect(request.columns[1].name).toBe('Next');
@@ -266,18 +270,18 @@ describe('column settings dialog', () => {
   });
 
   it('only lets empty columns be archived', async () => {
-    bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(1, 'todo', 1)] }));
+    bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(1, 'triage', 1)] }));
     renderPage();
     fireEvent.click(await screen.findByRole('button', { name: 'Column settings' }));
 
-    expect(await screen.findByRole('button', { name: 'Archive To do' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Archive Backlog' })).toBeEnabled();
+    expect(await screen.findByRole('button', { name: 'Archive Triage' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Archive Ideas' })).toBeEnabled();
   });
 
   it('refuses to save a new column without a name', async () => {
     bridge.get.mockResolvedValue(
       makeSnapshot({
-        columns: [...simpleColumns(), { ...simpleColumns()[1], id: 'c5', key: 'col_x', name: 'X', position: 9 }],
+        columns: [...flowColumns(), { ...flowColumns()[1], id: 'c5', key: 'col_x', name: 'X', position: 9 }],
       })
     );
     renderPage();

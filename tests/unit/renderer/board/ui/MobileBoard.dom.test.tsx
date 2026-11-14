@@ -12,7 +12,7 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/common', async (importOriginal) =>
-  (await import('./boardTestUtils')).mockCommonModule(await importOriginal())
+  (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
 vi.mock('@/renderer/hooks/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'u1', username: 'me' } }) }));
 
@@ -33,9 +33,9 @@ import {
   removeMatchMedia,
   renderWithBoard,
   resetBridge,
-  simpleColumns,
+  flowColumns,
   stubMatchMedia,
-} from './boardTestUtils';
+} from '../boardTestUtils';
 
 let notifyWarning: ReturnType<typeof vi.spyOn>;
 
@@ -44,8 +44,8 @@ beforeEach(() => {
   stubMatchMedia((query) => query === BOARD_NARROW_QUERY);
   bridge.get.mockResolvedValue(
     makeSnapshot({
-      columns: simpleColumns({ done: { wip_limit: 1 } }),
-      cards: [makeCard(1, 'backlog', 1024, { title: 'Idea one' }), makeCard(2, 'done', 1024, { title: 'Shipped' })],
+      columns: flowColumns({ done: { wip_limit: 1 } }),
+      cards: [makeCard(1, 'ideas', 1024, { title: 'Idea one' }), makeCard(2, 'done', 1024, { title: 'Shipped' })],
     })
   );
   vi.spyOn(Message, 'success').mockImplementation(() => undefined as never);
@@ -63,11 +63,12 @@ describe('narrow board (≤768 px)', () => {
   it('shows one column at a time behind a switcher, without drag handles', async () => {
     renderWithBoard(<BoardPage projectId='p1' />);
 
-    expect(await screen.findByRole('region', { name: 'Backlog, 1 card' })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: 'Ideas, 1 card' })).toBeInTheDocument();
     expect(screen.getAllByRole('region')).toHaveLength(1);
     expect(screen.queryByRole('button', { name: /^Move TASK-/ })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('radio', { name: /Done/ }));
+    fireEvent.click(screen.getByRole('combobox', { name: 'Column' }));
+    fireEvent.click(await screen.findByRole('option', { name: 'Done · 1' }));
     expect(await screen.findByRole('region', { name: 'Done, 1 card' })).toBeInTheDocument();
     expect(screen.getByText('Shipped')).toBeInTheDocument();
     expect(screen.queryByText('Idea one')).not.toBeInTheDocument();
@@ -86,7 +87,7 @@ describe('narrow board (≤768 px)', () => {
       card_id: 'card-1',
       to_column: 'done',
       after_id: 'card-2',
-      expected_column: 'backlog',
+      expected_column: 'ideas',
     });
     const config = notifyWarning.mock.calls[0][0] as { btn: React.ReactElement<{ onClick: () => void }> };
     config.btn.props.onClick();

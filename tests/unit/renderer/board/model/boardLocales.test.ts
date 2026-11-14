@@ -16,7 +16,7 @@ import { describe, expect, it } from 'vitest';
 
 import i18nConfig from '@/common/config/i18n-config.json';
 
-const LOCALES_DIR = path.resolve(__dirname, '../../../../packages/desktop/src/renderer/services/i18n/locales');
+const LOCALES_DIR = path.resolve(__dirname, '../../../../../packages/desktop/src/renderer/services/i18n/locales');
 
 type Tree = { [key: string]: string | Tree };
 
@@ -38,10 +38,22 @@ const placeholders = (value: string): string[] => [...value.matchAll(/{{\s*(\w+)
  * against the locale's existing modules), not an untranslated leftover.
  */
 const SAME_AS_ENGLISH: Record<string, ReadonlySet<string>> = {
-  'de-DE': new Set(['filters.skill']),
-  'es-ES': new Set(['type.idea']),
-  'fr-FR': new Set(['type.label', 'drawer.description']),
+  'de-DE': new Set(['filters.skill', 'departments.marketing', 'assign.team', 'conversations.status']),
+  'es-ES': new Set(['type.idea', 'columns.ideas', 'departments.marketing']),
+  'fr-FR': new Set([
+    'type.label',
+    'drawer.description',
+    'departments.marketing',
+    'assign.assistant',
+    'questions.title',
+    'conversations.title',
+    'conversations.untitled',
+  ]),
+  'pt-BR': new Set(['departments.marketing']),
 };
+
+/** A value with no words of its own (only placeholders and symbols) needs no translation. */
+const hasWords = (value: string): boolean => /\p{L}/u.test(value.replace(/{{\s*\w+\s*}}/g, ''));
 
 const PLURAL_FORMS: Record<string, string[]> = {
   'ru-RU': ['one', 'few', 'many', 'other'],
@@ -75,7 +87,7 @@ describe('board locale module', () => {
     const values = load(lang);
     const allowed = SAME_AS_ENGLISH[lang] ?? new Set<string>();
     const untranslated = Object.entries(reference)
-      .filter(([key, english]) => values[key] === english && !allowed.has(key))
+      .filter(([key, english]) => values[key] === english && hasWords(english) && !allowed.has(key))
       .map(([key]) => key);
     expect(untranslated).toEqual([]);
   });

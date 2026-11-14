@@ -9,14 +9,22 @@ import { describe, expect, it } from 'vitest';
 
 import { BackendHttpError } from '@/common/adapter/httpBridge';
 import type { BoardChangedEvent } from '@/common/types/board';
-import { boardErrorKey, isBoardUnavailableError } from '@/renderer/components/board/utils/boardErrors';
-import { actorName, columnName, describeEvent } from '@/renderer/components/board/utils/boardFormat';
+import {
+  boardErrorKey,
+  describeMissing,
+  exitRuleMissing,
+  isBoardUnavailableError,
+} from '@/renderer/components/board/utils/boardErrors';
+import { actorName, columnName, departmentName, describeEvent } from '@/renderer/components/board/utils/boardFormat';
 import {
   anchorForSlot,
   applyBoardChange,
   applyOptimisticMove,
   endAnchor,
   groupCardsByColumn,
+  groupColumnsByCategory,
+  moveLock,
+  needsDecisionCount,
   isNoopMove,
   optimisticPosition,
   POSITION_STEP,
@@ -28,7 +36,7 @@ import {
   wouldExceedWip,
 } from '@/renderer/components/board/utils/boardModel';
 
-import { makeCard, makeColumn, makeEvent, makeSnapshot, simpleColumns } from './boardTestUtils';
+import { makeCard, makeColumn, makeEvent, makeSnapshot, flowColumns, studioColumns } from '../boardTestUtils';
 
 /** `t` stub that echoes the key and its options, so assertions see what was asked for. */
 const t = ((key: string, options?: Record<string, unknown>) =>
@@ -39,9 +47,13 @@ const coded = (status: number, code: string) =>
 
 describe('board ordering and grouping', () => {
   it('orders cards by position, then id, and gives every visible column a list', () => {
-    const cards = [makeCard(2, 'todo', 2048), makeCard(1, 'todo', 1024), makeCard(3, 'todo', 1024, { id: 'card-0' })];
-    const groups = groupCardsByColumn(simpleColumns(), cards);
-    expect(groups.todo.map((card) => card.id)).toEqual(['card-0', 'card-1', 'card-2']);
+    const cards = [
+      makeCard(2, 'triage', 2048),
+      makeCard(1, 'triage', 1024),
+      makeCard(3, 'triage', 1024, { id: 'card-0' }),
+    ];
+    const groups = groupCardsByColumn(flowColumns(), cards);
+    expect(groups.triage.map((card) => card.id)).toEqual(['card-0', 'card-1', 'card-2']);
     expect(groups.done).toEqual([]);
   });
 
@@ -52,10 +64,10 @@ describe('board ordering and grouping', () => {
 });
 
 describe('WIP', () => {
-  const column = makeColumn('in_progress', 2, { wip_limit: 2 });
+  const column = makeColumn('building', 2, { wip_limit: 2 });
 
   it('reports none / ok / full / over against the limit', () => {
-    expect(wipState(makeColumn('todo', 1), 9)).toBe('none');
+    expect(wipState(makeColumn('triage', 1), 9)).toBe('none');
     expect(wipState(column, 1)).toBe('ok');
     expect(wipState(column, 2)).toBe('full');
     expect(wipState(column, 3)).toBe('over');
@@ -63,72 +75,74 @@ describe('WIP', () => {
 
   it('never counts the moving card twice and ignores archived cards', () => {
     const cards = [
-      makeCard(1, 'in_progress', 1),
-      makeCard(2, 'in_progress', 2, { archived_at: 5 }),
-      makeCard(3, 'todo', 1),
+      makeCard(1, 'building', 1),
+      makeCard(2, 'building', 2, { archived_at: 5 }),
+      makeCard(3, 'triage', 1),
     ];
     expect(wouldExceedWip(column, cards, 'card-3')).toBe(false);
-    const full = [...cards, makeCard(4, 'in_progress', 3)];
+    const full = [...cards, makeCard(4, 'building', 3)];
     expect(wouldExceedWip(column, full, 'card-3')).toBe(true);
     expect(wouldExceedWip(column, full, 'card-1')).toBe(false);
   });
 });
 
 describe('placement anchors', () => {
-  const cards = [makeCard(1, 'todo', 1024), makeCard(2, 'todo', 2048), makeCard(3, 'todo', 3072)];
+  const cards = [makeCard(1, 'triage', 1024), makeCard(2, 'triage', 2048), makeCard(3, 'triage', 3072)];
 
   it('anchors before the slot card, or after the last visible card at the end', () => {
-    expect(anchorForSlot({ columnKey: 'todo', beforeId: 'card-2' }, ['card-1', 'card-2'])).toEqual({
+    expect(anchorForSlot({ columnKey: 'triage', beforeId: 'card-2' }, ['card-1', 'card-2'])).toEqual({
       before_id: 'card-2',
     });
-    expect(anchorForSlot({ columnKey: 'todo', beforeId: null }, ['card-1', 'card-2'])).toEqual({ after_id: 'card-2' });
+    expect(anchorForSlot({ columnKey: 'triage', beforeId: null }, ['card-1', 'card-2'])).toEqual({
+      after_id: 'card-2',
+    });
     expect(anchorForSlot({ columnKey: 'done', beforeId: null }, [])).toEqual({});
   });
 
   it('computes the end anchor without the moving card', () => {
-    expect(endAnchor(cards, 'todo', 'card-3')).toEqual({ after_id: 'card-2' });
+    expect(endAnchor(cards, 'triage', 'card-3')).toEqual({ after_id: 'card-2' });
     expect(endAnchor(cards, 'done', 'card-1')).toEqual({});
   });
 
   it('places optimistically at the midpoint, head − step or tail + step', () => {
-    expect(optimisticPosition(cards, 'card-9', 'todo', { before_id: 'card-2' })).toBe(1536);
-    expect(optimisticPosition(cards, 'card-9', 'todo', { before_id: 'card-1' })).toBe(1024 - POSITION_STEP);
-    expect(optimisticPosition(cards, 'card-9', 'todo', { after_id: 'card-1' })).toBe(1536);
-    expect(optimisticPosition(cards, 'card-9', 'todo', {})).toBe(3072 + POSITION_STEP);
+    expect(optimisticPosition(cards, 'card-9', 'triage', { before_id: 'card-2' })).toBe(1536);
+    expect(optimisticPosition(cards, 'card-9', 'triage', { before_id: 'card-1' })).toBe(1024 - POSITION_STEP);
+    expect(optimisticPosition(cards, 'card-9', 'triage', { after_id: 'card-1' })).toBe(1536);
+    expect(optimisticPosition(cards, 'card-9', 'triage', {})).toBe(3072 + POSITION_STEP);
     expect(optimisticPosition(cards, 'card-9', 'done', {})).toBe(POSITION_STEP);
   });
 
   it('detects a move that leaves the card where it is', () => {
-    expect(isNoopMove(cards, cards[0], 'todo', { before_id: 'card-2' })).toBe(true);
-    expect(isNoopMove(cards, cards[1], 'todo', { after_id: 'card-1' })).toBe(true);
-    expect(isNoopMove(cards, cards[2], 'todo', {})).toBe(true);
-    expect(isNoopMove(cards, cards[0], 'todo', { after_id: 'card-2' })).toBe(false);
+    expect(isNoopMove(cards, cards[0], 'triage', { before_id: 'card-2' })).toBe(true);
+    expect(isNoopMove(cards, cards[1], 'triage', { after_id: 'card-1' })).toBe(true);
+    expect(isNoopMove(cards, cards[2], 'triage', {})).toBe(true);
+    expect(isNoopMove(cards, cards[0], 'triage', { after_id: 'card-2' })).toBe(false);
     expect(isNoopMove(cards, cards[0], 'done', {})).toBe(false);
   });
 });
 
 describe('optimistic move and rollback', () => {
   it('moves the card locally and restores only that card on rollback', () => {
-    const before = makeSnapshot({ cards: [makeCard(1, 'backlog', 1024), makeCard(2, 'todo', 1024)] });
-    const moved = applyOptimisticMove(before, 'card-1', 'todo', { before_id: 'card-2' });
-    expect(moved.cards.find((card) => card.id === 'card-1')).toMatchObject({ column_key: 'todo', position: 0 });
+    const before = makeSnapshot({ cards: [makeCard(1, 'ideas', 1024), makeCard(2, 'triage', 1024)] });
+    const moved = applyOptimisticMove(before, 'card-1', 'triage', { before_id: 'card-2' });
+    expect(moved.cards.find((card) => card.id === 'card-1')).toMatchObject({ column_key: 'triage', position: 0 });
 
     // A live change to another card lands while the request is in flight.
     const withOther = upsertCard(moved, makeCard(2, 'done', 50), false);
     const rolledBack = restoreCard(withOther, before.cards[0]);
-    expect(rolledBack.cards.find((card) => card.id === 'card-1')).toMatchObject({ column_key: 'backlog' });
+    expect(rolledBack.cards.find((card) => card.id === 'card-1')).toMatchObject({ column_key: 'ideas' });
     expect(rolledBack.cards.find((card) => card.id === 'card-2')).toMatchObject({ column_key: 'done' });
   });
 
   it('drops archived cards from a view without archived cards', () => {
-    const snapshot = makeSnapshot({ cards: [makeCard(1, 'todo', 1)] });
-    expect(upsertCard(snapshot, makeCard(1, 'todo', 1, { archived_at: 9 }), false).cards).toEqual([]);
-    expect(upsertCard(snapshot, makeCard(1, 'todo', 1, { archived_at: 9 }), true).cards).toHaveLength(1);
+    const snapshot = makeSnapshot({ cards: [makeCard(1, 'triage', 1)] });
+    expect(upsertCard(snapshot, makeCard(1, 'triage', 1, { archived_at: 9 }), false).cards).toEqual([]);
+    expect(upsertCard(snapshot, makeCard(1, 'triage', 1, { archived_at: 9 }), true).cards).toHaveLength(1);
   });
 });
 
 describe('applyBoardChange (live hints)', () => {
-  const snapshot = makeSnapshot({ cards: [makeCard(1, 'todo', 1)], last_seq: 10 });
+  const snapshot = makeSnapshot({ cards: [makeCard(1, 'triage', 1)], last_seq: 10 });
   const change = (seq: number, over: Partial<BoardChangedEvent> = {}): BoardChangedEvent => ({
     user_id: 'u1',
     project_id: 'p1',
@@ -213,8 +227,8 @@ describe('board error codes → i18n keys', () => {
 
 describe('display helpers', () => {
   it('uses the custom column name, else the translated default for the key', () => {
-    expect(columnName(makeColumn('todo', 0, { name: 'Next up' }), t)).toBe('Next up');
-    expect(columnName(makeColumn('todo', 0), t)).toBe('board.columns.todo{"defaultValue":"todo"}');
+    expect(columnName(makeColumn('triage', 0, { name: 'Next up' }), t)).toBe('Next up');
+    expect(columnName(makeColumn('triage', 0), t)).toBe('board.columns.triage{"defaultValue":"triage"}');
   });
 
   it('names actors: the owner, the supervisor and agents by assistant id', () => {
@@ -225,10 +239,78 @@ describe('display helpers', () => {
   });
 
   it('describes moves with column names and unknown kinds generically', () => {
-    const columns = simpleColumns({ todo: { name: 'Next' } });
-    const moved = describeEvent(makeEvent(1, 'card_moved', { payload: { from: 'todo', to: 'gone' } }), columns, t);
+    const columns = flowColumns({ triage: { name: 'Next' } });
+    const moved = describeEvent(makeEvent(1, 'card_moved', { payload: { from: 'triage', to: 'gone' } }), columns, t);
     expect(moved).toContain('"from":"Next"');
     expect(moved).toContain('"to":"gone"');
-    expect(describeEvent(makeEvent(2, 'gate_approved'), columns, t)).toContain('board.activity.other');
+    expect(describeEvent(makeEvent(2, 'something_new'), columns, t)).toContain('board.activity.other');
+  });
+});
+
+describe('studio flow helpers', () => {
+  it('groups the studio columns by category in flow order', () => {
+    const groups = groupColumnsByCategory(visibleColumns(studioColumns()));
+    expect(groups.map((group) => [group.category, group.columns.length])).toEqual([
+      ['backlog', 2],
+      ['todo', 4],
+      ['in_progress', 5],
+      ['done', 4],
+    ]);
+  });
+
+  it('counts only active cards waiting for a decision', () => {
+    const cards = [
+      makeCard(1, 'decision', 1, { needs_decision: true }),
+      makeCard(2, 'decision', 2),
+      makeCard(3, 'decision', 3, { needs_decision: true, archived_at: 5 }),
+    ];
+    expect(needsDecisionCount(cards, 'decision')).toBe(1);
+  });
+
+  it('locks a waiting gate card and every Deploying card, nothing else', () => {
+    const [decision, deploying, building] = ['decision', 'deploying', 'building'].map((key) => makeColumn(key, 0));
+    expect(moveLock(makeCard(1, 'decision', 1, { needs_decision: true }), decision)).toBe('decision');
+    expect(moveLock(makeCard(1, 'decision', 1), decision)).toBeNull();
+    expect(moveLock(makeCard(1, 'deploying', 1), deploying)).toBe('automation');
+    expect(moveLock(makeCard(1, 'building', 1, { needs_decision: true }), building)).toBeNull();
+    expect(moveLock(makeCard(1, 'x', 1), undefined)).toBeNull();
+  });
+
+  it('reads and words the missing exit-rule items', () => {
+    const error = new BackendHttpError({
+      method: 'POST',
+      path: '/x',
+      status: 409,
+      body: { code: 'board_exit_rule', details: { missing: ['review:qa', 'open_questions', 'min_confidence', 7] } },
+    });
+    expect(exitRuleMissing(error)).toEqual(['review:qa', 'open_questions', 'min_confidence']);
+    expect(exitRuleMissing(new Error('x'))).toEqual([]);
+    const name = (key: string) => departmentName(key, t);
+    expect(describeMissing('review:qa', t, name)).toBe(
+      'board.errors.missing.review{"department":"board.departments.qa"}'
+    );
+    expect(describeMissing('question:q1', t, name)).toBe('board.errors.missing.openQuestions');
+    expect(describeMissing('custom', t, name)).toBe('custom');
+  });
+
+  it('names known departments and keeps custom ones as written', () => {
+    expect(departmentName('technical', t)).toBe('board.departments.technical');
+    expect(departmentName('owner', t)).toBe('board.departments.owner');
+    expect(departmentName('Legal', t)).toBe('Legal');
+  });
+
+  it('describes gate, review and question events', () => {
+    const columns = studioColumns();
+    expect(
+      describeEvent(makeEvent(1, 'gate_approved', { payload: { from: 'decision', to: 'planned' } }), columns, t)
+    ).toBe(
+      'board.activity.gate_approved{"actor":"board.actor.you","from":"board.columns.decision{\\"defaultValue\\":\\"decision\\"}","to":"board.columns.planned{\\"defaultValue\\":\\"planned\\"}"}'
+    );
+    expect(
+      describeEvent(makeEvent(2, 'review_updated', { payload: { department: 'qa', verdict: 'reject' } }), columns, t)
+    ).toContain('"department":"board.departments.qa"');
+    expect(
+      describeEvent(makeEvent(3, 'question_added', { payload: { to_department: 'owner' } }), columns, t)
+    ).toContain('"to":"board.departments.owner"');
   });
 });

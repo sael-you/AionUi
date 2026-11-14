@@ -11,7 +11,7 @@ import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/common', async (importOriginal) =>
-  (await import('./boardTestUtils')).mockCommonModule(await importOriginal())
+  (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
 
 import { useBoard } from '@/renderer/components/board/hooks/useBoard';
@@ -26,7 +26,7 @@ import {
   makeSnapshot,
   reconnected,
   resetBridge,
-} from './boardTestUtils';
+} from '../boardTestUtils';
 
 const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <I18nextProvider i18n={createTestI18n()}>
@@ -78,7 +78,7 @@ describe('useBoardLiveFeed', () => {
 
 describe('useBoard live updates', () => {
   it('applies the card carried by the next hint without refetching', async () => {
-    bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(1, 'todo', 1)], last_seq: 5 }));
+    bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(1, 'triage', 1)], last_seq: 5 }));
     const { result } = renderHook(() => useBoard('p1'), { wrapper });
     await waitFor(() => expect(result.current.snapshot).toBeDefined());
 
@@ -94,8 +94,8 @@ describe('useBoard live updates', () => {
     const { result } = renderHook(() => useBoard('p1'), { wrapper });
     await waitFor(() => expect(result.current.snapshot).toBeDefined());
 
-    bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(4, 'todo', 1)], last_seq: 9 }));
-    act(() => boardChanged.emit(change(9, { card: makeCard(4, 'todo', 1) })));
+    bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(4, 'triage', 1)], last_seq: 9 }));
+    act(() => boardChanged.emit(change(9, { card: makeCard(4, 'triage', 1) })));
 
     await waitFor(() => expect(bridge.get).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(result.current.snapshot?.last_seq).toBe(9));
@@ -111,7 +111,7 @@ describe('useBoard live updates', () => {
   });
 
   it('reports a project without a board as unavailable', async () => {
-    const { backendError } = await import('./boardTestUtils');
+    const { backendError } = await import('../boardTestUtils');
     bridge.get.mockRejectedValue(backendError(409, 'board_no_project'));
     const { result } = renderHook(() => useBoard('p1'), { wrapper });
 

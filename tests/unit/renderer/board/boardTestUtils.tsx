@@ -24,18 +24,20 @@ import { SWRConfig } from 'swr';
 import { vi } from 'vitest';
 
 import { BackendHttpError } from '@/common/adapter/httpBridge';
-import type {
-  BoardCard,
-  BoardCardDetail,
-  BoardCardSummary,
-  BoardChangedEvent,
-  BoardColumn,
-  BoardEvent,
-  BoardSettings,
-  BoardSnapshot,
+import {
+  STUDIO_COLUMN_KEYS,
+  type BoardCard,
+  type BoardCardDetail,
+  type BoardCardSummary,
+  type BoardChangedEvent,
+  type BoardColumn,
+  type BoardEvent,
+  type BoardSettings,
+  type BoardSnapshot,
 } from '@/common/types/board';
 import enBoard from '@/renderer/services/i18n/locales/en-US/board.json';
 import enCommon from '@/renderer/services/i18n/locales/en-US/common.json';
+import enConversation from '@/renderer/services/i18n/locales/en-US/conversation.json';
 import faBoard from '@/renderer/services/i18n/locales/fa-IR/board.json';
 import faCommon from '@/renderer/services/i18n/locales/fa-IR/common.json';
 
@@ -48,34 +50,70 @@ export const PROJECT_ID = 'p1';
 export const makeSettings = (over: Partial<BoardSettings> = {}): BoardSettings => ({
   project_id: PROJECT_ID,
   enabled: true,
-  template: 'simple',
+  template: 'studio',
   next_number: 10,
   version: 3,
   settings: {},
   archived_at: null,
+  keeper_conversation_id: null,
   created_at: 1_700_000_000_000,
   updated_at: 1_700_000_000_000,
   ...over,
 });
 
+const CATEGORY: Record<string, BoardColumn['category']> = {
+  ideas: 'backlog',
+  inbox: 'backlog',
+  triage: 'todo',
+  review: 'todo',
+  accuracy: 'todo',
+  decision: 'todo',
+  planned: 'in_progress',
+  building: 'in_progress',
+  local_test: 'in_progress',
+  ready_to_deploy: 'in_progress',
+  deploying: 'in_progress',
+  deployed: 'done',
+  done: 'done',
+  parked: 'done',
+  rejected: 'done',
+};
+const TERMINAL: Record<string, BoardColumn['resolution']> = {
+  deployed: 'completed',
+  done: 'completed',
+  parked: 'dropped',
+  rejected: 'dropped',
+};
+const GATES: Record<string, BoardColumn['gate']> = {
+  decision: { owner_if: { size: ['m', 'l'] }, on_approve: 'planned', on_reject: 'parked' },
+  ready_to_deploy: { owner_if: {}, on_approve: 'deploying', on_reject: 'local_test' },
+};
+const WIP: Record<string, number> = { review: 4, building: 1, local_test: 1 };
+
+/** A column with the studio template's defaults for its key (category, kind, resolution, gate). */
 export const makeColumn = (key: string, position: number, over: Partial<BoardColumn> = {}): BoardColumn => ({
   id: `col-${key}`,
   key,
   name: null,
-  category: (['backlog', 'todo', 'in_progress', 'done'].includes(key) ? key : 'todo') as BoardColumn['category'],
-  kind: key === 'done' ? 'terminal' : 'normal',
-  resolution: key === 'done' ? 'completed' : null,
-  agent_move: 'allow',
+  category: CATEGORY[key] ?? 'todo',
+  kind: GATES[key] ? 'gate' : TERMINAL[key] ? 'terminal' : 'normal',
+  resolution: TERMINAL[key] ?? null,
+  agent_move: 'deny',
   wip_limit: null,
   exit_rule: null,
-  gate: null,
+  gate: GATES[key] ?? null,
   position,
   archived: false,
   ...over,
 });
 
-export const simpleColumns = (over: Partial<Record<string, Partial<BoardColumn>>> = {}): BoardColumn[] =>
-  ['backlog', 'todo', 'in_progress', 'done'].map((key, index) => makeColumn(key, index, over[key]));
+/** A short flow (one column per category) for tests about generic board behaviour. */
+export const flowColumns = (over: Partial<Record<string, Partial<BoardColumn>>> = {}): BoardColumn[] =>
+  ['ideas', 'triage', 'building', 'done'].map((key, index) => makeColumn(key, index, over[key]));
+
+/** The full studio flow with its default WIP limits (SPEC §3). */
+export const studioColumns = (over: Partial<Record<string, Partial<BoardColumn>>> = {}): BoardColumn[] =>
+  STUDIO_COLUMN_KEYS.map((key, index) => makeColumn(key, index, { wip_limit: WIP[key] ?? null, ...over[key] }));
 
 export const makeCard = (
   number: number,
@@ -102,6 +140,7 @@ export const makeCard = (
   blocked: false,
   blocked_reason: null,
   open_dependency_count: 0,
+  needs_decision: false,
   version: 1,
   archived_at: null,
   created_at: 1_700_000_000_000,
@@ -111,7 +150,7 @@ export const makeCard = (
 
 export const makeSnapshot = (over: Partial<BoardSnapshot> = {}): BoardSnapshot => ({
   settings: makeSettings(),
-  columns: simpleColumns(),
+  columns: flowColumns(),
   cards: [],
   last_seq: 100,
   ...over,
@@ -194,6 +233,12 @@ export const bridge = {
   listCardEvents: vi.fn(),
   addDependency: vi.fn(),
   removeDependency: vi.fn(),
+  decideGate: vi.fn(),
+  assign: vi.fn(),
+  brainstorm: vi.fn(),
+  ensureKeeper: vi.fn(),
+  assistantsList: vi.fn(),
+  teamList: vi.fn(),
   projectGet: vi.fn(),
   unarchiveProject: vi.fn(),
 };
@@ -210,6 +255,8 @@ export const resetBridge = (): void => {
     explorer: { workspace_pe_id: '', entries: [] },
   });
   bridge.listComments.mockResolvedValue({ items: [], has_more: false, next_after_seq: null });
+  bridge.assistantsList.mockResolvedValue([]);
+  bridge.teamList.mockResolvedValue([]);
 };
 
 const provider = (fn: (params: unknown) => unknown) => ({ invoke: (params: unknown) => fn(params) });
@@ -236,10 +283,16 @@ export const mockCommonModule = (actual: Record<string, unknown>) => {
         listCardEvents: provider(bridge.listCardEvents),
         addDependency: provider(bridge.addDependency),
         removeDependency: provider(bridge.removeDependency),
+        decideGate: provider(bridge.decideGate),
+        assign: provider(bridge.assign),
+        brainstorm: provider(bridge.brainstorm),
+        ensureKeeper: provider(bridge.ensureKeeper),
         changed: { on: boardChanged.on, emit: () => {} },
       },
       realtime: { reconnected: { on: reconnected.on, emit: () => {} } },
       project: { ...(ipcBridge.project as object), get: provider(bridge.projectGet) },
+      assistants: { ...(ipcBridge.assistants as object), list: provider(bridge.assistantsList) },
+      team: { ...(ipcBridge.team as object), list: provider(bridge.teamList) },
       sidebar: { ...(ipcBridge.sidebar as object), unarchiveProject: provider(bridge.unarchiveProject) },
     },
   };
@@ -257,7 +310,7 @@ export const createTestI18n = (language: 'en-US' | 'fa-IR' = 'en-US'): I18n => {
     initImmediate: false,
     interpolation: { escapeValue: false },
     resources: {
-      'en-US': { translation: { board: enBoard, common: enCommon } },
+      'en-US': { translation: { board: enBoard, common: enCommon, conversation: enConversation } },
       'fa-IR': { translation: { board: faBoard, common: faCommon } },
     },
   });

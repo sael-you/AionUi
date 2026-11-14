@@ -24,11 +24,11 @@ import {
 } from '@/renderer/pages/board/utils/boardKeyboard';
 import type { DropSlot } from '@/renderer/components/board/utils/boardModel';
 
-import { makeCard } from './boardTestUtils';
+import { makeCard } from '../boardTestUtils';
 
 const layout: KeyboardLayout = {
-  columns: ['backlog', 'todo', 'done'],
-  cards: { backlog: ['a', 'b', 'c'], todo: ['x'], done: [] },
+  columns: ['ideas', 'triage', 'done'],
+  cards: { ideas: ['a', 'b', 'c'], triage: ['x'], done: [] },
 };
 
 describe('keyboard moves', () => {
@@ -42,29 +42,29 @@ describe('keyboard moves', () => {
   });
 
   it('starts where the picked-up card sits', () => {
-    expect(initialSlot('backlog', ['a', 'b', 'c'], 'b')).toEqual({ columnKey: 'backlog', beforeId: 'c' });
-    expect(initialSlot('backlog', ['a', 'b', 'c'], 'c')).toEqual({ columnKey: 'backlog', beforeId: null });
+    expect(initialSlot('ideas', ['a', 'b', 'c'], 'b')).toEqual({ columnKey: 'ideas', beforeId: 'c' });
+    expect(initialSlot('ideas', ['a', 'b', 'c'], 'c')).toEqual({ columnKey: 'ideas', beforeId: null });
   });
 
   it('steps up and down through the column and stops at the edges', () => {
-    const top: DropSlot = { columnKey: 'backlog', beforeId: 'a' };
+    const top: DropSlot = { columnKey: 'ideas', beforeId: 'a' };
     expect(nextSlot(layout, top, 'up')).toEqual(top);
-    expect(nextSlot(layout, top, 'down')).toEqual({ columnKey: 'backlog', beforeId: 'b' });
-    const end: DropSlot = { columnKey: 'backlog', beforeId: null };
+    expect(nextSlot(layout, top, 'down')).toEqual({ columnKey: 'ideas', beforeId: 'b' });
+    const end: DropSlot = { columnKey: 'ideas', beforeId: null };
     expect(nextSlot(layout, end, 'down')).toEqual(end);
-    expect(nextSlot(layout, end, 'up')).toEqual({ columnKey: 'backlog', beforeId: 'c' });
+    expect(nextSlot(layout, end, 'up')).toEqual({ columnKey: 'ideas', beforeId: 'c' });
   });
 
   it('keeps the position when crossing columns, clamped to the target length', () => {
-    expect(nextSlot(layout, { columnKey: 'backlog', beforeId: 'a' }, 'nextColumn')).toEqual({
-      columnKey: 'todo',
+    expect(nextSlot(layout, { columnKey: 'ideas', beforeId: 'a' }, 'nextColumn')).toEqual({
+      columnKey: 'triage',
       beforeId: 'x',
     });
-    expect(nextSlot(layout, { columnKey: 'backlog', beforeId: 'c' }, 'nextColumn')).toEqual({
-      columnKey: 'todo',
+    expect(nextSlot(layout, { columnKey: 'ideas', beforeId: 'c' }, 'nextColumn')).toEqual({
+      columnKey: 'triage',
       beforeId: null,
     });
-    expect(nextSlot(layout, { columnKey: 'todo', beforeId: null }, 'nextColumn')).toEqual({
+    expect(nextSlot(layout, { columnKey: 'triage', beforeId: null }, 'nextColumn')).toEqual({
       columnKey: 'done',
       beforeId: null,
     });
@@ -72,17 +72,17 @@ describe('keyboard moves', () => {
       columnKey: 'done',
       beforeId: null,
     });
-    expect(nextSlot(layout, { columnKey: 'backlog', beforeId: 'a' }, 'previousColumn')).toEqual({
-      columnKey: 'backlog',
+    expect(nextSlot(layout, { columnKey: 'ideas', beforeId: 'a' }, 'previousColumn')).toEqual({
+      columnKey: 'ideas',
       beforeId: 'a',
     });
   });
 
   it('reports the 1-based position, the droppable id and slot equality', () => {
-    expect(slotPosition(layout, { columnKey: 'backlog', beforeId: 'b' })).toEqual({ position: 2, count: 4 });
+    expect(slotPosition(layout, { columnKey: 'ideas', beforeId: 'b' })).toEqual({ position: 2, count: 4 });
     expect(slotPosition(layout, { columnKey: 'done', beforeId: null })).toEqual({ position: 1, count: 1 });
-    expect(slotDroppableId({ columnKey: 'todo', beforeId: 'x' })).toBe('card:x');
-    expect(slotDroppableId({ columnKey: 'todo', beforeId: null })).toBe('column:todo');
+    expect(slotDroppableId({ columnKey: 'triage', beforeId: 'x' })).toBe('card:x');
+    expect(slotDroppableId({ columnKey: 'triage', beforeId: null })).toBe('column:triage');
     expect(sameSlot({ columnKey: 'a', beforeId: null }, { columnKey: 'a', beforeId: null })).toBe(true);
     expect(sameSlot({ columnKey: 'a', beforeId: null }, null)).toBe(false);
   });
@@ -90,8 +90,8 @@ describe('keyboard moves', () => {
 
 describe('board filters', () => {
   const cards = [
-    makeCard(1, 'todo', 1, { title: 'Fix login', labels: ['auth'], type: 'bug', priority: 'high' }),
-    makeCard(2, 'todo', 2, { title: 'Dark mode', skills: ['css'], assignee_kind: 'team', assignee_ref: 't1' }),
+    makeCard(1, 'triage', 1, { title: 'Fix login', labels: ['auth'], type: 'bug', priority: 'high' }),
+    makeCard(2, 'triage', 2, { title: 'Dark mode', skills: ['css'], assignee_kind: 'team', assignee_ref: 't1' }),
     makeCard(3, 'done', 1, { title: 'Docs', open_dependency_count: 1, creator_kind: 'agent', creator_ref: 'x' }),
     makeCard(12, 'done', 2, { title: 'Ship', blocked: true, creator_kind: 'agent', creator_ref: 'x' }),
   ];

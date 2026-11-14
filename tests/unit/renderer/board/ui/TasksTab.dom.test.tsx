@@ -13,7 +13,7 @@ import { Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/common', async (importOriginal) =>
-  (await import('./boardTestUtils')).mockCommonModule(await importOriginal())
+  (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
 
 import { useBoard } from '@/renderer/components/board/hooks/useBoard';
@@ -28,8 +28,8 @@ import {
   makeSnapshot,
   renderWithBoard,
   resetBridge,
-  simpleColumns,
-} from './boardTestUtils';
+  flowColumns,
+} from '../boardTestUtils';
 
 const Harness: React.FC = () => {
   const board = useBoard('p1');
@@ -48,11 +48,11 @@ beforeEach(() => {
   resetBridge();
   bridge.get.mockResolvedValue(
     makeSnapshot({
-      columns: simpleColumns({ in_progress: { wip_limit: 1 } }),
+      columns: flowColumns({ building: { wip_limit: 1 } }),
       cards: [
-        makeCard(1, 'todo', 1024, { title: 'Fix login' }),
-        makeCard(2, 'todo', 2048, { title: 'Dark mode' }),
-        makeCard(3, 'in_progress', 1024, { title: 'API' }),
+        makeCard(1, 'triage', 1024, { title: 'Fix login' }),
+        makeCard(2, 'triage', 2048, { title: 'Dark mode' }),
+        makeCard(3, 'building', 1024, { title: 'API' }),
         makeCard(4, 'done', 1024, { title: 'Ship v1' }),
       ],
     })
@@ -71,7 +71,7 @@ describe('Tasks tab', () => {
     renderTab();
     expect(await screen.findByText('Shared by this project')).toBeInTheDocument();
     const chips = screen.getByRole('list', { name: 'Columns' });
-    expect(within(chips).getByRole('button', { name: 'To do, 2 cards' })).toBeInTheDocument();
+    expect(within(chips).getByRole('button', { name: 'Triage, 2 cards' })).toBeInTheDocument();
 
     expect(screen.getByText('Fix login')).toBeInTheDocument();
     expect(screen.queryByText('Ship v1')).not.toBeInTheDocument();
@@ -95,27 +95,27 @@ describe('Tasks tab', () => {
   });
 
   it('moves a card with "Move to…" (no drag in the narrow panel)', async () => {
-    bridge.moveCard.mockResolvedValue(fullCard(makeCard(1, 'in_progress', 2048, { title: 'Fix login' })));
+    bridge.moveCard.mockResolvedValue(fullCard(makeCard(1, 'building', 2048, { title: 'Fix login' })));
     renderTab();
     expect(screen.queryByRole('button', { name: /^Move TASK-/ })).not.toBeInTheDocument();
     fireEvent.click(await screen.findByRole('button', { name: 'Actions for TASK-1' }));
 
-    const current = await screen.findByRole('menuitem', { name: 'To do (current)' });
+    const current = await screen.findByRole('menuitem', { name: 'Triage (current)' });
     expect(current).toHaveAttribute('aria-disabled', 'true');
-    fireEvent.click(screen.getByRole('menuitem', { name: 'In progress (full)' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Building (full)' }));
 
     await waitFor(() =>
       expect(bridge.moveCard).toHaveBeenCalledWith({
         card_id: 'card-1',
-        to_column: 'in_progress',
+        to_column: 'building',
         after_id: 'card-3',
-        expected_column: 'todo',
+        expected_column: 'triage',
       })
     );
   });
 
   it('opens the card drawer from a card', async () => {
-    bridge.getCard.mockResolvedValue(makeDetail(fullCard(makeCard(1, 'todo', 1024, { title: 'Fix login' }))));
+    bridge.getCard.mockResolvedValue(makeDetail(fullCard(makeCard(1, 'triage', 1024, { title: 'Fix login' }))));
     renderTab();
     fireEvent.click(await screen.findByRole('button', { name: 'Open TASK-1: Fix login' }));
     expect(await screen.findByRole('dialog', { name: 'Card TASK-1' })).toBeInTheDocument();

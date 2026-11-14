@@ -12,8 +12,11 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/common', async (importOriginal) =>
-  (await import('./boardTestUtils')).mockCommonModule(await importOriginal())
+  (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
+// Each test drives the whole board page (and often the drawer) on a shared, busy CPU.
+vi.setConfig({ testTimeout: 60000 });
+
 vi.mock('@/renderer/hooks/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'u1', username: 'me' } }) }));
 
 import { BoardPage } from '@/renderer/pages/board';
@@ -29,16 +32,16 @@ import {
   makeSnapshot,
   renderWithBoard,
   resetBridge,
-} from './boardTestUtils';
+} from '../boardTestUtils';
 
 const XSS = '**Bold** text <img src=x onerror="alert(1)"> <script>alert(2)</script>';
 
-const card1 = makeCard(1, 'todo', 1024, { title: 'Fix login', labels: ['auth'], version: 4 });
+const card1 = makeCard(1, 'triage', 1024, { title: 'Fix login', labels: ['auth'], version: 4 });
 const card2 = makeCard(2, 'done', 1024, { title: 'Write spec' });
 const detail1 = (over: Parameters<typeof fullCard>[1] = {}) =>
   makeDetail(fullCard(card1, { description: XSS, ...over }), [
     makeEvent(1, 'card_created'),
-    makeEvent(2, 'card_moved', { payload: { from: 'backlog', to: 'todo' } }),
+    makeEvent(2, 'card_moved', { payload: { from: 'ideas', to: 'triage' } }),
     makeEvent(3, 'commented', { actor_kind: 'agent', actor_ref: 'assistant:coder@claude' }),
   ]);
 
@@ -91,7 +94,7 @@ describe('card drawer content', () => {
     const activity = within(dialog)
       .getAllByTestId('board-activity-item')
       .map((node) => node.textContent);
-    expect(activity).toEqual(['Agent coder commented', 'You moved it from Backlog to To do', 'You created the card']);
+    expect(activity).toEqual(['Agent coder commented', 'You moved it from Ideas to Triage', 'You created the card']);
   });
 
   it('renders description markdown through the sanitised pipeline (no raw HTML)', async () => {

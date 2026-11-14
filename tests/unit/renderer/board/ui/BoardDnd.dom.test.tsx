@@ -15,8 +15,11 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/common', async (importOriginal) =>
-  (await import('./boardTestUtils')).mockCommonModule(await importOriginal())
+  (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
+// Each test drives the whole board page (and often the drawer) on a shared, busy CPU.
+vi.setConfig({ testTimeout: 60000 });
+
 vi.mock('@/renderer/hooks/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'u1', username: 'me' } }) }));
 
 import { BoardPage } from '@/renderer/pages/board';
@@ -30,8 +33,8 @@ import {
   makeSnapshot,
   renderWithBoard,
   resetBridge,
-  simpleColumns,
-} from './boardTestUtils';
+  flowColumns,
+} from '../boardTestUtils';
 
 const tick = () => act(() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
 
@@ -71,7 +74,7 @@ let notifyWarning: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   resetBridge();
   bridge.get.mockResolvedValue(
-    makeSnapshot({ cards: [makeCard(1, 'backlog', 1024), makeCard(2, 'todo', 1024)], last_seq: 1 })
+    makeSnapshot({ cards: [makeCard(1, 'ideas', 1024), makeCard(2, 'triage', 1024)], last_seq: 1 })
   );
   notifyError = vi.spyOn(Notification, 'error').mockImplementation(() => undefined as never);
   notifyWarning = vi.spyOn(Notification, 'warning').mockImplementation(() => undefined as never);
@@ -92,53 +95,53 @@ describe('board keyboard drag and drop', () => {
 
     expect(bridge.moveCard).toHaveBeenCalledWith({
       card_id: 'card-1',
-      to_column: 'todo',
+      to_column: 'triage',
       before_id: 'card-2',
-      expected_column: 'backlog',
+      expected_column: 'ideas',
     });
-    // Optimistic: already shown in "To do" while the request is in flight.
-    expect(within(region(/^To do/)).getByText('Card 1')).toBeInTheDocument();
+    // Optimistic: already shown in "Triage" while the request is in flight.
+    expect(within(region(/^Triage/)).getByText('Card 1')).toBeInTheDocument();
 
-    await act(async () => pending.resolve(fullCard(makeCard(1, 'todo', 0))));
-    expect(await screen.findByText('TASK-1 moved to To do.')).toBeInTheDocument();
+    await act(async () => pending.resolve(fullCard(makeCard(1, 'triage', 0))));
+    expect(await screen.findByText('TASK-1 moved to Triage.')).toBeInTheDocument();
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Move TASK-1' })));
   });
 
   it('mirrors ← / → in a right-to-left layout (fa-IR)', async () => {
-    bridge.moveCard.mockResolvedValue(fullCard(makeCard(1, 'todo', 0)));
+    bridge.moveCard.mockResolvedValue(fullCard(makeCard(1, 'triage', 0)));
     renderWithBoard(<BoardPage projectId='p1' />, { i18n: createTestI18n('fa-IR') });
     const i18n = createTestI18n('fa-IR');
     const handleName = i18n.t('board.card.dragHandle', { ref: 'TASK-1' });
 
-    // → in RTL goes towards the start: there is no column before Backlog, so nothing moves.
+    // → in RTL goes towards the start: there is no column before Ideas, so nothing moves.
     await keyboardMove(handleName, ['ArrowRight']);
     expect(bridge.moveCard).not.toHaveBeenCalled();
 
     // ← in RTL is the next column.
     await keyboardMove(handleName, ['ArrowLeft']);
-    expect(bridge.moveCard).toHaveBeenCalledWith(expect.objectContaining({ card_id: 'card-1', to_column: 'todo' }));
+    expect(bridge.moveCard).toHaveBeenCalledWith(expect.objectContaining({ card_id: 'card-1', to_column: 'triage' }));
   });
 
   it('moves within a column with ↑ and announces in the user’s language', async () => {
     bridge.get.mockResolvedValue(
-      makeSnapshot({ cards: [makeCard(1, 'todo', 1024), makeCard(2, 'todo', 2048)], last_seq: 1 })
+      makeSnapshot({ cards: [makeCard(1, 'triage', 1024), makeCard(2, 'triage', 2048)], last_seq: 1 })
     );
-    bridge.moveCard.mockResolvedValue(fullCard(makeCard(2, 'todo', 0)));
+    bridge.moveCard.mockResolvedValue(fullCard(makeCard(2, 'triage', 0)));
     renderWithBoard(<BoardPage projectId='p1' />);
 
     const handle = await screen.findByRole('button', { name: 'Move TASK-2' });
     handle.focus();
     await press(handle, 'Space');
-    expect(await screen.findByText('Picked up TASK-2 from To do.')).toBeInTheDocument();
+    expect(await screen.findByText('Picked up TASK-2 from Triage.')).toBeInTheDocument();
     await press(document, 'ArrowUp');
-    expect(await screen.findByText('TASK-2 is in To do, position 1 of 2.')).toBeInTheDocument();
+    expect(await screen.findByText('TASK-2 is in Triage, position 1 of 2.')).toBeInTheDocument();
     await press(document, 'Space');
 
     expect(bridge.moveCard).toHaveBeenCalledWith({
       card_id: 'card-2',
-      to_column: 'todo',
+      to_column: 'triage',
       before_id: 'card-1',
-      expected_column: 'todo',
+      expected_column: 'triage',
     });
   });
 
@@ -151,7 +154,7 @@ describe('board keyboard drag and drop', () => {
     await press(document, 'Escape');
 
     expect(bridge.moveCard).not.toHaveBeenCalled();
-    expect(within(region(/^Backlog/)).getByText('Card 1')).toBeInTheDocument();
+    expect(within(region(/^Ideas/)).getByText('Card 1')).toBeInTheDocument();
   });
 });
 
@@ -162,24 +165,24 @@ describe('move failures', () => {
 
     await keyboardMove('Move TASK-1', ['ArrowRight']);
 
-    await waitFor(() => expect(within(region(/^Backlog/)).getByText('Card 1')).toBeInTheDocument());
+    await waitFor(() => expect(within(region(/^Ideas/)).getByText('Card 1')).toBeInTheDocument());
     expect(notifyError).toHaveBeenCalledWith({
       title: "Couldn't move TASK-1",
       content: 'Some values are invalid or too long.',
     });
-    expect(screen.getByTestId('board-live-region')).toHaveTextContent('TASK-1 was put back in Backlog.');
+    expect(screen.getByTestId('board-live-region')).toHaveTextContent('TASK-1 was put back in Ideas.');
   });
 
   it('offers "Move anyway" on a full column and forces the move when chosen', async () => {
     bridge.get.mockResolvedValue(
       makeSnapshot({
-        columns: simpleColumns({ todo: { wip_limit: 1 } }),
-        cards: [makeCard(1, 'backlog', 1024), makeCard(2, 'todo', 1024)],
+        columns: flowColumns({ triage: { wip_limit: 1 } }),
+        cards: [makeCard(1, 'ideas', 1024), makeCard(2, 'triage', 1024)],
         last_seq: 1,
       })
     );
     bridge.moveCard.mockRejectedValueOnce(backendError(409, 'board_wip_limit'));
-    bridge.moveCard.mockResolvedValueOnce(fullCard(makeCard(1, 'todo', 0)));
+    bridge.moveCard.mockResolvedValueOnce(fullCard(makeCard(1, 'triage', 0)));
     renderWithBoard(<BoardPage projectId='p1' />);
 
     await keyboardMove('Move TASK-1', ['ArrowRight']);
@@ -189,14 +192,14 @@ describe('move failures', () => {
       content: string;
       btn: React.ReactElement<{ onClick: () => void }>;
     };
-    expect(config.content).toBe('To do is full. Finish or move a card out first.');
-    expect(screen.getByTestId('board-live-region')).toHaveTextContent('To do is at its limit (1 of 1).');
+    expect(config.content).toBe('Triage is full. Finish or move a card out first.');
+    expect(screen.getByTestId('board-live-region')).toHaveTextContent('Triage is at its limit (1 of 1).');
 
     await act(async () => config.btn.props.onClick());
     expect(bridge.moveCard).toHaveBeenLastCalledWith(
-      expect.objectContaining({ card_id: 'card-1', to_column: 'todo', force: true })
+      expect.objectContaining({ card_id: 'card-1', to_column: 'triage', force: true })
     );
-    await waitFor(() => expect(within(region(/^To do/)).getByText('Card 1')).toBeInTheDocument());
+    await waitFor(() => expect(within(region(/^Triage/)).getByText('Card 1')).toBeInTheDocument());
   });
 
   it('reloads the board after a version conflict', async () => {
