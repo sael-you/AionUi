@@ -782,5 +782,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "展開計劃",
     "collapse": "收合計劃"
+  },
+  "hierarchy": {
+    "newSubConversation": "新增子對話",
+    "moveUnder": "移動到…",
+    "detach": "脫離父對話",
+    "detachSuccess": "已脫離父對話",
+    "moveSuccess": "對話已移動",
+    "moveUnderTitle": "移動到其他對話下",
+    "moveUnderConfirm": "移動",
+    "moveUnderPlaceholder": "選擇父對話",
+    "moveUnderEmpty": "沒有可選的對話",
+    "expand": "展開子對話",
+    "collapse": "收合子對話",
+    "rollupLabel": "{{count}} 個子對話",
+    "archiveConfirmWithSub": "封存「{{name}}」？其 {{count}} 個子對話也會一併封存。",
+    "batchArchiveConfirmWithSub": "封存所選對話？包含子對話在內共封存 {{count}} 個對話。",
+    "parentFallback": "父對話",
+    "backToParent": "返回父對話：{{name}}",
+    "resultTitle": "子代理結果：{{name}}",
+    "openChild": "開啟",
+    "resultToggle": "展開或收合子代理結果",
+    "errors": {
+      "parentNotFound": "父對話已不存在。",
+      "depthExceeded": "子對話已達最大巢狀層級。",
+      "fanoutExceeded": "此對話下的子對話數量已達上限。",
+      "cycle": "此操作會使對話成為自己的上層。",
+      "generic": "無法更新對話層級。",
+      "createFailed": "建立子對話失敗。",
+      "moveFailed": "移動對話失敗。",
+      "unsupportedParent": "此類型的對話不支援建立子對話。"
+    }
   }
 }

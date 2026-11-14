@@ -782,5 +782,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "계획 펼치기",
     "collapse": "계획 접기"
+  },
+  "hierarchy": {
+    "newSubConversation": "새 하위 대화",
+    "moveUnder": "다른 대화 아래로 이동…",
+    "detach": "상위 대화에서 분리",
+    "detachSuccess": "상위 대화에서 분리되었습니다",
+    "moveSuccess": "대화를 이동했습니다",
+    "moveUnderTitle": "다른 대화 아래로 이동",
+    "moveUnderConfirm": "이동",
+    "moveUnderPlaceholder": "상위 대화 선택",
+    "moveUnderEmpty": "선택할 수 있는 대화가 없습니다",
+    "expand": "하위 대화 펼치기",
+    "collapse": "하위 대화 접기",
+    "rollupLabel": "하위 대화 {{count}}개",
+    "archiveConfirmWithSub": "\"{{name}}\"을(를) 보관할까요? 하위 대화 {{count}}개도 함께 보관됩니다.",
+    "batchArchiveConfirmWithSub": "선택한 대화를 보관할까요? 하위 대화를 포함해 총 {{count}}개의 대화가 보관됩니다.",
+    "parentFallback": "상위 대화",
+    "backToParent": "상위 대화로 돌아가기: {{name}}",
+    "resultTitle": "하위 에이전트 결과: {{name}}",
+    "openChild": "열기",
+    "resultToggle": "하위 에이전트 결과 펼치기/접기",
+    "errors": {
+      "parentNotFound": "상위 대화가 더 이상 존재하지 않습니다.",
+      "depthExceeded": "하위 대화의 최대 중첩 깊이에 도달했습니다.",
+      "fanoutExceeded": "이 대화의 하위 대화 수가 최대치에 도달했습니다.",
+      "cycle": "이 이동은 대화를 자기 자신의 상위로 만듭니다.",
+      "generic": "대화 계층을 업데이트할 수 없습니다.",
+      "createFailed": "하위 대화를 만들지 못했습니다.",
+      "moveFailed": "대화를 이동하지 못했습니다.",
+      "unsupportedParent": "이 유형의 대화는 하위 대화를 가질 수 없습니다."
+    }
   }
 }

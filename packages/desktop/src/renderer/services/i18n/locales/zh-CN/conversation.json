@@ -782,5 +782,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "展开计划",
     "collapse": "收起计划"
+  },
+  "hierarchy": {
+    "newSubConversation": "新建子对话",
+    "moveUnder": "移动到…",
+    "detach": "脱离父对话",
+    "detachSuccess": "已脱离父对话",
+    "moveSuccess": "对话已移动",
+    "moveUnderTitle": "移动到其他对话下",
+    "moveUnderConfirm": "移动",
+    "moveUnderPlaceholder": "选择父对话",
+    "moveUnderEmpty": "没有可选的对话",
+    "expand": "展开子对话",
+    "collapse": "收起子对话",
+    "rollupLabel": "{{count}} 个子对话",
+    "archiveConfirmWithSub": "归档“{{name}}”？其 {{count}} 个子对话也将一并归档。",
+    "batchArchiveConfirmWithSub": "归档所选对话？包含子对话在内共归档 {{count}} 个对话。",
+    "parentFallback": "父对话",
+    "backToParent": "返回父对话：{{name}}",
+    "resultTitle": "子智能体结果：{{name}}",
+    "openChild": "打开",
+    "resultToggle": "展开或收起子智能体结果",
+    "errors": {
+      "parentNotFound": "父对话已不存在。",
+      "depthExceeded": "子对话已达到最大嵌套层级。",
+      "fanoutExceeded": "该对话下的子对话数量已达上限。",
+      "cycle": "此操作会使对话成为自己的上级。",
+      "generic": "无法更新对话层级。",
+      "createFailed": "创建子对话失败。",
+      "moveFailed": "移动对话失败。",
+      "unsupportedParent": "此类型的对话不支持创建子对话。"
+    }
   }
 }

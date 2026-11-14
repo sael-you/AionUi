@@ -782,5 +782,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "Expand plan",
     "collapse": "Collapse plan"
+  },
+  "hierarchy": {
+    "newSubConversation": "New sub-conversation",
+    "moveUnder": "Move under…",
+    "detach": "Detach from parent",
+    "detachSuccess": "Detached from parent",
+    "moveSuccess": "Conversation moved",
+    "moveUnderTitle": "Move under another conversation",
+    "moveUnderConfirm": "Move",
+    "moveUnderPlaceholder": "Select a parent conversation",
+    "moveUnderEmpty": "No eligible conversations",
+    "expand": "Expand sub-conversations",
+    "collapse": "Collapse sub-conversations",
+    "rollupLabel": "{{count}} sub-conversations",
+    "archiveConfirmWithSub": "Archive \"{{name}}\"? Its {{count}} sub-conversation(s) will be archived too.",
+    "batchArchiveConfirmWithSub": "Archive the selected conversations? {{count}} conversations in total will be archived, including sub-conversations.",
+    "parentFallback": "Parent conversation",
+    "backToParent": "Back to parent: {{name}}",
+    "resultTitle": "Sub-agent result: {{name}}",
+    "openChild": "Open",
+    "resultToggle": "Toggle sub-agent result",
+    "errors": {
+      "parentNotFound": "The parent conversation no longer exists.",
+      "depthExceeded": "Maximum nesting depth reached for sub-conversations.",
+      "fanoutExceeded": "This conversation already has the maximum number of sub-conversations.",
+      "cycle": "That move would make a conversation its own ancestor.",
+      "generic": "Could not update the conversation hierarchy.",
+      "createFailed": "Failed to create the sub-conversation.",
+      "moveFailed": "Failed to move the conversation.",
+      "unsupportedParent": "This conversation type cannot have sub-conversations."
+    }
   }
 }

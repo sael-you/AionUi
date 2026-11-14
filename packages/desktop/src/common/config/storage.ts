@@ -184,6 +184,13 @@ interface IChatConversation<T, Extra> {
    */
   project_id?: string;
   /**
+   * Hierarchy: id of the parent conversation (from
+   * `ConversationResponse.parent_conversation_id`). Absent for root conversations.
+   */
+  parent_conversation_id?: string;
+  /** Hierarchy depth (0 = root, max 3). Absent is treated as 0. */
+  depth?: number;
+  /**
    * Session-fork capability (from `ConversationResponse.fork_capability`).
    * Filled ONLY on the single-conversation detail response (never on lists).
    * Present = the fork entry point may be shown; `at_turn` = any message may

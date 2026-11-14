@@ -1,0 +1,60 @@
+/* Sub-conversation rows: thinner, secondary styling with a vertical connector line. */
+.childRow {
+  height: 28px;
+}
+
+.childRow::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--conversation-connector-x, 18px);
+  width: 1px;
+  background: var(--color-border-2);
+  pointer-events: none;
+}
+
+.childName {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-2);
+}
+
+.rollupBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--color-text-3);
+}
+
+.rollupCount {
+  min-width: 16px;
+  padding-inline: 4px;
+  border-radius: 8px;
+  text-align: center;
+  background: var(--color-fill-3);
+}
+
+.rollupAttention {
+  color: rgb(var(--warning-6));
+}
+
+.chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: -4px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  color: var(--color-text-3);
+  cursor: pointer;
+}
+
+.chevron:hover {
+  color: var(--color-text-1);
+  background: var(--color-fill-3);
+}

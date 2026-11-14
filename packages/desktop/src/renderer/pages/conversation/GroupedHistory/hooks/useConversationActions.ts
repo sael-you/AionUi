@@ -29,6 +29,41 @@ type UseConversationActionsParams = {
   markManualUnread: (conversation_id: string) => void;
   clearManualUnread: (conversation_id: string) => void;
   isManualUnread: (conversation_id: string) => boolean;
+  /** Hierarchy lookups so archive confirmations can account for sub-conversations. */
+  hierarchy?: ConversationHierarchyLookup;
+};
+
+export type ConversationHierarchyLookup = {
+  getParentId: (conversation_id: string) => string | undefined;
+  /** All descendants (every level) of a conversation. */
+  getDescendantIds: (conversation_id: string) => string[];
+};
+
+/**
+ * Resolve a batch selection to the ids to archive plus the total affected count.
+ * Selecting a parent implies its whole subtree, so selected ids with a selected
+ * ancestor are skipped (the backend archives the subtree with the parent) and
+ * the count includes every descendant.
+ */
+export const resolveBatchArchiveSelection = (
+  selected: ReadonlySet<string>,
+  hierarchy?: ConversationHierarchyLookup
+): { ids: string[]; totalCount: number } => {
+  if (!hierarchy) return { ids: [...selected], totalCount: selected.size };
+  const hasSelectedAncestor = (id: string): boolean => {
+    const seen = new Set<string>([id]);
+    let parent = hierarchy.getParentId(id);
+    while (parent && !seen.has(parent)) {
+      if (selected.has(parent)) return true;
+      seen.add(parent);
+      parent = hierarchy.getParentId(parent);
+    }
+    return false;
+  };
+  const ids = [...selected].filter((id) => !hasSelectedAncestor(id));
+  const all = new Set<string>(ids);
+  ids.forEach((id) => hierarchy.getDescendantIds(id).forEach((d) => all.add(d)));
+  return { ids, totalCount: all.size };
 };
 
 export const useConversationActions = ({
@@ -42,6 +77,7 @@ export const useConversationActions = ({
   markManualUnread,
   clearManualUnread,
   isManualUnread,
+  hierarchy,
 }: UseConversationActionsParams) => {
   const [renameModalVisible, setRenameModalVisible] = useState(false);
   const [renameModalName, setRenameModalName] = useState<string>('');
@@ -101,16 +137,19 @@ export const useConversationActions = ({
       return;
     }
 
+    const { ids: selectedIds, totalCount } = resolveBatchArchiveSelection(selectedConversationIds, hierarchy);
     Modal.confirm({
       title: t('conversation.history.batchArchive'),
-      content: t('conversation.history.batchArchiveConfirm', { count: selectedConversationIds.size }),
+      content:
+        totalCount > selectedIds.length
+          ? t('conversation.hierarchy.batchArchiveConfirmWithSub', { count: totalCount })
+          : t('conversation.history.batchArchiveConfirm', { count: selectedIds.length }),
       okText: t('conversation.history.batchArchive'),
       cancelText: t('common.cancel'),
       onOk: async () => {
         // No batch endpoint exists; archive each selected conversation on its
         // own. The active list (both read models) drops archived rows, so the
         // refresh clears the selection's rows and the archive page picks them up.
-        const selectedIds = Array.from(selectedConversationIds);
         try {
           const results = await Promise.allSettled(
             selectedIds.map((item_id) => ipcBridge.sidebar.archive.invoke({ item_type: 'conversation', item_id }))
@@ -134,7 +173,7 @@ export const useConversationActions = ({
       alignCenter: true,
       getPopupContainer: () => document.body,
     });
-  }, [onBatchModeChange, selectedConversationIds, t, setSelectedConversationIds]);
+  }, [hierarchy, onBatchModeChange, selectedConversationIds, t, setSelectedConversationIds]);
 
   const handleEditStart = useCallback((conversation: TChatConversation) => {
     setRenameModalId(conversation.id);
@@ -297,7 +336,7 @@ export const useConversationActions = ({
     }
   }, [archiveProjectTarget, t]);
 
-  const handleArchive = useCallback(
+  const archiveConversation = useCallback(
     async (conversation: TChatConversation) => {
       // Archiving moves the conversation into the archived slice (the backend
       // also unpins it). Both the new sidebar read model and the legacy list
@@ -314,6 +353,29 @@ export const useConversationActions = ({
       }
     },
     [t]
+  );
+
+  const handleArchive = useCallback(
+    async (conversation: TChatConversation) => {
+      const subCount = hierarchy?.getDescendantIds(conversation.id).length ?? 0;
+      if (subCount === 0) {
+        await archiveConversation(conversation);
+        return;
+      }
+      // A parent archives together with its sub-conversations: confirm first.
+      setDropdownVisibleId(null);
+      Modal.confirm({
+        title: t('conversation.history.archive'),
+        content: t('conversation.hierarchy.archiveConfirmWithSub', { name: conversation.name, count: subCount }),
+        okText: t('conversation.history.archive'),
+        cancelText: t('common.cancel'),
+        onOk: () => archiveConversation(conversation),
+        style: { borderRadius: '12px' },
+        alignCenter: true,
+        getPopupContainer: () => document.body,
+      });
+    },
+    [archiveConversation, hierarchy, t]
   );
 
   return {

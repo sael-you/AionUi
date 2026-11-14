@@ -782,5 +782,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "گسترش برنامه",
     "collapse": "جمع کردن برنامه"
+  },
+  "hierarchy": {
+    "newSubConversation": "گفتگوی زیرمجموعه جدید",
+    "moveUnder": "انتقال به زیر…",
+    "detach": "جدا کردن از والد",
+    "detachSuccess": "از والد جدا شد",
+    "moveSuccess": "گفتگو منتقل شد",
+    "moveUnderTitle": "انتقال به زیر گفتگوی دیگر",
+    "moveUnderConfirm": "انتقال",
+    "moveUnderPlaceholder": "یک گفتگوی والد انتخاب کنید",
+    "moveUnderEmpty": "گفتگوی مناسبی وجود ندارد",
+    "expand": "گسترش گفتگوهای زیرمجموعه",
+    "collapse": "بستن گفتگوهای زیرمجموعه",
+    "rollupLabel": "{{count}} گفتگوی زیرمجموعه",
+    "archiveConfirmWithSub": "«{{name}}» بایگانی شود؟ {{count}} گفتگوی زیرمجموعه آن نیز بایگانی می‌شود.",
+    "batchArchiveConfirmWithSub": "گفتگوهای انتخاب‌شده بایگانی شوند؟ در مجموع {{count}} گفتگو، از جمله زیرمجموعه‌ها، بایگانی می‌شود.",
+    "parentFallback": "گفتگوی والد",
+    "backToParent": "بازگشت به والد: {{name}}",
+    "resultTitle": "نتیجه زیرعامل: {{name}}",
+    "openChild": "باز کردن",
+    "resultToggle": "نمایش یا پنهان کردن نتیجه زیرعامل",
+    "errors": {
+      "parentNotFound": "گفتگوی والد دیگر وجود ندارد.",
+      "depthExceeded": "به حداکثر عمق تودرتویی گفتگوهای زیرمجموعه رسیده‌اید.",
+      "fanoutExceeded": "این گفتگو از قبل حداکثر تعداد گفتگوی زیرمجموعه را دارد.",
+      "cycle": "این انتقال باعث می‌شود گفتگو والد خودش شود.",
+      "generic": "به‌روزرسانی سلسله‌مراتب گفتگو ممکن نبود.",
+      "createFailed": "ایجاد گفتگوی زیرمجموعه ناموفق بود.",
+      "moveFailed": "انتقال گفتگو ناموفق بود.",
+      "unsupportedParent": "این نوع گفتگو نمی‌تواند زیرمجموعه داشته باشد."
+    }
   }
 }

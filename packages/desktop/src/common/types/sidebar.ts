@@ -61,7 +61,20 @@ export type SidebarTeamItem = {
  * conversation variant stays nested because its inner DTO is mapped separately.
  */
 export type SidebarItem =
-  | { type: 'conversation'; conversation: TChatConversation }
+  | {
+      type: 'conversation';
+      conversation: TChatConversation;
+      /**
+       * Hierarchy: every descendant of this root conversation, FLAT across all
+       * levels, `created_at` ascending. Each carries `parent_conversation_id` /
+       * `depth`. Children never appear as top-level group items.
+       */
+      descendants?: TChatConversation[];
+      /** Total descendants of this root (all levels). */
+      descendant_count?: number;
+      /** Descendants currently running. */
+      running_descendant_count?: number;
+    }
   | ({ type: 'team' } & SidebarTeamItem);
 
 /** One group (a section's window) in the sidebar. */

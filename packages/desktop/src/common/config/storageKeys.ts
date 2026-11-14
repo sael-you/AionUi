@@ -20,6 +20,9 @@ export const STORAGE_KEYS = {
   /** Sidebar collapse state / 侧边栏折叠状态 */
   SIDEBAR_COLLAPSE: 'aionui_sider_collapsed',
 
+  /** Expanded parent conversations in the sidebar hierarchy / 侧边栏层级会话展开状态 */
+  CONVERSATION_TREE_EXPANSION: 'aionui_conversation_tree_expansion',
+
   /** Theme preference / 主题偏好 */
   THEME: 'aionui_theme',
 

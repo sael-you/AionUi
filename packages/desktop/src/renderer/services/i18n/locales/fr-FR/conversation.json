@@ -782,5 +782,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "Développer le plan",
     "collapse": "Réduire le plan"
+  },
+  "hierarchy": {
+    "newSubConversation": "Nouvelle sous-conversation",
+    "moveUnder": "Déplacer sous…",
+    "detach": "Détacher du parent",
+    "detachSuccess": "Détachée du parent",
+    "moveSuccess": "Conversation déplacée",
+    "moveUnderTitle": "Déplacer sous une autre conversation",
+    "moveUnderConfirm": "Déplacer",
+    "moveUnderPlaceholder": "Sélectionner une conversation parente",
+    "moveUnderEmpty": "Aucune conversation éligible",
+    "expand": "Développer les sous-conversations",
+    "collapse": "Réduire les sous-conversations",
+    "rollupLabel": "{{count}} sous-conversations",
+    "archiveConfirmWithSub": "Archiver « {{name}} » ? Ses {{count}} sous-conversation(s) seront aussi archivées.",
+    "batchArchiveConfirmWithSub": "Archiver les conversations sélectionnées ? {{count}} conversations seront archivées au total, sous-conversations comprises.",
+    "parentFallback": "Conversation parente",
+    "backToParent": "Retour au parent : {{name}}",
+    "resultTitle": "Résultat du sous-agent : {{name}}",
+    "openChild": "Ouvrir",
+    "resultToggle": "Afficher ou masquer le résultat du sous-agent",
+    "errors": {
+      "parentNotFound": "La conversation parente n'existe plus.",
+      "depthExceeded": "Profondeur d'imbrication maximale atteinte pour les sous-conversations.",
+      "fanoutExceeded": "Cette conversation a déjà le nombre maximal de sous-conversations.",
+      "cycle": "Ce déplacement ferait d'une conversation son propre ancêtre.",
+      "generic": "Impossible de mettre à jour la hiérarchie des conversations.",
+      "createFailed": "Échec de la création de la sous-conversation.",
+      "moveFailed": "Échec du déplacement de la conversation.",
+      "unsupportedParent": "Ce type de conversation ne peut pas avoir de sous-conversations."
+    }
   }
 }

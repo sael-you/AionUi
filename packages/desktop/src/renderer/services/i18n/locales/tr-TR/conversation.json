@@ -784,5 +784,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "Planı genişlet",
     "collapse": "Planı daralt"
+  },
+  "hierarchy": {
+    "newSubConversation": "Yeni alt sohbet",
+    "moveUnder": "Şunun altına taşı…",
+    "detach": "Üst sohbetten ayır",
+    "detachSuccess": "Üst sohbetten ayrıldı",
+    "moveSuccess": "Sohbet taşındı",
+    "moveUnderTitle": "Başka bir sohbetin altına taşı",
+    "moveUnderConfirm": "Taşı",
+    "moveUnderPlaceholder": "Bir üst sohbet seçin",
+    "moveUnderEmpty": "Uygun sohbet yok",
+    "expand": "Alt sohbetleri genişlet",
+    "collapse": "Alt sohbetleri daralt",
+    "rollupLabel": "{{count}} alt sohbet",
+    "archiveConfirmWithSub": "\"{{name}}\" arşivlensin mi? {{count}} alt sohbeti de arşivlenecek.",
+    "batchArchiveConfirmWithSub": "Seçili sohbetler arşivlensin mi? Alt sohbetler dahil toplam {{count}} sohbet arşivlenecek.",
+    "parentFallback": "Üst sohbet",
+    "backToParent": "Üst sohbete dön: {{name}}",
+    "resultTitle": "Alt ajan sonucu: {{name}}",
+    "openChild": "Aç",
+    "resultToggle": "Alt ajan sonucunu aç/kapat",
+    "errors": {
+      "parentNotFound": "Üst sohbet artık mevcut değil.",
+      "depthExceeded": "Alt sohbetler için en yüksek iç içe geçme düzeyine ulaşıldı.",
+      "fanoutExceeded": "Bu sohbet zaten en fazla sayıda alt sohbete sahip.",
+      "cycle": "Bu taşıma, bir sohbeti kendi atası yapar.",
+      "generic": "Sohbet hiyerarşisi güncellenemedi.",
+      "createFailed": "Alt sohbet oluşturulamadı.",
+      "moveFailed": "Sohbet taşınamadı.",
+      "unsupportedParent": "Bu sohbet türü alt sohbetlere sahip olamaz."
+    }
   }
 }

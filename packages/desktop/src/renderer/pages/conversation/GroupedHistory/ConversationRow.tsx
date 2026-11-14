@@ -21,17 +21,29 @@ import {
   Inbox,
   MessageOne,
   MoreOne,
+  Plus,
   Pushpin,
+  Right,
   Robot,
   Timer,
+  Unlink,
+  MoveOne,
 } from '@icon-park/react';
 import ForkBranchIcon from '@renderer/components/base/ForkBranchIcon';
 import classNames from 'classnames';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import styles from './ConversationRow.module.css';
 import type { ConversationRowProps } from './types';
+import { MAX_CONVERSATION_DEPTH } from './utils/conversationTree';
 import { isConversationPinned } from './utils/groupingHelpers';
+
+/** Horizontal indent added per nesting level, in px. */
+const DEPTH_INDENT_PX = 14;
+/** Base start padding of a top-level row (matches `ps-10px` / `ps-34px`). */
+const BASE_PADDING_PX = 10;
+const NESTED_BASE_PADDING_PX = 34;
 
 const ConversationRow: React.FC<ConversationRowProps> = (props) => {
   const {
@@ -47,7 +59,17 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     menuVisible,
     dimIcon = false,
     dragHandle,
+    depth = 0,
+    treeInfo,
+    onCreateChild,
+    onDetach,
+    onMoveUnder,
   } = props;
+  const isChild = depth > 0;
+  const rowPaddingStart = (dimIcon ? NESTED_BASE_PADDING_PX : BASE_PADDING_PX) + depth * DEPTH_INDENT_PX;
+  // Depth limit (root = 0, max 3): a row already at the limit cannot take children.
+  const canCreateChild = Boolean(onCreateChild) && (conversation.depth ?? depth) < MAX_CONVERSATION_DEPTH;
+  const canDetach = Boolean(onDetach) && Boolean(conversation.parent_conversation_id);
   const logos = useAgentLogos();
   const layout = useLayoutContext();
   const isMobile = layout?.isMobile ?? false;
@@ -67,7 +89,8 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
   } = props;
   const { t } = useTranslation();
   const { info: assistantInfo } = usePresetAssistantInfo(conversation);
-  const isPinned = isConversationPinned(conversation);
+  // Pin is root-only: a sub-conversation never renders as pinned.
+  const isPinned = !isChild && isConversationPinned(conversation);
   // Fork-lineage badge: present only on forked conversations (extra.fork is
   // server-minted by the fork API). Parent name resolves from the loaded
   // sidebar list; a deleted/unloaded parent degrades to the generic tip.
@@ -133,6 +156,15 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     onConversationClick(conversation);
   };
 
+  // Keyboard support for the tree: Right expands, Left collapses.
+  const handleTreeKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!treeInfo || event.target !== event.currentTarget) return;
+    if ((event.key === 'ArrowRight' && !treeInfo.expanded) || (event.key === 'ArrowLeft' && treeInfo.expanded)) {
+      event.preventDefault();
+      treeInfo.onToggle();
+    }
+  };
+
   const handleRowContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -173,13 +205,29 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
           'chat-history__item h-34px rd-8px flex items-center group cursor-pointer relative overflow-hidden shrink-0 conversation-item [&.conversation-item+&.conversation-item]:mt-2px min-w-0 transition-colors',
           collapsed ? 'justify-center px-0' : 'justify-start gap-8px pe-16px',
           // dimIcon means this row sits inside a project/cron parent — visually indent the row content while keeping the bg full-width
-          !collapsed && (dimIcon ? 'ps-34px' : 'ps-10px'),
+          // Sub-conversation rows (depth > 0) are indented per depth via inline padding (see style below)
+          !collapsed && !isChild && (dimIcon ? 'ps-34px' : 'ps-10px'),
+          isChild && !collapsed && styles.childRow,
           {
             'hover:bg-fill-3': !batchMode && !selected,
             '!bg-fill-3': selected,
             'bg-[rgba(var(--primary-6),0.08)]': batchMode && checked,
           }
         )}
+        tabIndex={treeInfo || isChild ? 0 : undefined}
+        style={
+          collapsed || !isChild
+            ? undefined
+            : ({
+                paddingInlineStart: rowPaddingStart,
+                '--conversation-connector-x': `${rowPaddingStart - DEPTH_INDENT_PX / 2}px`,
+              } as React.CSSProperties)
+        }
+        role={treeInfo || isChild ? 'treeitem' : undefined}
+        aria-level={treeInfo || isChild ? depth + 1 : undefined}
+        aria-expanded={treeInfo ? treeInfo.expanded : undefined}
+        aria-selected={treeInfo || isChild ? selected : undefined}
+        onKeyDown={handleTreeKeyDown}
         onClick={handleRowClick}
         onContextMenu={handleRowContextMenu}
       >
@@ -192,6 +240,34 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
             }}
           >
             <Checkbox checked={checked} />
+          </span>
+        )}
+        {treeInfo && !collapsed && !batchMode && (
+          <span
+            role='button'
+            tabIndex={0}
+            className={styles.chevron}
+            aria-label={treeInfo.expanded ? t('conversation.hierarchy.collapse') : t('conversation.hierarchy.expand')}
+            data-testid={`conversation-tree-toggle-${conversation.id}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              treeInfo.onToggle();
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                event.stopPropagation();
+                treeInfo.onToggle();
+              }
+            }}
+          >
+            <Right
+              theme='outline'
+              size='12'
+              className={classNames('block leading-none transition-transform duration-150', {
+                'rotate-90': treeInfo.expanded,
+              })}
+            />
           </span>
         )}
         <span className='size-22px flex items-center justify-center shrink-0 relative'>
@@ -232,8 +308,31 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
             popupHoverStay={false}
             position='top'
           >
-            <div className='chat-history__item-name overflow-hidden text-ellipsis flex items-center gap-4px w-full text-14px font-[500] lh-24px whitespace-nowrap min-w-0 text-t-primary'>
+            <div
+              className={classNames(
+                'chat-history__item-name overflow-hidden text-ellipsis flex items-center gap-4px w-full text-14px font-[500] lh-24px whitespace-nowrap min-w-0 text-t-primary',
+                isChild && styles.childName
+              )}
+            >
               <span className='block overflow-hidden text-ellipsis whitespace-nowrap min-w-0'>{conversation.name}</span>
+              {treeInfo && !treeInfo.expanded && (
+                <span
+                  className={styles.rollupBadge}
+                  data-testid={`conversation-rollup-${conversation.id}`}
+                  aria-label={t('conversation.hierarchy.rollupLabel', { count: treeInfo.rollup.total })}
+                >
+                  {treeInfo.rollup.running > 0 && <Spin size={12} />}
+                  <span className={styles.rollupCount}>{treeInfo.childCount}</span>
+                  {treeInfo.rollup.pendingConfirmations > 0 && (
+                    <Attention
+                      theme='filled'
+                      size='12'
+                      className={classNames('line-height-0', styles.rollupAttention)}
+                      data-testid={`conversation-rollup-attention-${conversation.id}`}
+                    />
+                  )}
+                </span>
+              )}
               {forkLineage && (
                 <Tooltip
                   content={
@@ -290,17 +389,56 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
                       onExport?.(conversation);
                       return;
                     }
+                    if (key === 'createChild') {
+                      onCreateChild?.(conversation);
+                      return;
+                    }
+                    if (key === 'detach') {
+                      onDetach?.(conversation);
+                      return;
+                    }
+                    if (key === 'moveUnder') {
+                      onMoveUnder?.(conversation);
+                      return;
+                    }
                     if (key === 'archive') {
                       onArchive(conversation);
                     }
                   }}
                 >
-                  <Menu.Item key='pin'>
-                    <div className='flex items-center gap-8px'>
-                      <Pushpin theme='outline' size='14' />
-                      <span>{isPinned ? t('conversation.history.unpin') : t('conversation.history.pin')}</span>
-                    </div>
-                  </Menu.Item>
+                  {/* Pin is root-only: sub-conversations live under their parent */}
+                  {!isChild && (
+                    <Menu.Item key='pin'>
+                      <div className='flex items-center gap-8px'>
+                        <Pushpin theme='outline' size='14' />
+                        <span>{isPinned ? t('conversation.history.unpin') : t('conversation.history.pin')}</span>
+                      </div>
+                    </Menu.Item>
+                  )}
+                  {canCreateChild && (
+                    <Menu.Item key='createChild'>
+                      <div className='flex items-center gap-8px'>
+                        <Plus theme='outline' size='14' />
+                        <span>{t('conversation.hierarchy.newSubConversation')}</span>
+                      </div>
+                    </Menu.Item>
+                  )}
+                  {onMoveUnder && (
+                    <Menu.Item key='moveUnder'>
+                      <div className='flex items-center gap-8px'>
+                        <MoveOne theme='outline' size='14' />
+                        <span>{t('conversation.hierarchy.moveUnder')}</span>
+                      </div>
+                    </Menu.Item>
+                  )}
+                  {canDetach && (
+                    <Menu.Item key='detach'>
+                      <div className='flex items-center gap-8px'>
+                        <Unlink theme='outline' size='14' />
+                        <span>{t('conversation.hierarchy.detach')}</span>
+                      </div>
+                    </Menu.Item>
+                  )}
                   <Menu.Item key='toggleManualUnread'>
                     <div className='flex items-center gap-8px'>
                       <Inbox theme='outline' size='14' />

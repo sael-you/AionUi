@@ -6,6 +6,8 @@
 
 import type { IMessageText } from '@/common/chat/chatLib';
 import { parseFileMarker, resolveMessageFilePath } from './fileMarker';
+import ChildResultCard from './childResult/ChildResultCard';
+import { parseChildResultBlocks } from './childResult/childResultBlock';
 import SessionMentionAction from './SessionMentionAction';
 import { parseSessionMessageBlock, parseSessionsBlock } from './sessionMarkers';
 import { useConversationContextSafe } from '@/renderer/hooks/context/ConversationContext';
@@ -146,9 +148,15 @@ const MessageText: React.FC<{
     () => (isUserMessage ? parseSessionsBlock(text) : { text, sessions: [] }),
     [isUserMessage, text]
   );
-  const { text: visibleText, source: deliverySource } = useMemo(
+  const { text: textWithoutDelivery, source: deliverySource } = useMemo(
     () => (isUserMessage ? parseSessionMessageBlock(textWithoutMentions) : { text: textWithoutMentions, source: null }),
     [isUserMessage, textWithoutMentions]
+  );
+  // Hierarchy: a finished sub-conversation's result is delivered into its parent
+  // as an `[[AION_CHILD_RESULT …]]` block; render it as a compact card.
+  const { text: visibleText, results: childResults } = useMemo(
+    () => parseChildResultBlocks(textWithoutDelivery),
+    [textWithoutDelivery]
   );
   const contextResetNotice = useMemo(
     () => (isTeammateMessage && senderName === 'team_system' ? parseTeamContextResetNotice(text) : null),
@@ -277,6 +285,9 @@ const MessageText: React.FC<{
             )}
           </div>
         )}
+        {childResults.map((result, index) => (
+          <ChildResultCard key={`${result.childId}-${index}`} result={result} />
+        ))}
         {mentionedSessions.length > 0 && (
           <div className={classNames('mb-4px flex flex-wrap gap-4px', { 'self-end': isUserMessage })}>
             {mentionedSessions.map((session) => (
@@ -306,45 +317,47 @@ const MessageText: React.FC<{
             )}
           </div>
         )}
-        <div
-          className={classNames('min-w-0 [&>p:first-child]:mt-0px [&>p:last-child]:mb-0px', {
-            'bg-aou-2 p-6px md:p-8px': isUserMessage || cronMeta,
-            'bg-3 p-6px md:p-8px': isTeammateMessage,
-            'w-full': !(isUserMessage || cronMeta || isTeammateMessage),
-          })}
-          style={{
-            ...(isUserMessage || cronMeta
-              ? { borderRadius: '8px 0 8px 8px', color: 'var(--text-primary)' }
-              : isTeammateMessage
-                ? {
-                    borderRadius: '0 8px 8px 8px',
-                    ...(teammateColor ? { borderLeft: `3px solid ${teammateColor}` } : {}),
-                  }
-                : undefined),
-          }}
-        >
-          {/* JSON 内容使用折叠组件 Use CollapsibleContent for JSON content */}
-          {shouldRenderPlainText ? (
-            <div className='whitespace-pre-wrap [overflow-wrap:anywhere]' data-testid='message-text-content'>
-              {renderedText}
-            </div>
-          ) : json ? (
-            <CollapsibleContent maxHeight={200} defaultCollapsed={true}>
-              <div data-testid='message-text-content'>
-                <MarkdownView
-                  codeStyle={CODE_STYLE}
-                  onLocalFileLink={handleLocalFileLink}
-                >{`\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``}</MarkdownView>
+        {(childResults.length === 0 || renderedText.trim().length > 0) && (
+          <div
+            className={classNames('min-w-0 [&>p:first-child]:mt-0px [&>p:last-child]:mb-0px', {
+              'bg-aou-2 p-6px md:p-8px': isUserMessage || cronMeta,
+              'bg-3 p-6px md:p-8px': isTeammateMessage,
+              'w-full': !(isUserMessage || cronMeta || isTeammateMessage),
+            })}
+            style={{
+              ...(isUserMessage || cronMeta
+                ? { borderRadius: '8px 0 8px 8px', color: 'var(--text-primary)' }
+                : isTeammateMessage
+                  ? {
+                      borderRadius: '0 8px 8px 8px',
+                      ...(teammateColor ? { borderLeft: `3px solid ${teammateColor}` } : {}),
+                    }
+                  : undefined),
+            }}
+          >
+            {/* JSON 内容使用折叠组件 Use CollapsibleContent for JSON content */}
+            {shouldRenderPlainText ? (
+              <div className='whitespace-pre-wrap [overflow-wrap:anywhere]' data-testid='message-text-content'>
+                {renderedText}
               </div>
-            </CollapsibleContent>
-          ) : (
-            <div data-testid='message-text-content'>
-              <MarkdownView codeStyle={CODE_STYLE} onLocalFileLink={handleLocalFileLink}>
-                {data}
-              </MarkdownView>
-            </div>
-          )}
-        </div>
+            ) : json ? (
+              <CollapsibleContent maxHeight={200} defaultCollapsed={true}>
+                <div data-testid='message-text-content'>
+                  <MarkdownView
+                    codeStyle={CODE_STYLE}
+                    onLocalFileLink={handleLocalFileLink}
+                  >{`\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``}</MarkdownView>
+                </div>
+              </CollapsibleContent>
+            ) : (
+              <div data-testid='message-text-content'>
+                <MarkdownView codeStyle={CODE_STYLE} onLocalFileLink={handleLocalFileLink}>
+                  {data}
+                </MarkdownView>
+              </div>
+            )}
+          </div>
+        )}
         {isPendingDelivery && (
           <div className='text-12px text-t-secondary mt-4px select-none' data-testid='message-status-badge'>
             {t('messages.delivery.pending', { defaultValue: 'Unread' })}

@@ -6,6 +6,7 @@
 
 import type { TChatConversation } from '@/common/config/storage';
 import type { ReactNode } from 'react';
+import type { ConversationTreeRollup } from './utils/conversationTree';
 
 export type WorkspaceGroup = {
   workspace: string;
@@ -28,6 +29,8 @@ export type TimelineSection = {
 export type GroupedHistoryResult = {
   pinnedConversations: TChatConversation[];
   timelineSections: TimelineSection[];
+  /** Hierarchy: flat descendants (all levels) keyed by their root conversation id. */
+  descendantsByRoot: Map<string, TChatConversation[]>;
 };
 
 export type ExportZipFile = {
@@ -40,6 +43,16 @@ export type ExportTask =
   | { mode: 'single'; conversation: TChatConversation }
   | { mode: 'batch'; conversation_ids: string[] }
   | null;
+
+/** Hierarchy info for a row that has sub-conversations. */
+export type ConversationRowTreeInfo = {
+  expanded: boolean;
+  /** Direct children count (shown on the collapsed rollup badge). */
+  childCount: number;
+  /** Aggregated status over all descendants. */
+  rollup: ConversationTreeRollup;
+  onToggle: () => void;
+};
 
 export type ConversationRowProps = {
   conversation: TChatConversation;
@@ -72,6 +85,15 @@ export type ConversationRowProps = {
   resolveConversationName?: (conversation_id: string) => string | undefined;
   /** When true, the agent icon is dimmed by default and only shows full color on hover. Used inside project folders to reduce visual weight. */
   dimIcon?: boolean;
+  /** Nesting depth for sub-conversation rows (0 / undefined = top-level row). */
+  depth?: number;
+  /** Present only when this row has sub-conversations. */
+  treeInfo?: ConversationRowTreeInfo;
+  /** Total descendants (all levels) — drives "includes N sub-conversations" copy. */
+  descendantCount?: number;
+  onCreateChild?: (conversation: TChatConversation) => void;
+  onDetach?: (conversation: TChatConversation) => void;
+  onMoveUnder?: (conversation: TChatConversation) => void;
   /** Hover-reveal drag handle overlaying the leading icon; supplied by the sortable wrapper for reorderable (pinned) rows. */
   dragHandle?: ReactNode;
 };

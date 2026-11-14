@@ -51,9 +51,14 @@ export const flattenSidebarConversations = (response: SidebarResponse): TChatCon
   const seen = new Set<string>();
   for (const group of response.groups) {
     for (const item of group.items) {
-      if (item.type === 'conversation' && !seen.has(item.conversation.id)) {
-        seen.add(item.conversation.id);
-        out.push(item.conversation);
+      if (item.type !== 'conversation') continue;
+      // Hierarchy: descendants ride on their root item; include them so name
+      // resolution and batch selection still see every conversation.
+      for (const conversation of [item.conversation, ...(item.descendants ?? [])]) {
+        if (!seen.has(conversation.id)) {
+          seen.add(conversation.id);
+          out.push(conversation);
+        }
       }
     }
   }
@@ -62,6 +67,7 @@ export const flattenSidebarConversations = (response: SidebarResponse): TChatCon
 
 const mapItem = (raw: SidebarItem): SidebarItem => {
   if (raw.type === 'conversation') {
+    const descendants = raw.descendants?.map((d) => fromApiConversation(d));
     // The backend derives pin truth from a `user_order` row and sends it as a
     // top-level `pinned` flag on the wire `ConversationResponse`. The renderer
     // reads pin state from `extra.pinned`, so fold it in there after mapping.
@@ -71,7 +77,7 @@ const mapItem = (raw: SidebarItem): SidebarItem => {
       ...mapped,
       extra: { ...mapped.extra, pinned: wire.pinned ?? false, pinned_at: wire.pinned_at },
     } as TChatConversation;
-    return { type: 'conversation', conversation };
+    return descendants === undefined ? { ...raw, conversation } : { ...raw, conversation, descendants };
   }
   return raw;
 };

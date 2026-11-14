@@ -19,13 +19,25 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import WorkspaceCollapse from '../components/WorkspaceCollapse';
+import ConversationChildren from './components/ConversationChildren';
+import MoveUnderModal from './components/MoveUnderModal';
 import ConversationRow from './ConversationRow';
 import SortableConversationRow from './SortableConversationRow';
 import { useBatchSelection } from './hooks/useBatchSelection';
-import { useConversationActions } from './hooks/useConversationActions';
+import { resolveBatchArchiveSelection, useConversationActions } from './hooks/useConversationActions';
+import { useConversationHierarchyActions } from './hooks/useConversationHierarchyActions';
+import { useConversationTreeExpansion } from './hooks/useConversationTreeExpansion';
 import { useConversations } from './hooks/useConversations';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import type { ConversationRowProps, WorkspaceGroupedHistoryProps } from './types';
+import {
+  buildConversationTree,
+  collectDescendantIds,
+  computeConversationRollup,
+  findAncestorIds,
+  type ConversationTreeNode,
+} from './utils/conversationTree';
+import { buildTreesByRoot } from './utils/conversationTreeIndex';
 
 const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   onSessionClick,
@@ -53,10 +65,79 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     expandedWorkspaces,
     pinnedConversations,
     timelineSections,
+    descendantsByRoot,
     handleToggleWorkspace,
     collapsedSections,
     toggleSection,
   } = useConversations();
+
+  // --- Hierarchy (sub-conversations) ---
+  const treeExpansion = useConversationTreeExpansion();
+  const { isExpanded: isTreeExpanded, toggle: toggleTreeNode, expand: expandTreeNodes } = treeExpansion;
+
+  // Every root conversation (pinned + unpinned), in display order.
+  const allRoots = useMemo(() => {
+    const roots: TChatConversation[] = [...pinnedConversations];
+    for (const section of timelineSections) {
+      for (const item of section.items) {
+        if (item.type === 'conversation' && item.conversation) roots.push(item.conversation);
+        else if (item.type === 'workspace' && item.workspaceGroup) roots.push(...item.workspaceGroup.conversations);
+      }
+    }
+    return roots;
+  }, [pinnedConversations, timelineSections]);
+
+  // Trees only for roots that have descendants (the common case stays empty).
+  const treesByRoot = useMemo(() => buildTreesByRoot(allRoots, descendantsByRoot), [allRoots, descendantsByRoot]);
+
+  // Lookup for any node (root or descendant) → its tree node, parent and descendants.
+  const hierarchyIndex = useMemo(() => {
+    const nodeById = new Map<string, ConversationTreeNode>();
+    const parentById = new Map<string, string>();
+    const visit = (node: ConversationTreeNode, parentId?: string) => {
+      nodeById.set(node.conversation.id, node);
+      if (parentId) parentById.set(node.conversation.id, parentId);
+      node.children.forEach((child) => visit(child, node.conversation.id));
+    };
+    treesByRoot.forEach((tree) => visit(tree));
+    return { nodeById, parentById };
+  }, [treesByRoot]);
+
+  const hierarchyLookup = useMemo(
+    () => ({
+      getParentId: (conversationId: string) => hierarchyIndex.parentById.get(conversationId),
+      getDescendantIds: (conversationId: string) => {
+        const node = hierarchyIndex.nodeById.get(conversationId);
+        return node ? collectDescendantIds(node) : [];
+      },
+    }),
+    [hierarchyIndex]
+  );
+
+  // Auto-expand the branch containing the active conversation (once per id).
+  const revealedBranchRef = React.useRef<string | null>(null);
+  useEffect(() => {
+    if (!id) {
+      revealedBranchRef.current = null;
+      return;
+    }
+    if (revealedBranchRef.current === id) return;
+    for (const tree of treesByRoot.values()) {
+      const ancestors = findAncestorIds(tree, id);
+      if (ancestors.length > 0) {
+        revealedBranchRef.current = id;
+        expandTreeNodes(ancestors);
+        return;
+      }
+    }
+  }, [id, treesByRoot, expandTreeNodes]);
+
+  // Batch selection / select-all stays root-only: sub-conversations ride with their parent.
+  const batchConversations = useMemo(() => {
+    const childIds = new Set<string>();
+    descendantsByRoot.forEach((list) => list.forEach((c) => childIds.add(c.id)));
+    return childIds.size === 0 ? conversations : conversations.filter((c) => !childIds.has(c.id));
+  }, [conversations, descendantsByRoot]);
 
   const SectionLabel = useCallback(
     ({ sectionKey, label, trailing }: { sectionKey: string; label: string; trailing?: React.ReactNode }) => {
@@ -102,7 +183,14 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     allSelected,
     toggleSelectedConversation,
     handleToggleSelectAll,
-  } = useBatchSelection(batchMode, conversations);
+  } = useBatchSelection(batchMode, batchConversations);
+
+  // Selecting a parent implies its subtree, so the shown count includes descendants.
+  const effectiveSelectedCount = useMemo(
+    () =>
+      batchMode ? resolveBatchArchiveSelection(selectedConversationIds, hierarchyLookup).totalCount : selectedCount,
+    [batchMode, hierarchyLookup, selectedConversationIds, selectedCount]
+  );
 
   const {
     renameModalVisible,
@@ -137,7 +225,28 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     markManualUnread,
     clearManualUnread,
     isManualUnread,
+    hierarchy: hierarchyLookup,
   });
+
+  const {
+    handleCreateChild,
+    handleDetach,
+    moveTarget,
+    moveLoading,
+    handleMoveUnderStart,
+    handleMoveUnderCancel,
+    handleMoveUnderConfirm,
+  } = useConversationHierarchyActions({
+    expand: expandTreeNodes,
+    onBeforeNavigate: () => handleMenuVisibleChange('', false),
+    onSessionClick,
+  });
+
+  // Tree nodes for the move-under picker: every root, including childless ones.
+  const moveRootNodes = useMemo(
+    () => (moveTarget ? allRoots.map((root) => treesByRoot.get(root.id) ?? buildConversationTree(root)) : []),
+    [allRoots, moveTarget, treesByRoot]
+  );
 
   const { sensors, handleDragEnd, isDragEnabled } = useDragAndDrop({
     pinnedConversations,
@@ -184,8 +293,14 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       onToggleManualUnread: handleToggleManualUnread,
       getJobStatus,
       resolveConversationName,
+      onCreateChild: handleCreateChild,
+      onDetach: handleDetach,
+      onMoveUnder: handleMoveUnderStart,
     }),
     [
+      handleCreateChild,
+      handleDetach,
+      handleMoveUnderStart,
       collapsed,
       tooltipEnabled,
       batchMode,
@@ -210,10 +325,62 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     ]
   );
 
-  const renderConversation = (conversation: TChatConversation, dimIcon = false) => {
-    const rowProps = getConversationRowProps(conversation);
-    return <ConversationRow key={conversation.id} {...rowProps} dimIcon={dimIcon} />;
+  // Row props for a node of the hierarchy (depth, rollup, expand toggle).
+  const getTreeRowProps = (node: ConversationTreeNode): ConversationRowProps => {
+    const base = getConversationRowProps(node.conversation);
+    if (node.children.length === 0 && node.depth === 0) return base;
+    const descendantCount = collectDescendantIds(node).length;
+    return {
+      ...base,
+      depth: node.depth,
+      descendantCount,
+      treeInfo:
+        node.children.length > 0
+          ? {
+              expanded: isTreeExpanded(node.conversation.id),
+              childCount: node.children.length,
+              rollup: computeConversationRollup(node, {
+                isRunning: (c) => isConversationGenerating(c.id),
+                pendingConfirmations: (c) =>
+                  c.runtime?.pending_confirmations ?? (isConversationWaitingConfirmation(c.id) ? 1 : 0),
+              }),
+              onToggle: () => toggleTreeNode(node.conversation.id),
+            }
+          : undefined,
+    };
   };
+
+  // Render a root row; when it has sub-conversations, wrap it with its (expandable) subtree.
+  const renderConversationRow = (conversation: TChatConversation, dimIcon: boolean, sortable: boolean) => {
+    const tree = treesByRoot.get(conversation.id);
+    if (!tree) {
+      const rowProps = getConversationRowProps(conversation);
+      return sortable ? (
+        <SortableConversationRow key={conversation.id} {...rowProps} />
+      ) : (
+        <ConversationRow key={conversation.id} {...rowProps} dimIcon={dimIcon} />
+      );
+    }
+    const rootProps = getTreeRowProps(tree);
+    const showChildren = !collapsed && isTreeExpanded(conversation.id);
+    return (
+      <div key={conversation.id} role='tree' className='min-w-0'>
+        {sortable ? <SortableConversationRow {...rootProps} /> : <ConversationRow {...rootProps} dimIcon={dimIcon} />}
+        {showChildren && (
+          <ConversationChildren
+            nodes={tree.children}
+            isExpanded={isTreeExpanded}
+            renderRow={(node) => (
+              <ConversationRow key={node.conversation.id} {...getTreeRowProps(node)} dimIcon={dimIcon} />
+            )}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const renderConversation = (conversation: TChatConversation, dimIcon = false) =>
+    renderConversationRow(conversation, dimIcon, false);
 
   // Collect all sortable IDs for the pinned section
   const pinnedIds = useMemo(() => pinnedConversations.map((c) => c.id), [pinnedConversations]);
@@ -286,11 +453,22 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         />
       </Modal>
 
+      <MoveUnderModal
+        target={moveTarget}
+        targetNode={
+          moveTarget ? (hierarchyIndex.nodeById.get(moveTarget.id) ?? buildConversationTree(moveTarget)) : null
+        }
+        rootNodes={moveRootNodes}
+        loading={moveLoading}
+        onCancel={handleMoveUnderCancel}
+        onConfirm={(parentId) => void handleMoveUnderConfirm(parentId)}
+      />
+
       {batchMode && !collapsed && (
         <div className='px-12px pb-8px pt-2px sticky top-0 z-20 bg-[var(--bg-2)]'>
           <div className='rd-8px bg-fill-1 p-10px flex flex-col gap-8px border border-solid border-[rgba(var(--primary-6),0.08)]'>
             <div className='text-12px leading-18px text-t-secondary'>
-              {t('conversation.history.selectedCount', { count: selectedCount })}
+              {t('conversation.history.selectedCount', { count: effectiveSelectedCount })}
             </div>
             <div className='grid grid-cols-2 gap-6px'>
               <Button
@@ -395,14 +573,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
               {!collapsedSections.has('pinned') && (
                 <SortableContext items={pinnedIds} strategy={verticalListSortingStrategy}>
                   <div className='min-w-0'>
-                    {pinnedConversations.map((conversation) => {
-                      const props = getConversationRowProps(conversation);
-                      return isDragEnabled ? (
-                        <SortableConversationRow key={conversation.id} {...props} />
-                      ) : (
-                        <ConversationRow key={conversation.id} {...props} />
-                      );
-                    })}
+                    {pinnedConversations.map((conversation) =>
+                      renderConversationRow(conversation, false, isDragEnabled)
+                    )}
                   </div>
                 </SortableContext>
               )}

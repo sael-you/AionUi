@@ -273,6 +273,18 @@ export const conversation = {
     httpPost<TChatConversation, ICreateConversationParams>('/api/conversations', (p) => buildCreateConversationBody(p)),
     fromApiConversation
   ),
+  /**
+   * Reparent a conversation. `parent_conversation_id: null` detaches it to root.
+   * Backend errors carry codes: parent_not_found | parent_depth_exceeded |
+   * parent_fanout_exceeded | parent_cycle.
+   */
+  setParent: withResponseMap(
+    httpPut<TChatConversation, { id: string; parent_conversation_id: string | null }>(
+      (p) => `/api/conversations/${p.id}/parent`,
+      (p) => ({ parent_conversation_id: p.parent_conversation_id })
+    ),
+    fromApiConversation
+  ),
   createWithConversation: withResponseMap(
     httpPost<TChatConversation, { conversation: TChatConversation }>('/api/conversations/clone', (p) => {
       const isAionrs = p.conversation.type === 'aionrs';
@@ -1812,6 +1824,8 @@ export interface IConfirmMessageParams {
 export interface ICreateConversationParams {
   type?: 'acp' | 'aionrs';
   id?: string;
+  /** Hierarchy: create as a sub-conversation of this parent (backend enforces limits). */
+  parent_conversation_id?: string;
   name?: string;
   model?: TProviderWithModel;
   assistant?: {

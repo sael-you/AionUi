@@ -45,6 +45,8 @@ export type CreateConversationBodyInput = {
   model?: TProviderWithModel;
   assistant?: unknown;
   extra?: unknown;
+  /** Hierarchy: create the conversation as a child of this parent. */
+  parent_conversation_id?: string;
 };
 
 /**
@@ -62,6 +64,7 @@ export function buildCreateConversationBody(p: CreateConversationBodyInput): Rec
     assistant: p.assistant,
     extra: p.extra,
   };
+  if (p.parent_conversation_id) body.parent_conversation_id = p.parent_conversation_id;
   const model = p.type === 'acp' ? undefined : toApiModelOptional(p.model);
   if (model) body.model = model;
   return body;
@@ -108,6 +111,18 @@ export function fromApiConversation<T>(raw: T): T {
       ...extra,
       custom_workspace: workspace.length > 0 && !isTemporary,
     };
+  }
+
+  // Hierarchy fields: normalize a wire `null` parent to absent and default depth to 0.
+  if (typeof raw === 'object' && ('parent_conversation_id' in r || 'depth' in r)) {
+    const hier = r as T & { parent_conversation_id?: string | null; depth?: number | null };
+    const mutable = next as T & { parent_conversation_id?: string; depth?: number };
+    if (typeof hier.parent_conversation_id === 'string' && hier.parent_conversation_id.length > 0) {
+      mutable.parent_conversation_id = hier.parent_conversation_id;
+    } else {
+      delete mutable.parent_conversation_id;
+    }
+    mutable.depth = typeof hier.depth === 'number' ? hier.depth : 0;
   }
 
   return next;

@@ -783,5 +783,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "Plan ausklappen",
     "collapse": "Plan einklappen"
+  },
+  "hierarchy": {
+    "newSubConversation": "Neue Unterkonversation",
+    "moveUnder": "Verschieben unter…",
+    "detach": "Vom Elternteil lösen",
+    "detachSuccess": "Vom Elternteil gelöst",
+    "moveSuccess": "Konversation verschoben",
+    "moveUnderTitle": "Unter eine andere Konversation verschieben",
+    "moveUnderConfirm": "Verschieben",
+    "moveUnderPlaceholder": "Übergeordnete Konversation wählen",
+    "moveUnderEmpty": "Keine geeigneten Konversationen",
+    "expand": "Unterkonversationen aufklappen",
+    "collapse": "Unterkonversationen zuklappen",
+    "rollupLabel": "{{count}} Unterkonversationen",
+    "archiveConfirmWithSub": "„{{name}}“ archivieren? Die {{count}} Unterkonversation(en) werden ebenfalls archiviert.",
+    "batchArchiveConfirmWithSub": "Ausgewählte Konversationen archivieren? Insgesamt werden {{count}} Konversationen archiviert, einschließlich Unterkonversationen.",
+    "parentFallback": "Übergeordnete Konversation",
+    "backToParent": "Zurück zur übergeordneten Konversation: {{name}}",
+    "resultTitle": "Ergebnis des Unter-Agenten: {{name}}",
+    "openChild": "Öffnen",
+    "resultToggle": "Ergebnis des Unter-Agenten umschalten",
+    "errors": {
+      "parentNotFound": "Die übergeordnete Konversation existiert nicht mehr.",
+      "depthExceeded": "Maximale Verschachtelungstiefe für Unterkonversationen erreicht.",
+      "fanoutExceeded": "Diese Konversation hat bereits die maximale Anzahl an Unterkonversationen.",
+      "cycle": "Dieser Wechsel würde eine Konversation zu ihrem eigenen Vorfahren machen.",
+      "generic": "Die Konversationshierarchie konnte nicht aktualisiert werden.",
+      "createFailed": "Die Unterkonversation konnte nicht erstellt werden.",
+      "moveFailed": "Die Konversation konnte nicht verschoben werden.",
+      "unsupportedParent": "Dieser Konversationstyp kann keine Unterkonversationen haben."
+    }
   }
 }

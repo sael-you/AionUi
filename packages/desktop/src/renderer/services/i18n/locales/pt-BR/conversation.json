@@ -788,5 +788,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "Expandir plano",
     "collapse": "Recolher plano"
+  },
+  "hierarchy": {
+    "newSubConversation": "Nova subconversa",
+    "moveUnder": "Mover para…",
+    "detach": "Desvincular do pai",
+    "detachSuccess": "Desvinculada do pai",
+    "moveSuccess": "Conversa movida",
+    "moveUnderTitle": "Mover para baixo de outra conversa",
+    "moveUnderConfirm": "Mover",
+    "moveUnderPlaceholder": "Selecione uma conversa pai",
+    "moveUnderEmpty": "Nenhuma conversa elegível",
+    "expand": "Expandir subconversas",
+    "collapse": "Recolher subconversas",
+    "rollupLabel": "{{count}} subconversas",
+    "archiveConfirmWithSub": "Arquivar \"{{name}}\"? Suas {{count}} subconversa(s) também serão arquivadas.",
+    "batchArchiveConfirmWithSub": "Arquivar as conversas selecionadas? {{count}} conversas serão arquivadas no total, incluindo subconversas.",
+    "parentFallback": "Conversa pai",
+    "backToParent": "Voltar ao pai: {{name}}",
+    "resultTitle": "Resultado do subagente: {{name}}",
+    "openChild": "Abrir",
+    "resultToggle": "Alternar resultado do subagente",
+    "errors": {
+      "parentNotFound": "A conversa pai não existe mais.",
+      "depthExceeded": "Profundidade máxima de aninhamento de subconversas atingida.",
+      "fanoutExceeded": "Esta conversa já tem o número máximo de subconversas.",
+      "cycle": "Essa movimentação tornaria uma conversa ancestral de si mesma.",
+      "generic": "Não foi possível atualizar a hierarquia de conversas.",
+      "createFailed": "Falha ao criar a subconversa.",
+      "moveFailed": "Falha ao mover a conversa.",
+      "unsupportedParent": "Este tipo de conversa não pode ter subconversas."
+    }
   }
 }

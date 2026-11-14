@@ -10,6 +10,7 @@ import { getWorkspaceDisplayName } from '@/renderer/utils/workspace/workspace';
 import { getWorkspaceUpdateTime } from '@/renderer/utils/workspace/workspaceHistory';
 
 import type { GroupedHistoryResult, TimelineItem, TimelineSection } from '../types';
+import { partitionConversationHierarchy } from './conversationTreeIndex';
 import { getConversationSortOrder } from './sortOrderHelpers';
 
 export const isConversationPinned = (conversation: TChatConversation): boolean => {
@@ -99,7 +100,10 @@ export const buildGroupedHistory = (
   t: (key: string) => string
 ): GroupedHistoryResult => {
   // Filter out team-owned conversations; they are only visible via the Teams panel
-  const visibleConversations = conversations.filter((conv) => !isTeamConversation(conv));
+  const allVisible = conversations.filter((conv) => !isTeamConversation(conv));
+  // Hierarchy: sub-conversations never form top-level rows; they hang off their
+  // root. Without any parent links this is the identity partition.
+  const { roots: visibleConversations, descendantsByRoot } = partitionConversationHierarchy(allVisible);
 
   const pinnedConversations = visibleConversations
     .filter((conversation) => isConversationPinned(conversation))
@@ -117,5 +121,6 @@ export const buildGroupedHistory = (
   return {
     pinnedConversations,
     timelineSections: groupConversationsByWorkspace(normalConversations, t),
+    descendantsByRoot,
   };
 };

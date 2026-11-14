@@ -67,6 +67,12 @@ export const AIONUI_SESSIONS_END_MARKER = '[[/AION_SESSIONS]]';
 export const AIONUI_SESSION_MESSAGE_MARKER = '[[AION_SESSION_MESSAGE]]';
 export const AIONUI_SESSION_MESSAGE_END_MARKER = '[[/AION_SESSION_MESSAGE]]';
 
+// ===== Hierarchical conversations =====
+
+/** A finished child's result returned into its parent: `[[AION_CHILD_RESULT child_id=… name=… status=…]] … [[/AION_CHILD_RESULT]]` */
+export const AIONUI_CHILD_RESULT_MARKER_PREFIX = '[[AION_CHILD_RESULT';
+export const AIONUI_CHILD_RESULT_END_MARKER = '[[/AION_CHILD_RESULT]]';
+
 // ===== 媒体类型相关常量 =====
 
 /** 支持的图片文件扩展名 */

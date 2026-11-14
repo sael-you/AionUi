@@ -782,5 +782,36 @@
     "progress": "{{completed}}/{{total}}",
     "expand": "プランを展開",
     "collapse": "プランを折りたたむ"
+  },
+  "hierarchy": {
+    "newSubConversation": "新しいサブ会話",
+    "moveUnder": "移動先を指定…",
+    "detach": "親から切り離す",
+    "detachSuccess": "親から切り離しました",
+    "moveSuccess": "会話を移動しました",
+    "moveUnderTitle": "別の会話の下に移動",
+    "moveUnderConfirm": "移動",
+    "moveUnderPlaceholder": "親会話を選択",
+    "moveUnderEmpty": "選択できる会話がありません",
+    "expand": "サブ会話を展開",
+    "collapse": "サブ会話を折りたたむ",
+    "rollupLabel": "サブ会話 {{count}} 件",
+    "archiveConfirmWithSub": "「{{name}}」をアーカイブしますか？サブ会話 {{count}} 件も一緒にアーカイブされます。",
+    "batchArchiveConfirmWithSub": "選択した会話をアーカイブしますか？サブ会話を含め合計 {{count}} 件がアーカイブされます。",
+    "parentFallback": "親会話",
+    "backToParent": "親会話に戻る：{{name}}",
+    "resultTitle": "サブエージェントの結果：{{name}}",
+    "openChild": "開く",
+    "resultToggle": "サブエージェントの結果を切り替え",
+    "errors": {
+      "parentNotFound": "親会話は存在しません。",
+      "depthExceeded": "サブ会話の最大階層に達しました。",
+      "fanoutExceeded": "この会話のサブ会話数が上限に達しています。",
+      "cycle": "この移動では会話が自分自身の祖先になってしまいます。",
+      "generic": "会話の階層を更新できませんでした。",
+      "createFailed": "サブ会話を作成できませんでした。",
+      "moveFailed": "会話を移動できませんでした。",
+      "unsupportedParent": "この種類の会話はサブ会話を持てません。"
+    }
   }
 }
