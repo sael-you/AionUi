@@ -25,7 +25,7 @@ import { BoardSelect } from '../BoardSelect';
 import type { BoardController } from '../hooks/useBoard';
 import type { CardDetailController } from '../hooks/useCardDetail';
 import { actorName, assigneeLabel, columnName, departmentName, formatBoardTime } from '../utils/boardFormat';
-import { endAnchor, sanitizeTagList, visibleColumns } from '../utils/boardModel';
+import { endAnchor, isManualMoveTarget, sanitizeTagList, visibleColumns } from '../utils/boardModel';
 
 const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <>
@@ -74,7 +74,16 @@ export const CardFields: React.FC<{
               if (!snapshot || toColumn === card.column_key) return;
               void board.moveCard(card.id, toColumn, endAnchor(snapshot.cards, toColumn, card.id));
             }}
-            options={columns.map((column) => ({ value: column.key, label: columnName(column, t) }))}
+            options={columns.map((column) => {
+              const manual = isManualMoveTarget(column) || column.key === card.column_key;
+              return {
+                value: column.key,
+                disabled: !manual,
+                label: manual
+                  ? columnName(column, t)
+                  : t('board.card.moveTargetAutomated', { column: columnName(column, t) }),
+              };
+            })}
           />
         </Row>
         <Row label={t('board.type.label')}>

@@ -178,7 +178,8 @@
     "assignedTo": "واگذارشده به {{name}}",
     "needsDecision": "در انتظار تصمیم شما",
     "moveLocked": "برای جابه‌جایی، در خود کارت تصمیم بگیرید",
-    "moveAutomated": "با خودکارسازی استقرار جابه‌جا می‌شود"
+    "moveAutomated": "با خودکارسازی استقرار جابه‌جا می‌شود",
+    "moveTargetAutomated": "{{column}} (فقط خودکارسازی استقرار)"
   },
   "dnd": {
     "roleDescription": "کارت جابه‌جاشدنی",
@@ -257,6 +258,7 @@
     "routingPlaceholder": "افزودن بخش",
     "routingHelp": "بخش‌هایی که این کارت را بازبینی می‌کنند، حداکثر {{count}} بخش.",
     "assignee": "مسئول",
+    "assigneeSkills": "مهارت‌های مسئول",
     "creator": "سازنده",
     "created": "تاریخ ایجاد",
     "updated": "تاریخ به‌روزرسانی",
@@ -341,10 +343,12 @@
     "forceReason": "دلیل",
     "forceReasonRequired": "دلیلی وارد کنید",
     "forceSubmit": "خارج کردن",
+    "forceReasonTitle": "بیرون بردن {{ref}} از {{column}}",
     "markDeployed": "علامت‌گذاری دستی به‌عنوان مستقرشده",
     "backToLocalTest": "بازگشت به آزمون محلی",
     "forced": "{{ref}} به {{column}} منتقل شد (اقدام استثنایی مالک)",
     "lockedAnnouncement": "{{ref}} برای خروج از {{column}} به تصمیم شما نیاز دارد.",
+    "automationAnnouncement": "{{ref}} را خودکارسازی استقرار جابه‌جا می‌کند. برای جابه‌جایی دستی از کارت استفاده کنید.",
     "openDecision": "تصمیم بگیرید"
   },
   "assign": {

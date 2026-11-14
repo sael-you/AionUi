@@ -178,7 +178,8 @@
     "assignedTo": "Atanan: {{name}}",
     "needsDecision": "Kararınızı bekliyor",
     "moveLocked": "Taşımak için kartta karar verin",
-    "moveAutomated": "Dağıtım otomasyonu tarafından taşınır"
+    "moveAutomated": "Dağıtım otomasyonu tarafından taşınır",
+    "moveTargetAutomated": "{{column}} (yalnızca dağıtım otomasyonu)"
   },
   "dnd": {
     "roleDescription": "taşınabilir kart",
@@ -257,6 +258,7 @@
     "routingPlaceholder": "Departman ekle",
     "routingHelp": "Bu kartı inceleyen departmanlar (en fazla {{count}}).",
     "assignee": "Atanan",
+    "assigneeSkills": "Atanan kişinin becerileri",
     "creator": "Oluşturan",
     "created": "Oluşturulma",
     "updated": "Güncellenme",
@@ -341,10 +343,12 @@
     "forceReason": "Neden",
     "forceReasonRequired": "Bir neden girin",
     "forceSubmit": "Dışarı taşı",
+    "forceReasonTitle": "{{ref}} kartını {{column}} sütunundan çıkar",
     "markDeployed": "Elle dağıtıldı olarak işaretle",
     "backToLocalTest": "Yerel teste geri gönder",
     "forced": "{{ref}}, {{column}} sütununa taşındı (sahip müdahalesi)",
     "lockedAnnouncement": "{{ref}} kartının {{column}} sütunundan çıkabilmesi için kararınız gerekiyor.",
+    "automationAnnouncement": "{{ref}} dağıtım otomasyonu tarafından taşınır. Kendiniz çıkarmak için kartı kullanın.",
     "openDecision": "Karar ver"
   },
   "assign": {

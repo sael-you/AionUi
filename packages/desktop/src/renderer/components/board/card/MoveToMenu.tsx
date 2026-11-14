@@ -13,7 +13,15 @@ import type { BoardCardSummary } from '@/common/types/board';
 
 import type { BoardController } from '../hooks/useBoard';
 import { columnName } from '../utils/boardFormat';
-import { activeCardCount, cardRef, endAnchor, moveLock, visibleColumns, wipState } from '../utils/boardModel';
+import {
+  activeCardCount,
+  cardRef,
+  endAnchor,
+  isManualMoveTarget,
+  moveLock,
+  visibleColumns,
+  wipState,
+} from '../utils/boardModel';
 
 /** Focus a card's open target after it moved (it may have re-mounted in another column). */
 export const focusCard = (cardId: string): void => {
@@ -63,17 +71,17 @@ export const MoveToMenu: React.FC<{ board: BoardController; card: BoardCardSumma
           const current = column.key === card.column_key;
           const wip = wipState(column, activeCardCount(snapshot.cards, column.key));
           const full = !current && (wip === 'full' || wip === 'over');
+          const automated = !isManualMoveTarget(column);
+          const disabled = current || Boolean(lock) || automated;
           return (
-            <Menu.Item
-              key={`move:${column.key}`}
-              disabled={current || Boolean(lock)}
-              aria-disabled={current || Boolean(lock) || undefined}
-            >
+            <Menu.Item key={`move:${column.key}`} disabled={disabled} aria-disabled={disabled || undefined}>
               {current
                 ? t('board.card.moveToCurrent', { column: name })
-                : full
-                  ? t('board.card.moveToFull', { column: name })
-                  : name}
+                : automated
+                  ? t('board.card.moveTargetAutomated', { column: name })
+                  : full
+                    ? t('board.card.moveToFull', { column: name })
+                    : name}
             </Menu.Item>
           );
         })}
@@ -81,16 +89,47 @@ export const MoveToMenu: React.FC<{ board: BoardController; card: BoardCardSumma
     </Menu>
   );
 
+  // A locked card says why, both to screen readers on focus (description) and as a
+  // live announcement when its menu is opened.
+  const columnLabel = columnName(
+    snapshot.columns.find((column) => column.key === card.column_key),
+    t
+  );
+  const lockText = lock
+    ? t(lock === 'decision' ? 'board.gate.lockedAnnouncement' : 'board.gate.automationAnnouncement', {
+        ref,
+        column: columnLabel,
+      })
+    : '';
+  const lockId = `board-move-lock-${card.id}`;
+
   return (
-    <Dropdown droplist={droplist} trigger='click' position='br' disabled={disabled} unmountOnExit>
-      <Button
-        type='text'
-        size='mini'
+    <>
+      <Dropdown
+        droplist={droplist}
+        trigger='click'
+        position='br'
         disabled={disabled}
-        icon={<More theme='outline' size='14' fill='currentColor' />}
-        aria-label={t('board.card.actions', { ref })}
-        aria-haspopup='menu'
-      />
-    </Dropdown>
+        unmountOnExit
+        onVisibleChange={(visible) => {
+          if (visible && lockText) board.announce(lockText);
+        }}
+      >
+        <Button
+          type='text'
+          size='mini'
+          disabled={disabled}
+          icon={<More theme='outline' size='14' fill='currentColor' />}
+          aria-label={t('board.card.actions', { ref })}
+          aria-haspopup='menu'
+          aria-describedby={lockText ? lockId : undefined}
+        />
+      </Dropdown>
+      {lockText && (
+        <span id={lockId} className='sr-only'>
+          {lockText}
+        </span>
+      )}
+    </>
   );
 };

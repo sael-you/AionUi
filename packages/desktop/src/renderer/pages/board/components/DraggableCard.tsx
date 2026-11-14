@@ -36,9 +36,11 @@ export const DraggableCard: React.FC<{
   card: BoardCardSummary;
   dragEnabled: boolean;
   dragging: boolean;
+  /** Whether this card is a drop target (false in columns only the automation fills). */
+  dropEnabled: boolean;
   indicatorBefore: boolean;
   onOpen: (cardId: string) => void;
-}> = ({ board, card, dragEnabled, dragging, indicatorBefore, onOpen }) => {
+}> = ({ board, card, dragEnabled, dragging, dropEnabled, indicatorBefore, onOpen }) => {
   const { t } = useTranslation();
   const id = `${CARD_DND_PREFIX}${card.id}`;
   const data: CardDndData = { type: 'card', cardId: card.id, columnKey: card.column_key };
@@ -49,7 +51,7 @@ export const DraggableCard: React.FC<{
     disabled,
     attributes: { roleDescription: t('board.dnd.roleDescription') },
   });
-  const droppable = useDroppable({ id, data });
+  const droppable = useDroppable({ id, data, disabled: !dropEnabled });
   const setNodeRef = useCallback(
     (node: HTMLElement | null) => {
       draggable.setNodeRef(node);

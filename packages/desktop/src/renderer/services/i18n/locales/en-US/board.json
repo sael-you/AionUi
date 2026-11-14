@@ -178,7 +178,8 @@
     "assignedTo": "Assigned to {{name}}",
     "needsDecision": "Needs your decision",
     "moveLocked": "Decide in the card to move it",
-    "moveAutomated": "Moved by the deploy automation"
+    "moveAutomated": "Moved by the deploy automation",
+    "moveTargetAutomated": "{{column}} (deploy automation only)"
   },
   "dnd": {
     "roleDescription": "movable card",
@@ -257,6 +258,7 @@
     "routingPlaceholder": "Add departments",
     "routingHelp": "The departments that review this card, up to {{count}}.",
     "assignee": "Assignee",
+    "assigneeSkills": "Assignee's skills",
     "creator": "Created by",
     "created": "Created",
     "updated": "Updated",
@@ -341,10 +343,12 @@
     "forceReason": "Reason",
     "forceReasonRequired": "Enter a reason",
     "forceSubmit": "Move out",
+    "forceReasonTitle": "Move {{ref}} out of {{column}}",
     "markDeployed": "Mark deployed manually",
     "backToLocalTest": "Back to Local test",
     "forced": "{{ref}} moved to {{column}} (owner override)",
     "lockedAnnouncement": "{{ref}} needs your decision before it can leave {{column}}.",
+    "automationAnnouncement": "{{ref}} is moved by the deploy automation. Use the card to move it out yourself.",
     "openDecision": "Decide"
   },
   "assign": {

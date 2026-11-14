@@ -131,6 +131,60 @@ describe('studio flow layout', () => {
   });
 });
 
+describe('destination policy: Deploying is entered only by the deploy automation', () => {
+  it('disables Deploying in Move to… with the reason', async () => {
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'Actions for TASK-3' }));
+    expect(await screen.findByRole('menuitem', { name: 'Deploying (deploy automation only)' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    );
+    expect(screen.getByRole('menuitem', { name: 'Planned' })).not.toHaveAttribute('aria-disabled');
+  });
+
+  it('skips Deploying with the keyboard: → from Ready to deploy lands in Deployed', async () => {
+    bridge.get.mockResolvedValue(
+      makeSnapshot({ columns: studioColumns(), cards: [makeCard(7, 'ready_to_deploy', 1024, { title: 'Not gated' })] })
+    );
+    bridge.moveCard.mockResolvedValue(fullCard(makeCard(7, 'deployed', 1024, { title: 'Not gated' })));
+    renderPage();
+
+    await keyboardMove('Move TASK-7', 'ArrowRight');
+
+    await waitFor(() =>
+      expect(bridge.moveCard).toHaveBeenCalledWith(
+        expect.objectContaining({ card_id: 'card-7', to_column: 'deployed' })
+      )
+    );
+  });
+
+  it('offers Deploying as a disabled option in the drawer column field', async () => {
+    bridge.getCard.mockResolvedValue(makeDetail(fullCard(makeCard(3, 'decision', 2048, { title: 'Small fix' }))));
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'Open TASK-3: Small fix' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Card TASK-3' });
+    fireEvent.click(within(dialog).getByRole('combobox', { name: 'Column' }));
+    const option = await screen.findByRole('option', { name: 'Deploying (deploy automation only)' });
+    expect(option.className).toContain('arco-select-option-disabled');
+    fireEvent.click(option);
+    expect(bridge.moveCard).not.toHaveBeenCalled();
+  });
+});
+
+describe('locked move controls', () => {
+  it('describe the lock on focus and announce it when the menu opens', async () => {
+    renderPage();
+    const trigger = await screen.findByRole('button', { name: 'Actions for TASK-2' });
+    expect(trigger).toHaveAccessibleDescription('TASK-2 needs your decision before it can leave Decision.');
+    fireEvent.click(trigger);
+    await waitFor(() =>
+      expect(screen.getByTestId('board-live-region')).toHaveTextContent(
+        'TASK-2 needs your decision before it can leave Decision.'
+      )
+    );
+  });
+});
+
 describe('studio move errors', () => {
   it('lists what an exit rule misses and lets the owner move anyway', async () => {
     bridge.moveCard.mockRejectedValueOnce(

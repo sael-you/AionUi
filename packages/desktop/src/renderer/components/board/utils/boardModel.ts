@@ -77,6 +77,13 @@ export const moveLock = (card: BoardCardSummary, column: BoardColumn | undefined
   return null;
 };
 
+/**
+ * Destination policy shared by drag and drop, "Move to…", the drawer's column
+ * field and the owner override: Deploying is entered only by the deploy
+ * automation (SPEC R3), never by a manual move.
+ */
+export const isManualMoveTarget = (column: Pick<BoardColumn, 'key'>): boolean => column.key !== DEPLOYING_COLUMN;
+
 /** Cards grouped by column key, each list in board order. Every visible column gets an entry. */
 export const groupCardsByColumn = (
   columns: BoardColumn[],

@@ -188,7 +188,8 @@
     "assignedTo": "Исполнитель: {{name}}",
     "needsDecision": "Ждёт вашего решения",
     "moveLocked": "Чтобы переместить карточку, примите решение в ней",
-    "moveAutomated": "Перемещается автоматизацией развёртывания"
+    "moveAutomated": "Перемещается автоматизацией развёртывания",
+    "moveTargetAutomated": "{{column}} (только автоматизация развёртывания)"
   },
   "dnd": {
     "roleDescription": "перемещаемая карточка",
@@ -267,6 +268,7 @@
     "routingPlaceholder": "Добавить отделы",
     "routingHelp": "Отделы, которые проверяют эту карточку (не более {{count}}).",
     "assignee": "Исполнитель",
+    "assigneeSkills": "Навыки исполнителя",
     "creator": "Автор",
     "created": "Создана",
     "updated": "Обновлена",
@@ -351,10 +353,12 @@
     "forceReason": "Причина",
     "forceReasonRequired": "Укажите причину",
     "forceSubmit": "Переместить",
+    "forceReasonTitle": "Вывести {{ref}} из колонки «{{column}}»",
     "markDeployed": "Отметить как развёрнутую вручную",
     "backToLocalTest": "Вернуть на локальный тест",
     "forced": "{{ref}} перемещена в «{{column}}» (в обход правил владельцем)",
     "lockedAnnouncement": "Чтобы {{ref}} покинула колонку «{{column}}», нужно ваше решение.",
+    "automationAnnouncement": "{{ref}} перемещает автоматизация развёртывания. Чтобы переместить её самостоятельно, откройте карточку.",
     "openDecision": "Принять решение"
   },
   "assign": {

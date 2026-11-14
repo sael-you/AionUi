@@ -23,7 +23,7 @@ import { BoardSelect } from '../../BoardSelect';
 import type { BoardController } from '../../hooks/useBoard';
 import { newIdempotencyKey, type CardDetailController } from '../../hooks/useCardDetail';
 import { columnName, columnNameByKey } from '../../utils/boardFormat';
-import { moveLock, visibleColumns } from '../../utils/boardModel';
+import { isManualMoveTarget, moveLock, visibleColumns } from '../../utils/boardModel';
 
 const DEPLOYED = 'deployed';
 const LOCAL_TEST = 'local_test';
@@ -146,7 +146,9 @@ export const GatePanel: React.FC<{
 
   const approveTo = column.gate?.on_approve;
   const rejectTo = column.gate?.on_reject;
-  const targets = visibleColumns(columns).filter((candidate) => candidate.key !== column.key);
+  const targets = visibleColumns(columns).filter(
+    (candidate) => candidate.key !== column.key && isManualMoveTarget(candidate)
+  );
 
   return (
     <section

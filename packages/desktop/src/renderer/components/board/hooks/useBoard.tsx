@@ -40,6 +40,7 @@ import {
   applyOptimisticMove,
   cardRef,
   endAnchor,
+  isManualMoveTarget,
   isNoopMove,
   restoreCard,
   upsertCard,
@@ -174,6 +175,7 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
       if (!current || current.settings.archived_at) return false;
       const card = current.cards.find((existing) => existing.id === cardId);
       if (!card || card.archived_at) return false;
+      if (!isManualMoveTarget({ key: toColumn })) return false;
       if (isNoopMove(current.cards, card, toColumn, anchor)) return true;
 
       const ref = cardRef(card.number);

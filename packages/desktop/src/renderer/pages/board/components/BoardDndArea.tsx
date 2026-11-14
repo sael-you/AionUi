@@ -47,6 +47,7 @@ import {
   anchorForSlot,
   cardRef,
   groupColumnsByCategory,
+  isManualMoveTarget,
   type DropSlot,
 } from '@/renderer/components/board/utils/boardModel';
 import { directionForLanguage } from '@/renderer/services/i18n/direction';
@@ -110,7 +111,8 @@ export const BoardDndArea: React.FC<{
   /** Visible order with the moving card taken out — the positions a drop can target. */
   const buildLayout = useCallback(
     (movingId: string | null): KeyboardLayout => ({
-      columns: columns.map((column) => column.key),
+      // Keyboard moves skip columns that are not manual destinations (Deploying).
+      columns: columns.filter(isManualMoveTarget).map((column) => column.key),
       cards: Object.fromEntries(
         columns.map((column) => [
           column.key,
@@ -164,6 +166,7 @@ export const BoardDndArea: React.FC<{
     if (!over) return slotRef.current;
     const data = over.data.current as DndData | undefined;
     if (!data) return slotRef.current;
+    if (!layoutRef.current.columns.includes(data.columnKey)) return slotRef.current;
     if (data.type === 'column') return { columnKey: data.columnKey, beforeId: null };
     const movingId = cardIdOf(event.active);
     if (data.cardId === movingId) return slotRef.current;
@@ -204,7 +207,7 @@ export const BoardDndArea: React.FC<{
     const layout = layoutRef.current;
     droppedSlotRef.current = slot;
     reset();
-    if (!movingId || !slot) return;
+    if (!movingId || !slot || !layout.columns.includes(slot.columnKey)) return;
     void board.moveCard(movingId, slot.columnKey, anchorForSlot(slot, layout.cards[slot.columnKey] ?? [])).then(() => {
       if (viaKeyboard) focusHandle(movingId);
     });

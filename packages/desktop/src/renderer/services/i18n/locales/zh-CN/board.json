@@ -178,7 +178,8 @@
     "assignedTo": "已分配给 {{name}}",
     "needsDecision": "待你决定",
     "moveLocked": "请在卡片中做出决定以移动它",
-    "moveAutomated": "由自动部署流程移动"
+    "moveAutomated": "由自动部署流程移动",
+    "moveTargetAutomated": "{{column}}（仅限部署自动化）"
   },
   "dnd": {
     "roleDescription": "可移动的卡片",
@@ -257,6 +258,7 @@
     "routingPlaceholder": "添加部门",
     "routingHelp": "评审此卡片的部门，最多 {{count}} 个。",
     "assignee": "负责人",
+    "assigneeSkills": "负责人的技能",
     "creator": "创建者",
     "created": "创建时间",
     "updated": "更新时间",
@@ -341,10 +343,12 @@
     "forceReason": "原因",
     "forceReasonRequired": "请输入原因",
     "forceSubmit": "移出",
+    "forceReasonTitle": "将 {{ref}} 移出 {{column}}",
     "markDeployed": "手动标记为已部署",
     "backToLocalTest": "退回本地测试",
     "forced": "已将 {{ref}} 移至 {{column}}（所有者强制操作）",
     "lockedAnnouncement": "{{ref}} 需要你做出决定后才能离开 {{column}}。",
+    "automationAnnouncement": "{{ref}} 由部署自动化移动。如需自行移出，请在卡片中操作。",
     "openDecision": "做出决定"
   },
   "assign": {

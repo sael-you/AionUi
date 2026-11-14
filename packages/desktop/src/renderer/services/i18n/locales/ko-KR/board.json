@@ -178,7 +178,8 @@
     "assignedTo": "담당자: {{name}}",
     "needsDecision": "결정 필요",
     "moveLocked": "이동하려면 카드에서 결정하세요",
-    "moveAutomated": "배포 자동화가 이동합니다"
+    "moveAutomated": "배포 자동화가 이동합니다",
+    "moveTargetAutomated": "{{column}}(배포 자동화 전용)"
   },
   "dnd": {
     "roleDescription": "이동 가능한 카드",
@@ -257,6 +258,7 @@
     "routingPlaceholder": "부서 추가",
     "routingHelp": "이 카드를 검토하는 부서입니다(최대 {{count}}개).",
     "assignee": "담당자",
+    "assigneeSkills": "담당자의 스킬",
     "creator": "작성자",
     "created": "생성일",
     "updated": "수정일",
@@ -341,10 +343,12 @@
     "forceReason": "사유",
     "forceReasonRequired": "사유를 입력하세요",
     "forceSubmit": "옮기기",
+    "forceReasonTitle": "{{ref}}을(를) {{column}}에서 꺼내기",
     "markDeployed": "수동으로 배포됨 표시",
     "backToLocalTest": "로컬 테스트로 되돌리기",
     "forced": "{{ref}}을(를) {{column}}(으)로 옮겼습니다(소유자 재정의)",
     "lockedAnnouncement": "{{ref}}이(가) {{column}}을(를) 벗어나려면 사용자의 결정이 필요합니다.",
+    "automationAnnouncement": "{{ref}}은(는) 배포 자동화가 이동합니다. 직접 옮기려면 카드에서 진행하세요.",
     "openDecision": "결정하기"
   },
   "assign": {

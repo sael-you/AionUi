@@ -188,7 +188,8 @@
     "assignedTo": "Виконавець: {{name}}",
     "needsDecision": "Чекає на ваше рішення",
     "moveLocked": "Щоб перемістити картку, ухваліть рішення в ній",
-    "moveAutomated": "Переміщується автоматизацією розгортання"
+    "moveAutomated": "Переміщується автоматизацією розгортання",
+    "moveTargetAutomated": "{{column}} (лише автоматизація розгортання)"
   },
   "dnd": {
     "roleDescription": "переміщувана картка",
@@ -267,6 +268,7 @@
     "routingPlaceholder": "Додати відділи",
     "routingHelp": "Відділи, які перевіряють цю картку (не більше {{count}}).",
     "assignee": "Виконавець",
+    "assigneeSkills": "Навички виконавця",
     "creator": "Автор",
     "created": "Створено",
     "updated": "Оновлено",
@@ -351,10 +353,12 @@
     "forceReason": "Причина",
     "forceReasonRequired": "Вкажіть причину",
     "forceSubmit": "Перемістити",
+    "forceReasonTitle": "Вивести {{ref}} з колонки «{{column}}»",
     "markDeployed": "Позначити як розгорнуту вручну",
     "backToLocalTest": "Повернути на локальний тест",
     "forced": "{{ref}} переміщено до «{{column}}» (власником в обхід правил)",
     "lockedAnnouncement": "Щоб {{ref}} залишила колонку «{{column}}», потрібне ваше рішення.",
+    "automationAnnouncement": "{{ref}} переміщує автоматизація розгортання. Щоб перемістити її самостійно, відкрийте картку.",
     "openDecision": "Ухвалити рішення"
   },
   "assign": {

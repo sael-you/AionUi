@@ -16,7 +16,7 @@ import { QuickAddCard } from '@/renderer/components/board/column/QuickAddCard';
 import { ColumnMarks } from '@/renderer/components/board/column/ColumnMarks';
 import { WipCounter } from '@/renderer/components/board/column/WipCounter';
 import { columnName } from '@/renderer/components/board/utils/boardFormat';
-import { moveLock, type DropSlot } from '@/renderer/components/board/utils/boardModel';
+import { isManualMoveTarget, moveLock, type DropSlot } from '@/renderer/components/board/utils/boardModel';
 
 import { COLUMN_DND_PREFIX } from '../utils/boardKeyboard';
 import { DraggableCard, DropIndicator, type ColumnDndData } from './DraggableCard';
@@ -41,7 +41,13 @@ export const BoardColumnView: React.FC<{
   const { t } = useTranslation();
   const name = columnName(column, t);
   const data: ColumnDndData = { type: 'column', columnKey: column.key };
-  const { setNodeRef, isOver } = useDroppable({ id: `${COLUMN_DND_PREFIX}${column.key}`, data });
+  // Deploying is never a manual destination: neither the column nor its cards accept a drop.
+  const dropEnabled = isManualMoveTarget(column);
+  const { setNodeRef, isOver } = useDroppable({
+    id: `${COLUMN_DND_PREFIX}${column.key}`,
+    data,
+    disabled: !dropEnabled,
+  });
   const slotHere = dropSlot?.columnKey === column.key ? dropSlot : null;
 
   const renderCard = (card: BoardCardSummary) => (
@@ -51,6 +57,7 @@ export const BoardColumnView: React.FC<{
       card={card}
       dragEnabled={dragEnabled && !moveLock(card, column)}
       dragging={card.id === activeCardId}
+      dropEnabled={dropEnabled}
       indicatorBefore={slotHere?.beforeId === card.id}
       onOpen={onOpenCard}
     />

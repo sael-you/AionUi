@@ -183,7 +183,8 @@
     "assignedTo": "Asignada a {{name}}",
     "needsDecision": "Necesita tu decisión",
     "moveLocked": "Decide en la tarjeta para moverla",
-    "moveAutomated": "La mueve la automatización del despliegue"
+    "moveAutomated": "La mueve la automatización del despliegue",
+    "moveTargetAutomated": "{{column}} (solo la automatización de despliegue)"
   },
   "dnd": {
     "roleDescription": "tarjeta movible",
@@ -262,6 +263,7 @@
     "routingPlaceholder": "Añadir departamentos",
     "routingHelp": "Los departamentos que revisan esta tarjeta, hasta {{count}}.",
     "assignee": "Responsable",
+    "assigneeSkills": "Habilidades del responsable",
     "creator": "Creada por",
     "created": "Creada",
     "updated": "Actualizada",
@@ -346,10 +348,12 @@
     "forceReason": "Motivo",
     "forceReasonRequired": "Indica un motivo",
     "forceSubmit": "Sacar",
+    "forceReasonTitle": "Sacar {{ref}} de {{column}}",
     "markDeployed": "Marcar como desplegada manualmente",
     "backToLocalTest": "Volver a Prueba local",
     "forced": "{{ref}} movida a {{column}} (excepción del propietario)",
     "lockedAnnouncement": "{{ref}} necesita tu decisión antes de poder salir de {{column}}.",
+    "automationAnnouncement": "{{ref}} lo mueve la automatización de despliegue. Usa la tarjeta para sacarlo tú mismo.",
     "openDecision": "Decidir"
   },
   "assign": {

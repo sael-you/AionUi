@@ -178,7 +178,8 @@
     "assignedTo": "担当：{{name}}",
     "needsDecision": "あなたの判断待ち",
     "moveLocked": "移動するにはカード内で判断してください",
-    "moveAutomated": "デプロイ自動化によって移動されます"
+    "moveAutomated": "デプロイ自動化によって移動されます",
+    "moveTargetAutomated": "{{column}}（デプロイ自動化のみ）"
   },
   "dnd": {
     "roleDescription": "移動可能なカード",
@@ -257,6 +258,7 @@
     "routingPlaceholder": "部門を追加",
     "routingHelp": "このカードをレビューする部門です（最大 {{count}} 件）。",
     "assignee": "担当者",
+    "assigneeSkills": "担当者のスキル",
     "creator": "作成者",
     "created": "作成日時",
     "updated": "更新日時",
@@ -341,10 +343,12 @@
     "forceReason": "理由",
     "forceReasonRequired": "理由を入力してください",
     "forceSubmit": "移動する",
+    "forceReasonTitle": "{{ref}} を {{column}} から移動",
     "markDeployed": "手動でデプロイ済みにする",
     "backToLocalTest": "ローカルテストに戻す",
     "forced": "{{ref}} を {{column}} に移動しました（オーナー権限）",
     "lockedAnnouncement": "{{ref}} を {{column}} から移動するには、あなたの判断が必要です。",
+    "automationAnnouncement": "{{ref}} はデプロイ自動化が移動します。自分で移動するにはカードから操作してください。",
     "openDecision": "判断する"
   },
   "assign": {

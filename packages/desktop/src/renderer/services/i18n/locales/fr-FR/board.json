@@ -183,7 +183,8 @@
     "assignedTo": "Assignée à {{name}}",
     "needsDecision": "Attend votre décision",
     "moveLocked": "Décidez dans la carte pour la déplacer",
-    "moveAutomated": "Déplacée par l'automatisation du déploiement"
+    "moveAutomated": "Déplacée par l'automatisation du déploiement",
+    "moveTargetAutomated": "{{column}} (automatisation du déploiement uniquement)"
   },
   "dnd": {
     "roleDescription": "carte déplaçable",
@@ -262,6 +263,7 @@
     "routingPlaceholder": "Ajouter des départements",
     "routingHelp": "Les départements qui examinent cette carte, jusqu'à {{count}}.",
     "assignee": "Responsable",
+    "assigneeSkills": "Compétences de la personne assignée",
     "creator": "Créée par",
     "created": "Créée le",
     "updated": "Modifiée le",
@@ -346,10 +348,12 @@
     "forceReason": "Motif",
     "forceReasonRequired": "Saisissez un motif",
     "forceSubmit": "Sortir",
+    "forceReasonTitle": "Sortir {{ref}} de {{column}}",
     "markDeployed": "Marquer comme déployée manuellement",
     "backToLocalTest": "Revenir à Test local",
     "forced": "{{ref}} déplacée vers {{column}} (dérogation du propriétaire)",
     "lockedAnnouncement": "{{ref}} nécessite votre décision avant de pouvoir quitter {{column}}.",
+    "automationAnnouncement": "{{ref}} est déplacée par l'automatisation du déploiement. Utilisez la carte pour la sortir vous-même.",
     "openDecision": "Décider"
   },
   "assign": {

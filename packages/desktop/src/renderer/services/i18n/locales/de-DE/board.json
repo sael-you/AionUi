@@ -178,7 +178,8 @@
     "assignedTo": "Zugewiesen an {{name}}",
     "needsDecision": "Wartet auf deine Entscheidung",
     "moveLocked": "Triff in der Karte eine Entscheidung, um sie zu verschieben",
-    "moveAutomated": "Wird von der Rollout-Automatik verschoben"
+    "moveAutomated": "Wird von der Rollout-Automatik verschoben",
+    "moveTargetAutomated": "{{column}} (nur Rollout-Automatik)"
   },
   "dnd": {
     "roleDescription": "verschiebbare Karte",
@@ -257,6 +258,7 @@
     "routingPlaceholder": "Abteilungen hinzufügen",
     "routingHelp": "Die Abteilungen, die diese Karte prüfen, höchstens {{count}}.",
     "assignee": "Zuständig",
+    "assigneeSkills": "Skills der zuständigen Person",
     "creator": "Erstellt von",
     "created": "Erstellt",
     "updated": "Aktualisiert",
@@ -341,10 +343,12 @@
     "forceReason": "Grund",
     "forceReasonRequired": "Gib einen Grund ein",
     "forceSubmit": "Herausverschieben",
+    "forceReasonTitle": "{{ref}} aus {{column}} herausnehmen",
     "markDeployed": "Manuell als ausgerollt markieren",
     "backToLocalTest": "Zurück zu „Lokaler Test“",
     "forced": "{{ref}} nach {{column}} verschoben (Eingriff durch den Inhaber)",
     "lockedAnnouncement": "{{ref}} braucht deine Entscheidung, bevor sie {{column}} verlassen kann.",
+    "automationAnnouncement": "{{ref}} wird von der Rollout-Automatik verschoben. Verschiebe sie selbst über die Karte.",
     "openDecision": "Entscheiden"
   },
   "assign": {

@@ -183,7 +183,8 @@
     "assignedTo": "Atribuído a {{name}}",
     "needsDecision": "Precisa da sua decisão",
     "moveLocked": "Decida no cartão para movê-lo",
-    "moveAutomated": "Movido pela automação de implantação"
+    "moveAutomated": "Movido pela automação de implantação",
+    "moveTargetAutomated": "{{column}} (somente a automação de implantação)"
   },
   "dnd": {
     "roleDescription": "cartão móvel",
@@ -262,6 +263,7 @@
     "routingPlaceholder": "Adicionar departamentos",
     "routingHelp": "Os departamentos que revisam este cartão, até {{count}}.",
     "assignee": "Responsável",
+    "assigneeSkills": "Habilidades do responsável",
     "creator": "Criado por",
     "created": "Criado em",
     "updated": "Atualizado em",
@@ -346,10 +348,12 @@
     "forceReason": "Motivo",
     "forceReasonRequired": "Informe um motivo",
     "forceSubmit": "Tirar daqui",
+    "forceReasonTitle": "Tirar {{ref}} de {{column}}",
     "markDeployed": "Marcar como implantado manualmente",
     "backToLocalTest": "Voltar para Teste local",
     "forced": "{{ref}} movido para {{column}} (exceção do proprietário)",
     "lockedAnnouncement": "{{ref}} precisa da sua decisão antes de sair de {{column}}.",
+    "automationAnnouncement": "{{ref}} é movido pela automação de implantação. Use o cartão para movê-lo você mesmo.",
     "openDecision": "Decidir"
   },
   "assign": {
