@@ -117,7 +117,13 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
           controller={controller}
         />
         <CardDescription key={`d-${card.id}`} card={card} editable={editable} controller={controller} />
-        <CardFields card={card} editable={editable} board={board} controller={controller} />
+        <CardFields
+          card={card}
+          editable={editable}
+          board={board}
+          controller={controller}
+          assigneeSkills={detail.assignee_skills}
+        />
         <CardReviews card={card} reviews={detail.reviews} />
         <CardQuestions questions={detail.questions} editable={editable} controller={controller} />
         <CardDependencies card={card} editable={editable} board={board} controller={controller} />

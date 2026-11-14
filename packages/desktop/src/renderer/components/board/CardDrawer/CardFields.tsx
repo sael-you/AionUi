@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { Tag } from '@arco-design/web-react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +41,9 @@ export const CardFields: React.FC<{
   editable: boolean;
   board: BoardController;
   controller: CardDetailController;
-}> = ({ card, editable, board, controller }) => {
+  /** The assignee's resolved skill set (card detail); hidden when empty. */
+  assigneeSkills?: string[];
+}> = ({ card, editable, board, controller, assigneeSkills = [] }) => {
   const { t, i18n } = useTranslation();
   const snapshot = board.snapshot;
   const columns = snapshot ? visibleColumns(snapshot.columns) : [];
@@ -186,6 +189,19 @@ export const CardFields: React.FC<{
         <Row label={t('board.drawer.assignee')}>
           <span className='text-13px text-t-primary'>{assigneeLabel(card, t)}</span>
         </Row>
+        {assigneeSkills.length > 0 && (
+          <Row label={t('board.drawer.assigneeSkills')}>
+            <ul className='m-0 p-0 list-none flex flex-wrap gap-4px' data-testid='board-assignee-skills'>
+              {assigneeSkills.map((skill) => (
+                <li key={skill}>
+                  <Tag size='small' color='arcoblue'>
+                    {skill}
+                  </Tag>
+                </li>
+              ))}
+            </ul>
+          </Row>
+        )}
         <Row label={t('board.drawer.creator')}>
           <span className='text-13px text-t-primary'>{actorName(card.creator_kind, card.creator_ref, t)}</span>
         </Row>

@@ -228,6 +228,32 @@ describe('reviews and questions', () => {
     );
   });
 
+  it('shows the assignee’s resolved skills apart from the card’s tags, and hides an empty set', async () => {
+    const assigned = {
+      ...summary,
+      assignee_kind: 'assistant' as const,
+      assignee_ref: 'a1',
+      assignee_name: 'Architect',
+    };
+    renderAt(assigned, {
+      ...makeDetail(fullCard(assigned, { skills: ['cs-review'] })),
+      assignee_skills: ['cs-review', 'typescript'],
+    });
+    const dialog = await openDrawer(1, 'Dark mode');
+    const skills = within(dialog).getByTestId('board-assignee-skills');
+    expect(
+      within(skills)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent)
+    ).toEqual(['cs-review', 'typescript']);
+    expect(within(dialog).getByText("Assignee's skills")).toBeInTheDocument();
+    cleanup();
+
+    renderAt(summary, { ...makeDetail(fullCard(summary)), assignee_skills: [] });
+    const plain = await openDrawer(1, 'Dark mode');
+    expect(within(plain).queryByText("Assignee's skills")).not.toBeInTheDocument();
+  });
+
   it('edits the routing', async () => {
     bridge.updateCard.mockResolvedValue(fullCard(summary));
     renderAt(summary, detail());

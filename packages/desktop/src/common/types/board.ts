@@ -256,6 +256,12 @@ export type BoardSnapshot = {
 /** `GET /api/board/cards/{id}` response. */
 export type BoardCardDetail = {
   card: BoardCard;
+  /**
+   * The assignee's resolved skill set (its own skills merged with the card's
+   * tagged skills it can use); empty when unassigned. Read-only, shown apart
+   * from the card's tags.
+   */
+  assignee_skills?: string[];
   reviews: BoardReview[];
   questions: BoardQuestion[];
   links: BoardLink[];
