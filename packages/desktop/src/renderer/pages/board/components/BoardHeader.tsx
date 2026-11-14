@@ -5,28 +5,46 @@
  */
 
 import { Button, Dropdown, Menu, Modal, Tooltip } from '@arco-design/web-react';
-import { More, Refresh, SettingTwo } from '@icon-park/react';
-import React from 'react';
+import { Comment, More, Refresh, SettingTwo } from '@icon-park/react';
+import classNames from 'classnames';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
+import {
+  ProjectChip,
+  projectSurfaceClasses,
+  type ProjectThemeView,
+} from '@/renderer/components/workspace/ProjectIdentity';
 
 export type BoardHeaderProps = {
   board: BoardController;
   projectName: string | null;
   /**
-   * Accent colour of the project (CSS colour value). This is the single hook point
-   * for project colours: when set, the header shows the accent bar; the board
-   * itself stays on semantic tokens.
+   * The project's colour identity (ProjectIdentity): the header shows the project
+   * chip and the accent strip; the board itself stays on semantic tokens.
    */
-  projectColor?: string;
+  project: ProjectThemeView | null;
   onOpenSettings: () => void;
 };
 
-export const BoardHeader: React.FC<BoardHeaderProps> = ({ board, projectName, projectColor, onOpenSettings }) => {
+export const BoardHeader: React.FC<BoardHeaderProps> = ({ board, projectName, project, onOpenSettings }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [openingKeeper, setOpeningKeeper] = useState(false);
   const settings = board.snapshot?.settings;
   const canConfigure = Boolean(settings?.enabled) && !board.readOnly;
+
+  const talkToBoard = async () => {
+    setOpeningKeeper(true);
+    try {
+      const conversationId = await board.keeperConversation();
+      if (conversationId) void navigate(`/conversation/${encodeURIComponent(conversationId)}`);
+    } finally {
+      setOpeningKeeper(false);
+    }
+  };
 
   const confirmTurnOff = () => {
     Modal.confirm({
@@ -41,13 +59,30 @@ export const BoardHeader: React.FC<BoardHeaderProps> = ({ board, projectName, pr
   };
 
   return (
-    <header className='flex items-center gap-8px px-16px pt-12px pb-4px' data-project-color={projectColor}>
-      {projectColor && (
-        <span aria-hidden className='w-4px h-20px rd-full shrink-0' style={{ backgroundColor: projectColor }} />
+    <header
+      className={classNames(
+        'flex flex-wrap items-center gap-8px px-16px pt-12px pb-4px',
+        project && projectSurfaceClasses.stripTop
       )}
-      <h1 className='m-0 text-18px font-medium text-t-primary truncate flex-1'>
+      data-project-strip={project ? 'top' : undefined}
+    >
+      <h1 className='m-0 text-18px font-medium text-t-primary truncate'>
         {projectName ? t('board.pageTitle', { project: projectName }) : t('board.title')}
       </h1>
+      {project && <ProjectChip project={project} />}
+      <span className='flex-1' />
+      {settings?.enabled && (
+        <Tooltip content={t('board.keeper.tooltip')} mini>
+          <Button
+            size='small'
+            loading={openingKeeper}
+            icon={<Comment theme='outline' size='14' fill='currentColor' />}
+            onClick={() => void talkToBoard()}
+          >
+            {t('board.keeper.talk')}
+          </Button>
+        </Tooltip>
+      )}
       <Tooltip content={t('board.refresh')} mini>
         <Button
           type='text'

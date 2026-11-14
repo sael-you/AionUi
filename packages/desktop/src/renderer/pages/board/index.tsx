@@ -26,8 +26,10 @@ import {
 } from '@/renderer/components/board/BoardStates';
 import { CardDrawer } from '@/renderer/components/board/CardDrawer';
 import { useBoard } from '@/renderer/components/board/hooks/useBoard';
+import { useProjectWorkspace } from '@/renderer/components/board/hooks/useBoardDirectory';
 import { useBoardNarrow, useReducedMotion } from '@/renderer/components/board/hooks/useMediaQuery';
 import { groupCardsByColumn, visibleColumns } from '@/renderer/components/board/utils/boardModel';
+import { useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import { useAuth } from '@/renderer/hooks/context/AuthContext';
 
 import { BoardDndArea } from './components/BoardDndArea';
@@ -37,7 +39,7 @@ import { FilterBar } from './components/FilterBar';
 import { MobileBoard } from './components/MobileBoard';
 import { EMPTY_FILTERS, matchesFilters, type BoardFilters } from './utils/boardFilters';
 
-export const BoardPage: React.FC<{ projectId: string; projectColor?: string }> = ({ projectId, projectColor }) => {
+export const BoardPage: React.FC<{ projectId: string }> = ({ projectId }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -47,8 +49,10 @@ export const BoardPage: React.FC<{ projectId: string; projectColor?: string }> =
   const [filters, setFilters] = useState<BoardFilters>(EMPTY_FILTERS);
   const [openCardId, setOpenCardId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const board = useBoard(projectId, { includeArchived });
-  const { data: project } = useSWR(projectId ? ['board-project', projectId] : null, ([, id]: [string, string]) =>
+  const board = useBoard(projectId, { includeArchived, onOpenCard: setOpenCardId });
+  // The project's colour identity follows its workspace (the sidebar's colour key).
+  const project = useProjectTheme(useProjectWorkspace(projectId));
+  const { data: projectDetail } = useSWR(projectId ? ['board-project', projectId] : null, ([, id]: [string, string]) =>
     ipcBridge.project.get.invoke({ project_id: id })
   );
 
@@ -64,8 +68,8 @@ export const BoardPage: React.FC<{ projectId: string; projectColor?: string }> =
   const header = (
     <BoardHeader
       board={board}
-      projectName={project?.name ?? null}
-      projectColor={projectColor}
+      projectName={projectDetail?.name ?? null}
+      project={project}
       onOpenSettings={() => setSettingsOpen(true)}
     />
   );
@@ -130,7 +134,13 @@ export const BoardPage: React.FC<{ projectId: string; projectColor?: string }> =
   }
 
   return (
-    <div className='size-full flex flex-col min-h-0 bg-1' data-board-page={projectId}>
+    <div
+      className='size-full flex flex-col min-h-0 bg-1'
+      data-board-page={projectId}
+      data-project-surface={project ? 'board' : undefined}
+      {...project?.dataAttributes}
+      style={project?.style}
+    >
       {header}
       {body}
       <BoardLiveRegion announcement={board.announcement} />

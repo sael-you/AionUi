@@ -6,13 +6,14 @@
 
 /**
  * Card drawer (SPEC §8, S2 scope): title + description (edit in place), fields,
- * dependencies, comments, activity, Block/Unblock and Archive/Restore. Focus is
- * trapped while open and returns to where it came from (the card) on close.
- * Assign, Brainstorm, reviews, questions and gate actions arrive with S4.
+ * reviews, questions, dependencies, linked conversations, comments, activity;
+ * actions: the gate decision / owner override, Assign, Brainstorm, Block/Unblock
+ * and Archive/Restore. Focus is trapped while open and returns to where it came
+ * from (the card) on close.
  */
 
-import { Button, Drawer, Input, Modal, Skeleton, Tag } from '@arco-design/web-react';
-import { Close, Inbox, Lock, Undo, Unlock } from '@icon-park/react';
+import { Button, Drawer, Modal, Skeleton, Tag } from '@arco-design/web-react';
+import { Close, Inbox, Lightning, Lock, Undo, Unlock, UserToUserTransmission } from '@icon-park/react';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,59 +21,23 @@ import { BoardErrorState } from '../BoardStates';
 import type { BoardController } from '../hooks/useBoard';
 import { useCardDetail, type CardDetailController } from '../hooks/useCardDetail';
 import { useBoardNarrow } from '../hooks/useMediaQuery';
-import { focusCard } from '../MoveToMenu';
+import { focusCard } from '../card/MoveToMenu';
 import { cardRef } from '../utils/boardModel';
-import { CardActivity } from './CardActivity';
-import { CardComments } from './CardComments';
-import { CardDependencies } from './CardDependencies';
+import { AssignDialog } from './actions/AssignDialog';
+import { BlockDialog } from './actions/BlockDialog';
+import { BrainstormDialog } from './actions/BrainstormDialog';
+import { GatePanel } from './actions/GatePanel';
+import { CardActivity } from './sections/CardActivity';
+import { CardComments } from './sections/CardComments';
+import { CardConversations } from './sections/CardConversations';
+import { CardDependencies } from './sections/CardDependencies';
 import { CardDescription } from './CardDescription';
 import { CardFields } from './CardFields';
+import { CardQuestions } from './sections/CardQuestions';
+import { CardReviews } from './sections/CardReviews';
 import { CardTitle } from './CardTitle';
 
 const TITLE_ID = 'board-card-drawer-title';
-
-const BlockDialog: React.FC<{
-  refLabel: string;
-  visible: boolean;
-  onClose: () => void;
-  controller: CardDetailController;
-}> = ({ refLabel, visible, onClose, controller }) => {
-  const { t } = useTranslation();
-  const [reason, setReason] = useState('');
-  const [busy, setBusy] = useState(false);
-  return (
-    <Modal
-      title={t('board.drawer.blockTitle', { ref: refLabel })}
-      visible={visible}
-      onCancel={onClose}
-      afterClose={() => setReason('')}
-      okText={t('board.drawer.block')}
-      cancelText={t('common.cancel')}
-      confirmLoading={busy}
-      autoFocus
-      focusLock
-      onOk={async () => {
-        setBusy(true);
-        try {
-          if (await controller.setBlocked(true, reason)) onClose();
-        } finally {
-          setBusy(false);
-        }
-      }}
-    >
-      <label className='flex flex-col gap-6px text-13px text-t-secondary'>
-        {t('board.drawer.blockReason')}
-        <Input
-          autoFocus
-          value={reason}
-          onChange={setReason}
-          maxLength={500}
-          placeholder={t('board.drawer.blockReasonPlaceholder')}
-        />
-      </label>
-    </Modal>
-  );
-};
 
 const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailController; onClose: () => void }> = ({
   board,
@@ -81,6 +46,8 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
 }) => {
   const { t } = useTranslation();
   const [blockOpen, setBlockOpen] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [brainstormOpen, setBrainstormOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const detail = controller.detail;
 
@@ -143,14 +110,40 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
             <p className='m-0 text-13px text-t-secondary'>{t('board.drawer.archivedNotice')}</p>
           )}
         </div>
+        <GatePanel
+          card={card}
+          column={board.snapshot?.columns.find((column) => column.key === card.column_key)}
+          board={board}
+          controller={controller}
+        />
         <CardDescription key={`d-${card.id}`} card={card} editable={editable} controller={controller} />
         <CardFields card={card} editable={editable} board={board} controller={controller} />
+        <CardReviews card={card} reviews={detail.reviews} />
+        <CardQuestions questions={detail.questions} editable={editable} controller={controller} />
         <CardDependencies card={card} editable={editable} board={board} controller={controller} />
+        <CardConversations links={detail.links} events={detail.events} editable={editable} controller={controller} />
         <CardComments editable={editable} controller={controller} />
         <CardActivity events={detail.events} columns={board.snapshot?.columns ?? []} />
       </div>
       {!board.readOnly && (
         <div className='sticky bottom-0 flex flex-wrap gap-8px p-12px border-t border-solid border-[color:var(--border-base)] bg-1'>
+          {!archived && (
+            <>
+              <Button
+                type='primary'
+                icon={<UserToUserTransmission theme='outline' size='14' fill='currentColor' />}
+                onClick={() => setAssignOpen(true)}
+              >
+                {t('board.assign.action')}
+              </Button>
+              <Button
+                icon={<Lightning theme='outline' size='14' fill='currentColor' />}
+                onClick={() => setBrainstormOpen(true)}
+              >
+                {t('board.brainstorm.action')}
+              </Button>
+            </>
+          )}
           {!archived &&
             (card.blocked ? (
               <Button
@@ -196,6 +189,13 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
         </div>
       )}
       <BlockDialog refLabel={ref} visible={blockOpen} onClose={() => setBlockOpen(false)} controller={controller} />
+      <AssignDialog card={card} visible={assignOpen} onClose={() => setAssignOpen(false)} controller={controller} />
+      <BrainstormDialog
+        card={card}
+        visible={brainstormOpen}
+        onClose={() => setBrainstormOpen(false)}
+        controller={controller}
+      />
     </div>
   );
 };

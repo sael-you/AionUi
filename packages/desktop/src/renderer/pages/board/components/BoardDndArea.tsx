@@ -39,10 +39,16 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
-import { BoardCardTile } from '@/renderer/components/board/BoardCardTile';
+import { BoardCardTile } from '@/renderer/components/board/card/BoardCardTile';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
 import { columnNameByKey } from '@/renderer/components/board/utils/boardFormat';
-import { activeCardCount, anchorForSlot, cardRef, type DropSlot } from '@/renderer/components/board/utils/boardModel';
+import {
+  activeCardCount,
+  anchorForSlot,
+  cardRef,
+  groupColumnsByCategory,
+  type DropSlot,
+} from '@/renderer/components/board/utils/boardModel';
 import { directionForLanguage } from '@/renderer/services/i18n/direction';
 
 import {
@@ -270,19 +276,38 @@ export const BoardDndArea: React.FC<{
         className='flex-1 min-h-0 flex gap-12px overflow-x-auto overflow-y-hidden px-16px pb-16px'
         data-board-columns
       >
-        {columns.map((column) => (
-          <BoardColumnView
-            key={column.key}
-            board={board}
-            column={column}
-            cards={groups[column.key] ?? []}
-            count={activeCardCount(cards, column.key)}
-            dragEnabled={dragEnabled}
-            activeCardId={activeId}
-            dropSlot={dropSlot}
-            onOpenCard={onOpenCard}
-          />
-        ))}
+        {groupColumnsByCategory(columns).map((group, index) => {
+          const label = t(`board.categories.${group.category}`);
+          return (
+            <div
+              key={`${group.category}-${index}`}
+              role='group'
+              aria-label={t('board.column.group', { category: label })}
+              className='flex flex-col gap-6px min-h-0 shrink-0'
+              data-board-category={group.category}
+            >
+              <span className='text-12px font-medium text-t-secondary ps-4px' aria-hidden>
+                {label}
+              </span>
+              <div className='flex gap-12px flex-1 min-h-0'>
+                {group.columns.map((column) => (
+                  <BoardColumnView
+                    key={column.key}
+                    board={board}
+                    column={column}
+                    cards={groups[column.key] ?? []}
+                    count={activeCardCount(cards, column.key)}
+                    allCards={cards}
+                    dragEnabled={dragEnabled}
+                    activeCardId={activeId}
+                    dropSlot={dropSlot}
+                    onOpenCard={onOpenCard}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
       <DragOverlay dropAnimation={reducedMotion ? null : undefined}>
         {activeCard ? <BoardCardTile card={activeCard} onOpen={() => {}} overlay /> : null}

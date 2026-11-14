@@ -12,6 +12,7 @@
 
 import {
   BOARD_LIMITS,
+  DEPLOYING_COLUMN,
   type BoardCardSummary,
   type BoardChangedEvent,
   type BoardColumn,
@@ -46,6 +47,35 @@ export const compareCards = (a: BoardCardSummary, b: BoardCardSummary): number =
 /** Active (non-archived) columns in display order. */
 export const visibleColumns = (columns: BoardColumn[]): BoardColumn[] =>
   columns.filter((column) => !column.archived).toSorted((a, b) => a.position - b.position);
+
+/** Visible columns grouped by category, in board order (a category appears once, at its first column). */
+export const groupColumnsByCategory = (
+  columns: BoardColumn[]
+): Array<{ category: BoardColumn['category']; columns: BoardColumn[] }> => {
+  const groups: Array<{ category: BoardColumn['category']; columns: BoardColumn[] }> = [];
+  for (const column of columns) {
+    const last = groups[groups.length - 1];
+    if (last && last.category === column.category) last.columns.push(column);
+    else groups.push({ category: column.category, columns: [column] });
+  }
+  return groups;
+};
+
+/** Cards in a gate column that wait for the owner's decision. */
+export const needsDecisionCount = (cards: BoardCardSummary[], columnKey: string): number =>
+  cards.reduce((n, card) => (card.column_key === columnKey && card.needs_decision && !card.archived_at ? n + 1 : n), 0);
+
+/**
+ * Why a card cannot be moved by drag / "Move to…": it waits for the owner's
+ * decision in a gate (R3), or it sits in Deploying, which only the deploy
+ * automation moves. Both are released from the drawer (decision or override).
+ */
+export const moveLock = (card: BoardCardSummary, column: BoardColumn | undefined): 'decision' | 'automation' | null => {
+  if (!column) return null;
+  if (column.key === DEPLOYING_COLUMN) return 'automation';
+  if (column.kind === 'gate' && card.needs_decision) return 'decision';
+  return null;
+};
 
 /** Cards grouped by column key, each list in board order. Every visible column gets an entry. */
 export const groupCardsByColumn = (

@@ -26,13 +26,20 @@ import {
   type BoardSnapshot,
 } from '@/common/types/board';
 
-import { boardErrorCode, boardErrorKey, isBoardUnavailableError } from '../utils/boardErrors';
-import { columnNameByKey } from '../utils/boardFormat';
+import {
+  boardErrorCode,
+  boardErrorKey,
+  describeMissing,
+  exitRuleMissing,
+  isBoardUnavailableError,
+} from '../utils/boardErrors';
+import { columnNameByKey, departmentName } from '../utils/boardFormat';
 import {
   activeCardCount,
   applyBoardChange,
   applyOptimisticMove,
   cardRef,
+  endAnchor,
   isNoopMove,
   restoreCard,
   upsertCard,
@@ -57,8 +64,10 @@ const fetchBoard = ([, projectId, scope]: BoardKey): Promise<BoardSnapshot> =>
 const SWR_OPTIONS = { revalidateOnFocus: false, shouldRetryOnError: false, keepPreviousData: true } as const;
 
 export type MoveOptions = {
-  /** Owner override of the WIP limit ("Move anyway"). */
+  /** Owner override of the WIP limit / exit rules ("Move anyway") or of a gate (with `reason`). */
   force?: boolean;
+  /** Required by the server when `force` takes a card out of a gate or Deploying. */
+  reason?: string;
 };
 
 export type BoardAnnouncement = { text: string; id: number };
@@ -80,6 +89,10 @@ export type BoardController = {
   moveCard: (cardId: string, toColumn: string, anchor: MoveAnchor, options?: MoveOptions) => Promise<boolean>;
   createCard: (columnKey: string, title: string) => Promise<BoardCard | null>;
   setEnabled: (enabled: boolean) => Promise<boolean>;
+  /** Owner override out of a gate / Deploying (R3): moves to the end of `toColumn` with a recorded reason. */
+  forceMove: (cardId: string, toColumn: string, reason: string) => Promise<boolean>;
+  /** The project's Board Keeper conversation id, created on first use (D40); null on failure (reported). */
+  keeperConversation: () => Promise<string | null>;
   saveColumns: (columns: BoardColumnInput[]) => Promise<boolean>;
   reactivate: () => Promise<boolean>;
   /** Fold a card returned by another write (drawer PATCH, archive…) into the snapshot. */
@@ -91,8 +104,16 @@ export type BoardController = {
  * `unavailable` is true once the server says the project has no board (temp
  * project → `board_no_project`, unknown project → 404); entry points hide then.
  */
-export function useBoard(projectId: string, options: { includeArchived?: boolean } = {}): BoardController {
+export type UseBoardOptions = {
+  includeArchived?: boolean;
+  /** Opens a card's drawer — offered by the "needs your decision" toast. */
+  onOpenCard?: (cardId: string) => void;
+};
+
+export function useBoard(projectId: string, options: UseBoardOptions = {}): BoardController {
   const includeArchived = Boolean(options.includeArchived);
+  const onOpenCardRef = useRef(options.onOpenCard);
+  onOpenCardRef.current = options.onOpenCard;
   const { t } = useTranslation();
   const { data, error, isLoading, mutate } = useSWR(
     projectId ? boardKey(projectId, includeArchived) : null,
@@ -167,11 +188,14 @@ export function useBoard(projectId: string, options: { includeArchived?: boolean
           ...anchor,
           expected_column: card.column_key,
           ...(moveOptions.force ? { force: true } : {}),
+          ...(moveOptions.force && moveOptions.reason ? { reason: moveOptions.reason } : {}),
         });
         await update((snapshot) => upsertCard(snapshot, moved, includeArchived));
         const column = current.columns.find((candidate) => candidate.key === toColumn);
         const count = activeCardCount(snapshotRef.current?.cards ?? [], toColumn);
-        let message = t('board.dnd.moved', { ref, column: toName });
+        let message = moveOptions.reason
+          ? t('board.gate.forced', { ref, column: toName })
+          : t('board.dnd.moved', { ref, column: toName });
         if (column?.wip_limit && count >= column.wip_limit) {
           message = `${message} ${t('board.wip.fullAnnouncement', { column: toName, count, limit: column.wip_limit })}`;
         }
@@ -209,6 +233,59 @@ export function useBoard(projectId: string, options: { includeArchived?: boolean
                 {t('board.errors.moveAnyway')}
               </Button>
             ),
+          });
+          return false;
+        }
+        if (code === BOARD_ERROR_CODES.exitRule) {
+          const missing = exitRuleMissing(moveError)
+            .map((item) => describeMissing(item, t, (key) => departmentName(key, t)))
+            .join(', ');
+          const content = missing
+            ? t('board.errors.exitRuleMissing', { column: fromName, missing })
+            : t('board.errors.exitRule');
+          announce(`${t('board.dnd.rolledBack', { ref, column: fromName })} ${content}`);
+          const id = `board-exit-${cardId}`;
+          Notification.warning({
+            id,
+            title,
+            content,
+            duration: 10000,
+            btn: (
+              <Button
+                type='primary'
+                size='small'
+                onClick={() => {
+                  Notification.remove(id);
+                  void moveCard(cardId, toColumn, anchor, { force: true });
+                }}
+              >
+                {t('board.errors.moveAnyway')}
+              </Button>
+            ),
+          });
+          return false;
+        }
+        if (code === BOARD_ERROR_CODES.gateUseDecision) {
+          const locked = t('board.gate.lockedAnnouncement', { ref, column: fromName });
+          announce(locked);
+          const id = `board-gate-${cardId}`;
+          Notification.info({
+            id,
+            title,
+            content: locked,
+            duration: 8000,
+            btn: onOpenCardRef.current ? (
+              <Button
+                type='primary'
+                size='small'
+                onClick={() => {
+                  Notification.remove(id);
+                  onOpenCardRef.current?.(cardId);
+                }}
+              >
+                {t('board.gate.openDecision')}
+              </Button>
+            ) : undefined,
           });
           return false;
         }
@@ -256,7 +333,8 @@ export function useBoard(projectId: string, options: { includeArchived?: boolean
           project_id: projectId,
           version: settings?.version ?? 0,
           enabled,
-          template: settings?.template ?? 'simple',
+          // D39: every board uses the department flow; `simple` is not offered.
+          template: 'studio',
         });
         await mutate();
         Message.success(t(enabled ? 'board.states.enabled' : 'board.turnedOff'));
@@ -291,6 +369,31 @@ export function useBoard(projectId: string, options: { includeArchived?: boolean
     [projectId, mutate, t]
   );
 
+  const forceMove = useCallback(
+    async (cardId: string, toColumn: string, reason: string): Promise<boolean> => {
+      const current = snapshotRef.current;
+      if (!current || !reason.trim()) return false;
+      return moveCard(cardId, toColumn, endAnchor(current.cards, toColumn, cardId), {
+        force: true,
+        reason: reason.trim(),
+      });
+    },
+    [moveCard]
+  );
+
+  const keeperConversation = useCallback(async (): Promise<string | null> => {
+    const existing = snapshotRef.current?.settings.keeper_conversation_id;
+    if (existing) return existing;
+    try {
+      const keeper = await ipcBridge.board.ensureKeeper.invoke({ project_id: projectId });
+      void mutate();
+      return keeper.conversation_id;
+    } catch (keeperError) {
+      Notification.error({ title: t('board.keeper.failed'), content: t(boardErrorKey(keeperError)) });
+      return null;
+    }
+  }, [projectId, mutate, t]);
+
   const reactivate = useCallback(async (): Promise<boolean> => {
     try {
       // Unarchiving the project clears `board_settings.archived_at` (SPEC §6 ProjectBoardPorts).
@@ -319,6 +422,8 @@ export function useBoard(projectId: string, options: { includeArchived?: boolean
       moveCard,
       createCard,
       setEnabled,
+      forceMove,
+      keeperConversation,
       saveColumns,
       reactivate,
       applyCard,
@@ -336,6 +441,8 @@ export function useBoard(projectId: string, options: { includeArchived?: boolean
       moveCard,
       createCard,
       setEnabled,
+      forceMove,
+      keeperConversation,
       saveColumns,
       reactivate,
       applyCard,

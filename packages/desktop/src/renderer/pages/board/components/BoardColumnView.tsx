@@ -12,10 +12,11 @@ import { Virtuoso } from 'react-virtuoso';
 
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
-import { QuickAddCard } from '@/renderer/components/board/QuickAddCard';
-import { WipCounter } from '@/renderer/components/board/WipCounter';
+import { QuickAddCard } from '@/renderer/components/board/column/QuickAddCard';
+import { ColumnMarks } from '@/renderer/components/board/column/ColumnMarks';
+import { WipCounter } from '@/renderer/components/board/column/WipCounter';
 import { columnName } from '@/renderer/components/board/utils/boardFormat';
-import type { DropSlot } from '@/renderer/components/board/utils/boardModel';
+import { moveLock, type DropSlot } from '@/renderer/components/board/utils/boardModel';
 
 import { COLUMN_DND_PREFIX } from '../utils/boardKeyboard';
 import { DraggableCard, DropIndicator, type ColumnDndData } from './DraggableCard';
@@ -30,11 +31,13 @@ export const BoardColumnView: React.FC<{
   cards: BoardCardSummary[];
   /** Active cards in the column regardless of filters (the WIP count). */
   count: number;
+  /** Every card of the board (gate "needs your decision" count). */
+  allCards: BoardCardSummary[];
   dragEnabled: boolean;
   activeCardId: string | null;
   dropSlot: DropSlot | null;
   onOpenCard: (cardId: string) => void;
-}> = ({ board, column, cards, count, dragEnabled, activeCardId, dropSlot, onOpenCard }) => {
+}> = ({ board, column, cards, count, allCards, dragEnabled, activeCardId, dropSlot, onOpenCard }) => {
   const { t } = useTranslation();
   const name = columnName(column, t);
   const data: ColumnDndData = { type: 'column', columnKey: column.key };
@@ -46,7 +49,7 @@ export const BoardColumnView: React.FC<{
       key={card.id}
       board={board}
       card={card}
-      dragEnabled={dragEnabled}
+      dragEnabled={dragEnabled && !moveLock(card, column)}
       dragging={card.id === activeCardId}
       indicatorBefore={slotHere?.beforeId === card.id}
       onOpen={onOpenCard}
@@ -64,9 +67,12 @@ export const BoardColumnView: React.FC<{
         slotHere || isOver ? 'border-primary' : 'border-transparent'
       )}
     >
-      <div className='flex items-center gap-8px px-12px pt-10px pb-6px'>
-        <h2 className='m-0 text-14px font-medium text-t-primary truncate flex-1'>{name}</h2>
-        <WipCounter column={column} count={count} />
+      <div className='flex flex-col gap-2px px-12px pt-10px pb-6px'>
+        <div className='flex items-center gap-8px'>
+          <h2 className='m-0 text-14px font-medium text-t-primary truncate flex-1'>{name}</h2>
+          <WipCounter column={column} count={count} />
+        </div>
+        <ColumnMarks column={column} cards={allCards} />
       </div>
       <div
         ref={setNodeRef}

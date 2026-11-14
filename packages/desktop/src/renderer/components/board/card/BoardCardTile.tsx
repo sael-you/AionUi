@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary, BoardPriority } from '@/common/types/board';
 
-import { assigneeLabel } from './utils/boardFormat';
-import { cardRef } from './utils/boardModel';
+import { assigneeLabel } from '../utils/boardFormat';
+import { cardRef } from '../utils/boardModel';
 
 const PRIORITY_COLOR: Record<BoardPriority, string> = {
   low: 'gray',
@@ -101,8 +101,17 @@ export const BoardCardTile: React.FC<BoardCardTileProps> = ({
       >
         {card.title}
       </span>
-      {(labels.length > 0 || card.blocked || card.open_dependency_count > 0 || card.archived_at) && (
+      {(labels.length > 0 ||
+        card.blocked ||
+        card.needs_decision ||
+        card.open_dependency_count > 0 ||
+        card.archived_at) && (
         <div className='flex flex-wrap items-center gap-4px'>
+          {card.needs_decision && (
+            <Tag size='small' color='orange' icon={<Lock theme='outline' size='11' fill='currentColor' aria-hidden />}>
+              {t('board.card.needsDecision')}
+            </Tag>
+          )}
           {card.blocked && (
             <Tag
               size='small'

@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { BOARD_LIMITS } from '@/common/types/board';
 
-import type { BoardController } from './hooks/useBoard';
+import type { BoardController } from '../hooks/useBoard';
 
 /** One-line card creation at the end of a column. Focus stays in the field for rapid entry. */
 export const QuickAddCard: React.FC<{ board: BoardController; columnKey: string; columnLabel: string }> = ({

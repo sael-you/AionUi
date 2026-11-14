@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { BOARD_LIMITS, type BoardEvent } from '@/common/types/board';
 import MarkdownView from '@/renderer/components/Markdown';
 
-import type { CardDetailController } from '../hooks/useCardDetail';
-import { actorName, formatBoardTime } from '../utils/boardFormat';
+import type { CardDetailController } from '../../hooks/useCardDetail';
+import { actorName, formatBoardTime } from '../../utils/boardFormat';
 
 const commentBody = (event: BoardEvent): string => {
   const body = event.payload?.body;

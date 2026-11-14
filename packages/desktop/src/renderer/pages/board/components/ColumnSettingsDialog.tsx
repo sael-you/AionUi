@@ -5,8 +5,8 @@
  */
 
 /**
- * Column settings (`simple` template): rename, reorder, WIP limit, add, archive
- * an empty column and restore an archived one. Saves the full list in one
+ * Column settings of the department flow: rename, reorder, WIP limit, add,
+ * archive an empty column (never a gate or a gate's target) and restore one. Saves the full list in one
  * `PUT …/columns` guarded by the board version.
  */
 
@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import {
   BOARD_CATEGORIES,
+  STUDIO_COLUMN_KEYS,
   type BoardCategory,
   type BoardColumn,
   type BoardColumnInput,
@@ -28,7 +29,7 @@ import { columnName } from '@/renderer/components/board/utils/boardFormat';
 import { activeCardCount } from '@/renderer/components/board/utils/boardModel';
 
 /** Column keys that have a translated default name (`board.columns.<key>`). */
-const DEFAULT_NAMED_KEYS: ReadonlySet<string> = new Set(['backlog', 'todo', 'in_progress', 'done']);
+const DEFAULT_NAMED_KEYS: ReadonlySet<string> = new Set(STUDIO_COLUMN_KEYS);
 
 /** Longest column name accepted by the dialog. */
 const MAX_COLUMN_NAME = 60;
@@ -66,6 +67,10 @@ const DialogBody: React.FC<{
   const [newName, setNewName] = useState('');
   const [newCategory, setNewCategory] = useState<BoardCategory>('todo');
   const active = draft.filter((column) => !column.archived);
+  // A gate and the columns a gate leads to keep the flow intact: the server refuses to archive them (422).
+  const gateTargets = new Set(
+    draft.flatMap((column) => (column.gate ? [column.gate.on_approve, column.gate.on_reject] : [])).filter(Boolean)
+  );
   const archived = draft.filter((column) => column.archived);
 
   const patch = (key: string, change: Partial<DraftColumn>) =>
@@ -109,7 +114,11 @@ const DialogBody: React.FC<{
         {active.map((column, index) => {
           const label = columnName(column, t) || t('board.settings.newColumnName');
           const cardCount = activeCardCount(snapshot.cards, column.key);
-          const canArchive = cardCount === 0 && active.length > 1 && !column.isNew;
+          const protectedColumn = column.kind === 'gate' || gateTargets.has(column.key);
+          const canArchive = cardCount === 0 && active.length > 1 && !column.isNew && !protectedColumn;
+          const archiveHint = protectedColumn
+            ? t('board.settings.archiveGateDisabled')
+            : t('board.settings.archiveDisabled');
           return (
             <li
               key={column.key}
@@ -185,14 +194,20 @@ const DialogBody: React.FC<{
                   onClick={() => setDraft(draft.filter((candidate) => candidate.key !== column.key))}
                 />
               ) : (
-                <Tooltip content={canArchive ? undefined : t('board.settings.archiveDisabled')} mini>
+                <Tooltip content={canArchive ? undefined : archiveHint} mini>
                   <span>
                     <Button
                       size='mini'
                       type='text'
                       icon={<Inbox theme='outline' size='14' fill='currentColor' />}
                       aria-label={t('board.settings.archiveColumn', { column: label })}
-                      aria-describedby={canArchive ? undefined : 'board-settings-archive-help'}
+                      aria-describedby={
+                        canArchive
+                          ? undefined
+                          : protectedColumn
+                            ? 'board-settings-archive-gate-help'
+                            : 'board-settings-archive-help'
+                      }
                       disabled={!canArchive}
                       onClick={() => patch(column.key, { archived: true })}
                     />
@@ -203,9 +218,11 @@ const DialogBody: React.FC<{
           );
         })}
       </ol>
-      <span id='board-settings-archive-help' className='text-12px text-t-secondary'>
-        {t('board.settings.archiveDisabled')} · {t('board.settings.wipHelp')}
-      </span>
+      <div className='flex flex-col gap-2px text-12px text-t-secondary'>
+        <span id='board-settings-archive-help'>{t('board.settings.archiveDisabled')}</span>
+        <span id='board-settings-archive-gate-help'>{t('board.settings.archiveGateDisabled')}</span>
+        <span>{t('board.settings.wipHelp')}</span>
+      </div>
       <div className='flex flex-wrap items-center gap-8px'>
         <Input
           size='small'

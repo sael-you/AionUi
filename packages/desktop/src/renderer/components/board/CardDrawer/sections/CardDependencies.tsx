@@ -11,11 +11,11 @@ import { useTranslation } from 'react-i18next';
 
 import type { BoardCard } from '@/common/types/board';
 
-import { BoardSelect } from '../BoardSelect';
-import type { BoardController } from '../hooks/useBoard';
-import type { CardDetailController } from '../hooks/useCardDetail';
-import { columnNameByKey } from '../utils/boardFormat';
-import { cardRef } from '../utils/boardModel';
+import { BoardSelect } from '../../BoardSelect';
+import type { BoardController } from '../../hooks/useBoard';
+import type { CardDetailController } from '../../hooks/useCardDetail';
+import { columnNameByKey } from '../../utils/boardFormat';
+import { cardRef } from '../../utils/boardModel';
 
 /**
  * "Depends on" chips (R5: an open dependency blocks forward moves) with add and

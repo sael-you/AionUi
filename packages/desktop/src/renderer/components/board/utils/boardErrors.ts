@@ -9,6 +9,8 @@
  * (`BackendHttpError.code`), never on its English message.
  */
 
+import type { TFunction } from 'i18next';
+
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import { BOARD_ERROR_CODES, type BoardErrorCode } from '@/common/types/board';
 
@@ -31,7 +33,8 @@ const CODE_TO_KEY: Record<BoardErrorCode, string> = {
   [C.systemForbidden]: 'board.errors.forbidden',
   [C.agentMoveDenied]: 'board.errors.forbidden',
   [C.departmentMismatch]: 'board.errors.forbidden',
-  [C.featureNotEnabled]: 'board.errors.forbidden',
+  [C.featureNotEnabled]: 'board.errors.featureLater',
+  [C.alreadyLinked]: 'board.errors.alreadyLinked',
   [C.assignmentInProgress]: 'board.errors.busy',
   [C.deployInFlight]: 'board.errors.busy',
   [C.idempotencyConflict]: 'board.errors.busy',
@@ -60,4 +63,20 @@ export const isBoardUnavailableError = (error: unknown): boolean => {
   const code = boardErrorCode(error);
   if (code === C.noProject || code === C.notFound) return true;
   return isBackendHttpError(error) && error.status === 404;
+};
+
+/** `details.missing` of a `board_exit_rule` error (R4), e.g. `["review:technical", "open_questions"]`. */
+export const exitRuleMissing = (error: unknown): string[] => {
+  if (!isBackendHttpError(error) || !error.details || typeof error.details !== 'object') return [];
+  const missing = (error.details as { missing?: unknown }).missing;
+  return Array.isArray(missing) ? missing.filter((item): item is string => typeof item === 'string') : [];
+};
+
+/** One missing exit-rule item in words: `review:<department>`, `open_questions`, `min_confidence`. */
+export const describeMissing = (item: string, t: TFunction, departmentName: (key: string) => string): string => {
+  if (item.startsWith('review:'))
+    return t('board.errors.missing.review', { department: departmentName(item.slice(7)) });
+  if (item === 'open_questions' || item.startsWith('question:')) return t('board.errors.missing.openQuestions');
+  if (item === 'min_confidence') return t('board.errors.missing.minConfidence');
+  return item;
 };

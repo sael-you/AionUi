@@ -8,7 +8,13 @@
 
 import type { TFunction } from 'i18next';
 
-import type { BoardActorKind, BoardCardSummary, BoardColumn, BoardEvent } from '@/common/types/board';
+import {
+  BOARD_DEPARTMENTS,
+  type BoardActorKind,
+  type BoardCardSummary,
+  type BoardColumn,
+  type BoardEvent,
+} from '@/common/types/board';
 import { formatDateTime } from '@/renderer/services/i18n/format';
 
 import { cardRef } from './boardModel';
@@ -26,6 +32,12 @@ export const columnNameByKey = (columns: BoardColumn[], key: string, t: TFunctio
     columns.find((column) => column.key === key),
     t
   ) || key;
+
+const KNOWN_DEPARTMENTS: ReadonlySet<string> = new Set([...BOARD_DEPARTMENTS, 'owner']);
+
+/** Department label: translated for the studio departments (and `owner`), else the key as written. */
+export const departmentName = (key: string, t: TFunction): string =>
+  KNOWN_DEPARTMENTS.has(key) ? t(`board.departments.${key}`) : key;
 
 /**
  * Who did something. `user` is always the owner ("You"); an agent's ref is
@@ -83,6 +95,34 @@ export const describeEvent = (event: BoardEvent, columns: BoardColumn[], t: TFun
         actor,
         from: columnNameByKey(columns, payloadString(payload, 'from'), t),
         to: columnNameByKey(columns, payloadString(payload, 'to'), t),
+      });
+    case 'gate_approved':
+    case 'gate_rejected':
+    case 'gate_forced':
+    case 'deploy_forced':
+      return t(`board.activity.${event.kind}`, {
+        actor,
+        from: columnNameByKey(columns, payloadString(payload, 'from'), t),
+        to: columnNameByKey(columns, payloadString(payload, 'to'), t),
+      });
+    case 'card_assigned':
+    case 'link_parent_fallback':
+    case 'packet_send_failed':
+    case 'question_answered':
+    case 'board_unarchived':
+      return t(`board.activity.${event.kind}`, { actor });
+    case 'review_updated': {
+      const verdict = payloadString(payload, 'verdict');
+      return t('board.activity.review_updated', {
+        actor,
+        department: departmentName(payloadString(payload, 'department'), t),
+        verdict: verdict ? t(`board.verdict.${verdict}`, { defaultValue: verdict }) : '',
+      });
+    }
+    case 'question_added':
+      return t('board.activity.question_added', {
+        actor,
+        to: departmentName(payloadString(payload, 'to_department'), t),
       });
     case 'dep_added':
     case 'dep_removed':

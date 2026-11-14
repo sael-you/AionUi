@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { BoardColumn } from '@/common/types/board';
 
-import { wipState } from './utils/boardModel';
+import { wipState } from '../utils/boardModel';
 
 /**
  * Column card count with its WIP limit (`3/4`). A full or over-limit column adds

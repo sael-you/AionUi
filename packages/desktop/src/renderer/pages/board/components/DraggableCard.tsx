@@ -10,9 +10,9 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary } from '@/common/types/board';
-import { BoardCardTile } from '@/renderer/components/board/BoardCardTile';
+import { BoardCardTile } from '@/renderer/components/board/card/BoardCardTile';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
-import { MoveToMenu } from '@/renderer/components/board/MoveToMenu';
+import { MoveToMenu } from '@/renderer/components/board/card/MoveToMenu';
 import { cardRef } from '@/renderer/components/board/utils/boardModel';
 
 import { CARD_DND_PREFIX } from '../utils/boardKeyboard';

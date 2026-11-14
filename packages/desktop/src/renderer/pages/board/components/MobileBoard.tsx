@@ -4,20 +4,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Radio } from '@arco-design/web-react';
+import { Select } from '@arco-design/web-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
-import { BoardCardTile } from '@/renderer/components/board/BoardCardTile';
+import { BoardCardTile } from '@/renderer/components/board/card/BoardCardTile';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
-import { MoveToMenu } from '@/renderer/components/board/MoveToMenu';
-import { QuickAddCard } from '@/renderer/components/board/QuickAddCard';
-import { WipCounter } from '@/renderer/components/board/WipCounter';
+import { BoardSelect } from '@/renderer/components/board/BoardSelect';
+import { MoveToMenu } from '@/renderer/components/board/card/MoveToMenu';
+import { ColumnMarks } from '@/renderer/components/board/column/ColumnMarks';
+import { QuickAddCard } from '@/renderer/components/board/column/QuickAddCard';
+import { WipCounter } from '@/renderer/components/board/column/WipCounter';
 import { columnName } from '@/renderer/components/board/utils/boardFormat';
-import { activeCardCount } from '@/renderer/components/board/utils/boardModel';
+import { activeCardCount, groupColumnsByCategory } from '@/renderer/components/board/utils/boardModel';
 
-/** ≤768 px: one column at a time behind a switcher; no drag — cards move with "Move to…". */
+/** ≤768 px: one column at a time behind a switcher (grouped by category); no drag — cards move with "Move to…". */
 export const MobileBoard: React.FC<{
   board: BoardController;
   columns: BoardColumn[];
@@ -34,22 +36,22 @@ export const MobileBoard: React.FC<{
 
   return (
     <div className='flex-1 min-h-0 flex flex-col gap-8px px-12px pb-12px'>
-      <div className='overflow-x-auto shrink-0'>
-        <Radio.Group
-          type='button'
-          size='small'
-          aria-label={t('board.column.switcher')}
-          value={current.key}
-          onChange={(value: string) => setSelected(value)}
-          className='whitespace-nowrap'
-        >
-          {columns.map((column) => (
-            <Radio key={column.key} value={column.key}>
-              {columnName(column, t)} <span className='tabular-nums'>{activeCardCount(cards, column.key)}</span>
-            </Radio>
-          ))}
-        </Radio.Group>
-      </div>
+      <BoardSelect
+        ariaLabel={t('board.column.switcher')}
+        value={current.key}
+        onChange={(value: string) => setSelected(value)}
+        className='shrink-0'
+      >
+        {groupColumnsByCategory(columns).map((group, index) => (
+          <Select.OptGroup key={`${group.category}-${index}`} label={t(`board.categories.${group.category}`)}>
+            {group.columns.map((column) => (
+              <Select.Option key={column.key} value={column.key}>
+                {`${columnName(column, t)} · ${activeCardCount(cards, column.key)}`}
+              </Select.Option>
+            ))}
+          </Select.OptGroup>
+        ))}
+      </BoardSelect>
       <section
         aria-label={t('board.column.region', { column: name, count: activeCardCount(cards, current.key) })}
         data-board-column={current.key}
@@ -59,6 +61,7 @@ export const MobileBoard: React.FC<{
           <h2 className='m-0 text-15px font-medium text-t-primary flex-1 truncate'>{name}</h2>
           <WipCounter column={current} count={activeCardCount(cards, current.key)} />
         </div>
+        <ColumnMarks column={current} cards={cards} />
         <div className='flex-1 min-h-0 overflow-y-auto flex flex-col gap-8px'>
           {visible.length === 0 ? (
             <p className='m-0 text-13px text-t-secondary text-center py-16px'>{t('board.states.emptyColumn')}</p>

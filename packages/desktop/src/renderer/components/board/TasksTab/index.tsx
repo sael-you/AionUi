@@ -20,7 +20,7 @@ import { BoardBanners, BoardDisabledState, BoardErrorState, BoardLiveRegion, Boa
 import { CardDrawer } from '../CardDrawer';
 import type { BoardController } from '../hooks/useBoard';
 import { columnName } from '../utils/boardFormat';
-import { activeCardCount, groupCardsByColumn, visibleColumns } from '../utils/boardModel';
+import { activeCardCount, groupCardsByColumn, groupColumnsByCategory, visibleColumns } from '../utils/boardModel';
 import { StackedColumn } from './StackedColumn';
 
 const focusColumnHeading = (columnKey: string): void => {
@@ -90,16 +90,29 @@ export const TasksTab: React.FC<{ board: BoardController }> = ({ board }) => {
           {snapshot.cards.length === 0 && (
             <p className='m-0 text-13px text-t-secondary'>{t('board.states.emptyBoard')}</p>
           )}
-          {columns.map((column) => (
-            <StackedColumn
-              key={column.key}
-              board={board}
-              column={column}
-              cards={groups[column.key] ?? []}
-              collapsed={collapsedKeys.has(column.key)}
-              onToggle={() => toggle(column.key)}
-              onOpenCard={setOpenCardId}
-            />
+          {groupColumnsByCategory(columns).map((group, index) => (
+            <div
+              key={`${group.category}-${index}`}
+              role='group'
+              aria-labelledby={`board-stack-group-${index}`}
+              className='flex flex-col gap-10px'
+            >
+              <h3 id={`board-stack-group-${index}`} className='m-0 text-11px font-medium text-t-secondary'>
+                {t(`board.categories.${group.category}`)}
+              </h3>
+              {group.columns.map((column) => (
+                <StackedColumn
+                  key={column.key}
+                  board={board}
+                  column={column}
+                  cards={groups[column.key] ?? []}
+                  allCards={snapshot.cards}
+                  collapsed={collapsedKeys.has(column.key)}
+                  onToggle={() => toggle(column.key)}
+                  onOpenCard={setOpenCardId}
+                />
+              ))}
+            </div>
           ))}
         </div>
       </>

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import {
   BOARD_CARD_TYPES,
+  BOARD_DEPARTMENTS,
   BOARD_LIMITS,
   BOARD_PRIORITIES,
   BOARD_SIZES,
@@ -23,7 +24,7 @@ import {
 import { BoardSelect } from '../BoardSelect';
 import type { BoardController } from '../hooks/useBoard';
 import type { CardDetailController } from '../hooks/useCardDetail';
-import { actorName, assigneeLabel, columnName, formatBoardTime } from '../utils/boardFormat';
+import { actorName, assigneeLabel, columnName, departmentName, formatBoardTime } from '../utils/boardFormat';
 import { endAnchor, sanitizeTagList, visibleColumns } from '../utils/boardModel';
 
 const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -148,6 +149,30 @@ export const CardFields: React.FC<{
             onChange={(skills: string[]) => void controller.updateFields({ skills: sanitizeTagList(skills) })}
             options={skillOptions}
           />
+        </Row>
+        <Row label={t('board.drawer.routing')}>
+          <BoardSelect
+            ariaLabel={t('board.drawer.routing')}
+            size='small'
+            mode='multiple'
+            allowCreate
+            allowClear
+            placeholder={t('board.drawer.routingPlaceholder')}
+            value={card.routing}
+            disabled={!editable}
+            onChange={(routing: string[]) =>
+              void controller.updateFields({ routing: sanitizeTagList(routing).slice(0, BOARD_LIMITS.routing) })
+            }
+            options={[...new Set([...BOARD_DEPARTMENTS, ...card.routing])].map((department) => ({
+              value: department,
+              label: departmentName(department, t),
+            }))}
+          />
+          {editable && (
+            <div className='text-11px text-t-secondary mt-2px'>
+              {t('board.drawer.routingHelp', { count: BOARD_LIMITS.routing })}
+            </div>
+          )}
         </Row>
         <Row label={t('board.drawer.assignee')}>
           <span className='text-13px text-t-primary'>{assigneeLabel(card, t)}</span>

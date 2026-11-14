@@ -19,9 +19,12 @@ import useSWR from 'swr';
 import { ipcBridge } from '@/common';
 import {
   BOARD_ERROR_CODES,
+  type BoardAssignRequest,
+  type BoardAssignResponse,
   type BoardCard,
   type BoardCardDetail,
   type BoardEvent,
+  type BoardGateRequest,
   type UpdateBoardCardRequest,
 } from '@/common/types/board';
 
@@ -47,6 +50,14 @@ const fetchComments = async (cardId: string): Promise<BoardEvent[]> => {
 
 export type CardFieldsPatch = Omit<UpdateBoardCardRequest, 'version'>;
 
+/** A random idempotency key; callers keep it for retries of the same request (SPEC §5/§6). */
+export const newIdempotencyKey = (): string =>
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `k-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
+export type AssignInput = Omit<BoardAssignRequest, 'idempotency_key'>;
+
 export type CardDetailController = {
   detail: BoardCardDetail | undefined;
   comments: BoardEvent[] | undefined;
@@ -60,6 +71,13 @@ export type CardDetailController = {
   addComment: (body: string) => Promise<boolean>;
   addDependency: (dependsOn: string) => Promise<boolean>;
   removeDependency: (dependsOn: string) => Promise<boolean>;
+  /** Owner decision on a gate card; `key` is reused when the same decision is retried. */
+  decideGate: (decision: BoardGateRequest['decision'], reason: string, key: string) => Promise<boolean>;
+  /** Assign (or, with `brainstorm`, brainstorm); `key` is reused for retries and Resend. */
+  assign: (input: AssignInput, key: string) => Promise<BoardAssignResponse | null>;
+  brainstorm: (assistantId: string | undefined, key: string) => Promise<BoardAssignResponse | null>;
+  /** Answer an open question: a comment with `answers` (R6) addressed back to the asking department. */
+  answerQuestion: (questionId: string, toDepartment: string, body: string) => Promise<boolean>;
 };
 
 export function useCardDetail(cardId: string | null, onCardChanged: (card: BoardCard) => void): CardDetailController {
@@ -197,6 +215,95 @@ export function useCardDetail(cardId: string | null, onCardChanged: (card: Board
     [card, mutateDetail, onCardChanged, reportFailure]
   );
 
+  const decideGate = useCallback(
+    async (decision: BoardGateRequest['decision'], reason: string, key: string): Promise<boolean> => {
+      if (!card) return false;
+      try {
+        const updated = await ipcBridge.board.decideGate.invoke({
+          card_id: card.id,
+          decision,
+          ...(reason.trim() ? { reason: reason.trim() } : {}),
+          idempotency_key: key,
+        });
+        await applyUpdated(updated);
+        Message.success(
+          t(decision === 'approve' ? 'board.gate.approved' : 'board.gate.rejected', { ref: cardRef(card.number) })
+        );
+        return true;
+      } catch (error) {
+        reportFailure(error, 'board.gate.decisionFailed');
+        return false;
+      }
+    },
+    [card, applyUpdated, reportFailure, t]
+  );
+
+  /** Shared tail of assign / brainstorm: fold the card in, explain a fallback or an undelivered packet. */
+  const afterAssign = useCallback(
+    async (response: BoardAssignResponse, successKey: string) => {
+      await applyUpdated(response.card);
+      Message.success(t(successKey, { ref: cardRef(response.card.number) }));
+      if (response.parent_fallback) Message.info(t(`board.assign.fallback.${response.parent_fallback}`));
+      if (!response.packet_sent) Message.warning(t('board.assign.packetFailed'));
+    },
+    [applyUpdated, t]
+  );
+
+  const assign = useCallback(
+    async (input: AssignInput, key: string): Promise<BoardAssignResponse | null> => {
+      if (!card) return null;
+      try {
+        const response = await ipcBridge.board.assign.invoke({ card_id: card.id, ...input, idempotency_key: key });
+        await afterAssign(response, 'board.assign.assigned');
+        return response;
+      } catch (error) {
+        reportFailure(error, 'board.assign.failed');
+        return null;
+      }
+    },
+    [card, afterAssign, reportFailure]
+  );
+
+  const brainstorm = useCallback(
+    async (assistantId: string | undefined, key: string): Promise<BoardAssignResponse | null> => {
+      if (!card) return null;
+      try {
+        const response = await ipcBridge.board.brainstorm.invoke({
+          card_id: card.id,
+          ...(assistantId ? { assistant_id: assistantId } : {}),
+          idempotency_key: key,
+        });
+        await afterAssign(response, 'board.brainstorm.started');
+        return response;
+      } catch (error) {
+        reportFailure(error, 'board.assign.failed');
+        return null;
+      }
+    },
+    [card, afterAssign, reportFailure]
+  );
+
+  const answerQuestion = useCallback(
+    async (questionId: string, toDepartment: string, body: string): Promise<boolean> => {
+      if (!card || !body.trim()) return false;
+      try {
+        await ipcBridge.board.addComment.invoke({
+          card_id: card.id,
+          body: body.trim(),
+          answers: questionId,
+          to_department: toDepartment,
+        });
+        await Promise.all([mutateDetail(), mutateComments()]);
+        Message.success(t('board.questions.sent'));
+        return true;
+      } catch (error) {
+        reportFailure(error, 'board.drawer.commentFailed');
+        return false;
+      }
+    },
+    [card, mutateDetail, mutateComments, reportFailure, t]
+  );
+
   const addDependency = useCallback((dependsOn: string) => changeDependency(dependsOn, true), [changeDependency]);
   const removeDependency = useCallback((dependsOn: string) => changeDependency(dependsOn, false), [changeDependency]);
 
@@ -213,6 +320,10 @@ export function useCardDetail(cardId: string | null, onCardChanged: (card: Board
       addComment,
       addDependency,
       removeDependency,
+      decideGate,
+      assign,
+      brainstorm,
+      answerQuestion,
     }),
     [
       detailSwr.data,
@@ -226,6 +337,10 @@ export function useCardDetail(cardId: string | null, onCardChanged: (card: Board
       addComment,
       addDependency,
       removeDependency,
+      decideGate,
+      assign,
+      brainstorm,
+      answerQuestion,
     ]
   );
 }

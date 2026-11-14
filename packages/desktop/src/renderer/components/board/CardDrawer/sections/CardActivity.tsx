@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { BoardColumn, BoardEvent } from '@/common/types/board';
 
-import { describeEvent, formatBoardTime } from '../utils/boardFormat';
+import { describeEvent, formatBoardTime } from '../../utils/boardFormat';
 
 /** The card detail answers with its last 50 events (SPEC §5). */
 const DETAIL_EVENT_WINDOW = 50;

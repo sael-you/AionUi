@@ -10,7 +10,7 @@
  * polite live region that announces moves, conflicts and full columns.
  */
 
-import { Alert, Button, Radio, Result, Skeleton } from '@arco-design/web-react';
+import { Alert, Button, Result, Skeleton } from '@arco-design/web-react';
 import { ListView } from '@icon-park/react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +60,10 @@ export const BoardErrorState: React.FC<{ error: unknown; onRetry: () => void }> 
   );
 };
 
-/** Disabled board without cards: the "Turn on the board" empty state (F-KANBAN-07), `simple` template only. */
+/**
+ * Disabled board without cards: the "Turn on the board" empty state (F-KANBAN-07).
+ * Turning it on creates the department (`studio`) flow — the only template (D39).
+ */
 export const BoardDisabledState: React.FC<{ board: BoardController }> = ({ board }) => {
   const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
@@ -70,14 +73,10 @@ export const BoardDisabledState: React.FC<{ board: BoardController }> = ({ board
       <ListView theme='outline' size='32' fill='currentColor' className='text-t-secondary' aria-hidden />
       <h2 className='m-0 text-16px font-medium text-t-primary'>{t('board.states.disabledTitle')}</h2>
       <p className='m-0 text-13px text-t-secondary'>{t('board.states.disabledDescription')}</p>
-      <Radio.Group aria-label={t('board.states.templateLabel')} value='simple' className='w-full' direction='vertical'>
-        <Radio value='simple' className='w-full !me-0'>
-          <span className='flex flex-col items-start text-start'>
-            <span className='text-14px text-t-primary font-medium'>{t('board.states.templateSimple')}</span>
-            <span className='text-12px text-t-secondary'>{t('board.states.templateSimpleDescription')}</span>
-          </span>
-        </Radio>
-      </Radio.Group>
+      <div className='w-full rd-8px bg-2 p-12px flex flex-col gap-4px text-start'>
+        <span className='text-14px text-t-primary font-medium'>{t('board.states.flowTitle')}</span>
+        <span className='text-12px text-t-secondary'>{t('board.states.flowDescription')}</span>
+      </div>
       <Button
         type='primary'
         loading={busy}
