@@ -11,9 +11,11 @@
  * them to {@link ExplorerPanel} (which drives the WS store). It also owns the
  * project-level actions: add folder (attach) and remove folder.
  *
- * Scope: data wiring + tree + attach/remove + the Files/Changes tabs, plus the
- * persistent filename-search area at the top of the Files tab (fs/search →
- * reveal / explicit add-to-chat; see {@link SearchPanel}).
+ * Scope: data wiring + tree + attach/remove + the Files/Changes/Tasks tabs, plus
+ * the persistent filename-search area at the top of the Files tab (fs/search →
+ * reveal / explicit add-to-chat; see {@link SearchPanel}). The Tasks tab is the
+ * project board ({@link TasksTab}); it is hidden for projects without a board
+ * (temp projects).
  */
 
 import { Button, Input, Message, Modal, Spin, Tooltip } from '@arco-design/web-react';
@@ -59,6 +61,8 @@ import { initExplorerRuntime } from './monitorTransport';
 import { toRootRefs } from './projectRoots';
 import { collapseAll, refreshRoot, reveal, select } from './explorerStore';
 import { useCurrentConversation } from './currentConversationStore';
+import { TasksTab } from '@/renderer/components/board/TasksTab';
+import { useBoard } from '@/renderer/components/board/hooks/useBoard';
 import { SearchPanel } from './search/SearchPanel';
 import type { SearchHit } from './search/searchModel';
 import { ScmPanel } from '../SourceControl/ScmPanel';
@@ -252,7 +256,13 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
   // unmounts the inactive one for `changes`, which is safe because the SCM
   // subscription is owned by its store per project, not by the component's mount
   // (see ScmPanel's lifecycle note) — a tab switch never drops the backend watch.
-  const [activeTab, setActiveTab] = useState<'files' | 'changes'>('files');
+  const [selectedTab, setActiveTab] = useState<'files' | 'changes' | 'tasks'>('files');
+  // The project board backs the Tasks tab. It stays hidden until the board answers
+  // (no flash for temp projects) and for projects that have no board at all; any
+  // other failure keeps the tab so its error state can offer a retry.
+  const board = useBoard(projectId);
+  const tasksAvailable = Boolean(board.snapshot) || (Boolean(board.error) && !board.unavailable);
+  const activeTab = selectedTab === 'tasks' && !tasksAvailable ? 'files' : selectedTab;
   // Busy flag for the top-bar refresh: spins the icon and disables re-click while a
   // refresh is in flight (so rapid clicks don't fan out redundant backend round-trips).
   const [refreshing, setRefreshing] = useState(false);
@@ -501,6 +511,8 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
     try {
       if (activeTab === 'changes') {
         await Promise.all([rediscoverRepos(), refreshAllRepos()]);
+      } else if (activeTab === 'tasks') {
+        await board.reload();
       } else {
         await Promise.all([mutate(), ...roots.map((root) => refreshRoot(root.pe_id))]);
       }
@@ -509,11 +521,19 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
     }
   };
 
-  const tabButton = (key: 'files' | 'changes', label: string) => (
+  const refreshLabel =
+    activeTab === 'changes'
+      ? t('conversation.explorer.refreshChanges')
+      : activeTab === 'tasks'
+        ? t('board.refresh')
+        : t('conversation.explorer.refreshFiles');
+
+  const tabButton = (key: 'files' | 'changes' | 'tasks', label: string) => (
     <Button
       type='text'
       size='small'
       className={`flex-shrink-0 !px-8px ${activeTab === key ? '!text-t-primary !font-medium !bg-2' : '!text-t-secondary'}`}
+      aria-pressed={activeTab === key}
       onClick={() => setActiveTab(key)}
     >
       {label}
@@ -522,7 +542,8 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
 
   return (
     <div className='h-full flex flex-col min-h-0'>
-      {/* Host component-switcher tab bar: 文件 = explorer, 变更 = source control.
+      {/* Host component-switcher tab bar: 文件 = explorer, 变更 = source control,
+          任务 = the project board (Tasks).
           Tabs are left-aligned and scroll horizontally when they overflow; the
           attach + open-externally cluster is pinned right (flex-shrink-0) with
           container padding, so it never scrolls with the tabs nor clips at narrow
@@ -543,6 +564,7 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
         <div className='flex items-center gap-2px overflow-x-auto flex-1 min-w-0'>
           {tabButton('files', t('conversation.explorer.tabs.files'))}
           {tabButton('changes', t('conversation.explorer.tabs.changes'))}
+          {tasksAvailable && tabButton('tasks', t('board.tasksTab'))}
         </div>
         <div className='flex items-center gap-2px flex-shrink-0'>
           {/* Right cluster order (VS Code parity): project-scope actions first (add
@@ -565,26 +587,14 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
             />
           </Tooltip>
           {workspacePath && <WorkspaceOpenButton workspacePath={workspacePath} isTemporary={false} />}
-          <Tooltip
-            content={
-              activeTab === 'changes'
-                ? t('conversation.explorer.refreshChanges')
-                : t('conversation.explorer.refreshFiles')
-            }
-            mini
-            position='br'
-          >
+          <Tooltip content={refreshLabel} mini position='br'>
             <Button
               type='text'
               size='small'
               className='flex items-center justify-center'
               loading={refreshing}
               icon={<Refresh theme='outline' size='16' />}
-              aria-label={
-                activeTab === 'changes'
-                  ? t('conversation.explorer.refreshChanges')
-                  : t('conversation.explorer.refreshFiles')
-              }
+              aria-label={refreshLabel}
               onClick={() => void handleRefreshActiveTab()}
             />
           </Tooltip>
@@ -645,6 +655,11 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
       {activeTab === 'changes' && (
         <div className='flex-1 min-h-0'>
           <ScmPanel projectId={projectId} />
+        </div>
+      )}
+      {activeTab === 'tasks' && (
+        <div className='flex-1 min-h-0'>
+          <TasksTab board={board} />
         </div>
       )}
       <Modal

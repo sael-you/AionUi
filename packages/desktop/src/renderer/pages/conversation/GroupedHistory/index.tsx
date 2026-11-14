@@ -13,7 +13,7 @@ import { restrictToVerticalAxis } from '@/renderer/utils/ui/dndModifiers';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Button, Dropdown, Empty, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
-import { FolderClose, MoreOne, Plus, Right } from '@icon-park/react';
+import { FolderClose, MoreOne, Plus, Right, ViewGridDetail } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -414,6 +414,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       workspace: string;
       displayName: string;
       conversations: TChatConversation[];
+      /** Backend project id: known for listed projects, else carried by the group's conversations. */
+      projectId: string | null;
     }> = [];
     for (const section of timelineSections) {
       for (const item of section.items) {
@@ -423,6 +425,10 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
             workspace: item.workspaceGroup.workspace,
             displayName: item.workspaceGroup.display_name,
             conversations: item.workspaceGroup.conversations,
+            projectId:
+              item.workspaceGroup.project_id ??
+              item.workspaceGroup.conversations.find((conversation) => conversation.project_id)?.project_id ??
+              null,
           });
         }
       }
@@ -625,6 +631,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                     onClickMenuItem={(key) => {
                       if (key === 'archive') {
                         handleArchiveProject(group.displayName, group.conversations);
+                      } else if (key === 'board' && group.projectId) {
+                        void navigate(`/board/${encodeURIComponent(group.projectId)}`);
                       } else if (key === 'color:auto') {
                         setProjectColor(colorKey, null);
                       } else if (key.startsWith('color:')) {
@@ -662,6 +670,13 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         </Menu.Item>
                       ))}
                     </Menu.SubMenu>
+                    {/* The project board. Disabled while the project id is unknown (no backend record yet). */}
+                    <Menu.Item key='board' disabled={!group.projectId}>
+                      <span className='flex items-center gap-8px'>
+                        <ViewGridDetail theme='outline' size='14' />
+                        {t('board.openBoard')}
+                      </span>
+                    </Menu.Item>
                     {/* A folder with no visible conversation has nothing to archive here. */}
                     <Menu.Item key='archive' disabled={group.conversations.length === 0}>
                       <span className='flex items-center gap-8px'>

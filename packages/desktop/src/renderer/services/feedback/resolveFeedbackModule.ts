@@ -20,6 +20,8 @@ const ROUTE_MODULE_MAP: ReadonlyArray<readonly [prefix: string, tag: FeedbackMod
   ['/conversation', 'conversation-session'],
   ['/team', 'agent-team'],
   ['/scheduled', 'scheduled-task'],
+  // The project board lives with the project workspace (explorer, Tasks tab).
+  ['/board', 'workspace-preview'],
   ['/assistants', 'assistant-preset'],
   ['/settings/agent', 'agent-detection'],
   ['/settings/model', 'model-auth'],
