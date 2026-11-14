@@ -155,9 +155,15 @@
     "agentFirstUseContent": "Er kann in diesem Bereich Seiten öffnen, klicken und Inhalte lesen. Deine Anmeldung bleibt erhalten.",
     "agentFirstUseAction": "Einstellungen öffnen",
     "openInNewTab": "In neuem Tab öffnen",
-    "webModeHint": "Webversion: Links, die innerhalb der Seite angeklickt werden, werden hier nicht verfolgt. Wenn eine Website das Laden verweigert, öffne sie in einem neuen Tab.",
+    "webModeHint": "Webversion: Navigation und Weiterleitungen innerhalb der Seite werden nicht verfolgt, und es gibt keine eigene Browsersitzung. Zum Anmelden oder um die echte Adresse zu sehen, öffne die Seite in einem neuen Tab.",
     "cannotEmbedSelf": "AionUi kann nicht in seinem eigenen Browserbereich angezeigt werden.",
-    "unsupportedUrl": "Hier können nur http- und https-Adressen geöffnet werden."
+    "unsupportedUrl": "Hier können nur http- und https-Adressen geöffnet werden.",
+    "addressLabel": "Adresse",
+    "mayHaveNavigated": "Die Seite hat diese Adresse möglicherweise verlassen.",
+    "allowDevices": "Mikrofon und Kamera für diesen Dev-Server erlauben",
+    "devicesOn": "Mikrofon und Kamera für diese Seite erlaubt",
+    "insecureUrl": "Diese Seite nutzt http und kann nicht in der https-App angezeigt werden. Öffne sie in einem neuen Tab.",
+    "dismissHint": "Hinweis ausblenden"
   },
   "saveConflict": "Speichern fehlgeschlagen: Diese Datei wurde auf der Festplatte geändert, nachdem Sie sie geöffnet haben. Neu laden, um die anderen Änderungen zu sehen — Ihre Bearbeitungen sind noch da, ungespeichert.",
   "persistQuotaExceeded": "Der lokale Speicher ist voll, offene Tabs dieses Projekts können nicht mehr gemerkt werden. Schließen Sie einige Tabs oder löschen Sie die Websitedaten.",

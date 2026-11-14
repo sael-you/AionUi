@@ -155,9 +155,15 @@
     "agentFirstUseContent": "它可以在这个面板里打开网页、点击和读取内容。你的登录状态会被保留。",
     "agentFirstUseAction": "前往设置",
     "openInNewTab": "在新标签页中打开",
-    "webModeHint": "网页版：页面内点击的链接不会在此记录。如果网站拒绝加载，请在新标签页中打开。",
+    "webModeHint": "网页版：页面内导航和重定向不会被记录，也没有独立的浏览器会话。如需登录或查看真实地址，请在新标签页中打开。",
     "cannotEmbedSelf": "AionUi 无法在自身的浏览器面板中显示。",
-    "unsupportedUrl": "此处只能打开 http 和 https 地址。"
+    "unsupportedUrl": "此处只能打开 http 和 https 地址。",
+    "addressLabel": "地址",
+    "mayHaveNavigated": "页面可能已离开此地址。",
+    "allowDevices": "允许此开发服务器使用麦克风和摄像头",
+    "devicesOn": "已允许此页面使用麦克风和摄像头",
+    "insecureUrl": "此页面使用 http，无法在 https 应用中显示。请在新标签页中打开。",
+    "dismissHint": "隐藏此提示"
   },
   "saveConflict": "保存失败：该文件在你打开后已被改动。可重新加载查看其他改动——你的编辑仍在，尚未保存。",
   "persistQuotaExceeded": "本地存储已满，无法再记住该项目打开的标签页。请关闭一些标签页或清理站点数据。",

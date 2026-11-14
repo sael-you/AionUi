@@ -155,9 +155,15 @@
     "agentFirstUseContent": "It can open pages, click and read content in this panel. Your sign-in state is kept between sessions.",
     "agentFirstUseAction": "Open settings",
     "openInNewTab": "Open in new tab",
-    "webModeHint": "Web version: links clicked inside the page aren't tracked here. If a site refuses to load, open it in a new tab.",
+    "webModeHint": "Web version: in-page navigation and redirects aren't tracked, and there is no separate browser session. For sign-in or to see the real address, open the page in a new tab.",
     "cannotEmbedSelf": "AionUi can't be shown inside its own browser panel.",
-    "unsupportedUrl": "Only http and https addresses can be opened here."
+    "unsupportedUrl": "Only http and https addresses can be opened here.",
+    "addressLabel": "Address",
+    "mayHaveNavigated": "The page may have navigated away from this address.",
+    "allowDevices": "Allow microphone and camera for this dev server",
+    "devicesOn": "Microphone and camera allowed for this page",
+    "insecureUrl": "This page uses http and can't be shown inside the https app. Open it in a new tab.",
+    "dismissHint": "Hide this note"
   },
   "saveConflict": "Could not save: this file changed on disk since you opened it. Reload to see the other changes — your edits are still here, unsaved.",
   "persistQuotaExceeded": "Local storage is full, so open tabs can no longer be remembered for this project. Close some tabs or clear site data.",

@@ -155,9 +155,15 @@
     "agentFirstUseContent": "Puede abrir páginas, hacer clic y leer contenido en este panel. Tu sesión se conserva.",
     "agentFirstUseAction": "Abrir ajustes",
     "openInNewTab": "Abrir en una pestaña nueva",
-    "webModeHint": "Versión web: los enlaces pulsados dentro de la página no se registran aquí. Si un sitio se niega a cargar, ábrelo en una pestaña nueva.",
+    "webModeHint": "Versión web: la navegación y las redirecciones dentro de la página no se registran y no hay una sesión de navegador propia. Para iniciar sesión o ver la dirección real, abre la página en una pestaña nueva.",
     "cannotEmbedSelf": "AionUi no se puede mostrar dentro de su propio panel de navegador.",
-    "unsupportedUrl": "Aquí solo se pueden abrir direcciones http y https."
+    "unsupportedUrl": "Aquí solo se pueden abrir direcciones http y https.",
+    "addressLabel": "Dirección",
+    "mayHaveNavigated": "Puede que la página haya salido de esta dirección.",
+    "allowDevices": "Permitir micrófono y cámara para este servidor de desarrollo",
+    "devicesOn": "Micrófono y cámara permitidos para esta página",
+    "insecureUrl": "Esta página usa http y no se puede mostrar dentro de la aplicación https. Ábrela en una pestaña nueva.",
+    "dismissHint": "Ocultar este aviso"
   },
   "saveConflict": "No se pudo guardar: este archivo cambió en el disco después de que lo abrieras. Vuelve a cargarlo para ver los otros cambios; tus ediciones siguen aquí, sin guardar.",
   "persistQuotaExceeded": "El almacenamiento local está lleno, así que ya no se pueden recordar las pestañas abiertas de este proyecto. Cierra algunas pestañas o borra los datos del sitio.",
