@@ -1,0 +1,135 @@
+name: Youssef build
+
+# Builds Youssef's personal AionUi bundle (aionui-web: bun-compiled web host + static UI +
+# bundled-aioncore built from source) from the `youssef` branches of sael-you/AionUi and
+# sael-you/AionCore — the same layout the containers run today — and publishes it as a prerelease.
+# The server checks for new builds itself and deploys them to clauterm-youssef only (see YOUSSEF.md).
+# No server credentials exist in this repository; this workflow only needs its own GITHUB_TOKEN.
+# The same file lives in both repositories: a push to `youssef` in either one builds both.
+
+on:
+  push:
+    branches: [youssef]
+    paths-ignore: ['**/*.md', 'docs/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write   # publish the prerelease in this repository
+
+concurrency:
+  group: youssef-build-${{ github.repository }}
+  cancel-in-progress: false
+
+env:
+  AIONUI_REPO: sael-you/AionUi
+  AIONCORE_REPO: sael-you/AionCore
+  BUN_VERSION: "1.4.4"
+  RUST_TOOLCHAIN: "1.95.0"
+  LINUX_X64_GLIBC_MAX: GLIBC_2.34
+  TARGET: x86_64-unknown-linux-gnu
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 150
+    steps:
+      - name: Check out AionUi (youssef)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.AIONUI_REPO }}
+          ref: ${{ github.repository == env.AIONUI_REPO && github.sha || 'youssef' }}
+          path: aionui
+
+      - name: Check out AionCore (youssef)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.AIONCORE_REPO }}
+          ref: ${{ github.repository == env.AIONCORE_REPO && github.sha || 'youssef' }}
+          path: aioncore
+          fetch-depth: 0
+
+      - name: Migrations added on youssef must be numbered 900-999
+        working-directory: aioncore
+        run: |
+          git fetch -q origin main
+          added=$(git diff --name-only --diff-filter=A origin/main...HEAD -- crates/aionui-db/migrations | xargs -r -n1 basename)
+          bad=$(printf '%s\n' "$added" | grep -v '^$' | grep -vE '^9[0-9]{2}_' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::New AionCore migrations on youssef must use 900-999 (main keeps upstream's numbering): $bad"
+            exit 1
+          fi
+          echo "youssef migrations: ${added:-none}"
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          targets: ${{ env.TARGET }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: aioncore
+          shared-key: youssef-${{ env.TARGET }}-${{ env.LINUX_X64_GLIBC_MAX }}
+
+      - name: Build AionCore from source
+        working-directory: aioncore
+        run: |
+          cargo build --release --target "$TARGET" -p aionui-app
+          scripts/check-glibc-baseline.sh "target/$TARGET/release/aioncore" "$LINUX_X64_GLIBC_MAX"
+
+      - name: Bundle AionCore (binary + managed resources, as pack-web-cli does)
+        run: |
+          B="$RUNNER_TEMP/aioncore-bundle"
+          rm -rf "$B" && mkdir -p "$B/managed-resources" "$RUNNER_TEMP/aioncore-data"
+          cp "aioncore/target/$TARGET/release/aioncore" "$B/aioncore"
+          AIONUI_BUNDLED_MANAGED_RESOURCES= "$B/aioncore" --data-dir "$RUNNER_TEMP/aioncore-data" \
+            prepare-managed-resources --bundle-out "$B/managed-resources"
+          echo "AIONUI_BACKEND_LOCAL_BUNDLE_DIR=$B" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Build aionui-web
+        working-directory: aionui
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+          PACK_PLATFORM: linux
+          PACK_ARCH: x64
+        run: |
+          bun install --frozen-lockfile
+          bunx electron-vite build --config packages/desktop/electron.vite.config.ts
+          node scripts/pack-web-cli.js
+          cd dist-web-cli && sha256sum -c aionui-web-*-linux-x86_64.tar.gz.sha256
+          grep -q '"sourceType": "local-bundle"' ../resources/bundled-aioncore/linux-x64/manifest.json \
+            || { echo "::error::bundled-aioncore is not the AionCore built above"; exit 1; }
+
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="youssef-build-$(date -u +%Y%m%d%H%M%S)-${GITHUB_RUN_NUMBER}"
+          mkdir -p out
+          cp aionui/dist-web-cli/aionui-web-*-linux-x86_64.tar.gz out/aionui-web-linux-x86_64.tar.gz
+          (cd out && sha256sum aionui-web-linux-x86_64.tar.gz > aionui-web-linux-x86_64.tar.gz.sha256)
+          jq -n \
+            --arg tag "$tag" --arg repo "$GITHUB_REPOSITORY" --arg run "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --arg ui_sha "$(git -C aionui rev-parse HEAD)" --argjson ui_time "$(git -C aionui log -1 --format=%ct)" \
+            --arg ui_subject "$(git -C aionui log -1 --format=%s)" \
+            --arg core_sha "$(git -C aioncore rev-parse HEAD)" --argjson core_time "$(git -C aioncore log -1 --format=%ct)" \
+            --arg core_subject "$(git -C aioncore log -1 --format=%s)" \
+            '{tag:$tag, repo:$repo, run:$run, builtAt:(now|floor),
+              aionui:{sha:$ui_sha, time:$ui_time, subject:$ui_subject},
+              aioncore:{sha:$core_sha, time:$core_time, subject:$core_subject}}' > out/build-info.json
+          cat out/build-info.json
+          gh release create "$tag" out/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "Youssef build $tag" \
+            --notes "AionUi $(git -C aionui rev-parse --short HEAD) + AionCore $(git -C aioncore rev-parse --short HEAD). Deployed to clauterm-youssef by the server within a few minutes."
+          # keep the 8 newest builds of this repository
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName --jq '.[].tagName' \
+            | grep '^youssef-build-' | sort -r | tail -n +9 \
+            | xargs -r -I{} gh release delete {} --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
