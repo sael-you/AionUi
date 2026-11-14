@@ -5,7 +5,7 @@
  */
 
 import { EditOne, FolderClose, Peoples, Plus, Pushpin } from '@icon-park/react';
-import { Input, Message, Modal, Spin, Tooltip } from '@arco-design/web-react';
+import { Button, Input, Message, Modal, Spin, Tooltip } from '@arco-design/web-react';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ import { useTeamList } from '@renderer/pages/team/hooks/useTeamList';
 import { useSiderTeamBadges } from '@renderer/pages/team/hooks/useSiderTeamBadges';
 import TeamCreateModal from '@renderer/pages/team/components/TeamCreateModal';
 import { ipcBridge } from '@/common';
-import SectionHeader from '@renderer/pages/conversation/GroupedHistory/components/SectionHeader';
+import SectionHeader, { sectionGroupId } from '@renderer/pages/conversation/GroupedHistory/components/SectionHeader';
 import {
   matchesSidebarQuery,
   normalizeSidebarQuery,
@@ -161,6 +161,20 @@ const TeamSiderSection: React.FC<TeamSiderSectionProps> = ({
                   <Tooltip key={team.id} {...siderTooltipProps} content={team.name} position='right'>
                     <div
                       data-testid={`collapsed-team-item-${team.id}`}
+                      role='treeitem'
+                      tabIndex={-1}
+                      aria-level={1}
+                      aria-label={team.name}
+                      aria-current={isActive ? 'page' : undefined}
+                      data-tree-item=''
+                      data-tree-level={1}
+                      data-tree-key={`team:${team.id}`}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault();
+                          handleTeamClick(team.id);
+                        }
+                      }}
                       className={classNames(
                         'relative w-full h-40px flex items-center justify-center cursor-pointer transition-colors rd-8px',
                         isActive ? '!bg-active' : 'hover:bg-fill-3 active:bg-fill-4'
@@ -208,30 +222,24 @@ const TeamSiderSection: React.FC<TeamSiderSectionProps> = ({
                 count={teams.length}
                 expanded={sectionExpanded}
                 onToggle={() => setExpanded((v) => !v)}
+                groupId={sectionGroupId('teams')}
                 trailing={
                   /* [E2E SYNC] data-testid="team-create-btn" is the E2E entry selector; keep it
                  (tests/e2e/cases/teams/team-create.e2e.ts). */
                   <Tooltip content={t('team.sider.createTeam')} position='top'>
-                    <span
-                      role='button'
-                      tabIndex={-1}
+                    <Button
+                      type='text'
+                      size='mini'
                       aria-label={t('team.sider.createTeam')}
                       data-testid='team-create-btn'
-                      className='size-22px rd-4px flex items-center justify-center hover:bg-fill-4 transition-colors shrink-0 cursor-pointer text-t-secondary hover:text-t-primary'
+                      className='!size-22px !p-0 !rd-4px shrink-0 !text-t-secondary hover:!text-t-primary hover:!bg-fill-4'
+                      icon={<Plus theme='outline' size='14' fill='currentColor' />}
                       onClick={() => setCreateTeamVisible(true)}
-                    >
-                      <Plus
-                        theme='outline'
-                        size='14'
-                        fill='currentColor'
-                        className='block leading-none'
-                        style={{ lineHeight: 0 }}
-                      />
-                    </span>
+                    />
                   </Tooltip>
                 }
               />
-              <div role='group' className='min-w-0'>
+              <div id={sectionGroupId('teams')} role='group' className='min-w-0'>
                 {sectionExpanded &&
                   sortedTeams.map((team) => {
                     const isPinned = pinnedIds.includes(team.id);

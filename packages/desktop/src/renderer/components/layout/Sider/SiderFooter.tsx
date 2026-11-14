@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dropdown, Menu, Tooltip } from '@arco-design/web-react';
+import { Button, Dropdown, Menu, Tooltip } from '@arco-design/web-react';
 import { ArrowCircleLeft, Logout, Moon, MoreOne, SettingTwo, SunOne } from '@icon-park/react';
 import classNames from 'classnames';
 import type { SiderTooltipProps } from '@renderer/utils/ui/siderTooltip';
@@ -86,18 +86,11 @@ const SiderFooter: React.FC<SiderFooterProps> = ({
     <div className={classNames('shrink-0 sider-footer', styles.footer)}>
       <div className={classNames(styles.footerRow, collapsed && styles.footerRowCollapsed)}>
         <Tooltip {...siderTooltipProps} content={primaryLabel} position='right'>
-          <div
-            role='button'
-            tabIndex={0}
+          <Button
+            type='text'
             aria-label={`${displayName} — ${primaryLabel}`}
             data-testid='sider-footer-user'
             onClick={onSettingsClick}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                onSettingsClick();
-              }
-            }}
             className={classNames(styles.footerUser, isMobile && 'sider-footer-btn-mobile', {
               [styles.footerUserActive]: isSettings,
               [styles.footerUserCollapsed]: collapsed,
@@ -112,36 +105,27 @@ const SiderFooter: React.FC<SiderFooterProps> = ({
                 <span className={styles.footerHint}>{primaryLabel}</span>
               </span>
             )}
-          </div>
+          </Button>
         </Tooltip>
-        {!collapsed && (
-          <Dropdown
-            droplist={menu}
-            trigger='click'
-            position='tr'
-            popupVisible={menuVisible}
-            onVisibleChange={setMenuVisible}
-            getPopupContainer={() => document.body}
-          >
-            <span
-              role='button'
-              tabIndex={0}
-              aria-label={t('conversation.sidebar.footer.menu')}
-              aria-haspopup='menu'
-              aria-expanded={menuVisible}
-              data-testid='sider-footer-menu'
-              className={classNames(styles.footerMenuButton, isMobile && 'sider-action-icon-btn-mobile')}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  setMenuVisible(true);
-                }
-              }}
-            >
-              <MoreOne theme='outline' size='16' fill='currentColor' className='block leading-none' />
-            </span>
-          </Dropdown>
-        )}
+        {/* The account menu stays available in the icon rail too. */}
+        <Dropdown
+          droplist={menu}
+          trigger='click'
+          position={collapsed ? 'tl' : 'tr'}
+          popupVisible={menuVisible}
+          onVisibleChange={setMenuVisible}
+          getPopupContainer={() => document.body}
+        >
+          <Button
+            type='text'
+            aria-label={t('conversation.sidebar.footer.menu')}
+            aria-haspopup='menu'
+            aria-expanded={menuVisible}
+            data-testid='sider-footer-menu'
+            className={classNames(styles.footerMenuButton, isMobile && 'sider-action-icon-btn-mobile')}
+            icon={<MoreOne theme='outline' size='16' fill='currentColor' />}
+          />
+        </Dropdown>
       </div>
     </div>
   );

@@ -23,7 +23,12 @@ type SectionHeaderProps = {
   className?: string;
   /** Test id (default `section-header-<sectionKey>`). */
   testId?: string;
+  /** Id of the section's `role="group"` (owned by this header while expanded). */
+  groupId?: string;
 };
+
+/** Id of a sidebar section's row group. */
+export const sectionGroupId = (sectionKey: string) => `sider-section-${sectionKey}`;
 
 /**
  * Sidebar section header (Pinned, Teams, Projects, Conversations): 24px,
@@ -38,6 +43,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   trailing,
   className,
   testId,
+  groupId,
 }) => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
@@ -60,6 +66,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
       tabIndex={-1}
       aria-level={1}
       aria-expanded={expanded}
+      aria-owns={expanded && groupId ? groupId : undefined}
       aria-label={count === undefined ? label : `${label} (${count})`}
       data-tree-item=''
       data-tree-level={1}

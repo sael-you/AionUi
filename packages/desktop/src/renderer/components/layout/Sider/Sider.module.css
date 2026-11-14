@@ -73,8 +73,12 @@
   justify-content: center;
 }
 
-/* Compact icon + label nav rows (Assistants, Scheduled tasks, New team). */
-.navItem {
+/*
+ * Compact icon + label nav rows (Assistants, Scheduled tasks, New team).
+ * These are Arco text buttons: the doubled selector outranks Arco's button
+ * defaults (padding, height, centred text, primary colour).
+ */
+.navItem.navItem {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -89,19 +93,18 @@
   outline: none;
 }
 
-.navItem:hover {
-  background: var(--color-fill-3);
+/* Arco's text-button hover rule is more specific: these states win with !important. */
+.navItem.navItem:hover,
+.navItemActive.navItemActive {
+  background: var(--color-fill-3) !important;
+  color: var(--color-text-1) !important;
 }
 
-.navItem:focus-visible {
+.navItem.navItem:focus-visible {
   box-shadow: inset 0 0 0 2px rgb(var(--primary-6));
 }
 
-.navItemActive {
-  background: var(--color-fill-3);
-}
-
-.navItemCollapsed {
+.navItemCollapsed.navItemCollapsed {
   justify-content: center;
   padding-inline: 0;
 }
@@ -149,10 +152,11 @@
 }
 
 .footerRowCollapsed {
+  flex-direction: column;
   justify-content: center;
 }
 
-.footerUser {
+.footerUser.footerUser {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -161,21 +165,24 @@
   height: 36px;
   padding-inline: 6px;
   border-radius: 6px;
+  color: var(--color-text-1);
+  text-align: start;
   cursor: pointer;
   outline: none;
 }
 
-.footerUser:hover,
-.footerUserActive {
-  background: var(--color-fill-3);
+.footerUser.footerUser:hover,
+.footerUserActive.footerUserActive {
+  background: var(--color-fill-3) !important;
+  color: var(--color-text-1) !important;
 }
 
-.footerUser:focus-visible,
-.footerMenuButton:focus-visible {
+.footerUser.footerUser:focus-visible,
+.footerMenuButton.footerMenuButton:focus-visible {
   box-shadow: inset 0 0 0 2px rgb(var(--primary-6));
 }
 
-.footerUserCollapsed {
+.footerUserCollapsed.footerUserCollapsed {
   flex: 0 0 auto;
   justify-content: center;
   width: 100%;
@@ -221,8 +228,9 @@
   line-height: 14px;
 }
 
-.footerMenuButton {
+.footerMenuButton.footerMenuButton {
   display: inline-flex;
+  padding: 0;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -234,22 +242,22 @@
   outline: none;
 }
 
-.footerMenuButton:hover {
-  background: var(--color-fill-3);
-  color: var(--color-text-1);
+.footerMenuButton.footerMenuButton:hover {
+  background: var(--color-fill-3) !important;
+  color: var(--color-text-1) !important;
 }
 
 @media (max-width: 768px) {
-  .navItem {
+  .navItem.navItem {
     height: 40px;
     font-size: 15px;
   }
 
-  .footerUser {
+  .footerUser.footerUser {
     height: 44px;
   }
 
-  .footerMenuButton {
+  .footerMenuButton.footerMenuButton {
     width: 40px;
     height: 40px;
   }

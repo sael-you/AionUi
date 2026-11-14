@@ -35,10 +35,10 @@ describe('sidebar footer (one compact row)', () => {
     const user = screen.getByTestId('sider-footer-user');
     expect(user.textContent).toContain('Y');
     expect(user.textContent).toContain('youssef');
+    // A real (Arco) button: keyboard activation comes with it.
+    expect(user.tagName).toBe('BUTTON');
     fireEvent.click(user);
     expect(onSettingsClick).toHaveBeenCalledTimes(1);
-    fireEvent.keyDown(user, { key: 'Enter' });
-    expect(onSettingsClick).toHaveBeenCalledTimes(2);
   });
 
   it('falls back to a local-user label without an account (desktop)', () => {
@@ -66,5 +66,23 @@ describe('sidebar footer (one compact row)', () => {
   it('turns the row into "Back" inside Settings', () => {
     renderFooter({ isSettings: true });
     expect(screen.getByTestId('sider-footer-user').getAttribute('aria-label')).toContain('common.back');
+  });
+
+  it('keeps an icon-only account menu in the collapsed sidebar (icon rail)', async () => {
+    const { onThemeToggle, onLogoutClick, onSettingsClick } = renderFooter({ collapsed: true });
+    // No name in the rail, but the avatar button and the menu trigger stay.
+    expect(screen.getByTestId('sider-footer-user').textContent).not.toContain('youssef');
+    const trigger = screen.getByTestId('sider-footer-menu');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger.getAttribute('aria-label')).toBe('conversation.sidebar.footer.menu');
+    fireEvent.click(trigger);
+    fireEvent.click(await screen.findByText('common.settings'));
+    expect(onSettingsClick).toHaveBeenCalledTimes(1);
+    fireEvent.click(trigger);
+    fireEvent.click(await screen.findByText('settings.darkMode'));
+    expect(onThemeToggle).toHaveBeenCalledTimes(1);
+    fireEvent.click(trigger);
+    fireEvent.click(await screen.findByText('settings.googleLogout'));
+    expect(onLogoutClick).toHaveBeenCalledTimes(1);
   });
 });

@@ -5,7 +5,7 @@
  */
 
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
-import { Dropdown, Menu, Tooltip } from '@arco-design/web-react';
+import { Button, Dropdown, Menu, Tooltip } from '@arco-design/web-react';
 import { MoreOne, Pushpin } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useState } from 'react';
@@ -153,26 +153,28 @@ const SiderItem: React.FC<SiderItemProps> = ({
               getPopupContainer={() => document.body}
               unmountOnExit={false}
             >
-              <span
-                role='button'
+              {/* Keyboard: Shift+F10 / the context-menu key on the row opens it. */}
+              <Button
+                type='text'
+                size='mini'
                 tabIndex={-1}
                 aria-label={name}
                 aria-haspopup='menu'
+                aria-expanded={menuVisible}
                 data-testid='sider-item-menu-trigger'
                 className={classNames(
-                  'flex-center cursor-pointer transition-colors text-t-secondary hover:text-t-primary size-20px rd-4px sider-action-btn',
+                  '!size-20px !p-0 !rd-4px !text-t-secondary hover:!text-t-primary sider-action-btn',
                   {
-                    flex: isMobile || menuVisible,
-                    'hidden group-hover:flex': !isMobile && !menuVisible,
+                    '!flex': isMobile || menuVisible,
+                    '!hidden group-hover:!flex': !isMobile && !menuVisible,
                   }
                 )}
+                icon={<MoreOne theme='outline' size='14' fill='currentColor' />}
                 onClick={(e) => {
                   e.stopPropagation();
                   setMenuVisible(true);
                 }}
-              >
-                <MoreOne theme='outline' size='14' fill='currentColor' className='block leading-none' />
-              </span>
+              />
             </Dropdown>
           </div>
         )}

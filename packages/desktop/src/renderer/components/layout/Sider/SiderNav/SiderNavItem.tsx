@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { Tooltip } from '@arco-design/web-react';
+import { Button, Tooltip } from '@arco-design/web-react';
 import classNames from 'classnames';
 import type { SiderTooltipProps } from '@renderer/utils/ui/siderTooltip';
 import styles from '../Sider.module.css';
@@ -31,9 +31,9 @@ const SiderNavItem: React.FC<SiderNavItemProps> = ({
   testId,
 }) => (
   <Tooltip {...siderTooltipProps} content={label} position='right'>
-    <div
-      role='button'
-      tabIndex={0}
+    <Button
+      type='text'
+      long
       aria-label={label}
       aria-current={isActive ? 'page' : undefined}
       data-testid={testId}
@@ -42,18 +42,12 @@ const SiderNavItem: React.FC<SiderNavItemProps> = ({
         [styles.navItemCollapsed]: collapsed,
       })}
       onClick={onClick}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          onClick();
-        }
-      }}
     >
       <span className={styles.navIcon} aria-hidden='true'>
         {icon}
       </span>
       {!collapsed && <span className={classNames(styles.navLabel, 'collapsed-hidden')}>{label}</span>}
-    </div>
+    </Button>
   </Tooltip>
 );
 

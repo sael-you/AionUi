@@ -192,20 +192,22 @@
   display: flex;
 }
 
-.actionButton {
+/* Arco text icon buttons; the doubled selector outranks Arco's sizing. */
+.actionButton.actionButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 22px;
   height: 22px;
+  padding: 0;
   border-radius: 4px;
   color: var(--color-text-2);
   cursor: pointer;
 }
 
-.actionButton:hover {
-  background: var(--color-fill-4);
-  color: var(--color-text-1);
+.actionButton.actionButton:hover {
+  background: var(--color-fill-4) !important;
+  color: var(--color-text-1) !important;
 }
 
 /* Conversations of the group: 20px indent and a 1px guide in the project accent. */
@@ -340,7 +342,7 @@
     top: 32px;
   }
 
-  .actionButton {
+  .actionButton.actionButton {
     width: 32px;
     height: 32px;
   }

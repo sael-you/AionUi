@@ -35,6 +35,7 @@ const mk = (id: string, name: string, workspace?: string): TChatConversation =>
 const A1 = mk('a1', 'Fix the login bug', '/p/alpha');
 const A2 = mk('a2', 'Write release notes', '/p/alpha');
 const LOOSE = mk('l1', 'Quick question');
+const fixture = vi.hoisted(() => ({ empty: false }));
 const sections: TimelineSection[] = [
   {
     timeline: 'Today',
@@ -76,7 +77,11 @@ vi.mock('@/renderer/hooks/context/ConversationHistoryContext', () => ({
     markManualUnread: () => {},
     clearManualUnread: () => {},
     setActiveConversation: () => {},
-    groupedHistory: { pinnedConversations: [], timelineSections: sections, descendantsByRoot: new Map() },
+    groupedHistory: {
+      pinnedConversations: [],
+      timelineSections: fixture.empty ? [] : sections,
+      descendantsByRoot: new Map(),
+    },
   }),
 }));
 vi.mock('@/renderer/pages/cron', () => ({
@@ -111,6 +116,7 @@ beforeEach(() => {
   localStorage.clear();
   state.generating.clear();
   state.waiting.clear();
+  fixture.empty = false;
 });
 
 describe('sidebar list', () => {
@@ -202,5 +208,56 @@ describe('sidebar list', () => {
     expect(document.activeElement).toBe(screen.getByTestId('project-row-/p/empty'));
     // Exactly one tab stop in the whole tree.
     expect(screen.getAllByRole('treeitem').filter((el) => el.tabIndex === 0)).toHaveLength(1);
+  });
+
+  it('archives the whole project from its menu while a filter shows only one of its conversations', async () => {
+    renderSidebar({ filterQuery: 'release' });
+    expect(within(screen.getByTestId('project-children-/p/alpha')).getAllByRole('treeitem')).toHaveLength(1);
+    fireEvent.click(screen.getByTestId('project-menu-/p/alpha'));
+    fireEvent.click(await screen.findByText('conversation.history.archiveProject'));
+    // The confirmation counts the project's two conversations, not the one match.
+    expect(await screen.findByText('conversation.history.archiveProjectConfirm:2')).toBeInTheDocument();
+  });
+
+  it('keeps the project running / needs-you status from conversations the filter hides', () => {
+    state.generating.add('a1'); // "Fix the login bug" — does not match the filter
+    state.waiting.add('a1');
+    renderSidebar({ filterQuery: 'release' });
+    expect(screen.queryByText('Fix the login bug')).toBeNull();
+    expect(screen.getByTestId('project-needs-you-/p/alpha').textContent).toBe('1');
+    expect(screen.getByTestId('project-count-/p/alpha').textContent).toBe('2');
+  });
+
+  it('keeps the Projects header and its "+" with a zero count when there are no projects', () => {
+    fixture.empty = true;
+    renderSidebar();
+    expect(screen.getByTestId('section-header-projects').getAttribute('aria-label')).toBe(
+      'conversation.history.projectsSection (0)'
+    );
+    expect(screen.getByTestId('projects-add')).toBeInTheDocument();
+    expect(screen.getByText('conversation.history.noHistory')).toBeInTheDocument();
+  });
+
+  it('associates every section and project group with its tree item', () => {
+    renderSidebar();
+    for (const key of ['projects', 'conversations']) {
+      const header = screen.getByTestId(`section-header-${key}`);
+      const owned = header.getAttribute('aria-owns');
+      expect(owned).toBeTruthy();
+      expect(document.getElementById(owned!)?.getAttribute('role')).toBe('group');
+    }
+    const project = screen.getByTestId('project-row-/p/alpha');
+    expect(document.getElementById(project.getAttribute('aria-owns')!)).toBe(
+      screen.getByTestId('project-children-/p/alpha')
+    );
+  });
+
+  it('flattens the tree in the icon rail: no headers, rows at level 1, no orphan groups', () => {
+    const { container } = renderSidebar({ collapsed: true });
+    expect(screen.queryByTestId('section-header-projects')).toBeNull();
+    expect(screen.queryByTestId('project-row-/p/alpha')).toBeNull();
+    const levels = screen.getAllByRole('treeitem').map((row) => row.getAttribute('aria-level'));
+    expect(new Set(levels)).toEqual(new Set(['1']));
+    expect(container.querySelector('[role="group"]')).toBeNull();
   });
 });

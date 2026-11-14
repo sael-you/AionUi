@@ -216,8 +216,8 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
       )}
       {showChildren && (
         <div
-          id={childrenId}
-          role='group'
+          id={siderCollapsed ? undefined : childrenId}
+          role={siderCollapsed ? undefined : 'group'}
           className={classNames(siderCollapsed ? 'min-w-0' : styles.children)}
           data-testid={`project-children-${workspace}`}
         >

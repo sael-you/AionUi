@@ -12,7 +12,7 @@ import { CronJobIndicator } from '@/renderer/pages/cron';
 import { resolveConversationLeadingMark } from '@/renderer/pages/conversation/utils/conversationAssistantIdentity';
 import { cleanupSiderTooltips, getSiderTooltipProps } from '@/renderer/utils/ui/siderTooltip';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
-import { Checkbox, Dropdown, Menu, Tooltip } from '@arco-design/web-react';
+import { Button, Checkbox, Dropdown, Menu, Tooltip } from '@arco-design/web-react';
 import {
   EditOne,
   Export,
@@ -261,30 +261,27 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
           </span>
         )}
         {treeInfo && !collapsed && !batchMode && (
-          <span
-            role='button'
+          // Pointer shortcut; keyboard users expand / collapse with the arrows on the row.
+          <Button
+            type='text'
+            size='mini'
             tabIndex={-1}
             className={styles.chevron}
             aria-label={treeInfo.expanded ? t('conversation.hierarchy.collapse') : t('conversation.hierarchy.expand')}
+            aria-expanded={treeInfo.expanded}
             data-testid={`conversation-tree-toggle-${conversation.id}`}
+            icon={
+              <Right
+                theme='outline'
+                size='12'
+                className={classNames(styles.chevronIcon, { [styles.chevronIconExpanded]: treeInfo.expanded })}
+              />
+            }
             onClick={(event) => {
               event.stopPropagation();
               treeInfo.onToggle();
             }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                event.stopPropagation();
-                treeInfo.onToggle();
-              }
-            }}
-          >
-            <Right
-              theme='outline'
-              size='12'
-              className={classNames(styles.chevronIcon, { [styles.chevronIconExpanded]: treeInfo.expanded })}
-            />
-          </span>
+          />
         )}
         <span className='size-20px flex items-center justify-center shrink-0 relative'>
           <ConversationStatusMark conversationId={conversation.id} status={status}>
@@ -501,22 +498,22 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
               getPopupContainer={() => document.body}
               unmountOnExit={false}
             >
-              <span
-                role='button'
+              {/* Keyboard: Shift+F10 / the context-menu key on the row opens it. */}
+              <Button
+                type='text'
+                size='mini'
                 tabIndex={-1}
                 aria-label={t('conversation.sidebar.conversationActions', { name: conversation.name })}
+                aria-haspopup='menu'
+                aria-expanded={menuVisible}
                 data-testid={`conversation-row-menu-${conversation.id}`}
-                className={classNames(
-                  'flex-center cursor-pointer transition-colors text-t-secondary hover:text-t-primary rd-4px sider-action-btn',
-                  styles.actionButton
-                )}
+                className={classNames('sider-action-btn', styles.actionButton)}
+                icon={<MoreOne theme='outline' size='14' fill='currentColor' />}
                 onClick={(event) => {
                   event.stopPropagation();
                   onOpenMenu(conversation);
                 }}
-              >
-                <MoreOne theme='outline' size='14' fill='currentColor' className='block leading-none' />
-              </span>
+              />
             </Dropdown>
           </div>
         )}

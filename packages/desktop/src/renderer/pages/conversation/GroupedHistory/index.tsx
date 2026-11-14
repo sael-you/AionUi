@@ -25,7 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ConversationChildren from './components/ConversationChildren';
 import MoveUnderModal from './components/MoveUnderModal';
 import ProjectGroup from './components/ProjectGroup';
-import SectionHeader from './components/SectionHeader';
+import SectionHeader, { sectionGroupId } from './components/SectionHeader';
 import sidebarTreeStyles from './components/SidebarTree.module.css';
 import ConversationRow from './ConversationRow';
 import SortableConversationRow from './SortableConversationRow';
@@ -190,8 +190,12 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       expanded={isSectionExpanded(sectionKey)}
       onToggle={() => toggleSection(sectionKey)}
       trailing={trailing}
+      groupId={sectionGroupId(sectionKey)}
     />
   );
+  /** The group of a section's rows, owned by its header (no header, no group, in the icon rail). */
+  const sectionGroupProps = (sectionKey: string) =>
+    collapsed ? {} : { id: sectionGroupId(sectionKey), role: 'group' as const };
 
   // Sync active conversation ref when route changes (for URL navigation)
   // This doesn't trigger state update, avoiding double render
@@ -468,8 +472,10 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       projectGroups
         .map((group) => {
           const shown = filterProjectGroup(group, filterQueryNormalized, descendantsOf);
-          // The count stays the project's own, also while filtering.
-          return shown ? { ...shown, totalCount: group.conversations.length } : null;
+          // `shown.conversations` is only what the filter lets through; `source`
+          // is the whole project, used for its count, its status and every
+          // project action (archive, colour, board, bulk actions).
+          return shown ? { ...shown, source: group } : null;
         })
         .filter((group): group is NonNullable<typeof group> => group !== null),
     [descendantsOf, filterQueryNormalized, projectGroups]
@@ -527,18 +533,11 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     }
   };
 
-  if (timelineSections.length === 0 && pinnedConversations.length === 0) {
-    return (
-      <>
-        {afterPinnedContent}
-        {!collapsed && (
-          <div className='px-8px py-12px text-12px leading-18px text-t-tertiary' role='status'>
-            {t('conversation.history.noHistory')}
-          </div>
-        )}
-      </>
-    );
-  }
+  const hasHistory = timelineSections.length > 0 || pinnedConversations.length > 0;
+  // Tree levels: section headers are level 1. In the icon rail (collapsed
+  // sidebar) there are no section or project headers, so rows are level 1.
+  const sectionRowLevel = collapsed ? 1 : 2;
+  const projectRowLevel = collapsed ? 1 : 3;
 
   return (
     <>
@@ -693,9 +692,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
               {!collapsed && renderSectionLabel('pinned', t('conversation.history.pinnedSection'))}
               {(collapsed || isSectionExpanded('pinned')) && (
                 <SortableContext items={pinnedIds} strategy={verticalListSortingStrategy}>
-                  <div className='min-w-0' role='group'>
+                  <div className='min-w-0' {...sectionGroupProps('pinned')}>
                     {visiblePinned.map((conversation) =>
-                      renderConversationRow(conversation, 2, isDragEnabled && !filtering)
+                      renderConversationRow(conversation, sectionRowLevel, isDragEnabled && !filtering)
                     )}
                   </div>
                 </SortableContext>
@@ -708,7 +707,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         {afterPinnedContent}
 
         {/* L1: Projects section — the hierarchy anchors, peer to conversations */}
-        {visibleProjectGroups.length > 0 && (
+        {/* Shown even without projects, so its "+" can add the first one. */}
+        {(visibleProjectGroups.length > 0 || (!filtering && !collapsed)) && (
           <div className='min-w-0'>
             {!collapsed &&
               renderSectionLabel(
@@ -728,7 +728,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                 </Tooltip>
               )}
             {(collapsed || isSectionExpanded('projects')) && (
-              <div className='min-w-0' role='group'>
+              <div className='min-w-0' {...sectionGroupProps('projects')}>
                 {visibleProjectGroups.map((group) => {
                   const accent = projectAccentOf(group.workspace);
                   const colorKey = normalizeWorkspace(group.workspace);
@@ -738,14 +738,14 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                     void navigate('/guid', { state: { workspace: group.workspace } });
                     onSessionClick?.();
                   };
-                  const status = projectStatusOf(group.conversations);
+                  const status = projectStatusOf(group.source.conversations);
                   const projectMenu = (
                     <Menu
                       onClickMenuItem={(key) => {
                         if (key === 'new') {
                           startConversation();
                         } else if (key === 'archive') {
-                          handleArchiveProject(group.displayName, group.conversations);
+                          handleArchiveProject(group.displayName, group.source.conversations);
                         } else if (key === 'color:auto') {
                           setProjectColor(colorKey, null);
                         } else if (key.startsWith('color:')) {
@@ -790,7 +790,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         ))}
                       </Menu.SubMenu>
                       {/* A folder with no visible conversation has nothing to archive here. */}
-                      <Menu.Item key='archive' disabled={group.conversations.length === 0}>
+                      <Menu.Item key='archive' disabled={group.source.conversations.length === 0}>
                         <span className='flex items-center gap-8px'>
                           <FolderClose theme='outline' size='14' />
                           {t('conversation.history.archiveProject')}
@@ -805,16 +805,17 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       {projectActions?.({ workspace: group.workspace, name: group.displayName })}
                       {!isMobile && (
                         <Tooltip content={t('conversation.history.newConversationInProject')} position='top'>
-                          <span
-                            role='button'
+                          {/* Pointer shortcut; keyboard users get the same action in the menu. */}
+                          <Button
+                            type='text'
+                            size='mini'
                             tabIndex={-1}
                             aria-label={t('conversation.history.newConversationInProject')}
                             className={classNames(sidebarTreeStyles.actionButton, 'sider-action-btn')}
                             data-testid={`project-new-conversation-${group.workspace}`}
+                            icon={<Plus theme='outline' size='14' fill='currentColor' />}
                             onClick={startConversation}
-                          >
-                            <Plus theme='outline' size='14' fill='currentColor' className='block leading-none' />
-                          </span>
+                          />
                         </Tooltip>
                       )}
                       <Dropdown
@@ -826,8 +827,10 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         getPopupContainer={() => document.body}
                         unmountOnExit={false}
                       >
-                        <span
-                          role='button'
+                        {/* Keyboard: Shift+F10 / the context-menu key on the project row opens it. */}
+                        <Button
+                          type='text'
+                          size='mini'
                           tabIndex={-1}
                           aria-label={t('conversation.sidebar.project.actions', { name: group.displayName })}
                           aria-haspopup='menu'
@@ -835,14 +838,13 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                           data-project-menu-trigger=''
                           data-testid={`project-menu-${group.workspace}`}
                           className={classNames(sidebarTreeStyles.actionButton, 'sider-action-btn')}
-                        >
-                          <MoreOne theme='outline' size='14' fill='currentColor' className='block leading-none' />
-                        </span>
+                          icon={<MoreOne theme='outline' size='14' fill='currentColor' />}
+                        />
                       </Dropdown>
                     </>
                   );
                   const rows = orderProjectConversations(group.conversations).map((conversation) =>
-                    renderConversation(conversation, 3)
+                    renderConversation(conversation, projectRowLevel)
                   );
                   return (
                     <ProjectGroup
@@ -852,7 +854,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       expanded={filtering || expandedWorkspaces.includes(group.workspace)}
                       onToggle={() => handleToggleWorkspace(group.workspace)}
                       active={isCurrentProject}
-                      count={group.totalCount}
+                      count={group.source.conversations.length}
                       running={status.running}
                       needsYou={status.needsYou}
                       actions={actions}
@@ -875,7 +877,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
           <div className='min-w-0'>
             {!collapsed && renderSectionLabel('conversations', t('conversation.history.conversationsSection'))}
             {(collapsed || isSectionExpanded('conversations')) && (
-              <div className='min-w-0' role='group'>
+              <div className='min-w-0' {...sectionGroupProps('conversations')}>
                 {visibleConversationSections.map((section) => (
                   <div key={section.timeline} className='min-w-0'>
                     {!collapsed && visibleConversationSections.length > 1 && (
@@ -884,7 +886,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       </div>
                     )}
                     {section.items.map((item) =>
-                      item.type === 'conversation' && item.conversation ? renderConversation(item.conversation) : null
+                      item.type === 'conversation' && item.conversation
+                        ? renderConversation(item.conversation, sectionRowLevel)
+                        : null
                     )}
                   </div>
                 ))}
@@ -893,7 +897,12 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
           </div>
         )}
       </div>
-      {filtering && !hasFilterResults && (
+      {!hasHistory && !collapsed && (
+        <div className='px-8px py-12px text-12px leading-18px text-t-tertiary' role='status'>
+          {t('conversation.history.noHistory')}
+        </div>
+      )}
+      {filtering && hasHistory && !hasFilterResults && (
         <div className='px-8px py-16px text-12px text-t-tertiary text-center' role='status'>
           {t('conversation.sidebar.filter.noResults')}
         </div>
