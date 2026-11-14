@@ -13,6 +13,9 @@ const backend = vi.hoisted(() => {
     stores: new Map<string, Map<string, unknown>>(),
     user: 'local',
     ready: Promise.resolve() as Promise<void>,
+    /** Next request gets a 401; a refresh then activates `refreshAs` (another account's session). */
+    unauthorizedOnce: false,
+    refreshAs: null as string | null,
   };
   const storeOf = (user: string) => {
     if (!state.stores.has(user)) state.stores.set(user, new Map());
@@ -36,8 +39,23 @@ const backend = vi.hoisted(() => {
 
 const auth = vi.hoisted(() => ({ value: undefined as undefined | { status: string; user: { id: string } | null } }));
 
+const requests = vi.hoisted(() => [] as Array<{ method: string; noSessionReplay: boolean }>);
+
 vi.mock('@/common/adapter/httpBridge', () => ({
-  httpRequest: async (method: string, path: string, body?: Record<string, unknown>) => {
+  // Emulates the real httpBridge 401 handling: refresh the session, then replay
+  // the request — unless the caller opted out with `noSessionReplay`.
+  httpRequest: async (
+    method: string,
+    path: string,
+    body?: Record<string, unknown>,
+    options?: { noSessionReplay?: boolean }
+  ) => {
+    requests.push({ method, noSessionReplay: Boolean(options?.noSessionReplay) });
+    if (backend.state.unauthorizedOnce) {
+      backend.state.unauthorizedOnce = false;
+      if (options?.noSessionReplay) throw Object.assign(new Error('unauthorized'), { status: 401 });
+      if (backend.state.refreshAs) backend.state.user = backend.state.refreshAs;
+    }
     if (method === 'GET') {
       await backend.load();
       const key = decodeURIComponent(path.split('keys=')[1] ?? '');
@@ -57,6 +75,7 @@ import {
   projectColorsPendingKey,
   resetProjectColorsForTest,
   setProjectColorOverride,
+  setProjectColorsOwner,
   sanitizeProjectColorOverrides,
   useProjectColors,
 } from '@/renderer/components/workspace/ProjectIdentity/useProjectColors';
@@ -72,6 +91,9 @@ beforeEach(() => {
   backend.state.user = 'local';
   auth.value = undefined;
   backend.state.ready = Promise.resolve();
+  backend.state.unauthorizedOnce = false;
+  backend.state.refreshAs = null;
+  requests.length = 0;
   vi.clearAllMocks();
   resetProjectColorsForTest();
 });
@@ -394,5 +416,52 @@ describe('useProjectColors per account', () => {
     });
     expect(backend.store.get(PROJECT_COLORS_SETTING_KEY)).toEqual({ [WS]: 'indigo' });
     expect(localStorage.getItem(LOCAL_PENDING)).toBeNull();
+  });
+
+  it("never replays A's save as B after a 401 while B's session becomes active", async () => {
+    signIn('A');
+    const view = renderHook(() => useProjectColors());
+    await waitFor(() => expect(backend.load).toHaveBeenCalledTimes(1));
+    await act(async () => {});
+
+    // A's save meets a 401; refreshing the session would now land on B.
+    backend.state.unauthorizedOnce = true;
+    backend.state.refreshAs = 'B';
+    act(() => view.result.current.setProjectColor(WS, 'pink'));
+    await act(async () => {});
+    expect(requests.every((r) => r.noSessionReplay)).toBe(true);
+    expect(backend.storeOf('B').has(PROJECT_COLORS_SETTING_KEY)).toBe(false);
+    expect(JSON.parse(localStorage.getItem(projectColorsPendingKey('A')) ?? '{}')).toEqual({ [WS]: 'pink' });
+
+    // The app switches to B: B loads and saves only its own colours.
+    backend.state.user = 'B';
+    signIn('B');
+    view.rerender();
+    act(() => view.result.current.setProjectColor('/root/projects/b', 'teal'));
+    await waitFor(() =>
+      expect(backend.storeOf('B').get(PROJECT_COLORS_SETTING_KEY)).toEqual({ '/root/projects/b': 'teal' })
+    );
+    expect(JSON.stringify([...backend.storeOf('B').values()])).not.toContain(WS);
+
+    // Back on A, the edit is still pending and saved to A.
+    signIn('A');
+    view.rerender();
+    await waitFor(() => expect(backend.storeOf('A').get(PROJECT_COLORS_SETTING_KEY)).toEqual({ [WS]: 'pink' }));
+  });
+
+  it('sends nothing for an account that changed between scheduling and sending', async () => {
+    signIn('A');
+    const view = renderHook(() => useProjectColors());
+    await waitFor(() => expect(backend.load).toHaveBeenCalledTimes(1));
+    await act(async () => {});
+    requests.length = 0;
+    act(() => {
+      view.result.current.setProjectColor(WS, 'red'); // save scheduled for A…
+      signIn('B');
+      setProjectColorsOwner('B'); // …account switches before it is sent
+    });
+    await act(async () => {});
+    expect(backend.save).not.toHaveBeenCalledWith(PROJECT_COLORS_SETTING_KEY, { [WS]: 'red' });
+    expect(backend.storeOf('B').has(PROJECT_COLORS_SETTING_KEY)).toBe(false);
   });
 });

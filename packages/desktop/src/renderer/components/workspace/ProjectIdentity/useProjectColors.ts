@@ -32,16 +32,27 @@ export const sanitizeProjectColorOverrides = (value: unknown): ProjectColorOverr
 // Backend (per user: the session cookie selects the account)
 // ---------------------------------------------------------------------------
 
+// Account-scoped: never refreshed-and-replayed on a 401 (a replay could reach
+// another account than the one the payload or result belongs to). A 401 is a
+// failed attempt; it stays pending and is retried once the store has re-checked
+// which account it serves.
+const ACCOUNT_SCOPED = { noSessionReplay: true } as const;
+
 const loadRemote = async (): Promise<unknown> => {
   const data = await httpRequest<Record<string, unknown> | undefined>(
     'GET',
-    `/api/settings/client?keys=${encodeURIComponent(PROJECT_COLORS_SETTING_KEY)}`
+    `/api/settings/client?keys=${encodeURIComponent(PROJECT_COLORS_SETTING_KEY)}`,
+    undefined,
+    ACCOUNT_SCOPED
   );
   return data?.[PROJECT_COLORS_SETTING_KEY];
 };
 
 const saveRemote = (value: ProjectColorOverrides): Promise<void> =>
-  httpRequest<void>('PUT', '/api/settings/client', { [PROJECT_COLORS_SETTING_KEY]: value });
+  httpRequest<void>('PUT', '/api/settings/client', { [PROJECT_COLORS_SETTING_KEY]: value }, ACCOUNT_SCOPED);
+
+/** Thrown when the account changed between scheduling and sending: nothing was sent. */
+class AccountChanged extends Error {}
 
 // ---------------------------------------------------------------------------
 // localStorage, scoped per account
@@ -177,7 +188,11 @@ const flush = () => {
   const saved = new Map(pendingEdits);
   const payload = overrides;
   Promise.resolve()
-    .then(() => saveRemote(payload))
+    .then(() => {
+      // Re-check right before sending: the account may have changed since.
+      if (run !== generation) throw new AccountChanged();
+      return saveRemote(payload);
+    })
     .then(() => {
       if (run !== generation) return;
       saving = false;
@@ -209,7 +224,10 @@ const hydrate = () => {
   clearRetry();
   const run = generation;
   Promise.resolve()
-    .then(loadRemote)
+    .then(() => {
+      if (run !== generation) throw new AccountChanged();
+      return loadRemote();
+    })
     .then((remote) => {
       if (run !== generation) return;
       hydration = 'done';
