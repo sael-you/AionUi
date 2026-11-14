@@ -206,9 +206,9 @@
   }
 
   .layout-sider-header--mobile {
-    min-height: 56px !important;
-    padding-top: 10px !important;
-    padding-bottom: 8px !important;
+    min-height: 48px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
     gap: 8px !important;
   }
 

@@ -58,27 +58,33 @@ const baseProps: ConversationRowProps = {
 
 const renderRow = (props: Partial<ConversationRowProps>) => render(<ConversationRow {...baseProps} {...props} />);
 
-describe('ConversationRow leading icon', () => {
-  it('shows the waiting-confirmation icon (not the spinner) when waiting takes precedence over generating', () => {
+describe('ConversationRow status mark (agent icon + status dot)', () => {
+  it('shows the needs-you dot (not the running dot) when waiting takes precedence over generating', () => {
     const { container } = renderRow({ isWaitingConfirmation: true, isGenerating: true });
     expect(screen.getByTestId('conversation-waiting-confirmation-conv-1')).toBeInTheDocument();
+    expect(screen.queryByTestId('conversation-running-conv-1')).toBeNull();
     expect(container.querySelector('.arco-spin')).toBeNull();
+    expect(container.querySelector('[data-conversation-status]')?.getAttribute('data-conversation-status')).toBe(
+      'needsYou'
+    );
   });
 
-  it('shows the generating spinner when generating but not waiting', () => {
+  it('shows the running dot on the agent icon when generating but not waiting (no spinner swap)', () => {
     const { container } = renderRow({ isWaitingConfirmation: false, isGenerating: true });
     expect(screen.queryByTestId('conversation-waiting-confirmation-conv-1')).toBeNull();
-    expect(container.querySelector('.arco-spin')).not.toBeNull();
-  });
-
-  it('shows neither the waiting icon nor the spinner when idle', () => {
-    const { container } = renderRow({ isWaitingConfirmation: false, isGenerating: false });
-    expect(screen.queryByTestId('conversation-waiting-confirmation-conv-1')).toBeNull();
+    expect(screen.getByTestId('conversation-running-conv-1')).toBeInTheDocument();
     expect(container.querySelector('.arco-spin')).toBeNull();
   });
 
-  it('does not show the waiting icon in batch mode (selection UI takes over)', () => {
-    renderRow({ isWaitingConfirmation: true, batchMode: true });
+  it('shows no status dot when idle', () => {
+    renderRow({ isWaitingConfirmation: false, isGenerating: false });
     expect(screen.queryByTestId('conversation-waiting-confirmation-conv-1')).toBeNull();
+    expect(screen.queryByTestId('conversation-running-conv-1')).toBeNull();
+  });
+
+  it('does not show status dots in batch mode (selection UI takes over)', () => {
+    renderRow({ isWaitingConfirmation: true, isGenerating: true, batchMode: true });
+    expect(screen.queryByTestId('conversation-waiting-confirmation-conv-1')).toBeNull();
+    expect(screen.queryByTestId('conversation-running-conv-1')).toBeNull();
   });
 });

@@ -832,5 +832,34 @@
   },
   "projectIdentity": {
     "label": "Projet : {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "Navigation principale",
+    "treeLabel": "Projets et conversations",
+    "conversationActions": "Actions pour {{name}}",
+    "status": {
+      "running": "En cours",
+      "needsYou": "Votre réponse est requise",
+      "unread": "Non lue"
+    },
+    "project": {
+      "count": "Conversations : {{count}}",
+      "needsYou": "En attente de vous : {{count}}",
+      "empty": "Aucune conversation pour l’instant.",
+      "startOne": "En démarrer une",
+      "showMore": "Afficher {{count}} de plus",
+      "showLess": "Afficher moins",
+      "add": "Ajouter un dossier de projet",
+      "actions": "Actions du projet {{name}}"
+    },
+    "filter": {
+      "placeholder": "Filtrer projets et discussions",
+      "label": "Filtrer les projets et conversations par nom",
+      "noResults": "Aucun projet ni aucune conversation correspondants"
+    },
+    "footer": {
+      "localUser": "Vous",
+      "menu": "Menu du compte"
+    }
   }
 }

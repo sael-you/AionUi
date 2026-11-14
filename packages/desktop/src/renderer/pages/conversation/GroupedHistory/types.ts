@@ -85,10 +85,10 @@ export type ConversationRowProps = {
   getJobStatus: (conversation_id: string) => 'none' | 'active' | 'paused' | 'error' | 'unread';
   /** Resolve a loaded conversation's name by id (fork-lineage badge tooltip). */
   resolveConversationName?: (conversation_id: string) => string | undefined;
-  /** When true, the agent icon is dimmed by default and only shows full color on hover. Used inside project folders to reduce visual weight. */
-  dimIcon?: boolean;
-  /** Project colour of the row; drawn as a thin bar at the inline start (moves with drag, RTL-aware). */
-  accentColor?: string;
+  /** Tree level of the row's root (1 = top level, 2 = inside a project); nested depth adds to it. */
+  treeLevel?: number;
+  /** Badge slot after the title (e.g. the Board Keeper badge). */
+  badge?: ReactNode;
   /** Nesting depth for sub-conversation rows (0 / undefined = top-level row). */
   depth?: number;
   /** Present only when this row has sub-conversations. */
@@ -109,6 +109,17 @@ export type WorkspaceGroupedHistoryProps = {
   batchMode?: boolean;
   onBatchModeChange?: (value: boolean) => void;
   afterPinnedContent?: ReactNode;
+  /** Sidebar name filter (projects and conversations); empty = no filter. */
+  filterQuery?: string;
+  /**
+   * Actions slot of a project row, before the built-in "+" and menu (e.g. the
+   * Board button). Shown on hover / focus, always on touch.
+   */
+  projectActions?: (project: { workspace: string; name: string }) => ReactNode;
+  /** Badge slot of a conversation row, after its title (e.g. the Board Keeper badge). */
+  conversationBadge?: (conversation: TChatConversation) => ReactNode;
+  /** Conversations listed first in their project (e.g. the Board Keeper). */
+  isProjectLeadConversation?: (conversation: TChatConversation) => boolean;
 };
 
 export type DragItemType = 'conversation' | 'workspace';

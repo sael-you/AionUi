@@ -848,5 +848,34 @@
   },
   "projectIdentity": {
     "label": "Проект: {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "Основная навигация",
+    "treeLabel": "Проекты и диалоги",
+    "conversationActions": "Действия для «{{name}}»",
+    "status": {
+      "running": "Выполняется",
+      "needsYou": "Нужен ваш ответ",
+      "unread": "Не прочитано"
+    },
+    "project": {
+      "count": "Диалогов: {{count}}",
+      "needsYou": "Ждут вас: {{count}}",
+      "empty": "Диалогов пока нет.",
+      "startOne": "Начать",
+      "showMore": "Показать ещё: {{count}}",
+      "showLess": "Свернуть",
+      "add": "Добавить папку проекта",
+      "actions": "Действия проекта «{{name}}»"
+    },
+    "filter": {
+      "placeholder": "Фильтр проектов и диалогов",
+      "label": "Фильтровать проекты и диалоги по названию",
+      "noResults": "Нет подходящих проектов или диалогов"
+    },
+    "footer": {
+      "localUser": "Вы",
+      "menu": "Меню аккаунта"
+    }
   }
 }

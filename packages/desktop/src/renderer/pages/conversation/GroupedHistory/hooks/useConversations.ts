@@ -164,17 +164,18 @@ export const useConversations = () => {
     }
   }, [collapsedSections]);
 
-  // Auto-expand all workspaces on first load only (#1156)
+  // Auto-expand the non-empty workspaces on first load only (#1156)
   useEffect(() => {
     if (hasAutoExpandedRef.current) return;
     if (expandedWorkspaces.length > 0) {
       hasAutoExpandedRef.current = true;
       return;
     }
+    // Empty projects start collapsed: nothing to show, and they stay compact.
     const allWorkspaces: string[] = [];
     timelineSections.forEach((section) => {
       section.items.forEach((item) => {
-        if (item.type === 'workspace' && item.workspaceGroup) {
+        if (item.type === 'workspace' && item.workspaceGroup && item.workspaceGroup.conversations.length > 0) {
           allWorkspaces.push(item.workspaceGroup.workspace);
         }
       });

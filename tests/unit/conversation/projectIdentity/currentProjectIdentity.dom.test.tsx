@@ -21,7 +21,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 import { AuthProvider, useAuth } from '@/renderer/hooks/context/AuthContext';
-import WorkspaceCollapse from '@/renderer/pages/conversation/components/WorkspaceCollapse';
+import ProjectGroup from '@/renderer/pages/conversation/GroupedHistory/components/ProjectGroup';
 import {
   ProjectLabel,
   projectIdentityOf,
@@ -99,30 +99,18 @@ describe('current project identity store', () => {
   });
 });
 
-const ActiveGroup: React.FC<{ workspace: string; current: string | null }> = ({ workspace, current }) => {
-  const project = useProjectTheme(current);
-  const active = workspace === current;
-  return (
-    <WorkspaceCollapse
-      expanded
-      onToggle={() => {}}
-      header={<span>{workspace}</span>}
-      active={active}
-      activeClassName='active-group'
-      activeStyle={active ? project?.style : undefined}
-    >
-      <div />
-    </WorkspaceCollapse>
-  );
-};
+const ActiveGroup: React.FC<{ workspace: string; current: string | null }> = ({ workspace, current }) => (
+  <ProjectGroup workspace={workspace} name='a' expanded onToggle={() => {}} active={workspace === current} count={0} />
+);
 
 describe('sidebar active project group', () => {
-  it('highlights the group of the current project with its accent and follows a switch', () => {
+  it('highlights the row of the current project with its accent and follows a switch', () => {
     const view = render(<ActiveGroup workspace='/root/projects/a' current='/root/projects/a' />);
-    const header = view.container.querySelector('[data-active-project]') as HTMLElement;
-    expect(header).toHaveClass('active-group');
-    expect(header.style.getPropertyValue('--project-accent')).toMatch(/^#[0-9a-f]{6}$/);
-    expect(header.style.getPropertyValue('--project-tint')).toMatch(/^rgba\(.*, 0\.06\)$/);
+    const row = view.container.querySelector('[data-active-project]') as HTMLElement;
+    expect(row).not.toBeNull();
+    const group = row.closest('[data-project-color]') as HTMLElement;
+    expect(group.style.getPropertyValue('--project-accent')).toMatch(/^#[0-9a-f]{6}$/);
+    expect(group.style.getPropertyValue('--project-tint')).toMatch(/^rgba\(.*, 0\.06\)$/);
 
     view.rerender(<ActiveGroup workspace='/root/projects/a' current='/root/projects/b' />);
     expect(view.container.querySelector('[data-active-project]')).toBeNull();

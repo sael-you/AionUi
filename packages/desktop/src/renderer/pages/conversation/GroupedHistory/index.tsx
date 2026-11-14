@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { ipcBridge } from '@/common';
 import type { TChatConversation } from '@/common/config/storage';
+import { addRecentWorkspace } from '@/renderer/components/workspace/recentWorkspaces';
 import AionModal from '@/renderer/components/base/AionModal';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useThemeContext } from '@/renderer/hooks/context/ThemeContext';
@@ -12,16 +14,18 @@ import { useCronJobsMap } from '@/renderer/pages/cron';
 import { restrictToVerticalAxis } from '@/renderer/utils/ui/dndModifiers';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Button, Dropdown, Empty, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
-import { FolderClose, MoreOne, Plus, Right } from '@icon-park/react';
+import { Button, Dropdown, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
+import { FolderClose, MoreOne, Plus } from '@icon-park/react';
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import WorkspaceCollapse from '../components/WorkspaceCollapse';
 import ConversationChildren from './components/ConversationChildren';
 import MoveUnderModal from './components/MoveUnderModal';
+import ProjectGroup from './components/ProjectGroup';
+import SectionHeader from './components/SectionHeader';
+import sidebarTreeStyles from './components/SidebarTree.module.css';
 import ConversationRow from './ConversationRow';
 import SortableConversationRow from './SortableConversationRow';
 import { useBatchSelection } from './hooks/useBatchSelection';
@@ -34,11 +38,9 @@ import {
   PROJECT_COLORS,
   isProjectColorId,
   projectAccent,
-  projectSurfaceClasses,
   resolveProjectColor,
   useCurrentProjectIdentity,
   useProjectColors,
-  useProjectTheme,
 } from '@/renderer/components/workspace/ProjectIdentity';
 import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
 import type { ConversationRowProps, WorkspaceGroupedHistoryProps } from './types';
@@ -50,6 +52,7 @@ import {
   type ConversationTreeNode,
 } from './utils/conversationTree';
 import { buildTreesByRoot } from './utils/conversationTreeIndex';
+import { filterConversations, filterProjectGroup, normalizeSidebarQuery } from './utils/sidebarFilter';
 
 const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   onSessionClick,
@@ -58,6 +61,10 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   batchMode = false,
   onBatchModeChange,
   afterPinnedContent,
+  filterQuery,
+  projectActions,
+  conversationBadge,
+  isProjectLeadConversation,
 }) => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -74,7 +81,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   );
   // The project shown in the main area: its group is highlighted with the same accent.
   const currentProjectWorkspace = useCurrentProjectIdentity()?.workspace ?? null;
-  const currentProjectTheme = useProjectTheme(currentProjectWorkspace);
+  const filterQueryNormalized = normalizeSidebarQuery(filterQuery);
+  // Which project's menu is open (keeps its actions visible while open).
+  const [openProjectMenu, setOpenProjectMenu] = useState<string | null>(null);
   const { getJobStatus, markAsRead, setActiveConversation } = useCronJobsMap();
 
   const {
@@ -162,33 +171,23 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     return childIds.size === 0 ? conversations : conversations.filter((c) => !childIds.has(c.id));
   }, [conversations, descendantsByRoot]);
 
-  const SectionLabel = useCallback(
-    ({ sectionKey, label, trailing }: { sectionKey: string; label: string; trailing?: React.ReactNode }) => {
-      const isCollapsed = collapsedSections.has(sectionKey);
-      return (
-        <div
-          className='group/label sider-section-label flex items-center px-12px h-28px select-none sticky top-0 z-10 mt-8px cursor-pointer'
-          onClick={() => toggleSection(sectionKey)}
-        >
-          <span className='text-14px text-t-tertiary sider-section-title group-hover/label:text-t-primary transition-colors font-[500] leading-none'>
-            {label}
-          </span>
-          <span className='ms-2px flex items-center justify-center opacity-0 group-hover/label:opacity-100 transition-opacity text-t-tertiary shrink-0'>
-            <Right
-              theme='outline'
-              size={12}
-              className={classNames('transition-transform duration-150', { 'rotate-90': !isCollapsed })}
-            />
-          </span>
-          {trailing && (
-            <div className='ms-auto' onClick={(e) => e.stopPropagation()}>
-              {trailing}
-            </div>
-          )}
-        </div>
-      );
-    },
-    [collapsedSections, toggleSection]
+  // While filtering every section and project with a match is shown open.
+  const filtering = filterQueryNormalized.length > 0;
+  const isSectionExpanded = useCallback(
+    (sectionKey: string) => filtering || !collapsedSections.has(sectionKey),
+    [collapsedSections, filtering]
+  );
+  // A plain render function (not a component) so a header keeps its DOM node,
+  // and its keyboard focus, when its section toggles.
+  const renderSectionLabel = (sectionKey: string, label: string, count?: number, trailing?: React.ReactNode) => (
+    <SectionHeader
+      sectionKey={sectionKey}
+      label={label}
+      count={count}
+      expanded={isSectionExpanded(sectionKey)}
+      onToggle={() => toggleSection(sectionKey)}
+      trailing={trailing}
+    />
   );
 
   // Sync active conversation ref when route changes (for URL navigation)
@@ -373,36 +372,35 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     };
   };
 
-  // Render a root row; when it has sub-conversations, wrap it with its (expandable) subtree.
-  const renderConversationRow = (conversation: TChatConversation, dimIcon: boolean, sortable: boolean) => {
-    // Rows of a project (in its folder or pinned) carry the project colour; the
-    // whole sub-conversation tree shares the root's colour.
-    const projectWorkspace = conversation.extra?.custom_workspace ? conversation.extra?.workspace : undefined;
-    const accentColor = projectWorkspace ? projectAccentOf(projectWorkspace) : undefined;
+  // Render a root row; when it has sub-conversations, wrap it with its (expandable)
+  // subtree. `treeLevel` is the row's level in the sidebar tree (2 under a
+  // section, 3 inside a project); sub-conversations add their depth.
+  const renderConversationRow = (conversation: TChatConversation, treeLevel: number, sortable: boolean) => {
+    const badge = conversationBadge?.(conversation);
     const tree = treesByRoot.get(conversation.id);
     if (!tree) {
-      const rowProps = { ...getConversationRowProps(conversation), accentColor };
+      const rowProps = { ...getConversationRowProps(conversation), treeLevel, badge };
       return sortable ? (
         <SortableConversationRow key={conversation.id} {...rowProps} />
       ) : (
-        <ConversationRow key={conversation.id} {...rowProps} dimIcon={dimIcon} />
+        <ConversationRow key={conversation.id} {...rowProps} />
       );
     }
-    const rootProps = { ...getTreeRowProps(tree), accentColor };
-    const showChildren = !collapsed && isTreeExpanded(conversation.id);
+    const rootProps = { ...getTreeRowProps(tree), treeLevel, badge };
+    const showChildren = !collapsed && (filtering || isTreeExpanded(conversation.id));
     return (
-      <div key={conversation.id} role='tree' className='min-w-0'>
-        {sortable ? <SortableConversationRow {...rootProps} /> : <ConversationRow {...rootProps} dimIcon={dimIcon} />}
+      <div key={conversation.id} className='min-w-0'>
+        {sortable ? <SortableConversationRow {...rootProps} /> : <ConversationRow {...rootProps} />}
         {showChildren && (
           <ConversationChildren
             nodes={tree.children}
-            isExpanded={isTreeExpanded}
+            isExpanded={(conversationId) => filtering || isTreeExpanded(conversationId)}
             renderRow={(node) => (
               <ConversationRow
                 key={node.conversation.id}
                 {...getTreeRowProps(node)}
-                dimIcon={dimIcon}
-                accentColor={accentColor}
+                treeLevel={treeLevel}
+                badge={conversationBadge?.(node.conversation)}
               />
             )}
           />
@@ -411,8 +409,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     );
   };
 
-  const renderConversation = (conversation: TChatConversation, dimIcon = false) =>
-    renderConversationRow(conversation, dimIcon, false);
+  const renderConversation = (conversation: TChatConversation, treeLevel = 2) =>
+    renderConversationRow(conversation, treeLevel, false);
 
   // Collect all sortable IDs for the pinned section
   const pinnedIds = useMemo(() => pinnedConversations.map((c) => c.id), [pinnedConversations]);
@@ -453,13 +451,88 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     [timelineSections]
   );
 
+  // --- Name filter (sidebar filter field) ---
+  const descendantsOf = useCallback(
+    (conversationId: string) => descendantsByRoot.get(conversationId),
+    [descendantsByRoot]
+  );
+  const visiblePinned = useMemo(
+    () => filterConversations(pinnedConversations, filterQueryNormalized, descendantsOf),
+    [descendantsOf, filterQueryNormalized, pinnedConversations]
+  );
+  const visibleProjectGroups = useMemo(
+    () =>
+      projectGroups
+        .map((group) => {
+          const shown = filterProjectGroup(group, filterQueryNormalized, descendantsOf);
+          // The count stays the project's own, also while filtering.
+          return shown ? { ...shown, totalCount: group.conversations.length } : null;
+        })
+        .filter((group): group is NonNullable<typeof group> => group !== null),
+    [descendantsOf, filterQueryNormalized, projectGroups]
+  );
+  const visibleConversationSections = useMemo(
+    () =>
+      conversationOnlySections
+        .map((section) => ({
+          ...section,
+          items: section.items.filter(
+            (item) =>
+              item.conversation &&
+              filterConversations([item.conversation], filterQueryNormalized, descendantsOf).length > 0
+          ),
+        }))
+        .filter((section) => section.items.length > 0),
+    [conversationOnlySections, descendantsOf, filterQueryNormalized]
+  );
+  const hasFilterResults =
+    visiblePinned.length > 0 || visibleProjectGroups.length > 0 || visibleConversationSections.length > 0;
+
+  /** Running / needs-you over a project's conversations and their sub-conversations. */
+  const projectStatusOf = (projectConversations: readonly TChatConversation[]) => {
+    let running = false;
+    let needsYou = 0;
+    for (const root of projectConversations) {
+      for (const conversation of [root, ...(descendantsByRoot.get(root.id) ?? [])]) {
+        if (isConversationWaitingConfirmation(conversation.id)) needsYou += 1;
+        else if (isConversationGenerating(conversation.id)) running = true;
+      }
+    }
+    return { running, needsYou };
+  };
+
+  /** Lead conversations (e.g. the Board Keeper) first, then newest first as grouped. */
+  const orderProjectConversations = (projectConversations: readonly TChatConversation[]) =>
+    isProjectLeadConversation
+      ? [
+          ...projectConversations.filter((conversation) => isProjectLeadConversation(conversation)),
+          ...projectConversations.filter((conversation) => !isProjectLeadConversation(conversation)),
+        ]
+      : [...projectConversations];
+
+  /** "+" in the Projects header: pick a folder, then start a conversation in it (a new project). */
+  const handleAddProject = async () => {
+    try {
+      const folders = await ipcBridge.dialog.showOpen.invoke({ properties: ['openDirectory', 'createDirectory'] });
+      const folder = folders?.[0];
+      if (!folder) return;
+      addRecentWorkspace(folder);
+      void navigate('/guid', { state: { workspace: folder } });
+      onSessionClick?.();
+    } catch (error) {
+      console.error('[sidebar] could not open the folder picker:', error);
+    }
+  };
+
   if (timelineSections.length === 0 && pinnedConversations.length === 0) {
     return (
       <>
         {afterPinnedContent}
-        <div className='py-48px flex-center'>
-          <Empty description={t('conversation.history.noHistory')} />
-        </div>
+        {!collapsed && (
+          <div className='px-8px py-12px text-12px leading-18px text-t-tertiary' role='status'>
+            {t('conversation.history.noHistory')}
+          </div>
+        )}
       </>
     );
   }
@@ -603,14 +676,14 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
           modifiers={[restrictToVerticalAxis]}
           onDragEnd={handleDragEnd}
         >
-          {pinnedConversations.length > 0 && (
+          {visiblePinned.length > 0 && (
             <div className='min-w-0'>
-              {!collapsed && <SectionLabel sectionKey='pinned' label={t('conversation.history.pinnedSection')} />}
-              {!collapsedSections.has('pinned') && (
+              {!collapsed && renderSectionLabel('pinned', t('conversation.history.pinnedSection'))}
+              {(collapsed || isSectionExpanded('pinned')) && (
                 <SortableContext items={pinnedIds} strategy={verticalListSortingStrategy}>
-                  <div className='min-w-0'>
-                    {pinnedConversations.map((conversation) =>
-                      renderConversationRow(conversation, false, isDragEnabled)
+                  <div className='min-w-0' role='group'>
+                    {visiblePinned.map((conversation) =>
+                      renderConversationRow(conversation, 2, isDragEnabled && !filtering)
                     )}
                   </div>
                 </SortableContext>
@@ -619,163 +692,199 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
           )}
         </DndContext>
 
-        {/* Slot 由父级（Sider）填入：例如 Team / CronJob sections，位于「置顶」之后、「项目」之前 */}
+        {/* Slot filled by the Sider (Teams), after Pinned and before Projects. */}
         {afterPinnedContent}
 
-        {/* L1: Projects section — workspace folders, peer to conversations */}
-        {projectGroups.length > 0 && (
+        {/* L1: Projects section — the hierarchy anchors, peer to conversations */}
+        {visibleProjectGroups.length > 0 && (
           <div className='min-w-0'>
-            {!collapsed && <SectionLabel sectionKey='projects' label={t('conversation.history.projectsSection')} />}
-            {!collapsedSections.has('projects') &&
-              projectGroups.map((group) => {
-                const accent = projectAccentOf(group.workspace);
-                const colorKey = normalizeWorkspace(group.workspace);
-                const chosenColor = projectColorOverrides[colorKey];
-                const isCurrentProject = colorKey === currentProjectWorkspace;
-                const projectMenu = (
-                  <Menu
-                    onClickMenuItem={(key) => {
-                      if (key === 'archive') {
-                        handleArchiveProject(group.displayName, group.conversations);
-                      } else if (key === 'color:auto') {
-                        setProjectColor(colorKey, null);
-                      } else if (key.startsWith('color:')) {
-                        const colorId = key.slice('color:'.length);
-                        if (isProjectColorId(colorId)) setProjectColor(colorKey, colorId);
-                      }
-                    }}
-                  >
-                    <Menu.SubMenu
-                      key='color'
-                      title={
-                        <span className='flex items-center gap-8px'>
-                          <span className='size-10px rd-full shrink-0' style={{ background: accent }} />
-                          {t('conversation.history.projectColor')}
-                        </span>
-                      }
+            {!collapsed &&
+              renderSectionLabel(
+                'projects',
+                t('conversation.history.projectsSection'),
+                projectGroups.length,
+                <Tooltip content={t('conversation.sidebar.project.add')} position='top'>
+                  <Button
+                    type='text'
+                    size='mini'
+                    className={sidebarTreeStyles.actionButton}
+                    icon={<Plus theme='outline' size='14' fill='currentColor' />}
+                    aria-label={t('conversation.sidebar.project.add')}
+                    data-testid='projects-add'
+                    onClick={() => void handleAddProject()}
+                  />
+                </Tooltip>
+              )}
+            {(collapsed || isSectionExpanded('projects')) && (
+              <div className='min-w-0' role='group'>
+                {visibleProjectGroups.map((group) => {
+                  const accent = projectAccentOf(group.workspace);
+                  const colorKey = normalizeWorkspace(group.workspace);
+                  const chosenColor = projectColorOverrides[colorKey];
+                  const isCurrentProject = colorKey === currentProjectWorkspace;
+                  const startConversation = (): void => {
+                    void navigate('/guid', { state: { workspace: group.workspace } });
+                    onSessionClick?.();
+                  };
+                  const status = projectStatusOf(group.conversations);
+                  const projectMenu = (
+                    <Menu
+                      onClickMenuItem={(key) => {
+                        if (key === 'new') {
+                          startConversation();
+                        } else if (key === 'archive') {
+                          handleArchiveProject(group.displayName, group.conversations);
+                        } else if (key === 'color:auto') {
+                          setProjectColor(colorKey, null);
+                        } else if (key.startsWith('color:')) {
+                          const colorId = key.slice('color:'.length);
+                          if (isProjectColorId(colorId)) setProjectColor(colorKey, colorId);
+                        }
+                      }}
                     >
-                      <Menu.Item key='color:auto'>
+                      <Menu.Item key='new'>
                         <span className='flex items-center gap-8px'>
-                          <span className='size-10px rd-full shrink-0 border border-solid border-[var(--color-border-3)]' />
-                          {t('conversation.history.projectColorAuto')}
-                          {!chosenColor && <span className='ms-auto text-t-secondary'>✓</span>}
+                          <Plus theme='outline' size='14' />
+                          {t('conversation.history.newConversationInProject')}
                         </span>
                       </Menu.Item>
-                      {PROJECT_COLORS.map((color) => (
-                        <Menu.Item key={`color:${color.id}`}>
+                      <Menu.SubMenu
+                        key='color'
+                        title={
                           <span className='flex items-center gap-8px'>
-                            <span
-                              className='size-10px rd-full shrink-0'
-                              style={{ background: projectAccent(color, theme) }}
-                            />
-                            {t(`conversation.history.projectColors.${color.id}`)}
-                            {chosenColor === color.id && <span className='ms-auto text-t-secondary'>✓</span>}
+                            <span className='size-10px rd-full shrink-0' style={{ background: accent }} />
+                            {t('conversation.history.projectColor')}
+                          </span>
+                        }
+                      >
+                        <Menu.Item key='color:auto'>
+                          <span className='flex items-center gap-8px'>
+                            <span className='size-10px rd-full shrink-0 border border-solid border-[var(--color-border-3)]' />
+                            {t('conversation.history.projectColorAuto')}
+                            {!chosenColor && <span className='ms-auto text-t-secondary'>✓</span>}
                           </span>
                         </Menu.Item>
-                      ))}
-                    </Menu.SubMenu>
-                    {/* A folder with no visible conversation has nothing to archive here. */}
-                    <Menu.Item key='archive' disabled={group.conversations.length === 0}>
-                      <span className='flex items-center gap-8px'>
-                        <FolderClose theme='outline' size='14' />
-                        {t('conversation.history.archiveProject')}
-                      </span>
-                    </Menu.Item>
-                  </Menu>
-                );
-                return (
-                  <div key={group.workspace} className='min-w-0'>
-                    <WorkspaceCollapse
-                      expanded={expandedWorkspaces.includes(group.workspace)}
-                      onToggle={() => handleToggleWorkspace(group.workspace)}
-                      siderCollapsed={collapsed}
-                      stickyHeader
-                      stickyTop={28}
-                      iconColor={accent}
-                      active={isCurrentProject}
-                      activeClassName={projectSurfaceClasses.activeGroup}
-                      activeStyle={isCurrentProject ? currentProjectTheme?.style : undefined}
-                      header={
-                        <span className='text-14px font-[500] truncate flex-1 text-t-primary min-w-0'>
-                          {group.displayName}
-                        </span>
-                      }
-                      trailing={
-                        <span className='flex items-center gap-6px'>
-                          <Tooltip content={t('conversation.history.newConversationInProject')} position='top'>
-                            <span
-                              role='button'
-                              tabIndex={0}
-                              aria-label={t('conversation.history.newConversationInProject')}
-                              className={classNames(
-                                'flex-center cursor-pointer transition-colors text-t-secondary hover:text-t-primary size-20px rd-4px sider-action-btn',
-                                isMobile ? 'flex' : 'hidden group-hover:flex'
-                              )}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                void navigate('/guid', { state: { workspace: group.workspace } });
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  void navigate('/guid', { state: { workspace: group.workspace } });
-                                }
-                              }}
-                            >
-                              <Plus theme='outline' size='14' fill='currentColor' className='block leading-none' />
+                        {PROJECT_COLORS.map((color) => (
+                          <Menu.Item key={`color:${color.id}`}>
+                            <span className='flex items-center gap-8px'>
+                              <span
+                                className='size-10px rd-full shrink-0'
+                                style={{ background: projectAccent(color, theme) }}
+                              />
+                              {t(`conversation.history.projectColors.${color.id}`)}
+                              {chosenColor === color.id && <span className='ms-auto text-t-secondary'>✓</span>}
                             </span>
-                          </Tooltip>
-                          <Dropdown
-                            droplist={projectMenu}
-                            trigger='click'
-                            position='br'
-                            getPopupContainer={() => document.body}
-                            unmountOnExit={false}
+                          </Menu.Item>
+                        ))}
+                      </Menu.SubMenu>
+                      {/* A folder with no visible conversation has nothing to archive here. */}
+                      <Menu.Item key='archive' disabled={group.conversations.length === 0}>
+                        <span className='flex items-center gap-8px'>
+                          <FolderClose theme='outline' size='14' />
+                          {t('conversation.history.archiveProject')}
+                        </span>
+                      </Menu.Item>
+                    </Menu>
+                  );
+                  const menuOpen = openProjectMenu === group.workspace;
+                  const actions = (
+                    <>
+                      {/* Slot for project-level actions supplied by the Sider (e.g. the Board button). */}
+                      {projectActions?.({ workspace: group.workspace, name: group.displayName })}
+                      {!isMobile && (
+                        <Tooltip content={t('conversation.history.newConversationInProject')} position='top'>
+                          <span
+                            role='button'
+                            tabIndex={-1}
+                            aria-label={t('conversation.history.newConversationInProject')}
+                            className={classNames(sidebarTreeStyles.actionButton, 'sider-action-btn')}
+                            data-testid={`project-new-conversation-${group.workspace}`}
+                            onClick={startConversation}
                           >
-                            <span
-                              aria-label='Project actions'
-                              className={classNames(
-                                'flex-center cursor-pointer transition-colors text-t-secondary hover:text-t-primary size-20px rd-4px sider-action-btn',
-                                isMobile ? 'flex' : 'hidden group-hover:flex'
-                              )}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreOne theme='outline' size='14' fill='currentColor' className='block leading-none' />
-                            </span>
-                          </Dropdown>
+                            <Plus theme='outline' size='14' fill='currentColor' className='block leading-none' />
+                          </span>
+                        </Tooltip>
+                      )}
+                      <Dropdown
+                        droplist={projectMenu}
+                        trigger='click'
+                        position='br'
+                        popupVisible={menuOpen}
+                        onVisibleChange={(visible) => setOpenProjectMenu(visible ? group.workspace : null)}
+                        getPopupContainer={() => document.body}
+                        unmountOnExit={false}
+                      >
+                        <span
+                          role='button'
+                          tabIndex={-1}
+                          aria-label={t('conversation.sidebar.project.actions', { name: group.displayName })}
+                          aria-haspopup='menu'
+                          aria-expanded={menuOpen}
+                          data-project-menu-trigger=''
+                          data-testid={`project-menu-${group.workspace}`}
+                          className={classNames(sidebarTreeStyles.actionButton, 'sider-action-btn')}
+                        >
+                          <MoreOne theme='outline' size='14' fill='currentColor' className='block leading-none' />
                         </span>
-                      }
+                      </Dropdown>
+                    </>
+                  );
+                  const rows = orderProjectConversations(group.conversations).map((conversation) =>
+                    renderConversation(conversation, 3)
+                  );
+                  return (
+                    <ProjectGroup
+                      key={group.workspace}
+                      workspace={group.workspace}
+                      name={group.displayName}
+                      expanded={filtering || expandedWorkspaces.includes(group.workspace)}
+                      onToggle={() => handleToggleWorkspace(group.workspace)}
+                      active={isCurrentProject}
+                      count={group.totalCount}
+                      running={status.running}
+                      needsYou={status.needsYou}
+                      actions={actions}
+                      actionsVisible={isMobile || menuOpen}
+                      onStartConversation={startConversation}
+                      siderCollapsed={collapsed}
+                      stickyTop={24}
+                      level={2}
                     >
-                      <div className={classNames('flex flex-col min-w-0', { 'mt-1px': !collapsed })}>
-                        {group.conversations.map((conversation) => renderConversation(conversation, true))}
-                      </div>
-                    </WorkspaceCollapse>
-                  </div>
-                );
-              })}
+                      {rows}
+                    </ProjectGroup>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
         {/* L1: Conversations section — peer to projects, internally split by timeline */}
-        {conversationOnlySections.length > 0 && (
+        {visibleConversationSections.length > 0 && (
           <div className='min-w-0'>
-            {!collapsed && (
-              <SectionLabel sectionKey='conversations' label={t('conversation.history.conversationsSection')} />
+            {!collapsed && renderSectionLabel('conversations', t('conversation.history.conversationsSection'))}
+            {(collapsed || isSectionExpanded('conversations')) && (
+              <div className='min-w-0' role='group'>
+                {visibleConversationSections.map((section) => (
+                  <div key={section.timeline} className='min-w-0'>
+                    {!collapsed && visibleConversationSections.length > 1 && (
+                      <div className='flex items-center ps-8px h-24px select-none' aria-hidden='true'>
+                        <span className='text-11px text-t-tertiary font-[500] leading-none'>{section.timeline}</span>
+                      </div>
+                    )}
+                    {section.items.map((item) =>
+                      item.type === 'conversation' && item.conversation ? renderConversation(item.conversation) : null
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
-            {!collapsedSections.has('conversations') &&
-              conversationOnlySections.map((section) => (
-                <div key={section.timeline} className='min-w-0'>
-                  {!collapsed && conversationOnlySections.length > 1 && (
-                    <div className='flex items-center px-16px h-24px select-none'>
-                      <span className='text-12px text-t-secondary font-[500] leading-none'>{section.timeline}</span>
-                    </div>
-                  )}
-                  {section.items.map((item) =>
-                    item.type === 'conversation' && item.conversation ? renderConversation(item.conversation) : null
-                  )}
-                </div>
-              ))}
+          </div>
+        )}
+
+        {filtering && !hasFilterResults && (
+          <div className='px-8px py-16px text-12px text-t-tertiary text-center' role='status'>
+            {t('conversation.sidebar.filter.noResults')}
           </div>
         )}
       </div>
