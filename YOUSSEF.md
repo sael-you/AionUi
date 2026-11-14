@@ -2,11 +2,11 @@
 
 Your own version of what runs in `clauterm-youssef`, built from three repositories:
 
-| Repository | `main` | `youssef` (yours) | Deployed to |
-|---|---|---|---|
-| [sael-you/AionUi](https://github.com/sael-you/AionUi) — web UI + web host | exactly upstream **v2.2.2** | your AionUi | your container |
-| [sael-you/AionCore](https://github.com/sael-you/AionCore) — Rust backend | exactly upstream **v0.2.2** | your AionCore | your container |
-| [sael-you/clauterm](https://github.com/sael-you/clauterm) — `aionui/token-pool` (Token Pool, ClauTerm branding, ClauTerm tools) | ClauTerm | the Token Pool your container runs | your container |
+| Repository                                                                                                                      | `main`                      | `youssef` (yours)                  | Deployed to    |
+| ------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ---------------------------------- | -------------- |
+| [sael-you/AionUi](https://github.com/sael-you/AionUi) — web UI + web host                                                       | exactly upstream **v2.2.2** | your AionUi                        | your container |
+| [sael-you/AionCore](https://github.com/sael-you/AionCore) — Rust backend                                                        | exactly upstream **v0.2.2** | your AionCore                      | your container |
+| [sael-you/clauterm](https://github.com/sael-you/clauterm) — `aionui/token-pool` (Token Pool, ClauTerm branding, ClauTerm tools) | ClauTerm                    | the Token Pool your container runs | your container |
 
 Only the `youssef` branches are deployed, and only to **your** container. Nothing here touches the
 other containers.
@@ -32,6 +32,7 @@ other containers.
 Pushes that only change `*.md` or `docs/` don't build.
 
 **See what happened**, in your container:
+
 - `cat /root/.clauterm/aionui/deploy/status.json` shows the last deploy and its result;
 - `tail /root/.clauterm/aionui/deploy/deploy.log` shows every step, with the AionUi log tail when
   a build did not start.
@@ -82,15 +83,17 @@ into `youssef`.
 ## What is yours and what is shared
 
 **Yours only:**
+
 - your AionUi database and data: `/root/.aionui-web` → `/root/.clauterm/aionui/aionui-web` in the
   `clauterm_youssef-clauterm` volume. No other container mounts it;
 - your projects, `~/.claude`, `~/.codex` and `~/.gemini` (your own volumes);
 - the releases in `/opt/aionui-tp`.
 
 **Shared with the others:**
+
 - **The Token Pool keys** (labels, keys, statuses). A small hub copies changes between all four
   containers, in both directions. A key you **add, replace, disable or remove** changes for
-  everyone; the key you *use* (active) stays yours. To fix a broken ChatGPT login, sign in again
+  everyone; the key you _use_ (active) stays yours. To fix a broken ChatGPT login, sign in again
   instead of removing it.
 - The global config folder every container reads at boot (read-only for you).
 - The Docker network (containers can reach each other) and the server's CPU, RAM and disk.

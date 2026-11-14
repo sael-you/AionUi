@@ -29,7 +29,9 @@ describe('project colour palette', () => {
     const a = autoProjectColorId('/root/projects/TB-test');
     expect(autoProjectColorId('/root/projects/TB-test')).toBe(a);
     expect(isProjectColorId(a)).toBe(true);
-    const spread = new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((n) => autoProjectColorId(`/root/projects/${n}`)));
+    const spread = new Set(
+      ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((n) => autoProjectColorId(`/root/projects/${n}`))
+    );
     expect(spread.size).toBeGreaterThan(1);
   });
 

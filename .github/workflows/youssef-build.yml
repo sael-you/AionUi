@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # publish the prerelease in this repository
+  contents: write # publish the prerelease in this repository
 
 concurrency:
   group: youssef-build-${{ github.repository }}
@@ -23,8 +23,8 @@ concurrency:
 env:
   AIONUI_REPO: sael-you/AionUi
   AIONCORE_REPO: sael-you/AionCore
-  BUN_VERSION: "1.4.4"
-  RUST_TOOLCHAIN: "1.95.0"
+  BUN_VERSION: '1.4.4'
+  RUST_TOOLCHAIN: '1.95.0'
   LINUX_X64_GLIBC_MAX: GLIBC_2.34
   TARGET: x86_64-unknown-linux-gnu
 
@@ -87,7 +87,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: '22'
 
       - uses: oven-sh/setup-bun@v2
         with:

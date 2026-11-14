@@ -21,10 +21,12 @@ const conversation = (id: string, extra: TChatConversation['extra'], modified_at
 
 const projectGroups = (result: ReturnType<typeof buildGroupedHistory>) =>
   result.timelineSections.flatMap((s) =>
-    s.items.filter((i) => i.type === 'workspace').map((i) => ({
-      workspace: i.workspaceGroup!.workspace,
-      count: i.workspaceGroup!.conversations.length,
-    }))
+    s.items
+      .filter((i) => i.type === 'workspace')
+      .map((i) => ({
+        workspace: i.workspaceGroup!.workspace,
+        count: i.workspaceGroup!.conversations.length,
+      }))
   );
 
 describe('standardProjectsFromSidebar', () => {
@@ -32,9 +34,21 @@ describe('standardProjectsFromSidebar', () => {
     const response = {
       groups: [
         { scope: { type: 'pinned' }, items: [], has_more: false },
-        { scope: { type: 'project', project_id: 'p1', name: 'airtable', workspace: 'file:///root/projects/airtable' }, items: [], has_more: false },
-        { scope: { type: 'project', project_id: 'p2', name: 'my app', workspace: 'file:///root/projects/my%20app/' }, items: [], has_more: false },
-        { scope: { type: 'project', project_id: 'p3', name: 'dup', workspace: 'file:///root/projects/airtable' }, items: [], has_more: false },
+        {
+          scope: { type: 'project', project_id: 'p1', name: 'airtable', workspace: 'file:///root/projects/airtable' },
+          items: [],
+          has_more: false,
+        },
+        {
+          scope: { type: 'project', project_id: 'p2', name: 'my app', workspace: 'file:///root/projects/my%20app/' },
+          items: [],
+          has_more: false,
+        },
+        {
+          scope: { type: 'project', project_id: 'p3', name: 'dup', workspace: 'file:///root/projects/airtable' },
+          items: [],
+          has_more: false,
+        },
         { scope: { type: 'project', project_id: 'p4', name: 'no ws', workspace: null }, items: [], has_more: false },
         { scope: { type: 'chats' }, items: [], has_more: false },
       ],
@@ -84,7 +98,14 @@ describe('buildGroupedHistory with standard projects', () => {
 
   it('keeps the folder of a project whose only conversations are pinned', () => {
     const result = buildGroupedHistory(
-      [conversation('c1', { backend: 'claude', workspace: '/root/projects/clauterm', custom_workspace: true, pinned: true })],
+      [
+        conversation('c1', {
+          backend: 'claude',
+          workspace: '/root/projects/clauterm',
+          custom_workspace: true,
+          pinned: true,
+        }),
+      ],
       t,
       [{ workspace: '/root/projects/clauterm', name: 'clauterm' }]
     );
