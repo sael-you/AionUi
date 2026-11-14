@@ -229,7 +229,10 @@ export type BoardLink = {
 
 /** `board_events` row (R8). `payload` carries the after-state of the changed entity. */
 export type BoardEvent = {
+  /** Global event counter (increasing, not contiguous per project). */
   seq: number;
+  /** Seq of the same project's previous event (0 for its first): the per-project chain. */
+  prev_seq: number;
   id: string;
   card_id: string | null;
   project_id: string;
@@ -246,7 +249,7 @@ export type BoardSnapshot = {
   settings: BoardSettings;
   columns: BoardColumn[];
   cards: BoardCardSummary[];
-  /** Highest `board_events.seq` of the project at read time (live-update checkpoint). */
+  /** Seq of the project's latest event at read time (live-update checkpoint; seq itself is global). */
   last_seq: number;
 };
 
@@ -384,6 +387,8 @@ export type BoardChangedEvent = {
   user_id: string;
   project_id: string;
   seq: number;
+  /** Seq of the project's previous event; ≠ the client's checkpoint ⇒ a hint was missed. */
+  prev_seq: number;
   event: BoardEvent;
   card?: BoardCardSummary;
   review?: BoardReview;

@@ -38,6 +38,7 @@ const change = (seq: number, over: Record<string, unknown> = {}) => ({
   user_id: 'u1',
   project_id: 'p1',
   seq,
+  prev_seq: seq - 1,
   event: makeEvent(seq, 'card_moved'),
   ...over,
 });
@@ -89,13 +90,32 @@ describe('useBoard live updates', () => {
     expect(bridge.get).toHaveBeenCalledTimes(1);
   });
 
-  it('refetches when a hint was missed (seq gap)', async () => {
+  it('does not refetch for interleaved events of other projects (global seq)', async () => {
+    bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(1, 'triage', 1)], last_seq: 5 }));
+    const { result } = renderHook(() => useBoard('p1'), { wrapper });
+    await waitFor(() => expect(result.current.snapshot).toBeDefined());
+
+    act(() => {
+      boardChanged.emit(change(6, { project_id: 'p2', prev_seq: 3 }));
+      boardChanged.emit(change(7, { project_id: 'p2', prev_seq: 6 }));
+      // p1's next event: global seq 8, its project chain continues from 5.
+      boardChanged.emit(change(8, { prev_seq: 5, card: makeCard(1, 'done', 1) }));
+      boardChanged.emit(change(9, { project_id: 'p3', prev_seq: 0 }));
+      boardChanged.emit(change(10, { prev_seq: 8, event: makeEvent(10, 'commented') }));
+    });
+
+    await waitFor(() => expect(result.current.snapshot?.last_seq).toBe(10));
+    expect(result.current.snapshot?.cards[0].column_key).toBe('done');
+    expect(bridge.get).toHaveBeenCalledTimes(1);
+  });
+
+  it('refetches when a hint of this project was missed (prev_seq gap)', async () => {
     bridge.get.mockResolvedValue(makeSnapshot({ last_seq: 5 }));
     const { result } = renderHook(() => useBoard('p1'), { wrapper });
     await waitFor(() => expect(result.current.snapshot).toBeDefined());
 
     bridge.get.mockResolvedValue(makeSnapshot({ cards: [makeCard(4, 'triage', 1)], last_seq: 9 }));
-    act(() => boardChanged.emit(change(9, { card: makeCard(4, 'triage', 1) })));
+    act(() => boardChanged.emit(change(9, { prev_seq: 7, card: makeCard(4, 'triage', 1) })));
 
     await waitFor(() => expect(bridge.get).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(result.current.snapshot?.last_seq).toBe(9));

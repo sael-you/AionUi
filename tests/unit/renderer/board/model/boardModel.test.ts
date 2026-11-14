@@ -158,6 +158,7 @@ describe('applyBoardChange (live hints)', () => {
     user_id: 'u1',
     project_id: 'p1',
     seq,
+    prev_seq: seq - 1,
     event: makeEvent(seq, 'card_moved'),
     ...over,
   });
@@ -174,8 +175,16 @@ describe('applyBoardChange (live hints)', () => {
     expect(result).toEqual({ next: snapshot, reload: false });
   });
 
-  it('reloads when a hint was missed (seq gap)', () => {
-    expect(applyBoardChange(snapshot, change(13, { card: makeCard(1, 'done', 5) }), false).reload).toBe(true);
+  it('reloads when a hint of this project was missed (prev_seq is not our checkpoint)', () => {
+    expect(applyBoardChange(snapshot, change(13, { prev_seq: 12, card: makeCard(1, 'done', 5) }), false).reload).toBe(
+      true
+    );
+  });
+
+  it('applies the next hint of this project even when the global seq jumped (other projects in between)', () => {
+    const result = applyBoardChange(snapshot, change(57, { prev_seq: 10, card: makeCard(1, 'done', 5) }), false);
+    expect(result.reload).toBe(false);
+    expect(result.next.last_seq).toBe(57);
   });
 
   it('advances on card-neutral kinds and reloads on settings/columns changes', () => {

@@ -189,6 +189,7 @@ describe('move failures', () => {
         user_id: 'u1',
         project_id: 'p1',
         seq: 2,
+        prev_seq: 1,
         event: makeEvent(2, 'card_moved'),
         card: makeCard(1, 'building', 512, { title: 'Card 1 (agent)' }),
       })

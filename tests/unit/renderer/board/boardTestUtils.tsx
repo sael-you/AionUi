@@ -168,6 +168,7 @@ export const fullCard = (summary: BoardCardSummary, over: Partial<BoardCard> = {
 
 export const makeEvent = (seq: number, kind: string, over: Partial<BoardEvent> = {}): BoardEvent => ({
   seq,
+  prev_seq: seq - 1,
   id: `ev-${seq}`,
   card_id: 'card-1',
   project_id: PROJECT_ID,

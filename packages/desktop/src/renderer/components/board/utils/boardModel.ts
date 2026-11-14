@@ -263,8 +263,10 @@ export type BoardChangeResult = { next: BoardSnapshot; reload: boolean };
 /**
  * Fold a `board.changed` hint into the snapshot (R8: hints, not the source of truth).
  *
+ * - another project's hint → unchanged (seq is a global counter, so other
+ *   projects' events never count as a gap here);
  * - already seen (`seq <= last_seq`) → unchanged;
- * - a gap in `seq` (a hint was missed) → reload;
+ * - `prev_seq` is not our checkpoint (a hint of this project was missed) → reload;
  * - the hint carries the card's after-state → upsert it;
  * - a card-neutral kind → advance the checkpoint;
  * - anything else (settings, columns, a card hint without its card) → reload.
@@ -276,7 +278,7 @@ export const applyBoardChange = (
 ): BoardChangeResult => {
   if (change.project_id !== snapshot.settings.project_id) return { next: snapshot, reload: false };
   if (change.seq <= snapshot.last_seq) return { next: snapshot, reload: false };
-  if (change.seq > snapshot.last_seq + 1) return { next: snapshot, reload: true };
+  if (change.prev_seq !== snapshot.last_seq) return { next: snapshot, reload: true };
   if (change.card) {
     return { next: { ...upsertCard(snapshot, change.card, includeArchived), last_seq: change.seq }, reload: false };
   }
