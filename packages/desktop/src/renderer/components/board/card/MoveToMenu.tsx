@@ -72,9 +72,9 @@ export const MoveToMenu: React.FC<{ board: BoardController; card: BoardCardSumma
           const wip = wipState(column, activeCardCount(snapshot.cards, column.key));
           const full = !current && (wip === 'full' || wip === 'over');
           const automated = !isManualMoveTarget(column);
-          const disabled = current || Boolean(lock) || automated;
+          const itemDisabled = current || Boolean(lock) || automated;
           return (
-            <Menu.Item key={`move:${column.key}`} disabled={disabled} aria-disabled={disabled || undefined}>
+            <Menu.Item key={`move:${column.key}`} disabled={itemDisabled} aria-disabled={itemDisabled || undefined}>
               {current
                 ? t('board.card.moveToCurrent', { column: name })
                 : automated
