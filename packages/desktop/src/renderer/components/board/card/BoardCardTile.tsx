@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Tag } from '@arco-design/web-react';
+import { Button, Tag } from '@arco-design/web-react';
 import { Inbox, Lock, Time } from '@icon-park/react';
 import classNames from 'classnames';
 import React from 'react';
@@ -40,8 +40,8 @@ export type BoardCardTileProps = {
 
 /**
  * One card on the board. The whole tile opens the drawer on click; the title is
- * the keyboard target (a named button), so the drag handle and the actions menu
- * stay separate controls instead of being nested inside another one.
+ * the keyboard target (an Arco button named "Open TASK-N: title"), so the drag
+ * handle and the actions menu stay separate controls instead of being nested.
  */
 export const BoardCardTile: React.FC<BoardCardTileProps> = ({
   card,
@@ -84,23 +84,23 @@ export const BoardCardTile: React.FC<BoardCardTileProps> = ({
           </span>
         )}
       </div>
-      <span
-        role={overlay ? undefined : 'button'}
-        tabIndex={overlay ? undefined : 0}
-        data-board-card-open={overlay ? undefined : card.id}
-        aria-label={overlay ? undefined : t('board.card.open', { ref, title: card.title })}
-        className='text-13px leading-18px text-t-primary font-medium break-words line-clamp-3'
-        onKeyDown={(event) => {
-          if (overlay) return;
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
+      {overlay ? (
+        <span className='text-13px leading-18px text-t-primary font-medium break-words line-clamp-3'>{card.title}</span>
+      ) : (
+        <Button
+          type='text'
+          long
+          data-board-card-open={card.id}
+          aria-label={t('board.card.open', { ref, title: card.title })}
+          className='!h-auto !p-0 !bg-transparent !text-start !justify-start !whitespace-normal !text-13px !leading-18px !text-t-primary !font-medium'
+          onClick={(event) => {
             event.stopPropagation();
             open();
-          }
-        }}
-      >
-        {card.title}
-      </span>
+          }}
+        >
+          <span className='break-words line-clamp-3'>{card.title}</span>
+        </Button>
+      )}
       {(labels.length > 0 ||
         card.blocked ||
         card.needs_decision ||

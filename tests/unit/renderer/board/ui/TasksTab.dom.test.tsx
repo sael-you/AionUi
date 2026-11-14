@@ -117,7 +117,9 @@ describe('Tasks tab', () => {
   it('opens the card drawer from a card', async () => {
     bridge.getCard.mockResolvedValue(makeDetail(fullCard(makeCard(1, 'triage', 1024, { title: 'Fix login' }))));
     renderTab();
-    fireEvent.click(await screen.findByRole('button', { name: 'Open TASK-1: Fix login' }));
+    const opener = await screen.findByRole('button', { name: 'Open TASK-1: Fix login' });
+    expect(opener.tagName).toBe('BUTTON');
+    fireEvent.click(opener);
     expect(await screen.findByRole('dialog', { name: 'Card TASK-1' })).toBeInTheDocument();
   });
 

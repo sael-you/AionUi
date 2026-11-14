@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { Button } from '@arco-design/web-react';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { Drag } from '@icon-park/react';
 import React, { useCallback } from 'react';
@@ -60,17 +61,18 @@ export const DraggableCard: React.FC<{
   );
 
   const handle = disabled ? null : (
-    <span
+    <Button
       ref={draggable.setActivatorNodeRef}
+      type='text'
+      size='mini'
       {...draggable.attributes}
       {...draggable.listeners}
       aria-label={t('board.card.dragHandle', { ref: cardRef(card.number) })}
       data-board-handle={card.id}
-      className='flex items-center justify-center size-18px rd-4px text-t-secondary hover:text-t-primary hover:bg-hover cursor-grab touch-none shrink-0'
+      icon={<Drag theme='outline' size='12' fill='currentColor' aria-hidden />}
+      className='!flex !items-center !justify-center !p-0 !size-18px !min-w-0 !rd-4px !text-t-secondary hover:!text-t-primary cursor-grab touch-none shrink-0'
       onClick={(event) => event.stopPropagation()}
-    >
-      <Drag theme='outline' size='12' fill='currentColor' aria-hidden />
-    </span>
+    />
   );
 
   return (

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Tooltip } from '@arco-design/web-react';
+import { Button, Tooltip } from '@arco-design/web-react';
 import { ViewGridDetail } from '@icon-park/react';
 import classNames from 'classnames';
 import React from 'react';
@@ -28,29 +28,23 @@ export const SidebarBoardButton: React.FC<{ projectId: string; projectName: stri
   };
   return (
     <Tooltip content={t('board.openBoard')} position='top'>
-      <span
-        role='button'
-        tabIndex={0}
+      <Button
+        type='text'
+        size='mini'
         aria-label={t('board.sidebar.openBoardOf', { project: projectName })}
         data-sidebar-board-button={projectId}
+        icon={<ViewGridDetail theme='outline' size='14' fill='currentColor' className='block leading-none' />}
         className={classNames(
-          'flex flex-center cursor-pointer transition-colors text-t-secondary hover:text-t-primary size-20px rd-4px sider-action-btn',
+          '!flex !items-center !justify-center !p-0 !size-20px !min-w-0 !rd-4px !text-t-secondary hover:!text-t-primary transition-colors sider-action-btn',
           !touch && 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100'
         )}
         onClick={(event) => {
           event.stopPropagation();
           open();
         }}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            event.stopPropagation();
-            open();
-          }
-        }}
-      >
-        <ViewGridDetail theme='outline' size='14' fill='currentColor' className='block leading-none' />
-      </span>
+        // The row header toggles on Enter/Space; the button's own activation must not reach it.
+        onKeyDown={(event) => event.stopPropagation()}
+      />
     </Tooltip>
   );
 };

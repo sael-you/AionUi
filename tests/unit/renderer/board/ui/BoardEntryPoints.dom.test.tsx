@@ -56,13 +56,26 @@ describe('sidebar board button', () => {
     expect(await screen.findByText('board page')).toBeInTheDocument();
   });
 
-  it('works from the keyboard and stays focusable while hidden on pointer devices', async () => {
-    renderWithBoard(withBoardRoute(<SidebarBoardButton projectId='p1' projectName='Alpha' touch={false} />));
+  it('is a native (Arco) button that stays focusable while hidden on pointer devices', async () => {
+    // The project row header handles Enter/Space itself (React handler, like WorkspaceCollapse).
+    const rowKeyDown = vi.fn();
+    renderWithBoard(
+      withBoardRoute(
+        <div onKeyDown={rowKeyDown}>
+          <SidebarBoardButton projectId='p1' projectName='Alpha' touch={false} />
+        </div>
+      )
+    );
     const button = screen.getByRole('button', { name: 'Open the board of Alpha' });
-    expect(button).toHaveAttribute('tabindex', '0');
+    expect(button.tagName).toBe('BUTTON');
     expect(button.className).toContain('opacity-0');
     expect(button.className).toContain('focus:opacity-100');
+    button.focus();
+    expect(document.activeElement).toBe(button);
+    // Enter/Space activation is the browser's own; the row must not see the key.
     fireEvent.keyDown(button, { key: 'Enter' });
+    expect(rowKeyDown).not.toHaveBeenCalled();
+    fireEvent.click(button);
     expect(await screen.findByText('board page')).toBeInTheDocument();
   });
 
