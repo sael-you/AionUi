@@ -95,6 +95,18 @@ describe('narrow board (≤768 px)', () => {
   });
 });
 
+describe('large columns on a phone', () => {
+  it('virtualises a column with more than 100 cards', async () => {
+    const many = Array.from({ length: 150 }, (_, index) => makeCard(index + 1, 'ideas', (index + 1) * 1024));
+    bridge.get.mockResolvedValue(makeSnapshot({ cards: many }));
+    renderWithBoard(<BoardPage projectId='p1' />);
+
+    const column = await screen.findByRole('region', { name: 'Ideas, 150 cards' });
+    expect(column.querySelector('[data-virtualized="true"]')).not.toBeNull();
+    expect(column.querySelectorAll('[data-board-card]').length).toBeLessThan(150);
+  });
+});
+
 describe('media query hooks', () => {
   it('follow matchMedia for the narrow layout and reduced motion', () => {
     stubMatchMedia((query) => query === REDUCED_MOTION_QUERY);

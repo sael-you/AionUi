@@ -15,6 +15,7 @@ import { isRtlLanguage } from '@/renderer/services/i18n/direction';
 import { BoardCardTile } from '../card/BoardCardTile';
 import type { BoardController } from '../hooks/useBoard';
 import { MoveToMenu } from '../card/MoveToMenu';
+import { CardList } from '../column/CardList';
 import { ColumnMarks } from '../column/ColumnMarks';
 import { QuickAddCard } from '../column/QuickAddCard';
 import { WipCounter } from '../column/WipCounter';
@@ -74,14 +75,21 @@ export const StackedColumn: React.FC<{
           {cards.length === 0 ? (
             <p className='m-0 text-12px text-t-secondary py-4px'>{t('board.states.emptyColumn')}</p>
           ) : (
-            cards.map((card) => (
-              <BoardCardTile
-                key={card.id}
-                card={card}
-                onOpen={onOpenCard}
-                actions={<MoveToMenu board={board} card={card} />}
-              />
-            ))
+            <CardList
+              cards={cards}
+              rowGapClass='pb-6px'
+              // The tab scrolls as a whole, so a long column gets its own bounded viewport.
+              height='min(60vh, 520px)'
+              className='shrink-0'
+              renderCard={(card) => (
+                <BoardCardTile
+                  key={card.id}
+                  card={card}
+                  onOpen={onOpenCard}
+                  actions={<MoveToMenu board={board} card={card} />}
+                />
+              )}
+            />
           )}
           <QuickAddCard board={board} columnKey={column.key} columnLabel={name} />
         </div>

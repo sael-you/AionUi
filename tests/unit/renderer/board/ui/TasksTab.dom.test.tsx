@@ -88,6 +88,16 @@ describe('Tasks tab', () => {
     expect(await screen.findByText('Ship v1')).toBeInTheDocument();
   });
 
+  it('virtualises a stacked column with more than 100 cards', async () => {
+    const many = Array.from({ length: 120 }, (_, index) => makeCard(index + 1, 'triage', (index + 1) * 1024));
+    bridge.get.mockResolvedValue(makeSnapshot({ cards: many }));
+    const { container } = renderTab();
+    await screen.findByRole('button', { name: 'Triage, 120 cards' });
+    const column = container.querySelector('[data-board-column="triage"]');
+    expect(column?.querySelector('[data-virtualized="true"]')).not.toBeNull();
+    expect(column?.querySelectorAll('[data-board-card]').length ?? 0).toBeLessThan(120);
+  });
+
   it('opens the full board', async () => {
     renderTab();
     fireEvent.click(await screen.findByRole('button', { name: 'Open full board' }));

@@ -13,6 +13,7 @@ import { BoardCardTile } from '@/renderer/components/board/card/BoardCardTile';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
 import { BoardSelect } from '@/renderer/components/board/BoardSelect';
 import { MoveToMenu } from '@/renderer/components/board/card/MoveToMenu';
+import { CardList } from '@/renderer/components/board/column/CardList';
 import { ColumnMarks } from '@/renderer/components/board/column/ColumnMarks';
 import { QuickAddCard } from '@/renderer/components/board/column/QuickAddCard';
 import { WipCounter } from '@/renderer/components/board/column/WipCounter';
@@ -66,14 +67,17 @@ export const MobileBoard: React.FC<{
           {visible.length === 0 ? (
             <p className='m-0 text-13px text-t-secondary text-center py-16px'>{t('board.states.emptyColumn')}</p>
           ) : (
-            visible.map((card) => (
-              <BoardCardTile
-                key={card.id}
-                card={card}
-                onOpen={onOpenCard}
-                actions={<MoveToMenu board={board} card={card} />}
-              />
-            ))
+            <CardList
+              cards={visible}
+              renderCard={(card) => (
+                <BoardCardTile
+                  key={card.id}
+                  card={card}
+                  onOpen={onOpenCard}
+                  actions={<MoveToMenu board={board} card={card} />}
+                />
+              )}
+            />
           )}
         </div>
         <QuickAddCard board={board} columnKey={current.key} columnLabel={name} />

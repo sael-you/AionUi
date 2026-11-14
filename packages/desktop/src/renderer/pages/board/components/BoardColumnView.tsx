@@ -8,11 +8,11 @@ import { useDroppable } from '@dnd-kit/core';
 import classNames from 'classnames';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
 import { QuickAddCard } from '@/renderer/components/board/column/QuickAddCard';
+import { CardList } from '@/renderer/components/board/column/CardList';
 import { ColumnMarks } from '@/renderer/components/board/column/ColumnMarks';
 import { WipCounter } from '@/renderer/components/board/column/WipCounter';
 import { columnName } from '@/renderer/components/board/utils/boardFormat';
@@ -20,9 +20,6 @@ import { isManualMoveTarget, moveLock, type DropSlot } from '@/renderer/componen
 
 import { COLUMN_DND_PREFIX } from '../utils/boardKeyboard';
 import { DraggableCard, DropIndicator, type ColumnDndData } from './DraggableCard';
-
-/** Columns longer than this render through a virtual list (SPEC §8). */
-export const VIRTUALIZE_THRESHOLD = 100;
 
 export const BoardColumnView: React.FC<{
   board: BoardController;
@@ -63,8 +60,6 @@ export const BoardColumnView: React.FC<{
     />
   );
 
-  const virtualized = cards.length > VIRTUALIZE_THRESHOLD;
-
   return (
     <section
       aria-label={t('board.column.region', { column: name, count })}
@@ -81,24 +76,11 @@ export const BoardColumnView: React.FC<{
         </div>
         <ColumnMarks column={column} cards={allCards} />
       </div>
-      <div
-        ref={setNodeRef}
-        className='flex-1 min-h-48px flex flex-col gap-8px px-8px pb-8px overflow-y-auto'
-        data-virtualized={virtualized ? 'true' : undefined}
-      >
+      <div ref={setNodeRef} className='flex-1 min-h-48px flex flex-col gap-8px px-8px pb-8px overflow-y-auto'>
         {cards.length === 0 && !slotHere && (
           <p className='m-0 text-12px text-t-secondary text-center py-12px'>{t('board.states.emptyColumn')}</p>
         )}
-        {virtualized ? (
-          <Virtuoso
-            className='flex-1 min-h-200px'
-            data={cards}
-            computeItemKey={(_index, card) => card.id}
-            itemContent={(_index, card) => <div className='pb-8px'>{renderCard(card)}</div>}
-          />
-        ) : (
-          cards.map(renderCard)
-        )}
+        <CardList cards={cards} renderCard={renderCard} />
         {slotHere && slotHere.beforeId === null && <DropIndicator />}
       </div>
       <div className='px-8px pb-8px'>
