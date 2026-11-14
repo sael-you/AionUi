@@ -42,6 +42,7 @@ import { resolveTeamWorkspaceView } from './utils/teamWorkspaceView';
 import { usePreviewContext } from '@/renderer/pages/conversation/Preview';
 import { previewScopeKey } from '@/renderer/pages/conversation/Preview/context/previewScope';
 import { setCurrentProject } from '@/renderer/pages/conversation/explorer/currentProjectStore';
+import { projectIdentityOf, setCurrentProjectIdentity } from '@/renderer/components/workspace/ProjectIdentity';
 import { setCurrentConversation } from '@/renderer/pages/conversation/explorer/currentConversationStore';
 import { getSnapshotConversationProjectId } from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
@@ -636,6 +637,14 @@ const TeamPageContent: React.FC<TeamPageContentProps> = ({
   // creation. Falling back to a leader assistant's auto-temp workspace counts as
   // temporary, mirroring single-chat behavior.
   const isTeamWorkspaceTemporary = teamWorkspaceView.isTemporaryWorkspace;
+  // Project colour identity: only a user-picked team workspace is a project.
+  const teamProjectIdentity = useMemo(
+    () => (isTeamWorkspaceTemporary ? null : projectIdentityOf(effectiveWorkspace, teamProjectId)),
+    [isTeamWorkspaceTemporary, effectiveWorkspace, teamProjectId]
+  );
+  useEffect(() => {
+    setCurrentProjectIdentity(teamProjectIdentity);
+  }, [teamProjectIdentity]);
 
   // Mirror conversation/index.tsx: close preview only when the isolation scope
   // changes, keep it open when switching between teams that share the same scope.
@@ -811,6 +820,7 @@ const TeamPageContent: React.FC<TeamPageContentProps> = ({
           agent_name={undefined}
           workspacePath={effectiveWorkspace}
           isTemporaryWorkspace={isTeamWorkspaceTemporary}
+          projectWorkspace={teamProjectIdentity?.workspace}
           workspacePreferenceKey={team.id}
           onRenameTitle={onRenameTeam}
           headerExtra={assistants.length > 1 ? <TeamViewToggle value={viewMode} onChange={setViewMode} /> : undefined}

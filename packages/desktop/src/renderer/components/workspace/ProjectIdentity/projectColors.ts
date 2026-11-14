@@ -5,12 +5,14 @@
  */
 
 /**
- * Project colour palette for the sidebar.
+ * Project colour palette, shared by the sidebar and every project surface
+ * (conversation header, send box, file panel, team page, mobile titlebar).
  *
  * Twelve hues with one accent per theme, chosen at a matching visual weight
  * (light theme: 600 shades, dark theme: 400 shades) so every project reads with
- * the same emphasis and stays legible on the sidebar background. Colour is never
+ * the same emphasis and stays legible on the app background. Colour is never
  * the only cue: project names and folder icons remain, the colour only groups.
+ * The derived per-surface tokens live in `projectTheme.ts`.
  */
 
 export type ProjectColorId =

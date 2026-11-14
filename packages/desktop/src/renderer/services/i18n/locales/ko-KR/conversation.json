@@ -829,5 +829,8 @@
       "moveFailed": "대화를 이동하지 못했습니다.",
       "unsupportedParent": "이 유형의 대화는 하위 대화를 가질 수 없습니다."
     }
+  },
+  "projectIdentity": {
+    "label": "프로젝트: {{name}}"
   }
 }

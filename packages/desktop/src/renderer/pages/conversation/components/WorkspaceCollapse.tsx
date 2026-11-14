@@ -29,6 +29,10 @@ interface WorkspaceCollapseProps {
   stickyTop?: number;
   /** Folder icon colour (project colour); defaults to the primary text colour. */
   iconColor?: string;
+  /** The project shown in the main area: the header gets `activeClassName` + `activeStyle` (project tint + accent bar). */
+  active?: boolean;
+  activeClassName?: string;
+  activeStyle?: React.CSSProperties;
 }
 
 /**
@@ -45,6 +49,9 @@ const WorkspaceCollapse: React.FC<WorkspaceCollapseProps> = ({
   stickyHeader = false,
   stickyTop,
   iconColor,
+  active = false,
+  activeClassName,
+  activeStyle,
 }) => {
   // 侧栏折叠时，强制展开内容并隐藏头部
   const showContent = siderCollapsed || expanded;
@@ -61,7 +68,12 @@ const WorkspaceCollapse: React.FC<WorkspaceCollapseProps> = ({
           style={stickyEnabled ? { top: stickyTop ?? 0 } : undefined}
         >
           <div
-            className='flex items-center gap-8px h-34px ps-10px pe-8px cursor-pointer hover:bg-fill-3 rd-8px transition-colors min-w-0 group'
+            data-active-project={active ? 'true' : undefined}
+            className={classNames(
+              'flex items-center gap-8px h-34px ps-10px pe-8px cursor-pointer hover:bg-fill-3 rd-8px transition-colors min-w-0 group',
+              active && activeClassName
+            )}
+            style={active ? activeStyle : undefined}
             onClick={onToggle}
           >
             <span

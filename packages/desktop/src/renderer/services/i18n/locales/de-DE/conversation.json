@@ -830,5 +830,8 @@
       "moveFailed": "Die Konversation konnte nicht verschoben werden.",
       "unsupportedParent": "Dieser Konversationstyp kann keine Unterkonversationen haben."
     }
+  },
+  "projectIdentity": {
+    "label": "Projekt: {{name}}"
   }
 }

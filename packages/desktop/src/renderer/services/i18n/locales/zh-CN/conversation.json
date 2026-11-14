@@ -829,5 +829,8 @@
       "moveFailed": "移动对话失败。",
       "unsupportedParent": "此类型的对话不支持创建子对话。"
     }
+  },
+  "projectIdentity": {
+    "label": "项目：{{name}}"
   }
 }
