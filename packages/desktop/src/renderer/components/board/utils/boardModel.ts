@@ -203,31 +203,44 @@ export const upsertCard = (
   return { ...snapshot, cards: keep ? [...rest, card] : rest };
 };
 
+export type Placement = Pick<BoardCardSummary, 'column_key' | 'position'>;
+
+/** Set one card's placement, leaving every other field and card as it is. */
+export const placeCard = (snapshot: BoardSnapshot, cardId: string, placement: Placement): BoardSnapshot => ({
+  ...snapshot,
+  cards: snapshot.cards.map((card) => (card.id === cardId ? { ...card, ...placement } : card)),
+});
+
 /** Apply a move locally (optimistic UI). */
 export const applyOptimisticMove = (
   snapshot: BoardSnapshot,
   cardId: string,
   toColumn: string,
   anchor: MoveAnchor
-): BoardSnapshot => {
-  const card = snapshot.cards.find((existing) => existing.id === cardId);
-  if (!card) return snapshot;
-  const position = optimisticPosition(snapshot.cards, cardId, toColumn, anchor);
-  return {
-    ...snapshot,
-    cards: snapshot.cards.map((existing) =>
-      existing.id === cardId ? { ...existing, column_key: toColumn, position } : existing
-    ),
-  };
-};
+): BoardSnapshot =>
+  placeCard(snapshot, cardId, {
+    column_key: toColumn,
+    position: optimisticPosition(snapshot.cards, cardId, toColumn, anchor),
+  });
 
-/** Put one card back to a previous state (rollback), leaving every other change intact. */
-export const restoreCard = (snapshot: BoardSnapshot, previous: BoardCardSummary): BoardSnapshot => ({
-  ...snapshot,
-  cards: snapshot.cards.some((card) => card.id === previous.id)
-    ? snapshot.cards.map((card) => (card.id === previous.id ? previous : card))
-    : [...snapshot.cards, previous],
-});
+/**
+ * Undo a failed optimistic move — only if the card still sits exactly where the
+ * optimistic move put it. If a live update changed the card meanwhile, that
+ * update is newer than the rollback: keep it and report `stale` so the caller
+ * re-reads the board instead of overwriting it.
+ */
+export const rollbackPlacement = (
+  snapshot: BoardSnapshot,
+  cardId: string,
+  optimistic: Placement,
+  previous: Placement
+): { next: BoardSnapshot; stale: boolean } => {
+  const card = snapshot.cards.find((existing) => existing.id === cardId);
+  if (!card || card.column_key !== optimistic.column_key || card.position !== optimistic.position) {
+    return { next: snapshot, stale: true };
+  }
+  return { next: placeCard(snapshot, cardId, previous), stale: false };
+};
 
 /**
  * Event kinds that never change a card summary, settings or columns. A hint of

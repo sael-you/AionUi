@@ -26,10 +26,12 @@ import { BoardPage } from '@/renderer/pages/board';
 
 import {
   backendError,
+  boardChanged,
   bridge,
   createTestI18n,
   fullCard,
   makeCard,
+  makeEvent,
   makeSnapshot,
   renderWithBoard,
   resetBridge,
@@ -171,6 +173,40 @@ describe('move failures', () => {
       content: 'Some values are invalid or too long.',
     });
     expect(screen.getByTestId('board-live-region')).toHaveTextContent('TASK-1 was put back in Ideas.');
+  });
+
+  it('keeps a newer live update of the card when the move then fails, and re-reads the board', async () => {
+    const pending = deferred<never>();
+    bridge.moveCard.mockReturnValue(pending.promise);
+    renderWithBoard(<BoardPage projectId='p1' />);
+
+    await keyboardMove('Move TASK-1', ['ArrowRight']);
+    expect(within(region(/^Triage/)).getByText('Card 1')).toBeInTheDocument();
+
+    // While the move is in flight, an agent moves and renames the card (next seq).
+    act(() =>
+      boardChanged.emit({
+        user_id: 'u1',
+        project_id: 'p1',
+        seq: 2,
+        event: makeEvent(2, 'card_moved'),
+        card: makeCard(1, 'building', 512, { title: 'Card 1 (agent)' }),
+      })
+    );
+    expect(await within(region(/^Building/)).findByText('Card 1 (agent)')).toBeInTheDocument();
+    bridge.get.mockResolvedValue(
+      makeSnapshot({
+        cards: [makeCard(1, 'building', 512, { title: 'Card 1 (agent)' }), makeCard(2, 'triage', 1024)],
+        last_seq: 2,
+      })
+    );
+
+    await act(async () => pending.reject(backendError(409, 'board_version_conflict')));
+
+    // The rollback did not put the card back in Ideas over the newer state.
+    expect(within(region(/^Building/)).getByText('Card 1 (agent)')).toBeInTheDocument();
+    expect(within(region(/^Ideas/)).queryByText(/Card 1/)).not.toBeInTheDocument();
+    await waitFor(() => expect(bridge.get).toHaveBeenCalledTimes(2));
   });
 
   it('offers "Move anyway" on a full column and forces the move when chosen', async () => {

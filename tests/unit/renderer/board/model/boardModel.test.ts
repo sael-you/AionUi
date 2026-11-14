@@ -28,7 +28,7 @@ import {
   isNoopMove,
   optimisticPosition,
   POSITION_STEP,
-  restoreCard,
+  rollbackPlacement,
   sanitizeTagList,
   upsertCard,
   visibleColumns,
@@ -122,16 +122,27 @@ describe('placement anchors', () => {
 });
 
 describe('optimistic move and rollback', () => {
-  it('moves the card locally and restores only that card on rollback', () => {
+  it('moves the card locally and rolls back only its placement', () => {
     const before = makeSnapshot({ cards: [makeCard(1, 'ideas', 1024), makeCard(2, 'triage', 1024)] });
     const moved = applyOptimisticMove(before, 'card-1', 'triage', { before_id: 'card-2' });
-    expect(moved.cards.find((card) => card.id === 'card-1')).toMatchObject({ column_key: 'triage', position: 0 });
+    const optimistic = { column_key: 'triage', position: 0 };
+    expect(moved.cards.find((card) => card.id === 'card-1')).toMatchObject(optimistic);
 
-    // A live change to another card lands while the request is in flight.
+    // Another card changes while the request is in flight; that change survives.
     const withOther = upsertCard(moved, makeCard(2, 'done', 50), false);
-    const rolledBack = restoreCard(withOther, before.cards[0]);
-    expect(rolledBack.cards.find((card) => card.id === 'card-1')).toMatchObject({ column_key: 'ideas' });
-    expect(rolledBack.cards.find((card) => card.id === 'card-2')).toMatchObject({ column_key: 'done' });
+    const { next, stale } = rollbackPlacement(withOther, 'card-1', optimistic, { column_key: 'ideas', position: 1024 });
+    expect(stale).toBe(false);
+    expect(next.cards.find((card) => card.id === 'card-1')).toMatchObject({ column_key: 'ideas', position: 1024 });
+    expect(next.cards.find((card) => card.id === 'card-2')).toMatchObject({ column_key: 'done' });
+  });
+
+  it('never overwrites a newer live state of the moved card (stale → re-read)', () => {
+    const optimistic = { column_key: 'triage', position: 0 };
+    const live = makeSnapshot({ cards: [makeCard(1, 'building', 7, { title: 'Renamed by an agent' })] });
+    const { next, stale } = rollbackPlacement(live, 'card-1', optimistic, { column_key: 'ideas', position: 1024 });
+    expect(stale).toBe(true);
+    expect(next).toBe(live);
+    expect(rollbackPlacement(makeSnapshot(), 'card-1', optimistic, optimistic).stale).toBe(true);
   });
 
   it('drops archived cards from a view without archived cards', () => {

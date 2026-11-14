@@ -37,12 +37,13 @@ import { columnNameByKey, departmentName } from '../utils/boardFormat';
 import {
   activeCardCount,
   applyBoardChange,
-  applyOptimisticMove,
   cardRef,
   endAnchor,
   isManualMoveTarget,
   isNoopMove,
-  restoreCard,
+  optimisticPosition,
+  placeCard,
+  rollbackPlacement,
   upsertCard,
   type MoveAnchor,
 } from '../utils/boardModel';
@@ -182,7 +183,12 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
       const fromName = columnNameByKey(current.columns, card.column_key, t);
       const toName = columnNameByKey(current.columns, toColumn, t);
 
-      await update((snapshot) => applyOptimisticMove(snapshot, cardId, toColumn, anchor));
+      const previous = { column_key: card.column_key, position: card.position };
+      const optimistic = {
+        column_key: toColumn,
+        position: optimisticPosition(current.cards, cardId, toColumn, anchor),
+      };
+      await update((snapshot) => placeCard(snapshot, cardId, optimistic));
       try {
         const moved = await ipcBridge.board.moveCard.invoke({
           card_id: cardId,
@@ -204,8 +210,16 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
         announce(message);
         return true;
       } catch (moveError) {
-        await update((snapshot) => restoreCard(snapshot, card));
+        // Undo only our optimistic placement; a newer live state of the card wins and is re-read.
+        let stale = false;
+        await update((snapshot) => {
+          const result = rollbackPlacement(snapshot, cardId, optimistic, previous);
+          stale = result.stale;
+          return result.next;
+        });
         const code = boardErrorCode(moveError);
+        // One re-read when the rollback was skipped or the server says our view is out of date.
+        if (stale || code === BOARD_ERROR_CODES.versionConflict || code === BOARD_ERROR_CODES.notFound) void mutate();
         const title = t('board.errors.moveFailed', { ref });
         if (code === BOARD_ERROR_CODES.wipLimit) {
           const column = current.columns.find((candidate) => candidate.key === toColumn);
@@ -293,7 +307,6 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
         }
         announce(`${t('board.dnd.rolledBack', { ref, column: fromName })} ${t(boardErrorKey(moveError))}`);
         Notification.error({ title, content: t(boardErrorKey(moveError)) });
-        if (code === BOARD_ERROR_CODES.versionConflict || code === BOARD_ERROR_CODES.notFound) void mutate();
         return false;
       }
     },
