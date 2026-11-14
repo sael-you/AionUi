@@ -26,6 +26,9 @@ export const STORAGE_KEYS = {
   /** User-chosen project colours (workspace → palette id); local copy of the backend `ui.projectColors` preference / 项目颜色 */
   PROJECT_COLORS: 'aionui_project_colors',
 
+  /** Project colour edits not yet saved to the backend (workspace → id, null = reset) / 未保存的项目颜色修改 */
+  PROJECT_COLORS_PENDING: 'aionui_project_colors_pending',
+
   /** Theme preference / 主题偏好 */
   THEME: 'aionui_theme',
 

@@ -12,6 +12,9 @@ const TeamIndex: React.FC = () => {
 
   if (isLoading) return <Spin loading />;
   if (!team) return null;
+  // Only the routed team: a response for a previous id never renders (nor
+  // publishes its project identity) under the new route.
+  if (team.id !== id) return <Spin loading />;
   return <TeamPage key={team.id} team={team} />;
 };
 

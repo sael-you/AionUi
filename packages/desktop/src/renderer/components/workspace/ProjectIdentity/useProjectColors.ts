@@ -41,12 +41,32 @@ const writeLocal = (overrides: ProjectColorOverrides) => {
   }
 };
 
-const writeRemote = (overrides: ProjectColorOverrides) => {
-  Promise.resolve()
-    .then(() => configService.set(PROJECT_COLORS_SETTING_KEY, overrides))
-    .catch((error: unknown) => {
-      console.warn('[project-colors] could not save the colours to the backend; kept in this browser', error);
-    });
+type PendingEdits = Map<string, ProjectColorId | null>;
+
+const readPending = (): PendingEdits => {
+  const out: PendingEdits = new Map();
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.PROJECT_COLORS_PENDING);
+    const parsed: unknown = raw ? JSON.parse(raw) : null;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      for (const [workspace, id] of Object.entries(parsed as Record<string, unknown>)) {
+        if (id === null) out.set(workspace, null);
+        else if (isProjectColorId(id)) out.set(workspace, id);
+      }
+    }
+  } catch {
+    // Unreadable: nothing pending.
+  }
+  return out;
+};
+
+const writePending = (edits: PendingEdits) => {
+  try {
+    if (edits.size === 0) localStorage.removeItem(STORAGE_KEYS.PROJECT_COLORS_PENDING);
+    else localStorage.setItem(STORAGE_KEYS.PROJECT_COLORS_PENDING, JSON.stringify(Object.fromEntries(edits)));
+  } catch {
+    // Storage unavailable: the edits stay pending in memory for this session.
+  }
 };
 
 // One shared copy for every consumer (sidebar, headers, file panel), so a
@@ -54,14 +74,16 @@ const writeRemote = (overrides: ProjectColorOverrides) => {
 let overrides: ProjectColorOverrides = readLocal();
 let hydration: 'idle' | 'pending' | 'done' = 'idle';
 /**
- * Choices made before the backend copy is loaded (workspace → id, `null` =
- * reset). They are replayed over the backend map once it arrives, so a stale
- * local copy never overwrites colours this browser has not seen yet.
+ * Edits not yet saved to the backend (workspace → id, `null` = reset), kept in
+ * memory and localStorage until a save succeeds. They are replayed over the
+ * backend map on every load, so neither a stale local copy nor an older backend
+ * value (after a failed save and a reload) can undo a choice.
  */
-const pendingEdits = new Map<string, ProjectColorId | null>();
+let pendingEdits: PendingEdits = readPending();
+let saving = false;
 const listeners = new Set<() => void>();
 
-/** Retry delays after a failed backend load (bounded: the last one repeats). */
+/** Retry delays after a failed backend load or save (bounded: the last one repeats). */
 export const PROJECT_COLORS_RETRY_DELAYS_MS = [2_000, 5_000, 15_000, 30_000, 60_000] as const;
 let retryAttempt = 0;
 let retryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -91,16 +113,44 @@ const scheduleRetry = () => {
   retryAttempt += 1;
   retryTimer = setTimeout(() => {
     retryTimer = null;
-    hydrate();
+    retryNow();
   }, delay);
+};
+
+/**
+ * Save the merged map while edits are pending. A success drops the edits it
+ * covered (edits made during the save stay pending and are saved next); a
+ * failure keeps them and retries with the backoff.
+ */
+const flush = () => {
+  if (hydration !== 'done' || saving || pendingEdits.size === 0) return;
+  saving = true;
+  const saved = new Map(pendingEdits);
+  const payload = overrides;
+  Promise.resolve()
+    .then(() => configService.set(PROJECT_COLORS_SETTING_KEY, payload))
+    .then(() => {
+      saving = false;
+      retryAttempt = 0;
+      for (const [workspace, id] of saved) {
+        if (pendingEdits.has(workspace) && pendingEdits.get(workspace) === id) pendingEdits.delete(workspace);
+      }
+      writePending(pendingEdits);
+      flush();
+    })
+    .catch((error: unknown) => {
+      saving = false;
+      console.warn('[project-colors] could not save the colours to the backend; will retry', error);
+      scheduleRetry();
+    });
 };
 
 /**
  * Load the backend copy. The backend is the source of truth (same colours on
  * every device); when it has none yet, this browser's legacy localStorage
- * choices are migrated to it. Edits made meanwhile are replayed on top. A failed
- * load keeps the local copy and retries with bounded backoff, or at once when the
- * browser comes back online, while any consumer is mounted.
+ * choices are migrated to it. Unsaved edits are replayed on top and saved. A
+ * failed load keeps the local copy and retries with bounded backoff, or at once
+ * when the browser comes back online, while any consumer is mounted.
  */
 const hydrate = () => {
   if (hydration !== 'idle') return;
@@ -113,13 +163,18 @@ const hydrate = () => {
       retryAttempt = 0;
       const remote: unknown = configService.get(PROJECT_COLORS_SETTING_KEY);
       const hasRemote = remote !== undefined && remote !== null;
-      const edits = new Map(pendingEdits);
-      pendingEdits.clear();
-      // No backend copy yet: migrate this browser's choices (edits already included).
-      const next = hasRemote ? applyEdits(sanitizeProjectColorOverrides(remote), edits) : overrides;
+      let next: ProjectColorOverrides;
+      if (hasRemote) {
+        next = applyEdits(sanitizeProjectColorOverrides(remote), pendingEdits);
+      } else {
+        // No backend copy yet: migrate this browser's choices (edits already included).
+        next = overrides;
+        for (const [workspace, id] of Object.entries(next)) pendingEdits.set(workspace, id);
+        writePending(pendingEdits);
+      }
       writeLocal(next);
       publish(next);
-      if (edits.size > 0 || (!hasRemote && Object.keys(next).length > 0)) writeRemote(next);
+      flush();
     })
     .catch(() => {
       hydration = 'idle';
@@ -127,15 +182,19 @@ const hydrate = () => {
     });
 };
 
+const retryNow = () => {
+  if (hydration === 'idle') hydrate();
+  else flush();
+};
+
 const onStorage = (event: StorageEvent) => {
-  // Another tab of this browser changed the colours (it also wrote the backend).
+  // Another tab of this browser changed the colours (it saves them itself).
   if (event.key === STORAGE_KEYS.PROJECT_COLORS) publish(applyEdits(readLocal(), pendingEdits));
 };
 
 const onOnline = () => {
-  if (hydration !== 'idle') return;
   clearRetry();
-  hydrate();
+  retryNow();
 };
 
 const subscribe = (listener: () => void) => {
@@ -159,15 +218,16 @@ const getSnapshot = () => overrides;
 
 /**
  * Set (or with `null`, reset to automatic) the colour of a workspace.
- * Write-through: memory, localStorage, and the backend — once the backend copy
- * is loaded; before that the edit is buffered and merged into it.
+ * Write-through: memory and localStorage at once; the edit stays pending
+ * (durably) until the backend has saved it.
  */
 export const setProjectColorOverride = (workspace: string, id: ProjectColorId | null) => {
   const next = applyEdits(overrides, new Map([[workspace, id]]));
+  pendingEdits.set(workspace, id);
+  writePending(pendingEdits);
   writeLocal(next);
   publish(next);
-  if (hydration === 'done') writeRemote(next);
-  else pendingEdits.set(workspace, id);
+  flush();
 };
 
 /**
@@ -186,11 +246,12 @@ export const useProjectColors = () => {
   return { overrides: current, setProjectColor };
 };
 
-/** Test hook: reload module state from localStorage and forget the backend load. */
+/** Test hook: reload module state (colours and pending edits) from localStorage and forget the backend load. */
 export const resetProjectColorsForTest = () => {
   overrides = readLocal();
   hydration = 'idle';
-  pendingEdits.clear();
+  pendingEdits = readPending();
+  saving = false;
   retryAttempt = 0;
   clearRetry();
   listeners.clear();

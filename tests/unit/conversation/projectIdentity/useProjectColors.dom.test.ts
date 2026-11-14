@@ -184,6 +184,84 @@ describe('useProjectColors (backend client preference)', () => {
     await waitFor(() => expect(result.current.overrides).toEqual({ [WS]: 'slate' }));
   });
 
+  it('keeps a failed save pending across a reload: the choice wins over the older backend value and is re-saved', async () => {
+    backend.state.store.set(PROJECT_COLORS_SETTING_KEY, { [WS]: 'violet', '/root/projects/other': 'teal' });
+    const first = renderHook(() => useProjectColors());
+    await waitFor(() => expect(first.result.current.overrides[WS]).toBe('violet'));
+
+    backend.configService.set.mockRejectedValueOnce(new Error('offline'));
+    act(() => first.result.current.setProjectColor(WS, 'pink'));
+    await waitFor(() => expect(backend.configService.set).toHaveBeenCalledTimes(1));
+    await act(async () => {});
+    expect(backend.state.store.get(PROJECT_COLORS_SETTING_KEY)).toEqual({
+      [WS]: 'violet',
+      '/root/projects/other': 'teal',
+    });
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.PROJECT_COLORS_PENDING) ?? '{}')).toEqual({ [WS]: 'pink' });
+
+    // Reload: fresh module state from localStorage, backend still holds the older value.
+    first.unmount();
+    resetProjectColorsForTest();
+    const second = renderHook(() => useProjectColors());
+    await waitFor(() =>
+      expect(backend.state.store.get(PROJECT_COLORS_SETTING_KEY)).toEqual({
+        [WS]: 'pink',
+        '/root/projects/other': 'teal',
+      })
+    );
+    expect(second.result.current.overrides).toEqual({ [WS]: 'pink', '/root/projects/other': 'teal' });
+    expect(localStorage.getItem(STORAGE_KEYS.PROJECT_COLORS_PENDING)).toBeNull();
+  });
+
+  it('retries a failed save with the backoff while mounted', async () => {
+    vi.useFakeTimers();
+    const { result } = renderHook(() => useProjectColors());
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    backend.configService.set.mockRejectedValueOnce(new Error('offline'));
+    act(() => result.current.setProjectColor(WS, 'green'));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(backend.state.store.get(PROJECT_COLORS_SETTING_KEY)).toBeUndefined();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(PROJECT_COLORS_RETRY_DELAYS_MS[0]);
+    });
+    expect(backend.state.store.get(PROJECT_COLORS_SETTING_KEY)).toEqual({ [WS]: 'green' });
+    expect(localStorage.getItem(STORAGE_KEYS.PROJECT_COLORS_PENDING)).toBeNull();
+  });
+
+  it('keeps an edit made during a save pending and saves it next', async () => {
+    let finish: (() => void) | undefined;
+    const { result } = renderHook(() => useProjectColors());
+    await waitFor(() => expect(backend.configService.whenReady).toHaveBeenCalled());
+    await act(async () => {});
+    backend.configService.set.mockImplementationOnce(
+      (key: string, value: unknown) =>
+        new Promise<void>((resolve) => {
+          finish = () => {
+            backend.state.store.set(key, value);
+            resolve();
+          };
+        })
+    );
+    act(() => result.current.setProjectColor(WS, 'red'));
+    await waitFor(() => expect(finish).toBeDefined());
+    act(() => result.current.setProjectColor('/root/projects/other', 'blue'));
+    await act(async () => {
+      finish?.();
+    });
+    await waitFor(() =>
+      expect(backend.state.store.get(PROJECT_COLORS_SETTING_KEY)).toEqual({
+        [WS]: 'red',
+        '/root/projects/other': 'blue',
+      })
+    );
+    expect(localStorage.getItem(STORAGE_KEYS.PROJECT_COLORS_PENDING)).toBeNull();
+  });
+
   it('keeps the local copy when the backend is unreachable', async () => {
     localStorage.setItem(STORAGE_KEYS.PROJECT_COLORS, JSON.stringify({ [WS]: 'cyan' }));
     backend.state.ready = Promise.reject(new Error('offline'));
