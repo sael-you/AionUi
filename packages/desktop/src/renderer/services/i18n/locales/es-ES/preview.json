@@ -153,7 +153,11 @@
     "tabLimitReached": "Se alcanzó el límite de pestañas ({{count}}). Se reutilizó la pestaña más antigua.",
     "agentFirstUseTitle": "El agente está usando el navegador integrado",
     "agentFirstUseContent": "Puede abrir páginas, hacer clic y leer contenido en este panel. Tu sesión se conserva.",
-    "agentFirstUseAction": "Abrir ajustes"
+    "agentFirstUseAction": "Abrir ajustes",
+    "openInNewTab": "Abrir en una pestaña nueva",
+    "webModeHint": "Versión web: los enlaces pulsados dentro de la página no se registran aquí. Si un sitio se niega a cargar, ábrelo en una pestaña nueva.",
+    "cannotEmbedSelf": "AionUi no se puede mostrar dentro de su propio panel de navegador.",
+    "unsupportedUrl": "Aquí solo se pueden abrir direcciones http y https."
   },
   "saveConflict": "No se pudo guardar: este archivo cambió en el disco después de que lo abrieras. Vuelve a cargarlo para ver los otros cambios; tus ediciones siguen aquí, sin guardar.",
   "persistQuotaExceeded": "El almacenamiento local está lleno, así que ya no se pueden recordar las pestañas abiertas de este proyecto. Cierra algunas pestañas o borra los datos del sitio.",

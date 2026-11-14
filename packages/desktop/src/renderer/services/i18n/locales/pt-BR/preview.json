@@ -153,7 +153,11 @@
     "tabLimitReached": "Limite de abas atingido ({{count}}). A aba mais antiga foi reutilizada.",
     "agentFirstUseTitle": "O agente está usando o navegador interno",
     "agentFirstUseContent": "Ele pode abrir páginas, clicar e ler conteúdo neste painel. Seu login é preservado.",
-    "agentFirstUseAction": "Abrir configurações"
+    "agentFirstUseAction": "Abrir configurações",
+    "openInNewTab": "Abrir em nova aba",
+    "webModeHint": "Versão web: links clicados dentro da página não são rastreados aqui. Se um site se recusar a carregar, abra-o em uma nova aba.",
+    "cannotEmbedSelf": "O AionUi não pode ser exibido dentro do próprio painel de navegador.",
+    "unsupportedUrl": "Somente endereços http e https podem ser abertos aqui."
   },
   "saveConflict": "Não foi possível salvar: este arquivo mudou no disco depois que você o abriu. Recarregue para ver as outras alterações — suas edições continuam aqui, não salvas.",
   "persistQuotaExceeded": "O armazenamento local está cheio, então as abas abertas deste projeto não podem mais ser lembradas. Feche algumas abas ou limpe os dados do site.",

@@ -153,7 +153,11 @@
     "tabLimitReached": "Limite d'onglets atteinte ({{count}}). L'onglet le plus ancien a été réutilisé.",
     "agentFirstUseTitle": "L'agent utilise le navigateur intégré",
     "agentFirstUseContent": "Il peut ouvrir des pages, cliquer et lire du contenu dans ce panneau. Votre connexion est conservée.",
-    "agentFirstUseAction": "Ouvrir les paramètres"
+    "agentFirstUseAction": "Ouvrir les paramètres",
+    "openInNewTab": "Ouvrir dans un nouvel onglet",
+    "webModeHint": "Version web : les liens cliqués dans la page ne sont pas suivis ici. Si un site refuse de se charger, ouvrez-le dans un nouvel onglet.",
+    "cannotEmbedSelf": "AionUi ne peut pas s'afficher dans son propre panneau de navigateur.",
+    "unsupportedUrl": "Seules les adresses http et https peuvent être ouvertes ici."
   },
   "saveConflict": "Échec de l'enregistrement : ce fichier a changé sur le disque depuis que vous l'avez ouvert. Rechargez pour voir les autres modifications — vos modifications sont toujours là, non enregistrées.",
   "persistQuotaExceeded": "Le stockage local est plein : les onglets ouverts de ce projet ne peuvent plus être mémorisés. Fermez des onglets ou effacez les données du site.",
