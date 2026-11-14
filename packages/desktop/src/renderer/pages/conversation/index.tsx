@@ -15,7 +15,10 @@ import {
 import { setCurrentConversation } from '@/renderer/pages/conversation/explorer/currentConversationStore';
 import { useAutoTitle } from '@/renderer/hooks/chat/useAutoTitle';
 import { getConversationOrNull } from '@/renderer/pages/conversation/utils/conversationCache';
-import { getSnapshotConversationProjectId } from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
+import {
+  getSnapshotConversation,
+  getSnapshotConversationProjectId,
+} from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
 
 const ChatConversationIndex: React.FC = () => {
   const { id } = useParams();
@@ -53,6 +56,11 @@ const ChatConversationIndex: React.FC = () => {
   useLayoutEffect(() => {
     if (!id) return;
     setCurrentProject(getSnapshotConversationProjectId(id) ?? null);
+    // Same for the project colour identity (sidebar group, mobile titlebar, file
+    // panel): the snapshot row's workspace, or none for an unknown row — never
+    // the previous conversation's project while the fetch is pending.
+    const snapshot = getSnapshotConversation(id);
+    setCurrentProjectIdentity(snapshot ? projectIdentityOfConversation(snapshot) : null);
   }, [id]);
 
   // Post-resolve authoritative correction: once `conversation.get` lands, publish
@@ -64,12 +72,13 @@ const ChatConversationIndex: React.FC = () => {
     if (data) setCurrentProject(data.project_id ?? null);
   }, [data]);
 
-  // Project colour identity for the surfaces above this route (sidebar group,
-  // mobile titlebar, Layout-level file panel). The chat view itself derives it
-  // from the conversation it renders, so it is never stale.
+  // Authoritative project colour identity once `conversation.get` lands — only
+  // for the conversation this route shows (a late response for the previous
+  // id must not repaint its project). The chat view itself derives it from the
+  // conversation it renders.
   useEffect(() => {
-    if (data) setCurrentProjectIdentity(projectIdentityOfConversation(data));
-  }, [data]);
+    if (data && data.id === id) setCurrentProjectIdentity(projectIdentityOfConversation(data));
+  }, [data, id]);
 
   // Publish the active conversation id so the Layout-level Explorer's "add to
   // chat" can target this conversation's send box. Cleared when leaving the

@@ -9,10 +9,10 @@ import type { TChatConversation } from '@/common/config/storage';
 import type { SidebarResponse } from '@/common/types/sidebar';
 import { buildGroupedHistory } from '@/renderer/pages/conversation/GroupedHistory/utils/groupingHelpers';
 import {
-  normalizeWorkspace,
   standardProjectsFromSidebar,
   workspaceFromUri,
 } from '@/renderer/pages/conversation/GroupedHistory/utils/standardProjects';
+import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
 
 const t = (key: string): string => key;
 

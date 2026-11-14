@@ -17,7 +17,7 @@
 
 import { useSyncExternalStore } from 'react';
 import type { TChatConversation } from '@/common/config/storage';
-import { normalizeWorkspace } from '@/renderer/pages/conversation/GroupedHistory/utils/standardProjects';
+import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
 
 export type ProjectIdentity = { projectId: string | null; workspace: string };
 

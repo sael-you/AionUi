@@ -51,14 +51,14 @@ describe('project theme colour maths', () => {
   });
 
   it('keeps a colour that already passes and darkens / lightens one that does not', () => {
-    expect(ensureContrast('#475569', ['#ffffff'], 4.5, 'light')).toBe('#475569');
-    const amber = ensureContrast('#d97706', ['#ffffff'], 4.5, 'light');
+    expect(ensureContrast('#475569', ['#ffffff'], 4.5)).toBe('#475569');
+    const amber = ensureContrast('#d97706', ['#ffffff'], 4.5);
     expect(amber).not.toBe('#d97706');
     expect(contrastRatio(amber, '#ffffff')).toBeGreaterThanOrEqual(4.5);
     // Darkened, not replaced: still warmer (more red than blue) like the original amber.
     const [r, , b] = hexToRgb(amber);
     expect(r).toBeGreaterThan(b);
-    const dim = ensureContrast('#475569', ['#0e0e0e'], 4.5, 'dark');
+    const dim = ensureContrast('#475569', ['#0e0e0e'], 4.5);
     expect(relativeLuminance(dim)).toBeGreaterThan(relativeLuminance('#475569'));
     expect(contrastRatio(dim, '#0e0e0e')).toBeGreaterThanOrEqual(4.5);
   });
@@ -116,5 +116,35 @@ describe('buildProjectTheme', () => {
       '--project-border': tokens.border,
       '--project-focus-shadow': tokens.focusShadow,
     });
+  });
+});
+
+describe('custom theme surfaces', () => {
+  // A sepia "light" user theme: darker surfaces than the built-in light theme.
+  const SEPIA = ['#e9e1cc', '#ded4ba', '#d2c6a6'];
+  const amber = PROJECT_COLORS.find((c) => c.id === 'amber')!;
+
+  it('keeps AA / 3:1 on the active surfaces, where the built-in reference would fail', () => {
+    const builtIn = buildProjectTheme(amber, 'light');
+    const tintedSepia = SEPIA.map((bg) => composite(builtIn.accent, PROJECT_TINT_ALPHA, bg));
+    expect(worstContrast(builtIn.accentContrast, tintedSepia)).toBeLessThan(TEXT_CONTRAST_MIN);
+
+    const tokens = buildProjectTheme(amber, 'light', { surfaces: SEPIA });
+    expect(worstContrast(tokens.accentContrast, tintedSepia)).toBeGreaterThanOrEqual(TEXT_CONTRAST_MIN);
+    expect(worstContrast(tokens.focus, SEPIA)).toBeGreaterThanOrEqual(FOCUS_CONTRAST_MIN);
+    const high = buildProjectTheme(amber, 'light', { surfaces: SEPIA, highContrast: true });
+    expect(worstContrast(high.accentContrast, SEPIA)).toBeGreaterThanOrEqual(HIGH_CONTRAST_TEXT_MIN);
+  });
+
+  it('follows the surfaces, not the theme name, for the adjustment direction', () => {
+    // A "dark" theme with light surfaces still gets readable (darkened) text.
+    const tokens = buildProjectTheme(amber, 'dark', { surfaces: ['#f5f5f5'] });
+    expect(
+      contrastRatio(tokens.accentContrast, composite(amber.dark, PROJECT_TINT_ALPHA, '#f5f5f5'))
+    ).toBeGreaterThanOrEqual(TEXT_CONTRAST_MIN);
+  });
+
+  it('falls back to the built-in surfaces when none are given', () => {
+    expect(buildProjectTheme(amber, 'light', { surfaces: [] })).toEqual(buildProjectTheme(amber, 'light'));
   });
 });

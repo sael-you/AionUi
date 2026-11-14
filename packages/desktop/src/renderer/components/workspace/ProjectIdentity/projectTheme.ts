@@ -20,11 +20,14 @@
  * | `--project-border`          | resting border of the chip and send box          | accent at 40 % alpha         |
  * | `--project-focus-shadow`    | focus glow of the send box                       | soft accent glow             |
  *
- * Contrast is measured against the theme's three surface backgrounds
- * (`--bg-base`, `--bg-1`, `--bg-2` of `styles/themes/default-color-scheme.css`)
- * with the tint composited on top, and the worst case must pass. When the
- * palette accent falls short, it is mixed towards black (light theme) or white
- * (dark theme) in 5 % steps until it passes, so the hue stays recognisable.
+ * Contrast is measured against the active theme's three surface backgrounds
+ * (`--bg-base`, `--bg-1`, `--bg-2`, read from the theme root by
+ * `themeSurfaces.ts`, so user themes are covered; the built-in values of
+ * `styles/themes/default-color-scheme.css` are the fallback) with the tint
+ * composited on top, and the worst case must pass. When the
+ * palette accent falls short, it is mixed towards black (light surfaces) or
+ * white (dark surfaces) in 5 % steps until it passes, so the hue stays
+ * recognisable.
  *
  * With `highContrast` (the OS asks for more contrast) the tint is dropped, the
  * text colour is raised to 7:1 (WCAG AAA), and borders and the focus ring use
@@ -50,7 +53,7 @@ export const HIGH_CONTRAST_TEXT_MIN = 7;
 /** WCAG 1.4.11 for UI component boundaries (focus border). */
 export const FOCUS_CONTRAST_MIN = 3;
 
-/** Surface backgrounds per theme (`--bg-base`, `--bg-1`, `--bg-2`), the reference for contrast. */
+/** Built-in surface backgrounds per theme (`--bg-base`, `--bg-1`, `--bg-2`): the fallback reference for contrast. */
 export const PROJECT_SURFACES: Record<ThemeAppearance, readonly string[]> = {
   light: ['#ffffff', '#f9fafb', '#f2f3f5'],
   dark: ['#0e0e0e', '#1a1a1a', '#262626'],
@@ -112,16 +115,15 @@ export const worstContrast = (color: string, backgrounds: readonly string[]): nu
 
 /**
  * The palette colour itself when it reaches `min` against every background,
- * otherwise the first 5 % step towards black (light) / white (dark) that does.
+ * otherwise the first 5 % step towards black (light surfaces) / white (dark
+ * surfaces) that does. The direction follows the surfaces, not the theme name,
+ * so a user theme with unusual surfaces still gets the best reachable contrast;
+ * when even black / white cannot reach `min`, that extreme is returned.
  */
-export const ensureContrast = (
-  hex: string,
-  backgrounds: readonly string[],
-  min: number,
-  appearance: ThemeAppearance
-): string => {
+export const ensureContrast = (hex: string, backgrounds: readonly string[], min: number): string => {
   const base = hexToRgb(hex);
-  const target = appearance === 'dark' ? WHITE : BLACK;
+  const target =
+    worstContrast(rgbToHex(BLACK), backgrounds) >= worstContrast(rgbToHex(WHITE), backgrounds) ? BLACK : WHITE;
   for (let step = 0; step <= 20; step += 1) {
     const candidate = rgbToHex(mix(base, target, step / 20));
     if (worstContrast(candidate, backgrounds) >= min) return candidate;
@@ -138,20 +140,24 @@ export type ProjectThemeTokens = {
   focusShadow: string;
 };
 
-export type ProjectThemeOptions = { highContrast?: boolean };
+export type ProjectThemeOptions = {
+  highContrast?: boolean;
+  /** Opaque `#rrggbb` surfaces of the active theme; defaults to the built-in ones. */
+  surfaces?: readonly string[];
+};
 
 /** Tokens of one project colour for one theme. */
 export const buildProjectTheme = (
   color: ProjectColor,
   appearance: ThemeAppearance,
-  { highContrast = false }: ProjectThemeOptions = {}
+  { highContrast = false, surfaces: activeSurfaces }: ProjectThemeOptions = {}
 ): ProjectThemeTokens => {
   const accent = projectAccent(color, appearance);
-  const surfaces = PROJECT_SURFACES[appearance];
+  const surfaces = activeSurfaces && activeSurfaces.length > 0 ? activeSurfaces : PROJECT_SURFACES[appearance];
   const tintedSurfaces = highContrast ? surfaces : surfaces.map((bg) => composite(accent, PROJECT_TINT_ALPHA, bg));
   const textMin = highContrast ? HIGH_CONTRAST_TEXT_MIN : TEXT_CONTRAST_MIN;
-  const accentContrast = ensureContrast(accent, tintedSurfaces, textMin, appearance);
-  const focus = ensureContrast(accent, surfaces, FOCUS_CONTRAST_MIN, appearance);
+  const accentContrast = ensureContrast(accent, tintedSurfaces, textMin);
+  const focus = ensureContrast(accent, surfaces, FOCUS_CONTRAST_MIN);
 
   if (highContrast) {
     return {

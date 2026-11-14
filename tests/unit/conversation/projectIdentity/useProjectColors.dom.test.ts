@@ -5,7 +5,7 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const backend = vi.hoisted(() => {
   const state = {
@@ -28,6 +28,7 @@ vi.mock('@/common/config/configService', () => ({ configService: backend.configS
 
 import { STORAGE_KEYS } from '@/common/config/storageKeys';
 import {
+  PROJECT_COLORS_RETRY_DELAYS_MS,
   PROJECT_COLORS_SETTING_KEY,
   resetProjectColorsForTest,
   sanitizeProjectColorOverrides,
@@ -43,6 +44,10 @@ beforeEach(() => {
   backend.state.ready = Promise.resolve();
   vi.clearAllMocks();
   resetProjectColorsForTest();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe('sanitizeProjectColorOverrides', () => {
@@ -101,20 +106,82 @@ describe('useProjectColors (backend client preference)', () => {
     await waitFor(() => expect(backend.configService.set).toHaveBeenLastCalledWith(PROJECT_COLORS_SETTING_KEY, {}));
   });
 
-  it('keeps a choice made while the backend copy is still loading', async () => {
+  it('merges a choice made while loading over the backend map (no remote colour is lost)', async () => {
     let release: (() => void) | undefined;
     backend.state.ready = new Promise<void>((resolve) => {
       release = resolve;
     });
-    backend.state.store.set(PROJECT_COLORS_SETTING_KEY, { [WS]: 'violet' });
+    // The backend knows two projects; this browser's stale copy only one of them.
+    backend.state.store.set(PROJECT_COLORS_SETTING_KEY, { [WS]: 'violet', '/root/projects/other': 'teal' });
+    localStorage.setItem(STORAGE_KEYS.PROJECT_COLORS, JSON.stringify({ [WS]: 'violet' }));
+    resetProjectColorsForTest();
 
     const { result } = renderHook(() => useProjectColors());
     await waitFor(() => expect(backend.configService.whenReady).toHaveBeenCalled());
     act(() => result.current.setProjectColor(WS, 'pink'));
+    expect(result.current.overrides).toEqual({ [WS]: 'pink' }); // shown at once
+    expect(backend.configService.set).not.toHaveBeenCalled(); // buffered, not a blind overwrite
+
     await act(async () => {
       release?.();
     });
-    expect(result.current.overrides).toEqual({ [WS]: 'pink' });
+    const merged = { [WS]: 'pink', '/root/projects/other': 'teal' };
+    expect(result.current.overrides).toEqual(merged);
+    expect(readLocal()).toEqual(merged);
+    await waitFor(() => expect(backend.configService.set).toHaveBeenCalledWith(PROJECT_COLORS_SETTING_KEY, merged));
+    expect(backend.state.store.get(PROJECT_COLORS_SETTING_KEY)).toEqual(merged);
+  });
+
+  it('replays a reset made while loading over the backend map', async () => {
+    let release: (() => void) | undefined;
+    backend.state.ready = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    backend.state.store.set(PROJECT_COLORS_SETTING_KEY, { [WS]: 'violet', '/root/projects/other': 'teal' });
+
+    const { result } = renderHook(() => useProjectColors());
+    await waitFor(() => expect(backend.configService.whenReady).toHaveBeenCalled());
+    act(() => result.current.setProjectColor(WS, null));
+    await act(async () => {
+      release?.();
+    });
+    expect(result.current.overrides).toEqual({ '/root/projects/other': 'teal' });
+  });
+
+  it('retries a failed backend load with backoff while mounted, keeping edits made meanwhile', async () => {
+    vi.useFakeTimers();
+    backend.configService.whenReady.mockImplementationOnce(() => Promise.reject(new Error('offline')));
+    backend.state.store.set(PROJECT_COLORS_SETTING_KEY, { '/root/projects/other': 'teal' });
+
+    const { result } = renderHook(() => useProjectColors());
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(backend.configService.whenReady).toHaveBeenCalledTimes(1);
+    act(() => result.current.setProjectColor(WS, 'amber'));
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(PROJECT_COLORS_RETRY_DELAYS_MS[0]);
+    });
+    expect(backend.configService.whenReady).toHaveBeenCalledTimes(2);
+    expect(result.current.overrides).toEqual({ [WS]: 'amber', '/root/projects/other': 'teal' });
+    expect(backend.configService.set).toHaveBeenCalledWith(PROJECT_COLORS_SETTING_KEY, {
+      [WS]: 'amber',
+      '/root/projects/other': 'teal',
+    });
+  });
+
+  it('retries at once when the browser comes back online', async () => {
+    backend.configService.whenReady.mockImplementationOnce(() => Promise.reject(new Error('offline')));
+    backend.state.store.set(PROJECT_COLORS_SETTING_KEY, { [WS]: 'slate' });
+
+    const { result } = renderHook(() => useProjectColors());
+    await act(async () => {});
+    expect(result.current.overrides).toEqual({});
+    act(() => {
+      window.dispatchEvent(new Event('online'));
+    });
+    await waitFor(() => expect(result.current.overrides).toEqual({ [WS]: 'slate' }));
   });
 
   it('keeps the local copy when the backend is unreachable', async () => {

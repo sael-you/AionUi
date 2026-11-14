@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
 import React from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -30,6 +32,7 @@ import {
   resetCurrentProjectIdentityForTest,
 } from '@/renderer/components/workspace/ProjectIdentity/currentProjectIdentityStore';
 import { resetProjectColorsForTest } from '@/renderer/components/workspace/ProjectIdentity/useProjectColors';
+import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
 
 beforeEach(() => {
   localStorage.clear();
@@ -55,6 +58,25 @@ describe('project identity of a conversation', () => {
     expect(projectIdentityOfConversation(null)).toBe(null);
     expect(projectIdentityOf('', 'p')).toBe(null);
     expect(projectIdentityOf('/a/b', undefined)).toEqual({ projectId: null, workspace: '/a/b' });
+  });
+});
+
+describe('module boundaries', () => {
+  it('the shared ProjectIdentity module does not import page code', () => {
+    const dir = path.resolve(
+      __dirname,
+      '../../../../packages/desktop/src/renderer/components/workspace/ProjectIdentity'
+    );
+    const files = fs.readdirSync(dir).filter((f) => /\.(ts|tsx)$/.test(f));
+    expect(files.length).toBeGreaterThan(0);
+    for (const file of files) {
+      expect(fs.readFileSync(path.join(dir, file), 'utf8'), file).not.toMatch(/from '[^']*renderer\/pages\//);
+    }
+  });
+
+  it('normalizeWorkspace lives in the renderer workspace utilities', () => {
+    expect(normalizeWorkspace('C:\\a\\')).toBe('C:/a');
+    expect(normalizeWorkspace('/root/x/')).toBe('/root/x');
   });
 });
 
