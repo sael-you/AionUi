@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { BoardBanners, BoardDisabledState, BoardErrorState, BoardLiveRegion, BoardSkeleton } from '../BoardStates';
 import { CardDrawer } from '../CardDrawer';
+import { ForceReasonDialog } from '../card/ForceReasonDialog';
 import type { BoardController } from '../hooks/useBoard';
 import { columnName } from '../utils/boardFormat';
 import { activeCardCount, groupCardsByColumn, groupColumnsByCategory, visibleColumns } from '../utils/boardModel';
@@ -135,6 +136,7 @@ export const TasksTab: React.FC<{ board: BoardController }> = ({ board }) => {
       {body}
       <BoardLiveRegion announcement={board.announcement} />
       <CardDrawer board={board} cardId={openCardId} onClose={() => setOpenCardId(null)} />
+      <ForceReasonDialog board={board} />
     </div>
   );
 };

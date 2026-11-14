@@ -20,6 +20,7 @@ import { ipcBridge } from '@/common';
 import {
   BOARD_ERROR_CODES,
   BOARD_LIMITS,
+  DEPLOYING_COLUMN,
   type BoardCard,
   type BoardCardSummary,
   type BoardColumnInput,
@@ -74,6 +75,8 @@ export type MoveOptions = {
 
 export type BoardAnnouncement = { text: string; id: number };
 
+export type ForceRequest = { cardId: string; toColumn: string; anchor: MoveAnchor; ref: string; fromName: string };
+
 export type BoardController = {
   projectId: string;
   snapshot: BoardSnapshot | undefined;
@@ -95,6 +98,13 @@ export type BoardController = {
   forceMove: (cardId: string, toColumn: string, reason: string) => Promise<boolean>;
   /** The project's Board Keeper conversation id, created on first use (D40); null on failure (reported). */
   keeperConversation: () => Promise<string | null>;
+  /**
+   * A "Move anyway" out of a gate (or Deploying) waiting for the owner's reason
+   * (R3: forcing a card out of a gate needs one). Rendered by ForceReasonDialog.
+   */
+  forceRequest: ForceRequest | null;
+  confirmForce: (reason: string) => Promise<boolean>;
+  cancelForce: () => void;
   saveColumns: (columns: BoardColumnInput[]) => Promise<boolean>;
   reactivate: () => Promise<boolean>;
   /** Fold a card returned by another write (drawer PATCH, archive…) into the snapshot. */
@@ -127,6 +137,7 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
   snapshotRef.current = data;
 
   const [announcement, setAnnouncement] = useState<BoardAnnouncement | null>(null);
+  const [forceRequest, setForceRequest] = useState<ForceRequest | null>(null);
   const announce = useCallback((text: string) => {
     setAnnouncement((previous) => ({ text, id: (previous?.id ?? 0) + 1 }));
   }, []);
@@ -182,6 +193,15 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
       const ref = cardRef(card.number);
       const fromName = columnNameByKey(current.columns, card.column_key, t);
       const toName = columnNameByKey(current.columns, toColumn, t);
+      const fromColumn = current.columns.find((column) => column.key === card.column_key);
+      /** Owner override: out of a gate (or Deploying) it needs a reason, so ask for one first. */
+      const moveAnyway = () => {
+        if (fromColumn?.kind === 'gate' || fromColumn?.key === DEPLOYING_COLUMN) {
+          setForceRequest({ cardId, toColumn, anchor, ref, fromName });
+          return;
+        }
+        void moveCard(cardId, toColumn, anchor, { force: true });
+      };
 
       const previous = { column_key: card.column_key, position: card.position };
       const optimistic = {
@@ -243,7 +263,7 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
                 size='small'
                 onClick={() => {
                   Notification.remove(id);
-                  void moveCard(cardId, toColumn, anchor, { force: true });
+                  moveAnyway();
                 }}
               >
                 {t('board.errors.moveAnyway')}
@@ -272,7 +292,7 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
                 size='small'
                 onClick={() => {
                   Notification.remove(id);
-                  void moveCard(cardId, toColumn, anchor, { force: true });
+                  moveAnyway();
                 }}
               >
                 {t('board.errors.moveAnyway')}
@@ -409,6 +429,22 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
     }
   }, [projectId, mutate, t]);
 
+  const confirmForce = useCallback(
+    async (reason: string): Promise<boolean> => {
+      const request = forceRequest;
+      if (!request || !reason.trim()) return false;
+      const ok = await moveCard(request.cardId, request.toColumn, request.anchor, {
+        force: true,
+        reason: reason.trim(),
+      });
+      if (ok) setForceRequest(null);
+      return ok;
+    },
+    [forceRequest, moveCard]
+  );
+
+  const cancelForce = useCallback(() => setForceRequest(null), []);
+
   const reactivate = useCallback(async (): Promise<boolean> => {
     try {
       // Unarchiving the project clears `board_settings.archived_at` (SPEC §6 ProjectBoardPorts).
@@ -439,6 +475,9 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
       setEnabled,
       forceMove,
       keeperConversation,
+      forceRequest,
+      confirmForce,
+      cancelForce,
       saveColumns,
       reactivate,
       applyCard,
@@ -458,6 +497,9 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
       setEnabled,
       forceMove,
       keeperConversation,
+      forceRequest,
+      confirmForce,
+      cancelForce,
       saveColumns,
       reactivate,
       applyCard,

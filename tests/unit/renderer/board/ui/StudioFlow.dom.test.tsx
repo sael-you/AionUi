@@ -209,6 +209,35 @@ describe('studio move errors', () => {
     );
   });
 
+  it('asks for a reason before "Move anyway" takes a card out of a gate', async () => {
+    bridge.moveCard.mockRejectedValueOnce(backendError(409, 'board_exit_rule', { missing: ['open_questions'] }));
+    bridge.moveCard.mockResolvedValueOnce(fullCard(makeCard(3, 'planned', 0, { title: 'Small fix' })));
+    renderPage();
+
+    await keyboardMove('Move TASK-3', 'ArrowRight');
+    await waitFor(() => expect(notifyWarning).toHaveBeenCalled());
+    const config = notifyWarning.mock.calls[0][0] as { btn: React.ReactElement<{ onClick: () => void }> };
+    act(() => config.btn.props.onClick());
+
+    const dialog = await screen.findByRole('dialog', { name: 'Move TASK-3 out of Decision' });
+    expect(bridge.moveCard).toHaveBeenCalledTimes(1);
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Move out' }));
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent('Enter a reason');
+    expect(bridge.moveCard).toHaveBeenCalledTimes(1);
+
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Reason' }), { target: { value: 'Owner call' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Move out' }));
+    await waitFor(() =>
+      expect(bridge.moveCard).toHaveBeenLastCalledWith({
+        card_id: 'card-3',
+        to_column: 'planned',
+        expected_column: 'decision',
+        force: true,
+        reason: 'Owner call',
+      })
+    );
+  });
+
   it('announces a gate refusal and offers to open the decision', async () => {
     bridge.moveCard.mockRejectedValue(backendError(409, 'board_gate_use_decision'));
     bridge.getCard.mockResolvedValue(makeDetail(fullCard(makeCard(3, 'decision', 2048, { title: 'Small fix' }))));

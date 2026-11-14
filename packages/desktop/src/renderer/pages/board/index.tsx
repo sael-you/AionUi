@@ -25,6 +25,7 @@ import {
   BoardSkeleton,
 } from '@/renderer/components/board/BoardStates';
 import { CardDrawer } from '@/renderer/components/board/CardDrawer';
+import { ForceReasonDialog } from '@/renderer/components/board/card/ForceReasonDialog';
 import { useBoard } from '@/renderer/components/board/hooks/useBoard';
 import { useProjectWorkspace } from '@/renderer/components/board/hooks/useBoardDirectory';
 import { useBoardNarrow, useReducedMotion } from '@/renderer/components/board/hooks/useMediaQuery';
@@ -145,6 +146,7 @@ export const BoardPage: React.FC<{ projectId: string }> = ({ projectId }) => {
       {body}
       <BoardLiveRegion announcement={board.announcement} />
       <CardDrawer board={board} cardId={openCardId} onClose={() => setOpenCardId(null)} />
+      <ForceReasonDialog board={board} />
       <ColumnSettingsDialog board={board} visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
