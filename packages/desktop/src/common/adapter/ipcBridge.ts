@@ -98,12 +98,17 @@ import type { AgentMetadata } from '@/renderer/utils/model/agentTypes';
 import type { Theme } from '@/common/theme/types';
 import type { AttachFolderRequest, ProjectDetailDto, ProjectEntryDto } from '@/common/types/project';
 import type {
+  BoardAssignRequest,
+  BoardAssignResponse,
+  BoardBrainstormRequest,
   BoardCard,
   BoardCardDetail,
   BoardChangedEvent,
   BoardColumnsResponse,
   BoardEvent,
   BoardEventPage,
+  BoardGateRequest,
+  BoardKeeperResponse,
   BoardSettings,
   BoardSnapshot,
   CreateBoardCardRequest,
@@ -649,6 +654,26 @@ export const board = {
   moveCard: httpPost<BoardCard, { card_id: string } & MoveBoardCardRequest>(
     (p) => `${boardCardPath(p.card_id)}/move`,
     ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/board/cards/{id}/gate → owner decision on a gate card (idempotent by key). */
+  decideGate: httpPost<BoardCard, { card_id: string } & BoardGateRequest>(
+    (p) => `${boardCardPath(p.card_id)}/gate`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/board/cards/{id}/assign → department conversation (or team) + packet (SPEC §6). */
+  assign: httpPost<BoardAssignResponse, { card_id: string } & BoardAssignRequest>(
+    (p) => `${boardCardPath(p.card_id)}/assign`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/board/cards/{id}/brainstorm → assign with role `brainstorm`. */
+  brainstorm: httpPost<BoardAssignResponse, { card_id: string } & BoardBrainstormRequest>(
+    (p) => `${boardCardPath(p.card_id)}/brainstorm`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/projects/{pid}/board/keeper → the project's Board Keeper conversation, created when missing (D40). */
+  ensureKeeper: httpPost<BoardKeeperResponse, { project_id: string }>(
+    (p) => `${boardProjectPath(p.project_id)}/keeper`,
+    () => ({})
   ),
   /** POST /api/board/cards/{id}/archive (soft delete). */
   archiveCard: httpPost<BoardCard, { card_id: string }>(

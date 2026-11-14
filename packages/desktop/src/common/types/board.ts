@@ -32,6 +32,47 @@ export const BOARD_PRIORITIES: readonly BoardPriority[] = ['low', 'medium', 'hig
 export const BOARD_SIZES: readonly BoardSize[] = ['s', 'm', 'l'];
 export const BOARD_TIERS: readonly BoardTier[] = ['t0', 't1', 't2', 't3'];
 
+/**
+ * Departments of the studio flow (design/board-and-departments.md §3). Routing and
+ * reviews use these keys; other strings are accepted and shown as written.
+ */
+export const BOARD_DEPARTMENTS = [
+  'lead',
+  'triage',
+  'technical',
+  'business',
+  'marketing',
+  'accuracy',
+  'research',
+  'engineering',
+  'qa',
+  'release',
+] as const;
+
+/** Column keys of the `studio` template (SPEC §3), the only template the product creates (D39). */
+export const STUDIO_COLUMN_KEYS = [
+  'ideas',
+  'inbox',
+  'triage',
+  'review',
+  'accuracy',
+  'decision',
+  'planned',
+  'building',
+  'local_test',
+  'ready_to_deploy',
+  'deploying',
+  'deployed',
+  'done',
+  'parked',
+  'rejected',
+] as const;
+
+/** The gate whose approval deploys (S5); until then only the owner override moves cards out of it. */
+export const READY_TO_DEPLOY_COLUMN = 'ready_to_deploy';
+/** Moved only by the deploy automation; the owner may force a card out (R3 `deploy_forced`). */
+export const DEPLOYING_COLUMN = 'deploying';
+
 /** Content limits (SPEC R9) — enforced server-side (422 `board_invalid`), mirrored for inline validation. */
 export const BOARD_LIMITS = {
   title: 200,
@@ -39,6 +80,7 @@ export const BOARD_LIMITS = {
   comment: 4_000,
   listItems: 20,
   listItemLength: 40,
+  routing: 10,
 } as const;
 
 /** `board_settings` row. A project that never had a board answers `enabled: false`, `version: 0`. */
@@ -52,8 +94,17 @@ export type BoardSettings = {
   settings: Record<string, unknown>;
   /** Set while the project is archived → the board is read-only (409 `board_archived`). */
   archived_at: number | null;
+  /** The project's Board Keeper conversation (D40); null until it is created. */
+  keeper_conversation_id: string | null;
   created_at: number;
   updated_at: number;
+};
+
+/** Gate configuration (SPEC §3 Templates): who must decide and where approve / reject lead. */
+export type BoardGateConfig = {
+  owner_if?: Record<string, unknown>;
+  on_approve?: string;
+  on_reject?: string;
 };
 
 /** `board_columns` row. `name: null` = i18n default `board.columns.<key>`. */
@@ -67,7 +118,7 @@ export type BoardColumn = {
   agent_move: BoardAgentMove;
   wip_limit: number | null;
   exit_rule: Record<string, unknown> | null;
-  gate: Record<string, unknown> | null;
+  gate: BoardGateConfig | null;
   position: number;
   archived: boolean;
 };
@@ -98,6 +149,8 @@ export type BoardCardSummary = {
   blocked_reason: string | null;
   /** Dependencies whose target has not reached a `resolution=completed` column (R5, derived). */
   open_dependency_count: number;
+  /** In a gate column and matching its `owner_if` (R3, derived): only the owner's decision releases it. */
+  needs_decision: boolean;
   version: number;
   archived_at: number | null;
   created_at: number;
@@ -159,6 +212,9 @@ export type BoardQuestion = {
 
 export type BoardLinkRole = 'lead' | 'review' | 'build' | 'brainstorm' | 'qa' | 'other';
 
+/** Roles the owner picks when assigning (brainstorm has its own action). */
+export const BOARD_ASSIGN_ROLES: readonly BoardLinkRole[] = ['lead', 'review', 'build', 'qa', 'other'];
+
 /** `board_card_links` row with the linked conversation's status (`removed` once deleted). */
 export type BoardLink = {
   card_id: string;
@@ -166,6 +222,7 @@ export type BoardLink = {
   role: BoardLinkRole;
   department: string | null;
   conversation_name: string | null;
+  /** The conversation's runtime status, or `removed` once the conversation is deleted (SPEC §6). */
   conversation_status: string;
   created_at: number;
 };
@@ -257,6 +314,7 @@ export type UpdateBoardCardRequest = {
   tier?: BoardTier | null;
   labels?: string[];
   skills?: string[];
+  routing?: string[];
   blocked?: boolean;
   blocked_reason?: string | null;
 };
@@ -268,8 +326,50 @@ export type MoveBoardCardRequest = {
   after_id?: string;
   /** Column the card was in when the user started the move (placement guard). */
   expected_column: string;
-  /** Owner override (WIP / exit rules). Never sent by agents. */
+  /** Owner override (WIP / exit rules / out of a gate). Never sent by agents. */
   force?: boolean;
+  /** Required when `force` takes a card out of a gate or Deploying (events `gate_forced` / `deploy_forced`). */
+  reason?: string;
+};
+
+/** `POST /api/board/cards/{id}/gate` body (owner only). */
+export type BoardGateRequest = {
+  decision: 'approve' | 'reject';
+  reason?: string;
+  idempotency_key: string;
+};
+
+/** `POST /api/board/cards/{id}/assign` body: exactly one of `assistant_id` / `team_id`. */
+export type BoardAssignRequest = {
+  assistant_id?: string;
+  team_id?: string;
+  department: string;
+  role: BoardLinkRole;
+  idempotency_key: string;
+};
+
+/** `POST /api/board/cards/{id}/brainstorm` body. */
+export type BoardBrainstormRequest = {
+  assistant_id?: string;
+  idempotency_key: string;
+};
+
+/** Why an assignment opened a root conversation instead of a child of the lead (SPEC §6). */
+export type BoardParentFallback = 'depth' | 'fanout' | 'team';
+
+/** Assign / brainstorm response. */
+export type BoardAssignResponse = {
+  card: BoardCard;
+  link: BoardLink;
+  conversation_id: string;
+  parent_fallback: BoardParentFallback | null;
+  /** False when the packet could not be delivered (`packet_send_failed`; the drawer offers Resend). */
+  packet_sent: boolean;
+};
+
+/** `POST /api/projects/{pid}/board/keeper` response (D40): the existing or newly created keeper conversation. */
+export type BoardKeeperResponse = {
+  conversation_id: string;
 };
 
 /** `POST /api/board/cards/{id}/comments` body. */
@@ -296,6 +396,7 @@ export const BOARD_ERROR_CODES = {
   useAgentRouter: 'board_use_agent_router',
   archived: 'board_archived',
   idempotencyConflict: 'board_idempotency_conflict',
+  alreadyLinked: 'board_already_linked',
   featureNotEnabled: 'board_feature_not_enabled',
   dependencyCycle: 'board_dependency_cycle',
   notFound: 'board_not_found',
