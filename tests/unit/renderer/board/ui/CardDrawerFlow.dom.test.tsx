@@ -400,14 +400,14 @@ describe('assign, brainstorm and conversations', () => {
 
   it('offers no team while the project workspace is unknown, and none for a project without one', async () => {
     bridge.teamList.mockResolvedValue([{ id: 't1', name: 'Council', workspace: '/x' }]);
-    let answer: (value: unknown) => void = () => {};
+    let answer: ((value: unknown) => void) | undefined;
     bridge.projectGet.mockReturnValue(new Promise((resolve) => (answer = resolve)));
     renderAt(summary);
     const modal = await openTeamAssign(await openDrawer(1, 'Dark mode'));
     expect(within(modal).queryByRole('combobox', { name: 'Team' })).not.toBeInTheDocument();
     expect(within(modal).queryByText('This project has no team yet.')).not.toBeInTheDocument();
 
-    answer({ project_id: 'p1', name: 'Alpha', explorer: { workspace_pe_id: '', entries: [] } });
+    answer?.({ project_id: 'p1', name: 'Alpha', explorer: { workspace_pe_id: '', entries: [] } });
     expect(await within(modal).findByText('This project has no team yet.')).toBeInTheDocument();
     expect(within(modal).queryByRole('combobox', { name: 'Team' })).not.toBeInTheDocument();
   });
