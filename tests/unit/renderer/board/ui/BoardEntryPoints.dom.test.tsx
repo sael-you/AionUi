@@ -6,7 +6,8 @@
 
 /** Entry points (D40): the sidebar board button, the Board Keeper badge, and the studio flow at ≤768 px. */
 
-import { cleanup, fireEvent, screen, within } from '@testing-library/react';
+import { Notification } from '@arco-design/web-react';
+import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -17,11 +18,13 @@ vi.mock('@/common', async (importOriginal) =>
 vi.mock('@/renderer/hooks/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'u1', username: 'me' } }) }));
 
 import { BoardKeeperBadge, isBoardKeeperConversation } from '@/renderer/components/board/BoardKeeperBadge';
+import { useOpenBoardKeeper } from '@/renderer/components/board/hooks/useBoardDirectory';
 import { BOARD_NARROW_QUERY } from '@/renderer/components/board/hooks/useMediaQuery';
 import { SidebarBoardButton } from '@/renderer/components/board/SidebarBoardButton';
 import { BoardPage } from '@/renderer/pages/board';
 
 import {
+  backendError,
   bridge,
   createTestI18n,
   makeCard,
@@ -74,6 +77,47 @@ describe('sidebar board button', () => {
     expect(
       screen.getByRole('button', { name: i18n.t('board.sidebar.openBoardOf', { project: 'Alpha' }) })
     ).toBeInTheDocument();
+  });
+});
+
+const KeeperOpener: React.FC = () => {
+  const open = useOpenBoardKeeper();
+  return (
+    <span role='button' tabIndex={0} onClick={() => void open('p1')}>
+      talk
+    </span>
+  );
+};
+
+describe('Talk to the board from the sidebar menu', () => {
+  const renderOpener = () =>
+    renderWithBoard(
+      <Routes>
+        <Route path='/' element={<KeeperOpener />} />
+        <Route path='/conversation/:id' element={<div>keeper conversation</div>} />
+      </Routes>
+    );
+
+  it('opens (or creates) the keeper conversation', async () => {
+    bridge.ensureKeeper.mockResolvedValue({ conversation_id: 'keeper-9' });
+    renderOpener();
+    fireEvent.click(screen.getByRole('button', { name: 'talk' }));
+    expect(await screen.findByText('keeper conversation')).toBeInTheDocument();
+    expect(bridge.ensureKeeper).toHaveBeenCalledWith({ project_id: 'p1' });
+  });
+
+  it('reports a failure with the translated reason', async () => {
+    const notify = vi.spyOn(Notification, 'error').mockImplementation(() => undefined as never);
+    bridge.ensureKeeper.mockRejectedValue(backendError(403, 'board_disabled'));
+    renderOpener();
+    fireEvent.click(screen.getByRole('button', { name: 'talk' }));
+    await waitFor(() =>
+      expect(notify).toHaveBeenCalledWith({
+        title: "Couldn't open the Board Keeper",
+        content: 'The board is turned off.',
+      })
+    );
+    notify.mockRestore();
   });
 });
 

@@ -4,13 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/** Lookups the board needs from the rest of the app: the project's workspace path and the assistants. */
+/** Lookups between the board and the rest of the app: project workspace, assistants, the keeper conversation. */
 
-import { useMemo } from 'react';
+import { Notification } from '@arco-design/web-react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
 
 import { ipcBridge } from '@/common';
+
+import { boardErrorKey } from '../utils/boardErrors';
 
 /** Workspace path of a project (its `role=workspace` root), for matching the project's teams. */
 export const useProjectWorkspace = (projectId: string): string | null => {
@@ -31,5 +35,25 @@ export const useAssistantOptions = (): Array<{ value: string; label: string }> =
         .filter((assistant) => assistant.enabled)
         .map((assistant) => ({ value: assistant.id, label: assistant.name_i18n?.[i18n.language] || assistant.name })),
     [data, i18n.language]
+  );
+};
+
+/**
+ * Opens a project's Board Keeper conversation from outside the board (sidebar
+ * project menu, D40): the server returns the existing keeper or creates it.
+ */
+export const useOpenBoardKeeper = (): ((projectId: string) => Promise<void>) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  return useCallback(
+    async (projectId: string) => {
+      try {
+        const keeper = await ipcBridge.board.ensureKeeper.invoke({ project_id: projectId });
+        void navigate(`/conversation/${encodeURIComponent(keeper.conversation_id)}`);
+      } catch (error) {
+        Notification.error({ title: t('board.keeper.failed'), content: t(boardErrorKey(error)) });
+      }
+    },
+    [navigate, t]
   );
 };

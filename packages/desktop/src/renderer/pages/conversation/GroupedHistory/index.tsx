@@ -13,7 +13,7 @@ import { restrictToVerticalAxis } from '@/renderer/utils/ui/dndModifiers';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Button, Dropdown, Empty, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
-import { FolderClose, MoreOne, Plus, Right, ViewGridDetail } from '@icon-park/react';
+import { Comment, FolderClose, MoreOne, Plus, Right, ViewGridDetail } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import WorkspaceCollapse from '../components/WorkspaceCollapse';
 import { SidebarBoardButton } from '@/renderer/components/board/SidebarBoardButton';
+import { useOpenBoardKeeper } from '@/renderer/components/board/hooks/useBoardDirectory';
 import ConversationChildren from './components/ConversationChildren';
 import MoveUnderModal from './components/MoveUnderModal';
 import ConversationRow from './ConversationRow';
@@ -63,6 +64,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   const { id } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const openBoardKeeper = useOpenBoardKeeper();
   const layout = useLayoutContext();
   const isMobile = layout?.isMobile ?? false;
   const { theme } = useThemeContext();
@@ -646,6 +648,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         handleArchiveProject(group.displayName, group.conversations);
                       } else if (key === 'board' && group.projectId) {
                         void navigate(`/board/${encodeURIComponent(group.projectId)}`);
+                      } else if (key === 'keeper' && group.projectId) {
+                        void openBoardKeeper(group.projectId);
                       } else if (key === 'color:auto') {
                         setProjectColor(colorKey, null);
                       } else if (key.startsWith('color:')) {
@@ -688,6 +692,12 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       <span className='flex items-center gap-8px'>
                         <ViewGridDetail theme='outline' size='14' />
                         {t('board.openBoard')}
+                      </span>
+                    </Menu.Item>
+                    <Menu.Item key='keeper' disabled={!group.projectId}>
+                      <span className='flex items-center gap-8px'>
+                        <Comment theme='outline' size='14' />
+                        {t('board.keeper.talk')}
                       </span>
                     </Menu.Item>
                     {/* A folder with no visible conversation has nothing to archive here. */}
