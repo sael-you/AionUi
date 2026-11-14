@@ -10,7 +10,6 @@ import { useAuth } from '@renderer/hooks/context/AuthContext';
 import { useLayoutContext } from '@renderer/hooks/context/LayoutContext';
 import { blurActiveElement } from '@renderer/utils/ui/focus';
 import { useThemeContext } from '@renderer/hooks/context/ThemeContext';
-import { useRovingTree } from '@renderer/hooks/ui/useRovingTree';
 import { isPrimaryApplicationShortcut } from '@renderer/utils/ui/keyboardShortcuts';
 import { useTeamList } from '@renderer/pages/team/hooks/useTeamList';
 import {
@@ -51,7 +50,6 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
   const [filterQuery, setFilterQuery] = useState('');
   const filterInputRef = useRef<RefInputType | null>(null);
   const treeRef = useRef<HTMLDivElement | null>(null);
-  const tree = useRovingTree(treeRef);
   const { theme, setTheme } = useThemeContext();
   const [isBatchMode, setIsBatchMode] = useState(false);
   const isSettings = pathname.startsWith('/settings');
@@ -188,8 +186,13 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isPrimaryApplicationShortcut(event, { key: 'k', targetGuard: 'embedded-editor' })) return;
       event.preventDefault();
-      if (layout?.siderCollapsed) layout.setSiderCollapsed?.(false);
-      requestAnimationFrame(() => filterInputRef.current?.focus());
+      const wasCollapsed = Boolean(layout?.siderCollapsed);
+      if (wasCollapsed) layout?.setSiderCollapsed?.(false);
+      // An opening sidebar mounts the field on its next render.
+      requestAnimationFrame(() => {
+        if (filterInputRef.current) filterInputRef.current.focus();
+        else window.setTimeout(() => filterInputRef.current?.focus(), 60);
+      });
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -316,12 +319,8 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
                 remaining height; the footer stays pinned below it. */}
             <div
               ref={treeRef}
-              role='tree'
-              aria-label={t('conversation.sidebar.treeLabel')}
-              data-testid='sider-tree'
+              data-testid='sider-scroll'
               className={classNames('flex-1 min-h-0 overflow-y-auto mt-4px', siderStyles.scrollArea)}
-              onKeyDown={tree.onKeyDown}
-              onFocus={tree.onFocus}
             >
               <Suspense fallback={null}>
                 <WorkspaceGroupedHistory

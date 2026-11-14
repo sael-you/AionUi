@@ -6,12 +6,49 @@
 
 import { projectSurfaceClasses, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import { treeArrowIntent } from '@/renderer/hooks/ui/useRovingTree';
-import { Button, Spin } from '@arco-design/web-react';
+import { Spin } from '@arco-design/web-react';
 import { Right } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './SidebarTree.module.css';
+
+/**
+ * A tree row that runs an action (empty-state "Start one", "Show N more"): a
+ * tree item like the conversations around it, so the arrows reach it and the
+ * tree holds no stray buttons. Enter / Space / click activate it.
+ */
+const ActionTreeItem: React.FC<{
+  className: string;
+  level: number;
+  treeKey: string;
+  testId: string;
+  label?: string;
+  onActivate?: () => void;
+  children: React.ReactNode;
+}> = ({ className, level, treeKey, testId, label, onActivate, children }) => (
+  <div
+    className={classNames(className, { [styles.actionItem]: Boolean(onActivate) })}
+    role='treeitem'
+    tabIndex={-1}
+    aria-level={level}
+    aria-label={label}
+    data-tree-item=''
+    data-tree-level={level}
+    data-tree-key={treeKey}
+    data-testid={testId}
+    onClick={onActivate}
+    onKeyDown={(event) => {
+      if (event.target !== event.currentTarget || !onActivate) return;
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onActivate();
+      }
+    }}
+  >
+    {children}
+  </div>
+);
 
 /** Conversations shown before "Show N more". */
 export const PROJECT_VISIBLE_LIMIT = 8;
@@ -41,7 +78,7 @@ export type ProjectGroupProps = {
   onStartConversation?: () => void;
   /** Sidebar collapsed to icons: no header, rows only. */
   siderCollapsed?: boolean;
-  /** Offset of the sticky header from the scroll top (below the section header). */
+  /** Offset of the sticky header from the scroll top; defaults to below the section header (CSS). */
   stickyTop?: number;
   /** Tree level of the project row. */
   level?: number;
@@ -69,7 +106,7 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
   actionsVisible = false,
   onStartConversation,
   siderCollapsed = false,
-  stickyTop = 0,
+  stickyTop,
   level = 2,
   children,
 }) => {
@@ -117,7 +154,7 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
       {!siderCollapsed && (
         <div
           className={classNames(expanded && styles.groupHeaderSticky)}
-          style={expanded ? { top: stickyTop } : undefined}
+          style={expanded && stickyTop !== undefined ? { top: stickyTop } : undefined}
         >
           <div
             className={classNames(styles.projectRow, 'group', {
@@ -186,29 +223,32 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
         >
           {visibleRows}
           {!siderCollapsed && rows.length === 0 && (
-            <div className={styles.emptyHint} data-testid={`project-empty-${workspace}`}>
+            <ActionTreeItem
+              className={styles.emptyHint}
+              level={level + 1}
+              treeKey={`project-empty:${workspace}`}
+              testId={`project-empty-${workspace}`}
+              label={`${t('conversation.sidebar.project.empty')} ${t('conversation.sidebar.project.startOne')}`}
+              onActivate={onStartConversation}
+            >
               <span>{t('conversation.sidebar.project.empty')}</span>
-              {onStartConversation && (
-                <Button type='text' size='mini' className={styles.linkButton} onClick={onStartConversation}>
-                  {t('conversation.sidebar.project.startOne')}
-                </Button>
-              )}
-            </div>
+              {onStartConversation && <span className={styles.link}>{t('conversation.sidebar.project.startOne')}</span>}
+            </ActionTreeItem>
           )}
           {!siderCollapsed && (hiddenCount > 0 || (showAll && rows.length > PROJECT_VISIBLE_LIMIT)) && (
-            <div className={styles.showMore}>
-              <Button
-                type='text'
-                size='mini'
-                className={styles.linkButton}
-                data-testid={`project-show-more-${workspace}`}
-                onClick={() => setShowAll((value) => !value)}
-              >
+            <ActionTreeItem
+              className={styles.showMore}
+              level={level + 1}
+              treeKey={`project-more:${workspace}`}
+              testId={`project-show-more-${workspace}`}
+              onActivate={() => setShowAll((value) => !value)}
+            >
+              <span className={styles.link}>
                 {hiddenCount > 0
                   ? t('conversation.sidebar.project.showMore', { count: hiddenCount })
                   : t('conversation.sidebar.project.showLess')}
-              </Button>
-            </div>
+              </span>
+            </ActionTreeItem>
           )}
         </div>
       )}

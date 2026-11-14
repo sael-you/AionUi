@@ -12,12 +12,13 @@ import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useThemeContext } from '@/renderer/hooks/context/ThemeContext';
 import { useCronJobsMap } from '@/renderer/pages/cron';
 import { restrictToVerticalAxis } from '@/renderer/utils/ui/dndModifiers';
+import { useRovingTree } from '@/renderer/hooks/ui/useRovingTree';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Button, Dropdown, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
 import { FolderClose, MoreOne, Plus } from '@icon-park/react';
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -82,6 +83,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   // The project shown in the main area: its group is highlighted with the same accent.
   const currentProjectWorkspace = useCurrentProjectIdentity()?.workspace ?? null;
   const filterQueryNormalized = normalizeSidebarQuery(filterQuery);
+  const treeRef = useRef<HTMLDivElement | null>(null);
+  const rovingTree = useRovingTree(treeRef);
   // Which project's menu is open (keeps its actions visible while open).
   const [openProjectMenu, setOpenProjectMenu] = useState<string | null>(null);
   const { getJobStatus, markAsRead, setActiveConversation } = useCronJobsMap();
@@ -668,7 +671,16 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         </div>
       </AionModal>
 
-      <div>
+      {/* The sidebar tree (WAI-ARIA tree, roving tabindex): sections → teams /
+          projects → conversations → sub-conversations. */}
+      <div
+        ref={treeRef}
+        role='tree'
+        aria-label={t('conversation.sidebar.treeLabel')}
+        data-testid='sider-tree'
+        onKeyDown={rovingTree.onKeyDown}
+        onFocus={rovingTree.onFocus}
+      >
         {/* L1: Pinned section */}
         <DndContext
           sensors={sensors}
@@ -847,7 +859,6 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       actionsVisible={isMobile || menuOpen}
                       onStartConversation={startConversation}
                       siderCollapsed={collapsed}
-                      stickyTop={24}
                       level={2}
                     >
                       {rows}
@@ -881,13 +892,12 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
             )}
           </div>
         )}
-
-        {filtering && !hasFilterResults && (
-          <div className='px-8px py-16px text-12px text-t-tertiary text-center' role='status'>
-            {t('conversation.sidebar.filter.noResults')}
-          </div>
-        )}
       </div>
+      {filtering && !hasFilterResults && (
+        <div className='px-8px py-16px text-12px text-t-tertiary text-center' role='status'>
+          {t('conversation.sidebar.filter.noResults')}
+        </div>
+      )}
     </>
   );
 };
