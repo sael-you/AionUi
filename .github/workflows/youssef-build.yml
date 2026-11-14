@@ -51,11 +51,13 @@ jobs:
       - name: Migrations added on youssef must be numbered 900-999
         working-directory: aioncore
         run: |
-          git fetch -q origin main
-          added=$(git diff --name-only --diff-filter=A origin/main...HEAD -- crates/aionui-db/migrations | xargs -r -n1 basename)
+          # Compare with iOfficeAI upstream main directly: youssef merges upstream updates itself, so a migration
+          # that upstream added (e.g. 044_*) is not "ours" even when sael-you/AionCore main has not moved yet.
+          git fetch -q https://github.com/iOfficeAI/AionCore.git main
+          added=$(git diff --name-only --diff-filter=A FETCH_HEAD...HEAD -- crates/aionui-db/migrations | xargs -r -n1 basename)
           bad=$(printf '%s\n' "$added" | grep -v '^$' | grep -vE '^9[0-9]{2}_' || true)
           if [ -n "$bad" ]; then
-            echo "::error::New AionCore migrations on youssef must use 900-999 (main keeps upstream's numbering): $bad"
+            echo "::error::Migrations added on youssef (not in upstream main) must use 900-999: $bad"
             exit 1
           fi
           echo "youssef migrations: ${added:-none}"
