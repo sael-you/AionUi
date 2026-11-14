@@ -829,5 +829,8 @@
       "moveFailed": "انتقال گفتگو ناموفق بود.",
       "unsupportedParent": "این نوع گفتگو نمی‌تواند زیرمجموعه داشته باشد."
     }
+  },
+  "projectIdentity": {
+    "label": "پروژه: {{name}}"
   }
 }

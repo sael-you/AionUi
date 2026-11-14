@@ -831,5 +831,8 @@
       "moveFailed": "Sohbet taşınamadı.",
       "unsupportedParent": "Bu sohbet türü alt sohbetlere sahip olamaz."
     }
+  },
+  "projectIdentity": {
+    "label": "Proje: {{name}}"
   }
 }

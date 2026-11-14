@@ -1061,6 +1061,7 @@ export type I18nKey =
   | 'conversation.planBar.expand'
   | 'conversation.planBar.progress'
   | 'conversation.planBar.title'
+  | 'conversation.projectIdentity.label'
   | 'conversation.runtimePreparing.sendboxHint'
   | 'conversation.sendbox.hint'
   | 'conversation.sendbox.hintWithSessions'

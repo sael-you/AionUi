@@ -829,5 +829,8 @@
       "moveFailed": "移動對話失敗。",
       "unsupportedParent": "此類型的對話不支援建立子對話。"
     }
+  },
+  "projectIdentity": {
+    "label": "專案：{{name}}"
   }
 }

@@ -86,3 +86,9 @@ export const useThemeContext = () => {
   }
   return context;
 };
+
+/**
+ * Light/dark appearance of the active theme, `'light'` outside a ThemeProvider.
+ * For leaf visuals (e.g. project colours) that must not crash when rendered alone.
+ */
+export const useThemeAppearance = (): ThemeAppearance => useContext(ThemeContext)?.theme ?? 'light';

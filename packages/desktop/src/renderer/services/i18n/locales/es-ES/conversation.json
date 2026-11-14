@@ -830,5 +830,8 @@
       "moveFailed": "No se pudo mover la conversación.",
       "unsupportedParent": "Este tipo de conversación no admite subconversaciones."
     }
+  },
+  "projectIdentity": {
+    "label": "Proyecto: {{name}}"
   }
 }

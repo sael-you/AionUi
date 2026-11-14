@@ -25,6 +25,12 @@ import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
 import { dispatchWorkspaceHasFilesEvent } from '@/renderer/utils/workspace/workspaceEvents';
+import {
+  projectSurfaceClasses,
+  useCurrentProjectIdentity,
+  useProjectTheme,
+} from '@/renderer/components/workspace/ProjectIdentity';
+import classNames from 'classnames';
 
 import { ipcBridge } from '@/common';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
@@ -263,6 +269,10 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
   const board = useBoard(projectId);
   const tasksAvailable = Boolean(board.snapshot) || (Boolean(board.error) && !board.unavailable);
   const activeTab = selectedTab === 'tasks' && !tasksAvailable ? 'files' : selectedTab;
+  // Project colour identity of the route, only when it belongs to this panel's
+  // project (a switch publishes the new identity once the conversation loads).
+  const identity = useCurrentProjectIdentity();
+  const project = useProjectTheme(identity?.projectId === projectId ? identity.workspace : null);
   // Busy flag for the top-bar refresh: spins the icon and disables re-click while a
   // refresh is in flight (so rapid clicks don't fan out redundant backend round-trips).
   const [refreshing, setRefreshing] = useState(false);
@@ -532,7 +542,11 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
     <Button
       type='text'
       size='small'
-      className={`flex-shrink-0 !px-8px ${activeTab === key ? '!text-t-primary !font-medium !bg-2' : '!text-t-secondary'}`}
+      className={classNames(
+        'flex-shrink-0 !px-8px',
+        activeTab === key ? '!text-t-primary !font-medium !bg-2' : '!text-t-secondary',
+        activeTab === key && project && projectSurfaceClasses.activeTab
+      )}
       aria-pressed={activeTab === key}
       onClick={() => setActiveTab(key)}
     >
@@ -541,7 +555,12 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
   );
 
   return (
-    <div className='h-full flex flex-col min-h-0'>
+    <div
+      className='h-full flex flex-col min-h-0'
+      data-project-surface={project ? 'panel' : undefined}
+      {...project?.dataAttributes}
+      style={project?.style}
+    >
       {/* Host component-switcher tab bar: 文件 = explorer, 变更 = source control,
           任务 = the project board (Tasks).
           Tabs are left-aligned and scroll horizontally when they overflow; the
@@ -560,7 +579,13 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
           text / search icon / tree arrow) starts at 20px. 12px is not arbitrary —
           the sider's resize handle covers the leftmost 12px and sits above this
           content, so anything placed to its left cannot be clicked. */}
-      <div className='flex items-center gap-4px ps-12px pe-8px py-4px flex-shrink-0 border-b border-[var(--bg-3)]'>
+      <div
+        data-project-strip={project ? 'top' : undefined}
+        className={classNames(
+          'flex items-center gap-4px ps-12px pe-8px py-4px flex-shrink-0 border-b border-[var(--bg-3)]',
+          project && projectSurfaceClasses.stripTop
+        )}
+      >
         <div className='flex items-center gap-2px overflow-x-auto flex-1 min-w-0'>
           {tabButton('files', t('conversation.explorer.tabs.files'))}
           {tabButton('changes', t('conversation.explorer.tabs.changes'))}

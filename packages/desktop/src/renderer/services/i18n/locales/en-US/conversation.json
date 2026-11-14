@@ -829,5 +829,8 @@
       "moveFailed": "Failed to move the conversation.",
       "unsupportedParent": "This conversation type cannot have sub-conversations."
     }
+  },
+  "projectIdentity": {
+    "label": "Project: {{name}}"
   }
 }

@@ -30,8 +30,16 @@ import { useConversationHierarchyActions } from './hooks/useConversationHierarch
 import { useConversationTreeExpansion } from './hooks/useConversationTreeExpansion';
 import { useConversations } from './hooks/useConversations';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
-import { useProjectColors } from './hooks/useProjectColors';
-import { PROJECT_COLORS, isProjectColorId, projectAccent, resolveProjectColor } from './utils/projectColors';
+import {
+  PROJECT_COLORS,
+  isProjectColorId,
+  projectAccent,
+  projectSurfaceClasses,
+  resolveProjectColor,
+  useCurrentProjectIdentity,
+  useProjectColors,
+  useProjectTheme,
+} from '@/renderer/components/workspace/ProjectIdentity';
 import { normalizeWorkspace } from './utils/standardProjects';
 import type { ConversationRowProps, WorkspaceGroupedHistoryProps } from './types';
 import {
@@ -64,6 +72,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       projectAccent(resolveProjectColor(normalizeWorkspace(workspace), projectColorOverrides), theme),
     [projectColorOverrides, theme]
   );
+  // The project shown in the main area: its group is highlighted with the same accent.
+  const currentProjectWorkspace = useCurrentProjectIdentity()?.workspace ?? null;
+  const currentProjectTheme = useProjectTheme(currentProjectWorkspace);
   const { getJobStatus, markAsRead, setActiveConversation } = useCronJobsMap();
 
   const {
@@ -626,6 +637,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                 const accent = projectAccentOf(group.workspace);
                 const colorKey = normalizeWorkspace(group.workspace);
                 const chosenColor = projectColorOverrides[colorKey];
+                const isCurrentProject = colorKey === currentProjectWorkspace;
                 const projectMenu = (
                   <Menu
                     onClickMenuItem={(key) => {
@@ -695,6 +707,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       stickyHeader
                       stickyTop={28}
                       iconColor={accent}
+                      active={isCurrentProject}
+                      activeClassName={projectSurfaceClasses.activeGroup}
+                      activeStyle={isCurrentProject ? currentProjectTheme?.style : undefined}
                       header={
                         <span className='text-14px font-[500] truncate flex-1 text-t-primary min-w-0'>
                           {group.displayName}

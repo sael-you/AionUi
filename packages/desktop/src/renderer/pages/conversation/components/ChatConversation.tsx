@@ -14,6 +14,7 @@ import { classifyConfigSetError, useAcpConfigOptions } from '@/renderer/hooks/ag
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { usePresetAssistantInfo } from '@/renderer/hooks/agent/usePresetAssistantInfo';
 import { iconColors } from '@/renderer/styles/colors';
+import { projectIdentityOfConversation } from '@/renderer/components/workspace/ProjectIdentity';
 import { Button, Dropdown, Menu, Message, Tooltip, Typography } from '@arco-design/web-react';
 import { History } from '@icon-park/react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -227,6 +228,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
     // switches — no remount). ChatLayout then renders chat only.
     previewHosted: Boolean(conversation.project_id),
     workspacePath: conversation.extra?.workspace,
+    projectWorkspace: projectIdentityOfConversation(conversation)?.workspace,
     // Key the workspace-panel collapse preference per-project (falls back to
     // conversation_id inside ChatLayout when there is no project) so the panel's
     // open/closed state restores when switching conversations within a project.
@@ -437,6 +439,7 @@ const ChatConversation: React.FC<{
       workspaceEnabled={workspaceEnabled}
       previewHosted={Boolean(conversation?.project_id)}
       workspacePath={conversation?.extra?.workspace}
+      projectWorkspace={projectIdentityOfConversation(conversation)?.workspace}
       workspacePreferenceKey={conversation?.project_id}
       isTemporaryWorkspace={
         (conversation?.extra as { is_temporary_workspace?: boolean } | undefined)?.is_temporary_workspace

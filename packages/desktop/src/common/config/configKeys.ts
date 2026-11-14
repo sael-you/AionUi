@@ -35,6 +35,8 @@ export type ConfigKeyMap = {
   'pet.size': number | undefined;
   'pet.dnd': boolean | undefined;
   'pet.confirmEnabled': boolean | undefined;
+  /** User-chosen project colours: normalised workspace path → palette id (see ProjectIdentity/projectColors). */
+  'ui.projectColors': Record<string, string> | undefined;
   // Removed: 'system.autoPreviewOfficeFiles'. It gated "auto-open a preview tab
   // when an Office file appears in the workspace", a behaviour that was dropped
   // along with its hook — leaving the toggle would have been a switch the user

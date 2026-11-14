@@ -829,5 +829,8 @@
       "moveFailed": "会話を移動できませんでした。",
       "unsupportedParent": "この種類の会話はサブ会話を持てません。"
     }
+  },
+  "projectIdentity": {
+    "label": "プロジェクト: {{name}}"
   }
 }

@@ -8,6 +8,10 @@ import ChatConversation from './components/ChatConversation';
 import { usePreviewContext } from '@/renderer/pages/conversation/Preview';
 import { previewScopeKey } from '@/renderer/pages/conversation/Preview/context/previewScope';
 import { setCurrentProject } from '@/renderer/pages/conversation/explorer/currentProjectStore';
+import {
+  projectIdentityOfConversation,
+  setCurrentProjectIdentity,
+} from '@/renderer/components/workspace/ProjectIdentity';
 import { setCurrentConversation } from '@/renderer/pages/conversation/explorer/currentConversationStore';
 import { useAutoTitle } from '@/renderer/hooks/chat/useAutoTitle';
 import { getConversationOrNull } from '@/renderer/pages/conversation/utils/conversationCache';
@@ -58,6 +62,13 @@ const ChatConversationIndex: React.FC = () => {
   // right value this is a no-op.
   useEffect(() => {
     if (data) setCurrentProject(data.project_id ?? null);
+  }, [data]);
+
+  // Project colour identity for the surfaces above this route (sidebar group,
+  // mobile titlebar, Layout-level file panel). The chat view itself derives it
+  // from the conversation it renders, so it is never stale.
+  useEffect(() => {
+    if (data) setCurrentProjectIdentity(projectIdentityOfConversation(data));
   }, [data]);
 
   // Publish the active conversation id so the Layout-level Explorer's "add to
