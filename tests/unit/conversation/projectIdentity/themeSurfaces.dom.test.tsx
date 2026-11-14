@@ -8,8 +8,10 @@ import React from 'react';
 import { act, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/common/config/configService', () => ({
-  configService: { whenReady: () => Promise.resolve(), get: () => undefined, set: () => Promise.resolve() },
+vi.mock('@/common/adapter/httpBridge', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/common/adapter/httpBridge')>()),
+  // Project colour preferences: no backend in these tests.
+  httpRequest: vi.fn(async () => undefined),
 }));
 
 import { PROJECT_COLORS, buildProjectTheme, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';

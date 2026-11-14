@@ -23,10 +23,13 @@ export const STORAGE_KEYS = {
   /** Expanded parent conversations in the sidebar hierarchy / 侧边栏层级会话展开状态 */
   CONVERSATION_TREE_EXPANSION: 'aionui_conversation_tree_expansion',
 
-  /** User-chosen project colours (workspace → palette id); local copy of the backend `ui.projectColors` preference / 项目颜色 */
+  /**
+   * Project colours (workspace → palette id): local copy of the backend `ui.projectColors` preference,
+   * stored as `<key>:<account id>`; the bare key is the legacy browser-wide copy / 项目颜色
+   */
   PROJECT_COLORS: 'aionui_project_colors',
 
-  /** Project colour edits not yet saved to the backend (workspace → id, null = reset) / 未保存的项目颜色修改 */
+  /** Project colour edits not yet saved to the backend, as `<key>:<account id>` (workspace → id, null = reset) / 未保存的项目颜色修改 */
   PROJECT_COLORS_PENDING: 'aionui_project_colors_pending',
 
   /** Theme preference / 主题偏好 */

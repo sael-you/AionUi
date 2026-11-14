@@ -33,8 +33,10 @@ vi.mock('@/renderer/hooks/context/ThemeContext', () => ({
   useThemeContext: () => ({ theme: env.appearance }),
 }));
 
-vi.mock('@/common/config/configService', () => ({
-  configService: { whenReady: () => Promise.resolve(), get: () => undefined, set: () => Promise.resolve() },
+vi.mock('@/common/adapter/httpBridge', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/common/adapter/httpBridge')>()),
+  // Project colour preferences: no backend in these tests.
+  httpRequest: vi.fn(async () => undefined),
 }));
 
 vi.mock('@/renderer/hooks/context/ConversationContext', () => ({

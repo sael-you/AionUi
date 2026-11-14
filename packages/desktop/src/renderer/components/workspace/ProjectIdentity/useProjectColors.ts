@@ -4,15 +4,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { configService } from '@/common/config/configService';
+import { httpRequest } from '@/common/adapter/httpBridge';
 import { STORAGE_KEYS } from '@/common/config/storageKeys';
-import { useCallback, useSyncExternalStore } from 'react';
+import { useOptionalAuth } from '@/renderer/hooks/context/AuthContext';
+import { useCallback, useLayoutEffect, useSyncExternalStore } from 'react';
 import { isProjectColorId, type ProjectColorId } from './projectColors';
 
 export type ProjectColorOverrides = Record<string, ProjectColorId>;
 
 /** Backend client-preference key (per user, `/api/settings/client`). */
 export const PROJECT_COLORS_SETTING_KEY = 'ui.projectColors';
+
+/** Owner id of the single local user (desktop app, or no auth provider). */
+export const LOCAL_PROJECT_COLORS_OWNER = 'local';
 
 /** Keep only `workspace → valid palette id` entries. */
 export const sanitizeProjectColorOverrides = (value: unknown): ProjectColorOverrides => {
@@ -24,62 +28,96 @@ export const sanitizeProjectColorOverrides = (value: unknown): ProjectColorOverr
   return out;
 };
 
-const readLocal = (): ProjectColorOverrides => {
+// ---------------------------------------------------------------------------
+// Backend (per user: the session cookie selects the account)
+// ---------------------------------------------------------------------------
+
+const loadRemote = async (): Promise<unknown> => {
+  const data = await httpRequest<Record<string, unknown> | undefined>(
+    'GET',
+    `/api/settings/client?keys=${encodeURIComponent(PROJECT_COLORS_SETTING_KEY)}`
+  );
+  return data?.[PROJECT_COLORS_SETTING_KEY];
+};
+
+const saveRemote = (value: ProjectColorOverrides): Promise<void> =>
+  httpRequest<void>('PUT', '/api/settings/client', { [PROJECT_COLORS_SETTING_KEY]: value });
+
+// ---------------------------------------------------------------------------
+// localStorage, scoped per account
+// ---------------------------------------------------------------------------
+
+/** This account's local copy of its colours. */
+export const projectColorsCacheKey = (owner: string) => `${STORAGE_KEYS.PROJECT_COLORS}:${owner}`;
+/** This account's edits not yet saved to the backend. */
+export const projectColorsPendingKey = (owner: string) => `${STORAGE_KEYS.PROJECT_COLORS_PENDING}:${owner}`;
+
+const readJson = (key: string): unknown => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.PROJECT_COLORS);
-    return raw ? sanitizeProjectColorOverrides(JSON.parse(raw)) : {};
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
   } catch {
-    return {};
+    return null;
   }
 };
 
-const writeLocal = (overrides: ProjectColorOverrides) => {
+const writeJson = (key: string, value: unknown | null) => {
   try {
-    localStorage.setItem(STORAGE_KEYS.PROJECT_COLORS, JSON.stringify(overrides));
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // Storage unavailable (private mode / quota): the backend copy still holds the choice.
+    // Storage unavailable (private mode / quota): memory and the backend still hold the choice.
   }
+};
+
+/**
+ * The account's local copy. The legacy browser-wide copy (before colours were
+ * per account) is adopted by the first account that loads here, then removed,
+ * so it can never be migrated into a second account.
+ */
+const readLocal = (owner: string): ProjectColorOverrides => {
+  const scoped = readJson(projectColorsCacheKey(owner));
+  if (scoped !== null) return sanitizeProjectColorOverrides(scoped);
+  const legacy = readJson(STORAGE_KEYS.PROJECT_COLORS);
+  if (legacy === null) return {};
+  const adopted = sanitizeProjectColorOverrides(legacy);
+  writeJson(projectColorsCacheKey(owner), adopted);
+  writeJson(STORAGE_KEYS.PROJECT_COLORS, null);
+  return adopted;
 };
 
 type PendingEdits = Map<string, ProjectColorId | null>;
 
-const readPending = (): PendingEdits => {
+const readPending = (owner: string): PendingEdits => {
   const out: PendingEdits = new Map();
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.PROJECT_COLORS_PENDING);
-    const parsed: unknown = raw ? JSON.parse(raw) : null;
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      for (const [workspace, id] of Object.entries(parsed as Record<string, unknown>)) {
-        if (id === null) out.set(workspace, null);
-        else if (isProjectColorId(id)) out.set(workspace, id);
-      }
+  const parsed = readJson(projectColorsPendingKey(owner));
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    for (const [workspace, id] of Object.entries(parsed as Record<string, unknown>)) {
+      if (id === null) out.set(workspace, null);
+      else if (isProjectColorId(id)) out.set(workspace, id);
     }
-  } catch {
-    // Unreadable: nothing pending.
   }
   return out;
 };
 
-const writePending = (edits: PendingEdits) => {
-  try {
-    if (edits.size === 0) localStorage.removeItem(STORAGE_KEYS.PROJECT_COLORS_PENDING);
-    else localStorage.setItem(STORAGE_KEYS.PROJECT_COLORS_PENDING, JSON.stringify(Object.fromEntries(edits)));
-  } catch {
-    // Storage unavailable: the edits stay pending in memory for this session.
-  }
-};
+// ---------------------------------------------------------------------------
+// Shared store (one copy for every consumer: sidebar, headers, file panel)
+// ---------------------------------------------------------------------------
 
-// One shared copy for every consumer (sidebar, headers, file panel), so a
-// colour change shows everywhere at once.
-let overrides: ProjectColorOverrides = readLocal();
+/** Account the state belongs to; `null` = signed out / not known yet (nothing is loaded or saved). */
+let owner: string | null = null;
+/** Bumped on every account change: async work started for another account is ignored. */
+let generation = 0;
+let overrides: ProjectColorOverrides = {};
 let hydration: 'idle' | 'pending' | 'done' = 'idle';
 /**
- * Edits not yet saved to the backend (workspace → id, `null` = reset), kept in
- * memory and localStorage until a save succeeds. They are replayed over the
- * backend map on every load, so neither a stale local copy nor an older backend
- * value (after a failed save and a reload) can undo a choice.
+ * The account's edits not yet saved to the backend (workspace → id, `null` =
+ * reset), kept in memory and in the account's localStorage until a save
+ * succeeds. They are replayed over the backend map on every load, so neither a
+ * stale local copy nor an older backend value (after a failed save and a
+ * reload) can undo a choice.
  */
-let pendingEdits: PendingEdits = readPending();
+let pendingEdits: PendingEdits = new Map();
 let saving = false;
 const listeners = new Set<() => void>();
 
@@ -88,9 +126,19 @@ export const PROJECT_COLORS_RETRY_DELAYS_MS = [2_000, 5_000, 15_000, 30_000, 60_
 let retryAttempt = 0;
 let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
+const notify = () => {
+  for (const listener of listeners) listener();
+};
+
 const publish = (next: ProjectColorOverrides) => {
   overrides = next;
-  for (const listener of listeners) listener();
+  notify();
+};
+
+const persist = () => {
+  if (owner === null) return;
+  writeJson(projectColorsCacheKey(owner), overrides);
+  writeJson(projectColorsPendingKey(owner), pendingEdits.size > 0 ? Object.fromEntries(pendingEdits) : null);
 };
 
 const applyEdits = (base: ProjectColorOverrides, edits: ReadonlyMap<string, ProjectColorId | null>) => {
@@ -108,12 +156,12 @@ const clearRetry = () => {
 };
 
 const scheduleRetry = () => {
-  if (listeners.size === 0 || retryTimer !== null) return;
+  if (listeners.size === 0 || retryTimer !== null || owner === null) return;
   const delay = PROJECT_COLORS_RETRY_DELAYS_MS[Math.min(retryAttempt, PROJECT_COLORS_RETRY_DELAYS_MS.length - 1)];
   retryAttempt += 1;
   retryTimer = setTimeout(() => {
     retryTimer = null;
-    retryNow();
+    resume();
   }, delay);
 };
 
@@ -123,22 +171,25 @@ const scheduleRetry = () => {
  * failure keeps them and retries with the backoff.
  */
 const flush = () => {
-  if (hydration !== 'done' || saving || pendingEdits.size === 0) return;
+  if (owner === null || hydration !== 'done' || saving || pendingEdits.size === 0) return;
   saving = true;
+  const run = generation;
   const saved = new Map(pendingEdits);
   const payload = overrides;
   Promise.resolve()
-    .then(() => configService.set(PROJECT_COLORS_SETTING_KEY, payload))
+    .then(() => saveRemote(payload))
     .then(() => {
+      if (run !== generation) return;
       saving = false;
       retryAttempt = 0;
       for (const [workspace, id] of saved) {
         if (pendingEdits.has(workspace) && pendingEdits.get(workspace) === id) pendingEdits.delete(workspace);
       }
-      writePending(pendingEdits);
+      persist();
       flush();
     })
     .catch((error: unknown) => {
+      if (run !== generation) return;
       saving = false;
       console.warn('[project-colors] could not save the colours to the backend; will retry', error);
       scheduleRetry();
@@ -146,55 +197,89 @@ const flush = () => {
 };
 
 /**
- * Load the backend copy. The backend is the source of truth (same colours on
- * every device); when it has none yet, this browser's legacy localStorage
- * choices are migrated to it. Unsaved edits are replayed on top and saved. A
- * failed load keeps the local copy and retries with bounded backoff, or at once
- * when the browser comes back online, while any consumer is mounted.
+ * Load the account's backend copy. The backend is the source of truth (same
+ * colours on every device); when it has none yet, this account's local choices
+ * are migrated to it. Unsaved edits are replayed on top and saved. A failed load
+ * keeps the local copy and retries with bounded backoff, or at once when the
+ * browser comes back online, while any consumer is mounted.
  */
 const hydrate = () => {
-  if (hydration !== 'idle') return;
+  if (owner === null || hydration !== 'idle') return;
   hydration = 'pending';
   clearRetry();
+  const run = generation;
   Promise.resolve()
-    .then(() => configService.whenReady())
-    .then(() => {
+    .then(loadRemote)
+    .then((remote) => {
+      if (run !== generation) return;
       hydration = 'done';
       retryAttempt = 0;
-      const remote: unknown = configService.get(PROJECT_COLORS_SETTING_KEY);
-      const hasRemote = remote !== undefined && remote !== null;
       let next: ProjectColorOverrides;
-      if (hasRemote) {
+      if (remote !== undefined && remote !== null) {
         next = applyEdits(sanitizeProjectColorOverrides(remote), pendingEdits);
       } else {
-        // No backend copy yet: migrate this browser's choices (edits already included).
+        // No backend copy yet: migrate this account's choices (edits already included).
         next = overrides;
         for (const [workspace, id] of Object.entries(next)) pendingEdits.set(workspace, id);
-        writePending(pendingEdits);
       }
-      writeLocal(next);
-      publish(next);
+      overrides = next;
+      persist();
+      notify();
       flush();
     })
     .catch(() => {
+      if (run !== generation) return;
       hydration = 'idle';
       scheduleRetry();
     });
 };
 
-const retryNow = () => {
+/** Continue whatever is outstanding: load the backend copy, or save pending edits. */
+const resume = () => {
   if (hydration === 'idle') hydrate();
   else flush();
 };
 
+// Peek for a render with an account the store has not switched to yet (the
+// switch happens in a layout effect): same object for repeated reads.
+let peek: { owner: string | null; value: ProjectColorOverrides } = { owner: null, value: {} };
+const snapshotFor = (forOwner: string | null): ProjectColorOverrides => {
+  if (forOwner === owner) return overrides;
+  if (peek.owner !== forOwner) peek = { owner: forOwner, value: forOwner === null ? {} : readLocal(forOwner) };
+  return peek.value;
+};
+
+/**
+ * Switch the store to an account (`null` = signed out). Nothing from another
+ * account is kept: its in-flight work is ignored, and the new account's colours
+ * and pending edits come from its own scoped storage before anything is loaded
+ * or saved.
+ */
+export const setProjectColorsOwner = (next: string | null) => {
+  if (next === owner) return;
+  generation += 1;
+  clearRetry();
+  saving = false;
+  retryAttempt = 0;
+  hydration = 'idle';
+  overrides = snapshotFor(next);
+  peek = { owner: null, value: {} };
+  owner = next;
+  pendingEdits = next === null ? new Map() : readPending(next);
+  notify();
+  if (listeners.size > 0) resume();
+};
+
 const onStorage = (event: StorageEvent) => {
-  // Another tab of this browser changed the colours (it saves them itself).
-  if (event.key === STORAGE_KEYS.PROJECT_COLORS) publish(applyEdits(readLocal(), pendingEdits));
+  // Another tab of this browser changed this account's colours (it saves them itself).
+  if (owner !== null && event.key === projectColorsCacheKey(owner)) {
+    publish(applyEdits(sanitizeProjectColorOverrides(readJson(event.key)), pendingEdits));
+  }
 };
 
 const onOnline = () => {
   clearRetry();
-  retryNow();
+  resume();
 };
 
 const subscribe = (listener: () => void) => {
@@ -203,7 +288,8 @@ const subscribe = (listener: () => void) => {
     window.addEventListener('online', onOnline);
   }
   listeners.add(listener);
-  hydrate();
+  // Load, or resume saving edits a previous mount could not save.
+  if (retryTimer === null) resume();
   return () => {
     listeners.delete(listener);
     if (listeners.size === 0) {
@@ -214,30 +300,41 @@ const subscribe = (listener: () => void) => {
   };
 };
 
-const getSnapshot = () => overrides;
-
 /**
  * Set (or with `null`, reset to automatic) the colour of a workspace.
- * Write-through: memory and localStorage at once; the edit stays pending
- * (durably) until the backend has saved it.
+ * Write-through: memory and the account's localStorage at once; the edit stays
+ * pending (durably) until the backend has saved it.
  */
 export const setProjectColorOverride = (workspace: string, id: ProjectColorId | null) => {
   const next = applyEdits(overrides, new Map([[workspace, id]]));
-  pendingEdits.set(workspace, id);
-  writePending(pendingEdits);
-  writeLocal(next);
-  publish(next);
+  if (owner !== null) pendingEdits.set(workspace, id);
+  overrides = next;
+  persist();
+  notify();
   flush();
 };
 
+/** The account the colours belong to: the signed-in user, `'local'` on desktop / without auth, `null` signed out. */
+const useProjectColorsOwner = (): string | null => {
+  const auth = useOptionalAuth();
+  if (!auth) return LOCAL_PROJECT_COLORS_OWNER;
+  if (auth.status !== 'authenticated') return null;
+  return auth.user?.id ?? LOCAL_PROJECT_COLORS_OWNER;
+};
+
 /**
- * User-chosen project colours (normalised workspace → palette id). Stored per
- * user in the backend client preferences (`ui.projectColors`), so every device
- * shows the same colours; localStorage keeps a copy for offline start-up and
- * cross-tab sync. Projects without a choice use their automatic colour, which is
- * also the same everywhere.
+ * User-chosen project colours (normalised workspace → palette id) of the
+ * signed-in account. Stored per user in the backend client preferences
+ * (`ui.projectColors`), so every device shows the same colours; localStorage
+ * keeps a per-account copy for offline start-up and cross-tab sync. Projects
+ * without a choice use their automatic colour, which is also the same everywhere.
  */
 export const useProjectColors = () => {
+  const accountOwner = useProjectColorsOwner();
+  useLayoutEffect(() => {
+    setProjectColorsOwner(accountOwner);
+  }, [accountOwner]);
+  const getSnapshot = useCallback(() => snapshotFor(accountOwner), [accountOwner]);
   const current = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   const setProjectColor = useCallback(
     (workspace: string, id: ProjectColorId | null) => setProjectColorOverride(workspace, id),
@@ -246,11 +343,14 @@ export const useProjectColors = () => {
   return { overrides: current, setProjectColor };
 };
 
-/** Test hook: reload module state (colours and pending edits) from localStorage and forget the backend load. */
+/** Test hook: forget all module state (the next consumer reloads its account from localStorage). */
 export const resetProjectColorsForTest = () => {
-  overrides = readLocal();
+  generation += 1;
+  owner = null;
+  peek = { owner: null, value: {} };
+  overrides = {};
   hydration = 'idle';
-  pendingEdits = readPending();
+  pendingEdits = new Map();
   saving = false;
   retryAttempt = 0;
   clearRetry();

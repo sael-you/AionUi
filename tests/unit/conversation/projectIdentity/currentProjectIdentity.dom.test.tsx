@@ -10,14 +10,17 @@ import React from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/common/config/configService', () => ({
-  configService: { whenReady: () => Promise.resolve(), get: () => undefined, set: () => Promise.resolve() },
+vi.mock('@/common/adapter/httpBridge', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/common/adapter/httpBridge')>()),
+  // Project colour preferences: no backend in these tests.
+  httpRequest: vi.fn(async () => undefined),
 }));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
+import { AuthProvider, useAuth } from '@/renderer/hooks/context/AuthContext';
 import WorkspaceCollapse from '@/renderer/pages/conversation/components/WorkspaceCollapse';
 import {
   ProjectLabel,
@@ -123,6 +126,30 @@ describe('sidebar active project group', () => {
 
     view.rerender(<ActiveGroup workspace='/root/projects/a' current='/root/projects/b' />);
     expect(view.container.querySelector('[data-active-project]')).toBeNull();
+  });
+});
+
+describe('sign-out cleanup', () => {
+  it('removes every account copy and unsaved edit of the project colours', () => {
+    localStorage.setItem('aionui_project_colors', '{}');
+    localStorage.setItem('aionui_project_colors:A', '{"/a":"red"}');
+    localStorage.setItem('aionui_project_colors_pending:A', '{"/a":"red"}');
+    localStorage.setItem('unrelated', '1');
+    let clear: (() => void) | undefined;
+    const Grab = () => {
+      clear = useAuth().clearAuthCache;
+      return null;
+    };
+    render(
+      <AuthProvider>
+        <Grab />
+      </AuthProvider>
+    );
+    act(() => clear?.());
+    expect(localStorage.getItem('aionui_project_colors:A')).toBeNull();
+    expect(localStorage.getItem('aionui_project_colors_pending:A')).toBeNull();
+    expect(localStorage.getItem('aionui_project_colors')).toBeNull();
+    expect(localStorage.getItem('unrelated')).toBe('1');
   });
 });
 
