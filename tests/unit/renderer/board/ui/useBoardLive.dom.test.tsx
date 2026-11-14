@@ -130,6 +130,36 @@ describe('useBoard live updates', () => {
     await waitFor(() => expect(bridge.get).toHaveBeenCalledTimes(2));
   });
 
+  it('reads a large board through the paged card list, on the first read and after a reconnect', async () => {
+    bridge.get.mockResolvedValue(
+      makeSnapshot({ cards: [makeCard(1, 'triage', 1)], last_seq: 5, next_cards_cursor: 'c1' })
+    );
+    bridge.listCards
+      .mockResolvedValueOnce({ items: [makeCard(2, 'triage', 2), makeCard(3, 'done', 1)], next_cursor: 'c2' })
+      .mockResolvedValueOnce({ items: [makeCard(4, 'done', 2)], next_cursor: null });
+    const { result } = renderHook(() => useBoard('p1'), { wrapper });
+
+    await waitFor(() => expect(result.current.snapshot?.cards).toHaveLength(4));
+    expect(bridge.listCards.mock.calls.map((call) => call[0])).toEqual([
+      { project_id: 'p1', cursor: 'c1' },
+      { project_id: 'p1', cursor: 'c2' },
+    ]);
+    expect(result.current.snapshot?.next_cards_cursor).toBeNull();
+
+    bridge.listCards.mockResolvedValueOnce({ items: [makeCard(5, 'done', 3)], next_cursor: null });
+    act(() => reconnected.emit({ timestamp: 3 }));
+    await waitFor(() => expect(result.current.snapshot?.cards.map((card) => card.number)).toEqual([1, 5]));
+    expect(bridge.listCards).toHaveBeenLastCalledWith({ project_id: 'p1', cursor: 'c1' });
+  });
+
+  it('pages archived cards too when the view includes them', async () => {
+    bridge.get.mockResolvedValue(makeSnapshot({ cards: [], next_cards_cursor: 'a1' }));
+    bridge.listCards.mockResolvedValue({ items: [makeCard(9, 'done', 1, { archived_at: 4 })], next_cursor: null });
+    const { result } = renderHook(() => useBoard('p1', { includeArchived: true }), { wrapper });
+    await waitFor(() => expect(result.current.snapshot?.cards).toHaveLength(1));
+    expect(bridge.listCards).toHaveBeenCalledWith({ project_id: 'p1', cursor: 'a1', include_archived: true });
+  });
+
   it('reports a project without a board as unavailable', async () => {
     const { backendError } = await import('../boardTestUtils');
     bridge.get.mockRejectedValue(backendError(409, 'board_no_project'));

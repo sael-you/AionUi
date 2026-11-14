@@ -251,6 +251,18 @@ export type BoardSnapshot = {
   cards: BoardCardSummary[];
   /** Seq of the project's latest event at read time (live-update checkpoint; seq itself is global). */
   last_seq: number;
+  /**
+   * Large boards: `cards` holds the first page only and this cursor continues it
+   * through `GET …/board/cards?cursor=` (stable order `(column, position, id)`).
+   * Null or absent = `cards` is complete.
+   */
+  next_cards_cursor?: string | null;
+};
+
+/** `GET /api/projects/{pid}/board/cards?cursor=[&include_archived=true]` page. */
+export type BoardCardPage = {
+  items: BoardCardSummary[];
+  next_cursor: string | null;
 };
 
 /** `GET /api/board/cards/{id}` response. */

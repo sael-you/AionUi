@@ -56,8 +56,33 @@ type BoardKey = readonly ['board', string, 'all' | 'active'];
 export const boardKey = (projectId: string, includeArchived: boolean): BoardKey =>
   ['board', projectId, includeArchived ? 'all' : 'active'] as const;
 
-const fetchBoard = ([, projectId, scope]: BoardKey): Promise<BoardSnapshot> =>
-  ipcBridge.board.get.invoke({ project_id: projectId, include_archived: scope === 'all' });
+/** Upper bound of card pages read for one snapshot (each page is server-sized). */
+const MAX_CARD_PAGES = 200;
+
+/**
+ * The board snapshot with every card: a large board answers with its first
+ * page of cards and a cursor, the rest comes from the paged card list. Used for
+ * the first read and for every gap / reconnect refetch.
+ */
+export const fetchBoard = async ([, projectId, scope]: BoardKey): Promise<BoardSnapshot> => {
+  const includeArchived = scope === 'all';
+  const snapshot = await ipcBridge.board.get.invoke({ project_id: projectId, include_archived: includeArchived });
+  let cursor = snapshot.next_cards_cursor ?? null;
+  if (!cursor) return snapshot;
+  const byId = new Map(snapshot.cards.map((card) => [card.id, card]));
+  for (let page = 0; cursor && page < MAX_CARD_PAGES; page += 1) {
+    // Cursor paging: each page needs the previous page's cursor.
+    // eslint-disable-next-line no-await-in-loop
+    const result = await ipcBridge.board.listCards.invoke({
+      project_id: projectId,
+      cursor,
+      ...(includeArchived ? { include_archived: true } : {}),
+    });
+    for (const card of result.items) byId.set(card.id, card);
+    cursor = result.next_cursor;
+  }
+  return { ...snapshot, cards: [...byId.values()], next_cards_cursor: null };
+};
 
 /**
  * Live hints keep the snapshot fresh; a focus refetch would only race optimistic

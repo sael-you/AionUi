@@ -103,6 +103,7 @@ import type {
   BoardBrainstormRequest,
   BoardCard,
   BoardCardDetail,
+  BoardCardPage,
   BoardChangedEvent,
   BoardColumnsResponse,
   BoardEvent,
@@ -628,6 +629,12 @@ export const board = {
     // A temp project has no board (409 board_no_project) — an expected answer, not an error to log.
     { silentStatuses: [404, 409] }
   ),
+  /** GET /api/projects/{pid}/board/cards?cursor= → the next page of card summaries (large boards). */
+  listCards: httpGet<BoardCardPage, { project_id: string; cursor: string; include_archived?: boolean }>((p) => {
+    const params = new URLSearchParams({ cursor: p.cursor });
+    if (p.include_archived) params.set('include_archived', 'true');
+    return `${boardProjectPath(p.project_id)}/cards?${params.toString()}`;
+  }),
   /** PUT /api/projects/{pid}/board/settings → enable/disable, template, defaults (guarded by `version`). */
   updateSettings: httpPut<BoardSettings, { project_id: string } & UpdateBoardSettingsRequest>(
     (p) => `${boardProjectPath(p.project_id)}/settings`,
