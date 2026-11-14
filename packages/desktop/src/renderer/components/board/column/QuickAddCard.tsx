@@ -11,15 +11,16 @@ import { useTranslation } from 'react-i18next';
 
 import { BOARD_LIMITS } from '@/common/types/board';
 
-import type { BoardController } from '../hooks/useBoard';
+import { useBoardRef } from '../hooks/boardContext';
 
 /** One-line card creation at the end of a column. Focus stays in the field for rapid entry. */
-export const QuickAddCard: React.FC<{ board: BoardController; columnKey: string; columnLabel: string }> = ({
-  board,
+export const QuickAddCard: React.FC<{ readOnly: boolean; columnKey: string; columnLabel: string }> = ({
+  readOnly,
   columnKey,
   columnLabel,
 }) => {
   const { t } = useTranslation();
+  const boardRef = useBoardRef();
   const [title, setTitle] = useState('');
   const [busy, setBusy] = useState(false);
   const label = t('board.quickAdd.label', { column: columnLabel });
@@ -28,14 +29,14 @@ export const QuickAddCard: React.FC<{ board: BoardController; columnKey: string;
     if (!title.trim() || busy) return;
     setBusy(true);
     try {
-      const created = await board.createCard(columnKey, title);
+      const created = (await boardRef.current?.createCard(columnKey, title)) ?? null;
       if (created) setTitle('');
     } finally {
       setBusy(false);
     }
   };
 
-  if (board.readOnly) return null;
+  if (readOnly) return null;
   return (
     <div className='flex items-center gap-4px'>
       <Input

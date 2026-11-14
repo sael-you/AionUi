@@ -12,9 +12,8 @@ import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary } from '@/common/types/board';
 import { BoardCardTile } from '@/renderer/components/board/card/BoardCardTile';
-import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
 import { MoveToMenu } from '@/renderer/components/board/card/MoveToMenu';
-import { cardRef } from '@/renderer/components/board/utils/boardModel';
+import { cardRef, type MoveLock } from '@/renderer/components/board/utils/boardModel';
 
 import { CARD_DND_PREFIX } from '../utils/boardKeyboard';
 
@@ -29,10 +28,13 @@ export const DropIndicator: React.FC = () => (
 /**
  * A board card that can be dragged by its handle (mouse, touch after a 250 ms
  * press, or keyboard: Space/Enter on the handle) and that is also a drop target
- * ("insert before / after this card").
+ * ("insert before / after this card"). Memoised on plain props, so a live hint
+ * re-renders only the cards it changed.
  */
 export const DraggableCard: React.FC<{
-  board: BoardController;
+  readOnly: boolean;
+  lock: MoveLock;
+  columnLabel: string;
   card: BoardCardSummary;
   dragEnabled: boolean;
   dragging: boolean;
@@ -40,53 +42,57 @@ export const DraggableCard: React.FC<{
   dropEnabled: boolean;
   indicatorBefore: boolean;
   onOpen: (cardId: string) => void;
-}> = ({ board, card, dragEnabled, dragging, dropEnabled, indicatorBefore, onOpen }) => {
-  const { t } = useTranslation();
-  const id = `${CARD_DND_PREFIX}${card.id}`;
-  const data: CardDndData = { type: 'card', cardId: card.id, columnKey: card.column_key };
-  const disabled = !dragEnabled || Boolean(card.archived_at);
-  const draggable = useDraggable({
-    id,
-    data,
-    disabled,
-    attributes: { roleDescription: t('board.dnd.roleDescription') },
-  });
-  const droppable = useDroppable({ id, data, disabled: !dropEnabled });
-  const setNodeRef = useCallback(
-    (node: HTMLElement | null) => {
-      draggable.setNodeRef(node);
-      droppable.setNodeRef(node);
-    },
-    // The setters are stable for a given id.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [draggable.setNodeRef, droppable.setNodeRef]
-  );
+}> = React.memo(
+  ({ card, readOnly, lock, columnLabel, dragEnabled, dragging, dropEnabled, indicatorBefore, onOpen }) => {
+    const { t } = useTranslation();
+    const id = `${CARD_DND_PREFIX}${card.id}`;
+    const data: CardDndData = { type: 'card', cardId: card.id, columnKey: card.column_key };
+    const disabled = !dragEnabled || Boolean(card.archived_at);
+    const draggable = useDraggable({
+      id,
+      data,
+      disabled,
+      attributes: { roleDescription: t('board.dnd.roleDescription') },
+    });
+    const droppable = useDroppable({ id, data, disabled: !dropEnabled });
+    const setNodeRef = useCallback(
+      (node: HTMLElement | null) => {
+        draggable.setNodeRef(node);
+        droppable.setNodeRef(node);
+      },
+      // The setters are stable for a given id.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [draggable.setNodeRef, droppable.setNodeRef]
+    );
 
-  const handle = disabled ? null : (
-    <Button
-      ref={draggable.setActivatorNodeRef}
-      type='text'
-      size='mini'
-      {...draggable.attributes}
-      {...draggable.listeners}
-      aria-label={t('board.card.dragHandle', { ref: cardRef(card.number) })}
-      data-board-handle={card.id}
-      icon={<Drag theme='outline' size='12' fill='currentColor' aria-hidden />}
-      className='!flex !items-center !justify-center !p-0 !size-18px !min-w-0 !rd-4px !text-t-secondary hover:!text-t-primary cursor-grab touch-none shrink-0'
-      onClick={(event) => event.stopPropagation()}
-    />
-  );
-
-  return (
-    <div ref={setNodeRef} className='flex flex-col gap-4px' data-board-card-slot={card.id}>
-      {indicatorBefore && <DropIndicator />}
-      <BoardCardTile
-        card={card}
-        onOpen={onOpen}
-        dragHandle={handle}
-        dragging={dragging}
-        actions={<MoveToMenu board={board} card={card} />}
+    const handle = disabled ? null : (
+      <Button
+        ref={draggable.setActivatorNodeRef}
+        type='text'
+        size='mini'
+        {...draggable.attributes}
+        {...draggable.listeners}
+        aria-label={t('board.card.dragHandle', { ref: cardRef(card.number) })}
+        data-board-handle={card.id}
+        icon={<Drag theme='outline' size='12' fill='currentColor' aria-hidden />}
+        className='!flex !items-center !justify-center !p-0 !size-18px !min-w-0 !rd-4px !text-t-secondary hover:!text-t-primary cursor-grab touch-none shrink-0'
+        onClick={(event) => event.stopPropagation()}
       />
-    </div>
-  );
-};
+    );
+
+    return (
+      <div ref={setNodeRef} className='flex flex-col gap-4px' data-board-card-slot={card.id}>
+        {indicatorBefore && <DropIndicator />}
+        <BoardCardTile
+          card={card}
+          onOpen={onOpen}
+          dragHandle={handle}
+          dragging={dragging}
+          actions={<MoveToMenu card={card} readOnly={readOnly} lock={lock} columnLabel={columnLabel} />}
+        />
+      </div>
+    );
+  }
+);
+
+DraggableCard.displayName = 'DraggableCard';

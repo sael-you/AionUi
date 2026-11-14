@@ -6,21 +6,21 @@
 
 import { Button, Dropdown, Menu } from '@arco-design/web-react';
 import { More } from '@icon-park/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary } from '@/common/types/board';
 
-import type { BoardController } from '../hooks/useBoard';
+import { useBoardRef } from '../hooks/boardContext';
 import { columnName } from '../utils/boardFormat';
 import {
   activeCardCount,
   cardRef,
   endAnchor,
   isManualMoveTarget,
-  moveLock,
   visibleColumns,
   wipState,
+  type MoveLock,
 } from '../utils/boardModel';
 
 /** Focus a card's open target after it moved (it may have re-mounted in another column). */
@@ -31,70 +31,32 @@ export const focusCard = (cardId: string): void => {
   });
 };
 
+export type MoveToMenuProps = {
+  card: BoardCardSummary;
+  /** Board or card read-only (archived project / archived card): the trigger is disabled. */
+  readOnly: boolean;
+  /** Why the card cannot be moved from here (see `moveLock`), or null. */
+  lock: MoveLock;
+  /** Name of the card's column (for the lock announcement). */
+  columnLabel: string;
+};
+
 /**
  * Card actions menu with "Move to…" — the drag-free way to move a card (narrow
  * layouts, keyboard and screen-reader users). A full column stays selectable:
  * the server answers `board_wip_limit` and the toast offers "Move anyway".
+ *
+ * Props are plain values and the board is read through `useBoardRef` when the
+ * menu opens, so the card does not re-render when unrelated board state changes.
  */
-export const MoveToMenu: React.FC<{ board: BoardController; card: BoardCardSummary }> = ({ board, card }) => {
+export const MoveToMenu: React.FC<MoveToMenuProps> = React.memo(({ card, readOnly, lock, columnLabel }) => {
   const { t } = useTranslation();
-  const snapshot = board.snapshot;
-  if (!snapshot) return null;
+  const boardRef = useBoardRef();
+  const [open, setOpen] = useState(false);
   const ref = cardRef(card.number);
-  const disabled = board.readOnly || Boolean(card.archived_at);
-  const columns = visibleColumns(snapshot.columns);
-  // A card waiting for a decision (or in Deploying) moves only from the drawer:
-  // every target is disabled and the menu says why.
-  const lock = moveLock(
-    card,
-    snapshot.columns.find((column) => column.key === card.column_key)
-  );
-
-  const droplist = (
-    <Menu
-      onClickMenuItem={(key) => {
-        if (!key.startsWith('move:')) return;
-        const toColumn = key.slice('move:'.length);
-        void board.moveCard(card.id, toColumn, endAnchor(snapshot.cards, toColumn, card.id)).then(() => {
-          focusCard(card.id);
-        });
-      }}
-    >
-      <Menu.ItemGroup title={t('board.card.moveTo')}>
-        {lock && (
-          <Menu.Item key='lock-reason' disabled aria-disabled>
-            {t(lock === 'decision' ? 'board.card.moveLocked' : 'board.card.moveAutomated')}
-          </Menu.Item>
-        )}
-        {columns.map((column) => {
-          const name = columnName(column, t);
-          const current = column.key === card.column_key;
-          const wip = wipState(column, activeCardCount(snapshot.cards, column.key));
-          const full = !current && (wip === 'full' || wip === 'over');
-          const automated = !isManualMoveTarget(column);
-          const itemDisabled = current || Boolean(lock) || automated;
-          return (
-            <Menu.Item key={`move:${column.key}`} disabled={itemDisabled} aria-disabled={itemDisabled || undefined}>
-              {current
-                ? t('board.card.moveToCurrent', { column: name })
-                : automated
-                  ? t('board.card.moveTargetAutomated', { column: name })
-                  : full
-                    ? t('board.card.moveToFull', { column: name })
-                    : name}
-            </Menu.Item>
-          );
-        })}
-      </Menu.ItemGroup>
-    </Menu>
-  );
-
+  const disabled = readOnly || Boolean(card.archived_at);
   // A locked card says why, both to screen readers on focus (description) and as a
   // live announcement when its menu is opened.
-  const columnLabel = columnName(
-    snapshot.columns.find((column) => column.key === card.column_key),
-    t
-  );
   const lockText = lock
     ? t(lock === 'decision' ? 'board.gate.lockedAnnouncement' : 'board.gate.automationAnnouncement', {
         ref,
@@ -103,16 +65,63 @@ export const MoveToMenu: React.FC<{ board: BoardController; card: BoardCardSumma
     : '';
   const lockId = `board-move-lock-${card.id}`;
 
+  const buildMenu = () => {
+    const board = boardRef.current;
+    const snapshot = board?.snapshot;
+    if (!board || !snapshot) return <Menu />;
+    return (
+      <Menu
+        onClickMenuItem={(key) => {
+          if (!key.startsWith('move:')) return;
+          setOpen(false);
+          const toColumn = key.slice('move:'.length);
+          void board.moveCard(card.id, toColumn, endAnchor(snapshot.cards, toColumn, card.id)).then(() => {
+            focusCard(card.id);
+          });
+        }}
+      >
+        <Menu.ItemGroup title={t('board.card.moveTo')}>
+          {lock && (
+            <Menu.Item key='lock-reason' disabled aria-disabled>
+              {t(lock === 'decision' ? 'board.card.moveLocked' : 'board.card.moveAutomated')}
+            </Menu.Item>
+          )}
+          {visibleColumns(snapshot.columns).map((column) => {
+            const name = columnName(column, t);
+            const current = column.key === card.column_key;
+            const wip = wipState(column, activeCardCount(snapshot.cards, column.key));
+            const full = !current && (wip === 'full' || wip === 'over');
+            const automated = !isManualMoveTarget(column);
+            const itemDisabled = current || Boolean(lock) || automated;
+            return (
+              <Menu.Item key={`move:${column.key}`} disabled={itemDisabled} aria-disabled={itemDisabled || undefined}>
+                {current
+                  ? t('board.card.moveToCurrent', { column: name })
+                  : automated
+                    ? t('board.card.moveTargetAutomated', { column: name })
+                    : full
+                      ? t('board.card.moveToFull', { column: name })
+                      : name}
+              </Menu.Item>
+            );
+          })}
+        </Menu.ItemGroup>
+      </Menu>
+    );
+  };
+
   return (
     <>
       <Dropdown
-        droplist={droplist}
+        droplist={open ? buildMenu() : <Menu />}
         trigger='click'
         position='br'
         disabled={disabled}
+        popupVisible={open}
         unmountOnExit
         onVisibleChange={(visible) => {
-          if (visible && lockText) board.announce(lockText);
+          setOpen(visible);
+          if (visible && lockText) boardRef.current?.announce(lockText);
         }}
       >
         <Button
@@ -132,4 +141,6 @@ export const MoveToMenu: React.FC<{ board: BoardController; card: BoardCardSumma
       )}
     </>
   );
-};
+});
+
+MoveToMenu.displayName = 'MoveToMenu';

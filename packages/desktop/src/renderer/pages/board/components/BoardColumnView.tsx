@@ -10,7 +10,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
-import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
 import { QuickAddCard } from '@/renderer/components/board/column/QuickAddCard';
 import { CardList } from '@/renderer/components/board/column/CardList';
 import { ColumnMarks } from '@/renderer/components/board/column/ColumnMarks';
@@ -22,7 +21,7 @@ import { COLUMN_DND_PREFIX } from '../utils/boardKeyboard';
 import { DraggableCard, DropIndicator, type ColumnDndData } from './DraggableCard';
 
 export const BoardColumnView: React.FC<{
-  board: BoardController;
+  readOnly: boolean;
   column: BoardColumn;
   /** Cards shown (filters applied), in board order. */
   cards: BoardCardSummary[];
@@ -34,7 +33,7 @@ export const BoardColumnView: React.FC<{
   activeCardId: string | null;
   dropSlot: DropSlot | null;
   onOpenCard: (cardId: string) => void;
-}> = ({ board, column, cards, count, allCards, dragEnabled, activeCardId, dropSlot, onOpenCard }) => {
+}> = ({ readOnly, column, cards, count, allCards, dragEnabled, activeCardId, dropSlot, onOpenCard }) => {
   const { t } = useTranslation();
   const name = columnName(column, t);
   const data: ColumnDndData = { type: 'column', columnKey: column.key };
@@ -50,8 +49,10 @@ export const BoardColumnView: React.FC<{
   const renderCard = (card: BoardCardSummary) => (
     <DraggableCard
       key={card.id}
-      board={board}
       card={card}
+      readOnly={readOnly}
+      lock={moveLock(card, column)}
+      columnLabel={name}
       dragEnabled={dragEnabled && !moveLock(card, column)}
       dragging={card.id === activeCardId}
       dropEnabled={dropEnabled}
@@ -84,7 +85,7 @@ export const BoardColumnView: React.FC<{
         {slotHere && slotHere.beforeId === null && <DropIndicator />}
       </div>
       <div className='px-8px pb-8px'>
-        <QuickAddCard board={board} columnKey={column.key} columnLabel={name} />
+        <QuickAddCard readOnly={readOnly} columnKey={column.key} columnLabel={name} />
       </div>
     </section>
   );

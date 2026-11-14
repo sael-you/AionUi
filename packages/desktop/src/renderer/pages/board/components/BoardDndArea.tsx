@@ -40,7 +40,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
 import { BoardCardTile } from '@/renderer/components/board/card/BoardCardTile';
-import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
+import { useBoardRef } from '@/renderer/components/board/hooks/boardContext';
 import { columnNameByKey } from '@/renderer/components/board/utils/boardFormat';
 import {
   activeCardCount,
@@ -77,17 +77,19 @@ const focusHandle = (cardId: string): void => {
 };
 
 export const BoardDndArea: React.FC<{
-  board: BoardController;
+  /** All cards of the board (stable between hints that do not change cards). */
+  cards: BoardCardSummary[];
+  readOnly: boolean;
   columns: BoardColumn[];
   /** Visible (filtered) cards per column, in board order. */
   groups: Record<string, BoardCardSummary[]>;
   dragEnabled: boolean;
   reducedMotion: boolean;
   onOpenCard: (cardId: string) => void;
-}> = ({ board, columns, groups, dragEnabled, reducedMotion, onOpenCard }) => {
+}> = React.memo(({ cards, readOnly, columns, groups, dragEnabled, reducedMotion, onOpenCard }) => {
+  const boardRef = useBoardRef();
   const { t, i18n } = useTranslation();
   const direction = directionForLanguage(i18n.language);
-  const cards = board.snapshot?.cards ?? [];
   const [activeId, setActiveId] = useState<string | null>(null);
   const [dropSlot, setDropSlotState] = useState<DropSlot | null>(null);
 
@@ -208,9 +210,11 @@ export const BoardDndArea: React.FC<{
     droppedSlotRef.current = slot;
     reset();
     if (!movingId || !slot || !layout.columns.includes(slot.columnKey)) return;
-    void board.moveCard(movingId, slot.columnKey, anchorForSlot(slot, layout.cards[slot.columnKey] ?? [])).then(() => {
-      if (viaKeyboard) focusHandle(movingId);
-    });
+    void boardRef.current
+      ?.moveCard(movingId, slot.columnKey, anchorForSlot(slot, layout.cards[slot.columnKey] ?? []))
+      .then(() => {
+        if (viaKeyboard) focusHandle(movingId);
+      });
   };
 
   const handleDragCancel = () => {
@@ -296,7 +300,7 @@ export const BoardDndArea: React.FC<{
                 {group.columns.map((column) => (
                   <BoardColumnView
                     key={column.key}
-                    board={board}
+                    readOnly={readOnly}
                     column={column}
                     cards={groups[column.key] ?? []}
                     count={activeCardCount(cards, column.key)}
@@ -317,4 +321,6 @@ export const BoardDndArea: React.FC<{
       </DragOverlay>
     </DndContext>
   );
-};
+});
+
+BoardDndArea.displayName = 'BoardDndArea';

@@ -20,6 +20,7 @@ import { BoardBanners, BoardDisabledState, BoardErrorState, BoardLiveRegion, Boa
 import { CardDrawer } from '../CardDrawer';
 import { ForceReasonDialog } from '../card/ForceReasonDialog';
 import type { BoardController } from '../hooks/useBoard';
+import { BoardProvider } from '../hooks/boardContext';
 import { columnName } from '../utils/boardFormat';
 import { activeCardCount, groupCardsByColumn, groupColumnsByCategory, visibleColumns } from '../utils/boardModel';
 import { StackedColumn } from './StackedColumn';
@@ -40,8 +41,14 @@ export const TasksTab: React.FC<{ board: BoardController }> = ({ board }) => {
   const [collapsed, setCollapsed] = useState<Set<string> | null>(null);
   const snapshot = board.snapshot;
 
-  const columns = useMemo(() => (snapshot ? visibleColumns(snapshot.columns) : []), [snapshot]);
-  const groups = useMemo(() => (snapshot ? groupCardsByColumn(columns, snapshot.cards) : {}), [snapshot, columns]);
+  // Keyed on cards / columns (not the snapshot, which a seq bump replaces).
+  const snapshotColumns = snapshot?.columns;
+  const snapshotCards = snapshot?.cards;
+  const columns = useMemo(() => (snapshotColumns ? visibleColumns(snapshotColumns) : []), [snapshotColumns]);
+  const groups = useMemo(
+    () => (snapshotCards ? groupCardsByColumn(columns, snapshotCards) : {}),
+    [snapshotCards, columns]
+  );
   const collapsedKeys = collapsed ?? new Set(columns.filter((column) => column.category === 'done').map((c) => c.key));
 
   const toggle = (key: string) => {
@@ -121,22 +128,24 @@ export const TasksTab: React.FC<{ board: BoardController }> = ({ board }) => {
   }
 
   return (
-    <div className='h-full flex flex-col min-h-0' data-board-tasks-tab>
-      <div className='flex items-center gap-8px ps-20px pe-8px py-6px flex-shrink-0'>
-        <span className='text-12px text-t-secondary flex-1 truncate'>{t('board.sharedByProject')}</span>
-        <Button
-          size='mini'
-          type='text'
-          icon={<ViewGridDetail theme='outline' size='14' fill='currentColor' />}
-          onClick={() => void navigate(`/board/${encodeURIComponent(board.projectId)}`)}
-        >
-          {t('board.openFullBoard')}
-        </Button>
+    <BoardProvider board={board}>
+      <div className='h-full flex flex-col min-h-0' data-board-tasks-tab>
+        <div className='flex items-center gap-8px ps-20px pe-8px py-6px flex-shrink-0'>
+          <span className='text-12px text-t-secondary flex-1 truncate'>{t('board.sharedByProject')}</span>
+          <Button
+            size='mini'
+            type='text'
+            icon={<ViewGridDetail theme='outline' size='14' fill='currentColor' />}
+            onClick={() => void navigate(`/board/${encodeURIComponent(board.projectId)}`)}
+          >
+            {t('board.openFullBoard')}
+          </Button>
+        </div>
+        {body}
+        <BoardLiveRegion announcement={board.announcement} />
+        <CardDrawer board={board} cardId={openCardId} onClose={() => setOpenCardId(null)} />
+        <ForceReasonDialog board={board} />
       </div>
-      {body}
-      <BoardLiveRegion announcement={board.announcement} />
-      <CardDrawer board={board} cardId={openCardId} onClose={() => setOpenCardId(null)} />
-      <ForceReasonDialog board={board} />
-    </div>
+    </BoardProvider>
   );
 };

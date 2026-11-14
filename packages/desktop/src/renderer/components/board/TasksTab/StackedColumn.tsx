@@ -12,15 +12,14 @@ import { useTranslation } from 'react-i18next';
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
 import { isRtlLanguage } from '@/renderer/services/i18n/direction';
 
-import { BoardCardTile } from '../card/BoardCardTile';
+import { CardWithActions } from '../card/CardWithActions';
 import type { BoardController } from '../hooks/useBoard';
-import { MoveToMenu } from '../card/MoveToMenu';
 import { CardList } from '../column/CardList';
 import { ColumnMarks } from '../column/ColumnMarks';
 import { QuickAddCard } from '../column/QuickAddCard';
 import { WipCounter } from '../column/WipCounter';
 import { columnName } from '../utils/boardFormat';
-import { activeCardCount } from '../utils/boardModel';
+import { activeCardCount, moveLock } from '../utils/boardModel';
 
 /** One collapsible column of the narrow Tasks tab (stacked layout, no drag — "Move to…" instead). */
 export const StackedColumn: React.FC<{
@@ -82,16 +81,18 @@ export const StackedColumn: React.FC<{
               height='min(60vh, 520px)'
               className='shrink-0'
               renderCard={(card) => (
-                <BoardCardTile
+                <CardWithActions
                   key={card.id}
                   card={card}
                   onOpen={onOpenCard}
-                  actions={<MoveToMenu board={board} card={card} />}
+                  readOnly={board.readOnly}
+                  lock={moveLock(card, column)}
+                  columnLabel={name}
                 />
               )}
             />
           )}
-          <QuickAddCard board={board} columnKey={column.key} columnLabel={name} />
+          <QuickAddCard readOnly={board.readOnly} columnKey={column.key} columnLabel={name} />
         </div>
       )}
     </section>

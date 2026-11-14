@@ -70,7 +70,9 @@ export const needsDecisionCount = (cards: BoardCardSummary[], columnKey: string)
  * decision in a gate (R3), or it sits in Deploying, which only the deploy
  * automation moves. Both are released from the drawer (decision or override).
  */
-export const moveLock = (card: BoardCardSummary, column: BoardColumn | undefined): 'decision' | 'automation' | null => {
+export type MoveLock = 'decision' | 'automation' | null;
+
+export const moveLock = (card: BoardCardSummary, column: BoardColumn | undefined): MoveLock => {
   if (!column) return null;
   if (column.key === DEPLOYING_COLUMN) return 'automation';
   if (column.kind === 'gate' && card.needs_decision) return 'decision';

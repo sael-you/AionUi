@@ -27,6 +27,7 @@ import {
 import { CardDrawer } from '@/renderer/components/board/CardDrawer';
 import { ForceReasonDialog } from '@/renderer/components/board/card/ForceReasonDialog';
 import { useBoard } from '@/renderer/components/board/hooks/useBoard';
+import { BoardProvider } from '@/renderer/components/board/hooks/boardContext';
 import { useProjectWorkspace } from '@/renderer/components/board/hooks/useBoardDirectory';
 import { useBoardNarrow, useReducedMotion } from '@/renderer/components/board/hooks/useMediaQuery';
 import { groupCardsByColumn, visibleColumns } from '@/renderer/components/board/utils/boardModel';
@@ -58,11 +59,15 @@ export const BoardPage: React.FC<{ projectId: string }> = ({ projectId }) => {
   );
 
   const snapshot = board.snapshot;
-  const columns = useMemo(() => (snapshot ? visibleColumns(snapshot.columns) : []), [snapshot]);
+  // Keyed on the card list / columns, not the snapshot: a neutral live hint only
+  // advances `last_seq` and must not rebuild the filtered groups.
+  const snapshotColumns = snapshot?.columns;
+  const snapshotCards = snapshot?.cards;
+  const columns = useMemo(() => (snapshotColumns ? visibleColumns(snapshotColumns) : []), [snapshotColumns]);
   const userId = user?.id ?? null;
   const visibleCards = useMemo(
-    () => (snapshot ? snapshot.cards.filter((card) => matchesFilters(card, filters, userId)) : []),
-    [snapshot, filters, userId]
+    () => (snapshotCards ? snapshotCards.filter((card) => matchesFilters(card, filters, userId)) : []),
+    [snapshotCards, filters, userId]
   );
   const groups = useMemo(() => groupCardsByColumn(columns, visibleCards), [columns, visibleCards]);
 
@@ -122,7 +127,8 @@ export const BoardPage: React.FC<{ projectId: string }> = ({ projectId }) => {
           <MobileBoard board={board} columns={columns} groups={groups} onOpenCard={setOpenCardId} />
         ) : (
           <BoardDndArea
-            board={board}
+            cards={snapshot.cards}
+            readOnly={board.readOnly}
             columns={columns}
             groups={groups}
             dragEnabled={!board.readOnly}
@@ -135,20 +141,22 @@ export const BoardPage: React.FC<{ projectId: string }> = ({ projectId }) => {
   }
 
   return (
-    <div
-      className='size-full flex flex-col min-h-0 bg-1'
-      data-board-page={projectId}
-      data-project-surface={project ? 'board' : undefined}
-      {...project?.dataAttributes}
-      style={project?.style}
-    >
-      {header}
-      {body}
-      <BoardLiveRegion announcement={board.announcement} />
-      <CardDrawer board={board} cardId={openCardId} onClose={() => setOpenCardId(null)} />
-      <ForceReasonDialog board={board} />
-      <ColumnSettingsDialog board={board} visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </div>
+    <BoardProvider board={board}>
+      <div
+        className='size-full flex flex-col min-h-0 bg-1'
+        data-board-page={projectId}
+        data-project-surface={project ? 'board' : undefined}
+        {...project?.dataAttributes}
+        style={project?.style}
+      >
+        {header}
+        {body}
+        <BoardLiveRegion announcement={board.announcement} />
+        <CardDrawer board={board} cardId={openCardId} onClose={() => setOpenCardId(null)} />
+        <ForceReasonDialog board={board} />
+        <ColumnSettingsDialog board={board} visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      </div>
+    </BoardProvider>
   );
 };
 

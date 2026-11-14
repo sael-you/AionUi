@@ -9,16 +9,15 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BoardCardSummary, BoardColumn } from '@/common/types/board';
-import { BoardCardTile } from '@/renderer/components/board/card/BoardCardTile';
+import { CardWithActions } from '@/renderer/components/board/card/CardWithActions';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
 import { BoardSelect } from '@/renderer/components/board/BoardSelect';
-import { MoveToMenu } from '@/renderer/components/board/card/MoveToMenu';
 import { CardList } from '@/renderer/components/board/column/CardList';
 import { ColumnMarks } from '@/renderer/components/board/column/ColumnMarks';
 import { QuickAddCard } from '@/renderer/components/board/column/QuickAddCard';
 import { WipCounter } from '@/renderer/components/board/column/WipCounter';
 import { columnName } from '@/renderer/components/board/utils/boardFormat';
-import { activeCardCount, groupColumnsByCategory } from '@/renderer/components/board/utils/boardModel';
+import { activeCardCount, groupColumnsByCategory, moveLock } from '@/renderer/components/board/utils/boardModel';
 
 /** ≤768 px: one column at a time behind a switcher (grouped by category); no drag — cards move with "Move to…". */
 export const MobileBoard: React.FC<{
@@ -70,17 +69,19 @@ export const MobileBoard: React.FC<{
             <CardList
               cards={visible}
               renderCard={(card) => (
-                <BoardCardTile
+                <CardWithActions
                   key={card.id}
                   card={card}
                   onOpen={onOpenCard}
-                  actions={<MoveToMenu board={board} card={card} />}
+                  readOnly={board.readOnly}
+                  lock={moveLock(card, current)}
+                  columnLabel={name}
                 />
               )}
             />
           )}
         </div>
-        <QuickAddCard board={board} columnKey={current.key} columnLabel={name} />
+        <QuickAddCard readOnly={board.readOnly} columnKey={current.key} columnLabel={name} />
       </section>
     </div>
   );
