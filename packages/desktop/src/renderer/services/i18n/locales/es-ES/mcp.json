@@ -189,7 +189,9 @@
       "forcedByTier": "Definido por el nivel {{tier}}.",
       "dormantUntilComplete": "Permanece inactivo hasta que se rellenen estos campos: {{keys}}",
       "startsDormant": "Los MCP nuevos empiezan inactivos. Activa uno cuando sus valores estén definidos y la prueba de conexión sea correcta.",
-      "secretsNotSaved": "Se creó {{name}}, pero estos secretos no se guardaron: {{keys}}. Configúralos en el panel de la instancia."
+      "secretsNotSaved": "Se creó {{name}}, pero estos secretos no se guardaron: {{keys}}. Configúralos en el panel de la instancia.",
+      "fullToolsNote": "Por defecto, todas las herramientas (lectura + escritura). Lo que pueden hacer los agentes lo deciden las skills y las reglas; escribir en datos de producción, pagos, anuncios o correo sigue necesitando el OK por escrito del propietario para ese cambio.",
+      "patternProblem": "{{key}} no tiene el formato esperado."
     },
     "attach": {
       "title": "Vincular {{name}}",
@@ -290,6 +292,43 @@
       "rateLimited": "Demasiadas solicitudes. Espera un momento y vuelve a intentarlo.",
       "internal": "El servidor tuvo un error interno. Vuelve a intentarlo; si persiste, revisa los registros de AionUi.",
       "upstream": "Un servicio detrás del servidor no respondió a tiempo. Vuelve a intentarlo."
+    },
+    "library": {
+      "official": "Oficial",
+      "community": "Comunidad",
+      "optional": "Opcional",
+      "metered": "De pago por llamada",
+      "addNamed": "Añadir {{name}}",
+      "keysLabel": "Claves:",
+      "needsKey": "necesita {{keys}}",
+      "noKey": "no necesita clave",
+      "readOnlyLabel": "Solo lectura:",
+      "enforcement": {
+        "server": "impuesto por el servidor",
+        "credential": "impuesto por los permisos de la credencial",
+        "proxy": "impuesto por la lista fija de herramientas del proxy",
+        "none": "no impuesto (lista de herramientas solo fuera de producción)"
+      },
+      "modeLabel": "Modo:",
+      "modeFull": "se instala con todas las herramientas (lectura + escritura); puedes pasar una instancia a solo lectura cuando quieras",
+      "modeReadOnly": "servidor de solo lectura",
+      "categoryFilter": "Categoría",
+      "allCategories": "Todas las categorías",
+      "noMatch": "Ningún MCP de la biblioteca coincide.",
+      "category": {
+        "developer": "Plataforma de desarrollo",
+        "payments": "Pagos",
+        "analytics": "Analítica",
+        "seo": "SEO",
+        "ads": "Anuncios",
+        "email": "Correo",
+        "data": "Documentos y datos",
+        "research": "Investigación y web",
+        "media": "Diseño y medios",
+        "other": "Otros"
+      },
+      "count_one": "{{count}} MCP",
+      "count_other": "{{count}} MCP"
     }
   }
 }

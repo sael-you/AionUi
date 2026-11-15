@@ -189,7 +189,9 @@
       "forcedByTier": "{{tier}} ティアにより設定されます。",
       "dormantUntilComplete": "次の項目が入力されるまで休止状態のままです: {{keys}}",
       "startsDormant": "新しい MCP は休止状態で開始します。値を設定し、接続テストに合格したら有効化してください。",
-      "secretsNotSaved": "{{name}} は作成されましたが、次のシークレットは保存されませんでした: {{keys}}。インスタンスのパネルで設定してください。"
+      "secretsNotSaved": "{{name}} は作成されましたが、次のシークレットは保存されませんでした: {{keys}}。インスタンスのパネルで設定してください。",
+      "fullToolsNote": "既定はすべてのツール（読み取り + 書き込み）です。エージェントにできることはスキルとルールで決まります。本番データ、決済、広告、メールへの書き込みには、変更ごとにオーナーの書面による承認が引き続き必要です。",
+      "patternProblem": "{{key}} の形式が正しくありません。"
     },
     "attach": {
       "title": "{{name}} を接続",
@@ -290,6 +292,43 @@
       "rateLimited": "リクエストが多すぎます。少し待ってから再試行してください。",
       "internal": "サーバーで内部エラーが発生しました。再試行し、続く場合は AionUi のログを確認してください。",
       "upstream": "サーバーの背後のサービスが時間内に応答しませんでした。再試行してください。"
+    },
+    "library": {
+      "official": "公式",
+      "community": "コミュニティ",
+      "optional": "任意",
+      "metered": "呼び出しごとに課金",
+      "addNamed": "{{name}} を追加",
+      "keysLabel": "キー：",
+      "needsKey": "{{keys}} が必要",
+      "noKey": "キー不要",
+      "readOnlyLabel": "読み取り専用：",
+      "enforcement": {
+        "server": "サーバー側で強制",
+        "credential": "認証情報の権限で強制",
+        "proxy": "プロキシの固定ツール許可リストで強制",
+        "none": "強制なし（ツール許可リストは本番以外のみ）"
+      },
+      "modeLabel": "モード：",
+      "modeFull": "すべてのツール（読み取り + 書き込み）でインストール。インスタンスはいつでも読み取り専用に切り替え可能",
+      "modeReadOnly": "読み取り専用サーバー",
+      "categoryFilter": "カテゴリ",
+      "allCategories": "すべてのカテゴリ",
+      "noMatch": "一致する MCP はライブラリにありません。",
+      "category": {
+        "developer": "開発プラットフォーム",
+        "payments": "決済",
+        "analytics": "アナリティクス",
+        "seo": "SEO",
+        "ads": "広告",
+        "email": "メール",
+        "data": "ドキュメントとデータ",
+        "research": "リサーチとウェブ",
+        "media": "デザインとメディア",
+        "other": "その他"
+      },
+      "count_one": "{{count}} 件の MCP",
+      "count_other": "{{count}} 件の MCP"
     }
   }
 }

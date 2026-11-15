@@ -189,7 +189,9 @@
       "forcedByTier": "{{tier}} katmanı tarafından ayarlanır.",
       "dormantUntilComplete": "Şunlar doldurulana kadar uykuda kalır: {{keys}}",
       "startsDormant": "Yeni MCP'ler uykuda başlar. Değerleri ayarlanıp bağlantı testi geçtiğinde etkinleştirin.",
-      "secretsNotSaved": "{{name}} oluşturuldu ancak şu gizli değerler kaydedilmedi: {{keys}}. Bunları örnek panelinde ayarlayın."
+      "secretsNotSaved": "{{name}} oluşturuldu ancak şu gizli değerler kaydedilmedi: {{keys}}. Bunları örnek panelinde ayarlayın.",
+      "fullToolsNote": "Varsayılan: tüm araçlar (okuma + yazma). Ajanların ne yapabileceğini beceriler ve kurallar belirler; üretim verisine, ödemelere, reklamlara veya e-postaya yazmak yine de her değişiklik için sahibin yazılı onayını gerektirir.",
+      "patternProblem": "{{key}} beklenen biçimde değil."
     },
     "attach": {
       "title": "{{name}} bağla",
@@ -290,6 +292,43 @@
       "rateLimited": "Çok fazla istek. Biraz bekleyip tekrar deneyin.",
       "internal": "Sunucuda dahili bir hata oluştu. Tekrar deneyin; sürerse AionUi günlüklerine bakın.",
       "upstream": "Sunucunun arkasındaki bir hizmet zamanında yanıt vermedi. Tekrar deneyin."
+    },
+    "library": {
+      "official": "Resmi",
+      "community": "Topluluk",
+      "optional": "İsteğe bağlı",
+      "metered": "Çağrı başına ücretli",
+      "addNamed": "{{name}} ekle",
+      "keysLabel": "Anahtarlar:",
+      "needsKey": "{{keys}} gerekli",
+      "noKey": "anahtar gerekmez",
+      "readOnlyLabel": "Salt okunur:",
+      "enforcement": {
+        "server": "sunucu tarafından uygulanır",
+        "credential": "kimlik bilgisinin izinleriyle uygulanır",
+        "proxy": "proxy'nin sabit araç izin listesiyle uygulanır",
+        "none": "uygulanmaz (araç izin listesi yalnızca üretim dışında)"
+      },
+      "modeLabel": "Mod:",
+      "modeFull": "tüm araçlarla (okuma + yazma) kurulur; bir örneği istediğiniz zaman salt okunura çevirebilirsiniz",
+      "modeReadOnly": "salt okunur sunucu",
+      "categoryFilter": "Kategori",
+      "allCategories": "Tüm kategoriler",
+      "noMatch": "Kütüphanede eşleşen MCP yok.",
+      "category": {
+        "developer": "Geliştirici platformu",
+        "payments": "Ödemeler",
+        "analytics": "Analitik",
+        "seo": "SEO",
+        "ads": "Reklamlar",
+        "email": "E-posta",
+        "data": "Belgeler ve veri",
+        "research": "Araştırma ve web",
+        "media": "Tasarım ve medya",
+        "other": "Diğer"
+      },
+      "count_one": "{{count}} MCP",
+      "count_other": "{{count}} MCP"
     }
   }
 }

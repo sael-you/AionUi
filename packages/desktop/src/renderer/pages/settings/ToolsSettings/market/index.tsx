@@ -234,7 +234,11 @@ const McpMarketView: React.FC<McpMarketViewProps> = ({ legacyServers, extensionS
                   onRetry={() => void market.reload()}
                 />
               ) : visibleTemplates.length === 0 ? (
-                <EmptyLine text={t('mcp.market.group.templatesEmpty')} />
+                <EmptyLine
+                  text={
+                    market.templates.length > 0 ? t('mcp.market.library.noMatch') : t('mcp.market.group.templatesEmpty')
+                  }
+                />
               ) : (
                 <TemplateList
                   templates={visibleTemplates}

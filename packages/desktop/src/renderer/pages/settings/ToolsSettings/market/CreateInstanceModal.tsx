@@ -20,13 +20,17 @@ import {
   MCP_INSTANCE_NAME_MAX,
   MCP_MARKET_ENVIRONMENTS,
   McpMarketSecretsNotSavedError,
+  defaultTemplateTier,
   describeMarketError,
   forcedPlainEnv,
+  initialReadAllowlist,
   instanceNameProblem,
   isMaskedValue,
   plainKeys,
+  plainValueMatchesPattern,
   secretKeys,
   templateClisForTier,
+  templateReadEnforcement,
 } from '@/renderer/hooks/mcp/market/marketModel';
 import type { McpMarketController } from '@/renderer/hooks/mcp/market/useMcpMarket';
 import SecretField from './SecretField';
@@ -95,7 +99,8 @@ const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
     setError(null);
     setSecrets({});
     if (template) {
-      const firstTier = template.tiers[0] ?? '';
+      // D50: full tools (write) by default where the template has them.
+      const firstTier = defaultTemplateTier(template);
       setTier(firstTier);
       setEnvironment(undefined);
       setClis(templateClisForTier(template, firstTier));
@@ -109,9 +114,13 @@ const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
   const missingPlain = template
     ? plainKeys(template).filter((key) => template.env[key].required && !(plainEnv[key] ?? '').trim())
     : [];
+  const badPattern = template
+    ? plainKeys(template).filter((key) => !plainValueMatchesPattern(template.env[key], (plainEnv[key] ?? '').trim()))
+    : [];
   const maskedSecret = Object.values(secrets).some(isMaskedValue);
   const formProblem =
-    nameProblem !== null || (template !== null && (!environment || !tier || clis.length === 0 || maskedSecret));
+    nameProblem !== null ||
+    (template !== null && (!environment || !tier || clis.length === 0 || maskedSecret || badPattern.length > 0));
 
   if (!target) return null;
 
@@ -142,8 +151,9 @@ const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
             tier,
             clis,
             plain_env: env,
-            // Read = allowlist, fail closed: no tool until one is allowed after a test (R6).
-            ...(tier === 'read' ? { tools_allow: [] } : { tools_block: [] }),
+            // Read = allowlist, fail closed (R6): the template's pinned read tools (G3), else none
+            // until one is allowed after a test.
+            ...(tier === 'read' ? { tools_allow: initialReadAllowlist(target.template) } : { tools_block: [] }),
           },
           secrets
         );
@@ -242,9 +252,17 @@ const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
               label={t('mcp.market.create.tier')}
               hint={
                 tier === 'write' ? (
-                  <Alert type='warning' content={t('mcp.market.create.writeTierNote')} />
+                  <div className='flex flex-col gap-6px'>
+                    <span className='text-12px text-t-secondary' data-testid='mcp-market-create-mode'>
+                      {t('mcp.market.create.fullToolsNote')}
+                    </span>
+                    <Alert type='warning' content={t('mcp.market.create.writeTierNote')} />
+                  </div>
                 ) : (
-                  <span className='text-12px text-t-secondary'>{t('mcp.market.create.readTierNote')}</span>
+                  <span className='text-12px text-t-secondary' data-testid='mcp-market-create-mode'>
+                    {t('mcp.market.create.readTierNote')}{' '}
+                    {t(`mcp.market.library.enforcement.${templateReadEnforcement(template)}`)}
+                  </span>
                 )
               }
             >
@@ -279,9 +297,16 @@ const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
                       label={field.required ? `${key} *` : key}
                       htmlFor={id}
                       hint={
-                        <span className='text-12px text-t-secondary'>
-                          {isForced ? t('mcp.market.create.forcedByTier', { tier }) : field.description}
-                        </span>
+                        <>
+                          <span className='text-12px text-t-secondary'>
+                            {isForced ? t('mcp.market.create.forcedByTier', { tier }) : field.description}
+                          </span>
+                          {!isForced && badPattern.includes(key) && (
+                            <span role='alert' className='text-12px text-danger'>
+                              {t('mcp.market.create.patternProblem', { key })}
+                            </span>
+                          )}
+                        </>
                       }
                     >
                       {field.enum && field.enum.length > 0 ? (

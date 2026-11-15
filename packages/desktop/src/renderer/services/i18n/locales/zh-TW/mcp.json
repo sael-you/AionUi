@@ -189,7 +189,9 @@
       "forcedByTier": "由{{tier}}層級設定。",
       "dormantUntilComplete": "在填寫以下項目之前會保持休眠：{{keys}}",
       "startsDormant": "新的 MCP 以休眠狀態開始。設定好值並通過連線測試後即可啟用。",
-      "secretsNotSaved": "{{name}} 已建立，但以下金鑰未儲存：{{keys}}。請在執行個體面板中設定。"
+      "secretsNotSaved": "{{name}} 已建立，但以下金鑰未儲存：{{keys}}。請在執行個體面板中設定。",
+      "fullToolsNote": "完整工具（讀 + 寫）為預設。代理能做什麼由技能與規則決定；寫入正式環境資料、付款、廣告或電子郵件仍需擁有者對該變更的書面同意。",
+      "patternProblem": "{{key}} 的格式不符。"
     },
     "attach": {
       "title": "掛載 {{name}}",
@@ -290,6 +292,43 @@
       "rateLimited": "請求過多，請稍後再試。",
       "internal": "伺服器發生內部錯誤。請重試；若持續發生，請查看 AionUi 記錄。",
       "upstream": "伺服器後方的服務未及時回應，請重試。"
+    },
+    "library": {
+      "official": "官方",
+      "community": "社群",
+      "optional": "選用",
+      "metered": "按呼叫計費",
+      "addNamed": "新增 {{name}}",
+      "keysLabel": "金鑰：",
+      "needsKey": "需要 {{keys}}",
+      "noKey": "不需要金鑰",
+      "readOnlyLabel": "唯讀：",
+      "enforcement": {
+        "server": "由伺服器強制",
+        "credential": "由憑證權限強制",
+        "proxy": "由代理的固定工具允許清單強制",
+        "none": "不強制（工具允許清單僅限非正式環境）"
+      },
+      "modeLabel": "模式：",
+      "modeFull": "以完整工具安裝（讀 + 寫）；可隨時將執行個體切換為唯讀",
+      "modeReadOnly": "唯讀伺服器",
+      "categoryFilter": "類別",
+      "allCategories": "所有類別",
+      "noMatch": "資料庫中沒有符合的 MCP。",
+      "category": {
+        "developer": "開發平台",
+        "payments": "付款",
+        "analytics": "分析",
+        "seo": "SEO",
+        "ads": "廣告",
+        "email": "電子郵件",
+        "data": "文件與資料",
+        "research": "研究與網路",
+        "media": "設計與媒體",
+        "other": "其他"
+      },
+      "count_one": "{{count}} 個 MCP",
+      "count_other": "{{count}} 個 MCP"
     }
   }
 }
