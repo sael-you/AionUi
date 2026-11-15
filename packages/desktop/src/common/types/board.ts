@@ -155,6 +155,12 @@ export type BoardCardSummary = {
   archived_at: number | null;
   created_at: number;
   updated_at: number;
+  /**
+   * Free-form card metadata. Always present on the full card; on list rows only
+   * when the server includes it. The Board Butler writes `progress` (0–100),
+   * `status_note` and `updated_at` (ms epoch) here (C22).
+   */
+  metadata?: Record<string, unknown> | null;
 };
 
 /** One `board_card_deps` row, resolved for display. */

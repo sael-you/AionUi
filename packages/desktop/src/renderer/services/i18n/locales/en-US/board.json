@@ -455,5 +455,10 @@
     "nameRequired": "Every column needs a name",
     "saved": "Columns saved",
     "saveFailed": "Couldn't save the columns"
+  },
+  "progress": {
+    "label": "Progress",
+    "updated": "Updated {{age}}",
+    "stale": "No update for more than 24 hours"
   }
 }

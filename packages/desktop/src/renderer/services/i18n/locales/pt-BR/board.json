@@ -460,5 +460,10 @@
     "nameRequired": "Toda coluna precisa de um nome",
     "saved": "Colunas salvas",
     "saveFailed": "Não foi possível salvar as colunas"
+  },
+  "progress": {
+    "label": "Progresso",
+    "updated": "Atualizado {{age}}",
+    "stale": "Sem atualização há mais de 24 horas"
   }
 }

@@ -455,5 +455,10 @@
     "nameRequired": "Her sütunun bir adı olmalı",
     "saved": "Sütunlar kaydedildi",
     "saveFailed": "Sütunlar kaydedilemedi"
+  },
+  "progress": {
+    "label": "İlerleme",
+    "updated": "Güncellendi: {{age}}",
+    "stale": "24 saatten uzun süredir güncelleme yok"
   }
 }

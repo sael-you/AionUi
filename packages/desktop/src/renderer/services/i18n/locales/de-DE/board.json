@@ -455,5 +455,10 @@
     "nameRequired": "Jede Spalte braucht einen Namen",
     "saved": "Spalten gespeichert",
     "saveFailed": "Spalten konnten nicht gespeichert werden"
+  },
+  "progress": {
+    "label": "Fortschritt",
+    "updated": "Aktualisiert {{age}}",
+    "stale": "Seit über 24 Stunden keine Aktualisierung"
   }
 }

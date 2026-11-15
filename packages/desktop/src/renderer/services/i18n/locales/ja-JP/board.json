@@ -455,5 +455,10 @@
     "nameRequired": "すべての列に名前が必要です",
     "saved": "列を保存しました",
     "saveFailed": "列を保存できませんでした"
+  },
+  "progress": {
+    "label": "進捗",
+    "updated": "{{age}}に更新",
+    "stale": "24 時間以上更新がありません"
   }
 }

@@ -455,5 +455,10 @@
     "nameRequired": "每個欄位都需要名稱",
     "saved": "欄位已儲存",
     "saveFailed": "無法儲存欄位"
+  },
+  "progress": {
+    "label": "進度",
+    "updated": "{{age}}更新",
+    "stale": "超過 24 小時未更新"
   }
 }

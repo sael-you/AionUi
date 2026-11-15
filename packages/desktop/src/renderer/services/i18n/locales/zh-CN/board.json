@@ -455,5 +455,10 @@
     "nameRequired": "每一列都需要名称",
     "saved": "列已保存",
     "saveFailed": "无法保存列"
+  },
+  "progress": {
+    "label": "进度",
+    "updated": "{{age}}更新",
+    "stale": "超过 24 小时未更新"
   }
 }
