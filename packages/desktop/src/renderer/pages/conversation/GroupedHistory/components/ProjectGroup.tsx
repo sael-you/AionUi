@@ -6,7 +6,7 @@
 
 import { projectSurfaceClasses, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import { treeArrowIntent } from '@/renderer/hooks/ui/useRovingTree';
-import { Spin } from '@arco-design/web-react';
+import StatusGlyph from '@/renderer/pages/conversation/components/orchestration/StatusGlyph';
 import { Right } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useState } from 'react';
@@ -88,11 +88,11 @@ export type ProjectGroupProps = {
 
 /**
  * A project in the sidebar: the hierarchy anchor. Chevron (remembered per
- * project), name, then a running indicator, a "needs
- * you" badge and the conversation count, and the actions slot. Its
- * conversations are indented under a thin guide line in the project accent and
- * drawn smaller than the project row (see ConversationRow.module.css);
- * more than eight show the most recent eight and a "Show N more" toggle.
+ * project), name, then a "needs you" pill, a running glyph and (collapsed
+ * only) the conversation count, and the actions slot. Its conversations sit
+ * under it with root titles aligned to the project name and are drawn smaller
+ * than the project row (see ConversationRow.module.css); more than eight show
+ * the most recent eight and a "Show N more" toggle.
  */
 const ProjectGroup: React.FC<ProjectGroupProps> = ({
   workspace,
@@ -186,21 +186,24 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
             <span className={styles.projectName} title={name}>
               {name}
             </span>
-            <span className={styles.meta} aria-hidden='true'>
-              {running && (
-                <span className='line-height-0' data-testid={`project-running-${workspace}`}>
-                  <Spin size={12} />
-                </span>
-              )}
-              {needsYou > 0 && (
-                <span className={styles.needsYouBadge} data-testid={`project-needs-you-${workspace}`}>
-                  {needsYou > 99 ? '99+' : needsYou}
-                </span>
-              )}
-              <span className={styles.count} data-testid={`project-count-${workspace}`}>
-                {count}
+            {/* C21: needs-you pill, running glyph, and the root count only while collapsed (never "0"). */}
+            {(needsYou > 0 || running || (!expanded && count > 0)) && (
+              <span className={styles.meta} aria-hidden='true'>
+                {needsYou > 0 && (
+                  <span className={styles.needsYouBadge} data-testid={`project-needs-you-${workspace}`}>
+                    {needsYou > 99 ? '99+' : needsYou}
+                  </span>
+                )}
+                {running && (
+                  <StatusGlyph state='running' size={12} label={null} data-testid={`project-running-${workspace}`} />
+                )}
+                {!expanded && count > 0 && (
+                  <span className={styles.count} data-testid={`project-count-${workspace}`}>
+                    {count}
+                  </span>
+                )}
               </span>
-            </span>
+            )}
             {actions && (
               <span
                 className={classNames(styles.actions, { [styles.actionsVisible]: actionsVisible })}

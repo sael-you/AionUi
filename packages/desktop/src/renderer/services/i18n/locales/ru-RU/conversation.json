@@ -877,5 +877,83 @@
       "localUser": "Вы",
       "menu": "Меню аккаунта"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "Нужны вы",
+      "failed": "Ошибка",
+      "running": "Выполняется",
+      "done": "Готово",
+      "queued": "Не начато",
+      "stopped": "Остановлено",
+      "idle": "Простой"
+    },
+    "count": {
+      "running": "выполняется: {{count}}",
+      "waiting": "нужны вы: {{count}}",
+      "failed": "ошибок: {{count}}",
+      "done": "готово: {{count}}",
+      "stopped": "остановлено: {{count}}",
+      "queued": "не начато: {{count}}"
+    },
+    "subConversations": "вложенных бесед: {{count}}",
+    "needsYou": {
+      "title": "Нужны вы",
+      "running": "бесед выполняется: {{count}}"
+    },
+    "announce": {
+      "waiting": "{{name}}: нужны вы",
+      "failed": "{{name}}: ошибка",
+      "done": "{{name}}: готово"
+    },
+    "activity": {
+      "worked": "Работа {{duration}}",
+      "working": "В работе · {{duration}}",
+      "steps": "шагов: {{count}}",
+      "thoughts": "размышлений: {{count}}",
+      "failedSteps": "с ошибкой: {{count}}",
+      "thought": "Размышление",
+      "thoughtFor": "размышление {{duration}}",
+      "moreSteps": "ещё шагов: {{count}}",
+      "shortThoughts": "коротких размышлений: {{count}}",
+      "messageTo": "Сообщение → {{name}}",
+      "viewSteps": "Показать шаги",
+      "viewStepsCount": "Показать шаги · {{count}}",
+      "waitingOnBackground": "ожидание фоновых задач: {{count}}"
+    },
+    "card": {
+      "title": "Делегированная работа",
+      "group": {
+        "conversation": "Беседы",
+        "subagent": "Субагенты",
+        "background": "Фоновые задачи"
+      },
+      "review": "Проверить",
+      "open": "Открыть",
+      "transcript": "Журнал",
+      "output": "Вывод",
+      "waitingNote": "Ожидает вашего одобрения",
+      "failedNote": "Последний ход завершился ошибкой",
+      "taskFailedNote": "Завершено с ошибкой",
+      "stoppedNote": "Остановлено",
+      "reportedBack": "Отчитался {{time}}",
+      "finishedHidden": "Скрыто завершённых задач: {{count}} ·",
+      "show": "Показать",
+      "noOutput": "Вывода пока нет",
+      "noSteps": "Шагов пока нет",
+      "collapse": "Свернуть делегированную работу",
+      "expand": "Развернуть делегированную работу"
+    },
+    "report": {
+      "done": "отчитался",
+      "failed": "ошибка",
+      "stopped": "остановлено",
+      "show": "Показать результат",
+      "hide": "Скрыть результат"
+    },
+    "pill": {
+      "label": "Делегированная работа: {{summary}}"
+    },
+    "breadcrumb": "Путь беседы"
   }
 }

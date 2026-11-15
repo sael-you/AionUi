@@ -72,6 +72,7 @@ vi.mock('@/renderer/hooks/context/ConversationHistoryContext', () => ({
     isConversationGenerating: (id: string) => state.generating.has(id),
     isConversationWaitingConfirmation: (id: string) => state.waiting.has(id),
     hasCompletionUnread: () => false,
+    hasBackgroundActive: () => false,
     clearCompletionUnread: () => {},
     isManualUnread: () => false,
     markManualUnread: () => {},
@@ -125,8 +126,9 @@ describe('sidebar list', () => {
     expect(screen.getByTestId('section-header-projects').getAttribute('aria-label')).toBe(
       'conversation.history.projectsSection (2)'
     );
-    expect(screen.getByTestId('project-count-/p/alpha').textContent).toBe('2');
-    expect(screen.getByTestId('project-count-/p/empty').textContent).toBe('0');
+    // C21: the count shows only while collapsed, and an empty project shows no "0".
+    expect(screen.queryByTestId('project-count-/p/alpha')).toBeNull();
+    expect(screen.queryByTestId('project-count-/p/empty')).toBeNull();
     // Non-empty projects open on first load, empty ones stay collapsed.
     expect(screen.getByTestId('project-row-/p/alpha').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('project-row-/p/empty').getAttribute('aria-expanded')).toBe('false');
@@ -225,7 +227,22 @@ describe('sidebar list', () => {
     renderSidebar({ filterQuery: 'release' });
     expect(screen.queryByText('Fix the login bug')).toBeNull();
     expect(screen.getByTestId('project-needs-you-/p/alpha').textContent).toBe('1');
-    expect(screen.getByTestId('project-count-/p/alpha').textContent).toBe('2');
+  });
+
+  it('lists what waits across projects in the Needs-you box, only while something waits (C21)', () => {
+    renderSidebar();
+    expect(screen.queryByTestId('sidebar-needs-you')).toBeNull();
+  });
+
+  it('shows the Needs-you box with the waiting conversation, its project and the running count', () => {
+    state.waiting.add('a2');
+    state.generating.add('a1');
+    renderSidebar();
+    const box = screen.getByTestId('sidebar-needs-you');
+    expect(within(box).getByTestId('sidebar-needs-you-a2')).toBeInTheDocument();
+    expect(within(box).getByTestId('sidebar-needs-you-running').textContent).toContain(
+      'conversation.orchestration.needsYou.running'
+    );
   });
 
   it('keeps the Projects header and its "+" with a zero count when there are no projects', () => {

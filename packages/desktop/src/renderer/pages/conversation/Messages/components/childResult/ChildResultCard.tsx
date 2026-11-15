@@ -4,56 +4,62 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Down, Right } from '@icon-park/react';
+import StatusGlyph from '@/renderer/pages/conversation/components/orchestration/StatusGlyph';
+import type { RunState } from '@/renderer/pages/conversation/components/orchestration/runState';
 import { Button } from '@arco-design/web-react';
+import { Down, Up } from '@icon-park/react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import type { ChildResult } from './childResultBlock';
+import styles from './ChildResultCard.module.css';
+
+/** The report header's status word → the one status language (C21). */
+const reportState = (status: string): Extract<RunState, 'done' | 'failed' | 'stopped'> =>
+  status === 'error' ? 'failed' : status === 'cancelled' ? 'stopped' : 'done';
 
 /**
- * Compact collapsible card for a sub-conversation's result returned into its
- * parent's message list, with a link to open the child.
+ * A sub-conversation's result returned into its parent, as a compact report
+ * row (C21): glyph · name (opens the child) · "reported back" / "failed" /
+ * "stopped" · Show result. The raw status word is never shown.
  */
 const ChildResultCard: React.FC<{ result: ChildResult }> = ({ result }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const name = result.name || result.childId;
+  const state = reportState(result.status);
 
   return (
-    <div
-      className='w-full min-w-0 rd-8px bg-fill-1 border border-solid border-[var(--color-border-2)] mb-6px'
-      data-testid='child-result-card'
-    >
-      <div className='flex items-center gap-8px px-10px h-32px'>
+    <div className={styles.report} data-testid='child-result-card' data-run-state={state}>
+      <div className={styles.line}>
+        <StatusGlyph state={state} size={14} />
         <Button
           type='text'
           size='mini'
-          aria-expanded={expanded}
-          aria-label={t('conversation.hierarchy.resultToggle')}
-          icon={expanded ? <Down theme='outline' size='14' /> : <Right theme='outline' size='14' />}
-          onClick={() => setExpanded((value) => !value)}
-        />
-        <span className='text-13px font-[500] text-t-primary truncate min-w-0 flex-1'>
-          {t('conversation.hierarchy.resultTitle', { name })}
-        </span>
-        {result.status && <span className='text-12px text-t-secondary shrink-0'>{result.status}</span>}
-        <Button
-          type='text'
-          size='mini'
+          className={styles.name}
           data-testid='child-result-open'
+          aria-label={t('conversation.hierarchy.openChild') + ': ' + name}
           onClick={() => void navigate(`/conversation/${result.childId}`)}
         >
-          {t('conversation.hierarchy.openChild')}
+          <span className={styles.nameText}>{name}</span>
+        </Button>
+        <span className={styles.sub}>{t(`conversation.orchestration.report.${state}`)}</span>
+        <Button
+          type='text'
+          size='mini'
+          className={styles.toggle}
+          aria-expanded={expanded}
+          aria-label={t('conversation.hierarchy.resultToggle')}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? t('conversation.orchestration.report.hide') : t('conversation.orchestration.report.show')}
+          {expanded ? <Up theme='outline' size='12' /> : <Down theme='outline' size='12' />}
         </Button>
       </div>
       {expanded && (
-        <div
-          className='px-12px pb-10px text-13px text-t-secondary whitespace-pre-wrap [overflow-wrap:anywhere]'
-          data-testid='child-result-body'
-        >
+        <div className={styles.body} data-testid='child-result-body'>
           {result.body}
         </div>
       )}

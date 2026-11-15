@@ -25,6 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import ConversationChildren from './components/ConversationChildren';
 import MoveUnderModal from './components/MoveUnderModal';
+import NeedsYouBox, { RunStateAnnouncer, type NeedsYouItem } from './components/NeedsYouBox';
 import ProjectGroup from './components/ProjectGroup';
 import SectionHeader, { sectionGroupId } from './components/SectionHeader';
 import sidebarTreeStyles from './components/SidebarTree.module.css';
@@ -55,6 +56,11 @@ import {
 } from './utils/conversationTree';
 import { buildTreesByRoot } from './utils/conversationTreeIndex';
 import { filterConversations, filterProjectGroup, normalizeSidebarQuery } from './utils/sidebarFilter';
+import {
+  conversationRunState,
+  readLastOutcome,
+  type RunState,
+} from '@/renderer/pages/conversation/components/orchestration/runState';
 
 const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   onSessionClick,
@@ -96,6 +102,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     isConversationGenerating,
     isConversationWaitingConfirmation,
     hasCompletionUnread,
+    hasBackgroundActive,
     isManualUnread,
     markManualUnread,
     clearManualUnread,
@@ -107,6 +114,20 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     collapsedSections,
     toggleSection,
   } = useConversations();
+
+  /** One status language (C21): the state every row, chip, project and the Needs-you box show. */
+  const runStateOf = useCallback(
+    (conversation: TChatConversation): RunState =>
+      conversationRunState({
+        waiting: isConversationWaitingConfirmation(conversation.id),
+        generating: isConversationGenerating(conversation.id),
+        backgroundActive: hasBackgroundActive(conversation.id),
+        doneUnread: hasCompletionUnread(conversation.id),
+        notStarted: conversation.status === 'pending',
+        lastOutcome: readLastOutcome(conversation.extra),
+      }),
+    [hasBackgroundActive, hasCompletionUnread, isConversationGenerating, isConversationWaitingConfirmation]
+  );
 
   // --- Hierarchy (sub-conversations) ---
   const treeExpansion = useConversationTreeExpansion();
@@ -306,6 +327,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       isGenerating: isConversationGenerating(conversation.id),
       isWaitingConfirmation: isConversationWaitingConfirmation(conversation.id),
       hasUnread: hasCompletionUnread(conversation.id) || isManualUnread(conversation.id),
+      runState: runStateOf(conversation),
       isManualUnread: isManualUnread(conversation.id),
       collapsed,
       tooltipEnabled,
@@ -338,6 +360,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       isConversationGenerating,
       isConversationWaitingConfirmation,
       hasCompletionUnread,
+      runStateOf,
       isManualUnread,
       selectedConversationIds,
       id,
@@ -356,25 +379,30 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     ]
   );
 
-  // Row props for a node of the hierarchy (depth, rollup, expand toggle).
-  const getTreeRowProps = (node: ConversationTreeNode): ConversationRowProps => {
+  // Row props for a node of the hierarchy (depth, rollup, expand toggle, connectors).
+  const getTreeRowProps = (
+    node: ConversationTreeNode,
+    position: { continues: boolean[]; hasNextSibling: boolean } = { continues: [], hasNextSibling: false }
+  ): ConversationRowProps => {
     const base = getConversationRowProps(node.conversation);
     if (node.children.length === 0 && node.depth === 0) return base;
     const descendantCount = collectDescendantIds(node).length;
+    const expanded = filtering || isTreeExpanded(node.conversation.id);
     return {
       ...base,
       depth: node.depth,
       descendantCount,
+      guides: {
+        continues: position.continues,
+        hasNextSibling: position.hasNextSibling,
+        showsChildren: node.children.length > 0 && expanded && !collapsed,
+      },
       treeInfo:
         node.children.length > 0
           ? {
-              expanded: isTreeExpanded(node.conversation.id),
+              expanded,
               childCount: node.children.length,
-              rollup: computeConversationRollup(node, {
-                isRunning: (c) => isConversationGenerating(c.id),
-                pendingConfirmations: (c) =>
-                  c.runtime?.pending_confirmations ?? (isConversationWaitingConfirmation(c.id) ? 1 : 0),
-              }),
+              rollup: computeConversationRollup(node, runStateOf),
               onToggle: () => toggleTreeNode(node.conversation.id),
             }
           : undefined,
@@ -404,10 +432,10 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
           <ConversationChildren
             nodes={tree.children}
             isExpanded={(conversationId) => filtering || isTreeExpanded(conversationId)}
-            renderRow={(node) => (
+            renderRow={(node, position) => (
               <ConversationRow
                 key={node.conversation.id}
-                {...getTreeRowProps(node)}
+                {...getTreeRowProps(node, position)}
                 treeLevel={treeLevel}
                 badge={conversationBadge?.(node.conversation)}
               />
@@ -511,8 +539,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     let needsYou = 0;
     for (const root of projectConversations) {
       for (const conversation of [root, ...(descendantsByRoot.get(root.id) ?? [])]) {
-        if (isConversationWaitingConfirmation(conversation.id)) needsYou += 1;
-        else if (isConversationGenerating(conversation.id)) running = true;
+        const state = runStateOf(conversation);
+        if (state === 'waiting') needsYou += 1;
+        else if (state === 'running') running = true;
       }
     }
     return { running, needsYou };
@@ -540,6 +569,37 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       console.error('[sidebar] could not open the folder picker:', error);
     }
   };
+
+  // --- Cross-project attention (C21): the Needs-you box and the live announcer ---
+  const runStates = useMemo(() => {
+    const map = new Map<string, { state: RunState; name: string }>();
+    for (const conversation of conversations) {
+      map.set(conversation.id, { state: runStateOf(conversation), name: conversation.name });
+    }
+    return map;
+  }, [conversations, runStateOf]);
+  const attention = useMemo(() => {
+    const projectNameById = new Map<string, string>();
+    for (const group of projectGroups) {
+      for (const root of group.conversations) {
+        for (const conversation of [root, ...(descendantsByRoot.get(root.id) ?? [])]) {
+          projectNameById.set(conversation.id, group.displayName);
+        }
+      }
+    }
+    const waiting: NeedsYouItem[] = [];
+    const failed: NeedsYouItem[] = [];
+    const running: TChatConversation[] = [];
+    const byRecent = (a: TChatConversation, b: TChatConversation) => (b.modified_at ?? 0) - (a.modified_at ?? 0);
+    for (const conversation of [...conversations].toSorted(byRecent)) {
+      const state = runStates.get(conversation.id)?.state;
+      const where = projectNameById.get(conversation.id);
+      if (state === 'waiting') waiting.push({ conversation, state, where });
+      else if (state === 'failed') failed.push({ conversation, state, where });
+      else if (state === 'running') running.push(conversation);
+    }
+    return { items: [...waiting, ...failed], running };
+  }, [conversations, descendantsByRoot, projectGroups, runStates]);
 
   const hasHistory = timelineSections.length > 0 || pinnedConversations.length > 0;
   // Tree levels: section headers are level 1. In the icon rail (collapsed
@@ -688,6 +748,18 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         onKeyDown={rovingTree.onKeyDown}
         onFocus={rovingTree.onFocus}
       >
+        {/* Cross-project "Needs you" (C21): only while something waits or failed. */}
+        {!collapsed && !batchMode && !filtering && (
+          <NeedsYouBox
+            items={attention.items}
+            runningCount={attention.running.length}
+            onOpen={handleConversationClick}
+            onShowRunning={() => {
+              const first = attention.running[0];
+              if (first) handleConversationClick(first);
+            }}
+          />
+        )}
         {/* L1: Pinned section */}
         <DndContext
           sensors={sensors}
@@ -929,6 +1001,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
           </div>
         )}
       </div>
+      <RunStateAnnouncer states={runStates} />
       {!hasHistory && !collapsed && (
         <div className='px-8px py-12px text-12px leading-18px text-t-tertiary' role='status'>
           {t('conversation.history.noHistory')}

@@ -1,0 +1,140 @@
+/*
+ * "Needs you" box (C21, direction C): 28px rows (40px touch), 11/600 heading
+ * in the needs-you text colour, project name trailing in meta text.
+ */
+.box {
+  margin: 6px 0 4px;
+  padding: 4px;
+  border: 1px solid var(--bg-3);
+  border-radius: 8px;
+  background: var(--bg-base);
+}
+
+:global([data-theme='dark']) .box {
+  border-color: var(--color-border-1);
+  background: var(--color-fill-1);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding-inline: 6px;
+  color: var(--status-wait-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 16px;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.count {
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.row,
+.summary {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  margin-top: 1px;
+  padding-inline: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+}
+
+.row:hover,
+.summary:hover {
+  background: var(--status-hover);
+}
+
+.row:focus-visible,
+.summary:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--status-focus);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-1);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.where {
+  flex-shrink: 0;
+  max-width: 70px;
+  overflow: hidden;
+  color: var(--status-meta);
+  font-size: 11px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summary {
+  margin-top: 3px;
+  padding-top: 2px;
+  border-top: 1px solid var(--bg-3);
+  border-radius: 0 0 6px 6px;
+  color: var(--color-text-2);
+  font-size: 12px;
+}
+
+:global([data-theme='dark']) .summary {
+  border-top-color: var(--color-border-1);
+}
+
+.summaryText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  display: inline-flex;
+  line-height: 0;
+  color: var(--status-idle);
+}
+
+[dir='rtl'] .chevron {
+  transform: scaleX(-1);
+}
+
+@media (max-width: 768px) {
+  .row,
+  .summary {
+    height: 40px;
+  }
+
+  .name {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .summary {
+    font-size: 14px;
+  }
+}
+
+/* Visually hidden, read by screen readers. */
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -149,6 +149,9 @@ export type TConversationRuntimeSummary = {
    * mid-turn UI on. Optional/undefined is treated as false for older
    * backends/responses that don't send it yet. */
   supports_midturn_delivery?: boolean;
+  /** Background work (subagents, background tasks, workflows) still in flight
+   * after the turn (AionCore C21). Absent = 0. */
+  background_active?: number;
 };
 
 export type TConversationAssistantIdentity = {

@@ -861,5 +861,83 @@
       "localUser": "あなた",
       "menu": "アカウントメニュー"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "要対応",
+      "failed": "失敗",
+      "running": "実行中",
+      "done": "完了",
+      "queued": "未開始",
+      "stopped": "停止",
+      "idle": "待機"
+    },
+    "count": {
+      "running": "実行中 {{count}}",
+      "waiting": "要対応 {{count}}",
+      "failed": "失敗 {{count}}",
+      "done": "完了 {{count}}",
+      "stopped": "停止 {{count}}",
+      "queued": "未開始 {{count}}"
+    },
+    "subConversations": "サブ会話 {{count}} 件",
+    "needsYou": {
+      "title": "要対応",
+      "running": "{{count}} 件の会話が実行中"
+    },
+    "announce": {
+      "waiting": "{{name}} が対応を待っています",
+      "failed": "{{name}} が失敗しました",
+      "done": "{{name}} が完了しました"
+    },
+    "activity": {
+      "worked": "作業時間 {{duration}}",
+      "working": "作業中 · {{duration}}",
+      "steps": "{{count}} ステップ",
+      "thoughts": "{{count}} 回の思考",
+      "failedSteps": "{{count}} 件失敗",
+      "thought": "思考",
+      "thoughtFor": "思考 {{duration}}",
+      "moreSteps": "ほか {{count}} ステップ",
+      "shortThoughts": "短い思考 {{count}} 回",
+      "messageTo": "メッセージ → {{name}}",
+      "viewSteps": "ステップを表示",
+      "viewStepsCount": "ステップを表示 · {{count}}",
+      "waitingOnBackground": "{{count}} 件のバックグラウンドタスクを待機中"
+    },
+    "card": {
+      "title": "委任した作業",
+      "group": {
+        "conversation": "会話",
+        "subagent": "サブエージェント",
+        "background": "バックグラウンドタスク"
+      },
+      "review": "確認",
+      "open": "開く",
+      "transcript": "記録",
+      "output": "出力",
+      "waitingNote": "承認待ち",
+      "failedNote": "前回のターンが失敗",
+      "taskFailedNote": "エラーで終了",
+      "stoppedNote": "停止済み",
+      "reportedBack": "{{time}}に報告",
+      "finishedHidden": "完了したタスク {{count}} 件を非表示 ·",
+      "show": "表示",
+      "noOutput": "出力はまだありません",
+      "noSteps": "記録されたステップはまだありません",
+      "collapse": "委任した作業を折りたたむ",
+      "expand": "委任した作業を展開"
+    },
+    "report": {
+      "done": "報告済み",
+      "failed": "失敗",
+      "stopped": "停止",
+      "show": "結果を表示",
+      "hide": "結果を隠す"
+    },
+    "pill": {
+      "label": "委任した作業: {{summary}}"
+    },
+    "breadcrumb": "会話の階層"
   }
 }

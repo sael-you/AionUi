@@ -142,6 +142,18 @@ vi.mock('@/renderer/pages/conversation/Messages/components/MessageToolGroupSumma
   ),
 }));
 
+// C21: thinking + step groups between two answers render as one activity line;
+// the stub lists the step message ids like the summary stub above.
+vi.mock('@/renderer/pages/conversation/components/orchestration/TurnActivity', () => ({
+  default: ({ entries }: { entries: Array<{ kind: string; messages?: Array<{ id: string }> }> }) => (
+    <div data-testid='tool-summary'>
+      {entries.flatMap((entry) => (entry.kind === 'tools' ? (entry.messages ?? []).map((m) => m.id) : [])).join(',')}
+    </div>
+  ),
+  useDurationUnits: () => ({ s: 's', m: 'm', h: 'h' }),
+  useTicker: () => Date.now(),
+}));
+
 vi.mock('@/renderer/pages/conversation/Messages/MessageFileChanges', () => ({
   __esModule: true,
   default: ({ diffsChanges }: MessageFileChangesProps) => (

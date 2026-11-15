@@ -861,5 +861,83 @@
       "localUser": "شما",
       "menu": "منوی حساب"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "به شما نیاز دارد",
+      "failed": "ناموفق",
+      "running": "در حال اجرا",
+      "done": "انجام شد",
+      "queued": "شروع نشده",
+      "stopped": "متوقف شد",
+      "idle": "بیکار"
+    },
+    "count": {
+      "running": "{{count}} در حال اجرا",
+      "waiting": "{{count}} به شما نیاز دارد",
+      "failed": "{{count}} ناموفق",
+      "done": "{{count}} انجام شد",
+      "stopped": "{{count}} متوقف شد",
+      "queued": "{{count}} شروع نشده"
+    },
+    "subConversations": "{{count}} زیرگفتگو",
+    "needsYou": {
+      "title": "به شما نیاز دارد",
+      "running": "{{count}} گفتگو در حال اجرا"
+    },
+    "announce": {
+      "waiting": "{{name}} به شما نیاز دارد",
+      "failed": "{{name}} ناموفق بود",
+      "done": "{{name}} تمام شد"
+    },
+    "activity": {
+      "worked": "{{duration}} کار کرد",
+      "working": "در حال کار · {{duration}}",
+      "steps": "{{count}} مرحله",
+      "thoughts": "{{count}} فکر",
+      "failedSteps": "{{count}} ناموفق",
+      "thought": "فکر",
+      "thoughtFor": "فکر {{duration}}",
+      "moreSteps": "{{count}} مرحلهٔ دیگر",
+      "shortThoughts": "{{count}} فکر کوتاه",
+      "messageTo": "پیام → {{name}}",
+      "viewSteps": "مشاهدهٔ مراحل",
+      "viewStepsCount": "مشاهدهٔ مراحل · {{count}}",
+      "waitingOnBackground": "در انتظار {{count}} کار پس‌زمینه"
+    },
+    "card": {
+      "title": "کارهای واگذارشده",
+      "group": {
+        "conversation": "گفتگوها",
+        "subagent": "زیرعامل‌ها",
+        "background": "کارهای پس‌زمینه"
+      },
+      "review": "بررسی",
+      "open": "باز کردن",
+      "transcript": "رونوشت",
+      "output": "خروجی",
+      "waitingNote": "در انتظار تأیید شما",
+      "failedNote": "نوبت آخر ناموفق بود",
+      "taskFailedNote": "با خطا پایان یافت",
+      "stoppedNote": "متوقف شد",
+      "reportedBack": "{{time}} گزارش داد",
+      "finishedHidden": "{{count}} کار تمام‌شده پنهان است ·",
+      "show": "نمایش",
+      "noOutput": "هنوز خروجی ندارد",
+      "noSteps": "هنوز مرحله‌ای ثبت نشده",
+      "collapse": "جمع کردن کارهای واگذارشده",
+      "expand": "باز کردن کارهای واگذارشده"
+    },
+    "report": {
+      "done": "گزارش داد",
+      "failed": "ناموفق",
+      "stopped": "متوقف شد",
+      "show": "نمایش نتیجه",
+      "hide": "پنهان کردن نتیجه"
+    },
+    "pill": {
+      "label": "کارهای واگذارشده: {{summary}}"
+    },
+    "breadcrumb": "مسیر گفتگو"
   }
 }

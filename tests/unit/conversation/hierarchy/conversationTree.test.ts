@@ -18,6 +18,7 @@ import {
   partitionConversationHierarchy,
 } from '@/renderer/pages/conversation/GroupedHistory/utils/conversationTreeIndex';
 import { buildGroupedHistory } from '@/renderer/pages/conversation/GroupedHistory/utils/groupingHelpers';
+import type { RunState } from '@/renderer/pages/conversation/components/orchestration/runState';
 
 const conv = (id: string, parent?: string, created_at = 0, extra: Record<string, unknown> = {}): TChatConversation =>
   ({
@@ -65,17 +66,27 @@ describe('buildConversationTree', () => {
 describe('rollups and lookups', () => {
   const tree = buildConversationTree(conv('r'), [conv('a', 'r', 1), conv('b', 'a', 2), conv('c', 'r', 3)]);
 
-  it('aggregates running, pending confirmations and errors over descendants only', () => {
-    const rollup = computeConversationRollup(tree, {
-      isRunning: (c) => c.id === 'b' || c.id === 'r',
-      pendingConfirmations: (c) => (c.id === 'c' ? 2 : 0),
-      hasError: (c) => c.id === 'a',
-    });
-    expect(rollup).toEqual({ total: 3, running: 1, pendingConfirmations: 2, hasError: true });
+  it('counts run states over descendants only and keeps the most urgent one', () => {
+    const states: Record<string, RunState> = { r: 'waiting', a: 'failed', b: 'running', c: 'running' };
+    const rollup = computeConversationRollup(tree, (c) => states[c.id] ?? 'idle');
+    expect(rollup.total).toBe(3);
+    expect(rollup.counts).toMatchObject({ failed: 1, running: 2, waiting: 0 });
+    // The root's own "waiting" is not part of its roll-up.
+    expect(rollup.worst).toBe('failed');
+  });
+
+  it('ranks needs you above failed, running, done, not started and stopped', () => {
+    const states: Record<string, RunState> = { a: 'done', b: 'stopped', c: 'waiting' };
+    expect(computeConversationRollup(tree, (c) => states[c.id] ?? 'idle').worst).toBe('waiting');
+    const quiet: Record<string, RunState> = { a: 'queued', b: 'stopped', c: 'done' };
+    expect(computeConversationRollup(tree, (c) => quiet[c.id] ?? 'idle').worst).toBe('done');
   });
 
   it('returns a zero rollup without predicates', () => {
-    expect(computeConversationRollup(tree)).toEqual({ total: 3, running: 0, pendingConfirmations: 0, hasError: false });
+    const rollup = computeConversationRollup(tree);
+    expect(rollup.total).toBe(3);
+    expect(rollup.worst).toBe('idle');
+    expect(rollup.counts.idle).toBe(3);
   });
 
   it('finds ancestors of the active conversation', () => {

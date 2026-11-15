@@ -198,7 +198,8 @@
   "clear": "پاک کردن",
   "unit": {
     "minute_short": "د",
-    "second_short": "ث"
+    "second_short": "ث",
+    "hour_short": "ساعت"
   },
   "selectedCount": "{{count}} انتخاب‌شده",
   "selectedSkills": "مهارت‌های انتخاب‌شده",

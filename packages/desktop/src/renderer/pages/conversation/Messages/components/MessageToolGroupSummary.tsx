@@ -28,7 +28,17 @@ const statusToBadge = (status: NormalizedToolStatus): BadgeProps['status'] => {
   }
 };
 
-const ToolItemDetail: React.FC<{ item: NormalizedToolCall }> = ({ item }) => {
+/**
+ * One step with its expandable input / output. `leading` replaces the status
+ * badge (the C21 activity timeline draws its own rail marker and icon) and
+ * `trailing` adds a right-aligned slot (e.g. the step's duration).
+ */
+export const ToolItemDetail: React.FC<{
+  item: NormalizedToolCall;
+  leading?: React.ReactNode;
+  trailing?: React.ReactNode;
+  monoDescription?: boolean;
+}> = ({ item, leading, trailing, monoDescription }) => {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [fullItem, setFullItem] = useState<NormalizedToolCall | null>(null);
@@ -77,8 +87,10 @@ const ToolItemDetail: React.FC<{ item: NormalizedToolCall }> = ({ item }) => {
   return (
     <div className='flex flex-col'>
       {messageContext}
-      <div className='flex flex-row color-#86909C gap-12px items-center'>
-        <Badge status={statusToBadge(item.status)} className={item.status === 'running' ? 'badge-breathing' : ''} />
+      <div className={`flex flex-row items-center ${leading ? 'gap-8px text-t-secondary' : 'color-#86909C gap-12px'}`}>
+        {leading ?? (
+          <Badge status={statusToBadge(item.status)} className={item.status === 'running' ? 'badge-breathing' : ''} />
+        )}
         <span
           className={
             'flex-1 min-w-0' +
@@ -89,9 +101,12 @@ const ToolItemDetail: React.FC<{ item: NormalizedToolCall }> = ({ item }) => {
         >
           <span className='font-medium text-13px'>{displayItem.name}</span>
           {displayItem.description && displayItem.description !== displayItem.name && (
-            <span className='m-l-4px opacity-80 text-13px'>{displayItem.description}</span>
+            <span className={monoDescription ? 'm-l-6px text-12px font-mono' : 'm-l-4px opacity-80 text-13px'}>
+              {displayItem.description}
+            </span>
           )}
         </span>
+        {trailing}
         {hasDetail && (
           <span className='flex-shrink-0 cursor-pointer hover:color-#4E5969 transition-colors' onClick={toggleExpanded}>
             {expanded ? <IconDown style={{ fontSize: 12 }} /> : <IconRight style={{ fontSize: 12 }} />}
@@ -141,6 +156,7 @@ const ToolItemDetail: React.FC<{ item: NormalizedToolCall }> = ({ item }) => {
 };
 
 const MessageToolGroupSummary: React.FC<{ messages: ToolMessage[] }> = ({ messages }) => {
+  const { t } = useTranslation();
   const hasRunning = hasRunningToolMessages(messages);
   const [showMore, setShowMore] = useState(hasRunning);
 
@@ -156,7 +172,11 @@ const MessageToolGroupSummary: React.FC<{ messages: ToolMessage[] }> = ({ messag
         <span className='tool-group-summary__icon'>
           {hasRunning ? <Spin size={12} /> : <Checklist theme='outline' size='14' />}
         </span>
-        <span className='tool-group-summary__label'>View Steps {tools.length > 0 ? `· ${tools.length}` : ''}</span>
+        <span className='tool-group-summary__label'>
+          {tools.length > 0
+            ? t('conversation.orchestration.activity.viewStepsCount', { count: tools.length })
+            : t('conversation.orchestration.activity.viewSteps')}
+        </span>
         <span className={`tool-group-summary__arrow${showMore ? ' tool-group-summary__arrow--open' : ''}`}>
           <Right theme='outline' size='12' />
         </span>

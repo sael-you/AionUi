@@ -861,5 +861,83 @@
       "localUser": "你",
       "menu": "帳戶選單"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "需要你",
+      "failed": "失敗",
+      "running": "執行中",
+      "done": "完成",
+      "queued": "未開始",
+      "stopped": "已停止",
+      "idle": "閒置"
+    },
+    "count": {
+      "running": "{{count}} 個執行中",
+      "waiting": "{{count}} 個需要你",
+      "failed": "{{count}} 個失敗",
+      "done": "{{count}} 個完成",
+      "stopped": "{{count}} 個已停止",
+      "queued": "{{count}} 個未開始"
+    },
+    "subConversations": "{{count}} 個子對話",
+    "needsYou": {
+      "title": "需要你",
+      "running": "{{count}} 個對話執行中"
+    },
+    "announce": {
+      "waiting": "{{name}} 需要你",
+      "failed": "{{name}} 失敗",
+      "done": "{{name}} 已完成"
+    },
+    "activity": {
+      "worked": "已工作 {{duration}}",
+      "working": "工作中 · {{duration}}",
+      "steps": "{{count}} 個步驟",
+      "thoughts": "{{count}} 次思考",
+      "failedSteps": "{{count}} 個失敗",
+      "thought": "思考",
+      "thoughtFor": "思考 {{duration}}",
+      "moreSteps": "另外 {{count}} 個步驟",
+      "shortThoughts": "{{count}} 次短思考",
+      "messageTo": "訊息 → {{name}}",
+      "viewSteps": "查看步驟",
+      "viewStepsCount": "查看步驟 · {{count}}",
+      "waitingOnBackground": "等待 {{count}} 個背景任務"
+    },
+    "card": {
+      "title": "委派的工作",
+      "group": {
+        "conversation": "對話",
+        "subagent": "子代理",
+        "background": "背景任務"
+      },
+      "review": "查看",
+      "open": "開啟",
+      "transcript": "紀錄",
+      "output": "輸出",
+      "waitingNote": "等待你的核准",
+      "failedNote": "上一輪失敗",
+      "taskFailedNote": "以錯誤結束",
+      "stoppedNote": "已停止",
+      "reportedBack": "{{time}}已回報",
+      "finishedHidden": "已隱藏 {{count}} 個完成的任務 ·",
+      "show": "顯示",
+      "noOutput": "尚無輸出",
+      "noSteps": "尚無步驟紀錄",
+      "collapse": "收合委派的工作",
+      "expand": "展開委派的工作"
+    },
+    "report": {
+      "done": "已回報",
+      "failed": "失敗",
+      "stopped": "已停止",
+      "show": "顯示結果",
+      "hide": "隱藏結果"
+    },
+    "pill": {
+      "label": "委派的工作：{{summary}}"
+    },
+    "breadcrumb": "對話路徑"
   }
 }

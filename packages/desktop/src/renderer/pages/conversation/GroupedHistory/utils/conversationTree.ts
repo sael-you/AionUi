@@ -5,6 +5,12 @@
  */
 
 import type { TChatConversation } from '@/common/config/storage';
+import {
+  emptyRunStateCounts,
+  moreUrgent,
+  type RunState,
+  type RunStateCounts,
+} from '@/renderer/pages/conversation/components/orchestration/runState';
 
 /** Maximum nesting depth enforced by the backend (root = 0). */
 export const MAX_CONVERSATION_DEPTH = 3;
@@ -21,17 +27,14 @@ export type ConversationTreeNode = {
 export type ConversationTreeRollup = {
   /** Descendants only (the root itself is not counted). */
   total: number;
-  running: number;
-  pendingConfirmations: number;
-  hasError: boolean;
+  /** Descendants per run state. */
+  counts: RunStateCounts;
+  /** Most urgent state among the descendants (`idle` when nothing happens). */
+  worst: RunState;
 };
 
-export type RollupPredicates = {
-  isRunning?: (conversation: TChatConversation) => boolean;
-  /** Returns the number of pending confirmations for a conversation (0 when none). */
-  pendingConfirmations?: (conversation: TChatConversation) => number;
-  hasError?: (conversation: TChatConversation) => boolean;
-};
+/** The run state of one conversation (see `conversationRunState`). */
+export type RunStateOf = (conversation: TChatConversation) => RunState;
 
 const byCreatedAsc = (a: TChatConversation, b: TChatConversation): number =>
   (a.created_at ?? 0) - (b.created_at ?? 0) || a.id.localeCompare(b.id);
@@ -108,18 +111,20 @@ export const collectDescendantIds = (node: ConversationTreeNode): string[] => {
 /** Aggregate status over the descendants of `node` (the node itself is excluded). */
 export const computeConversationRollup = (
   node: ConversationTreeNode,
-  predicates: RollupPredicates = {}
+  stateOf: RunStateOf = () => 'idle'
 ): ConversationTreeRollup => {
-  const rollup: ConversationTreeRollup = { total: 0, running: 0, pendingConfirmations: 0, hasError: false };
+  const counts = emptyRunStateCounts();
+  let total = 0;
+  let worst: RunState = 'idle';
   for (const child of node.children) {
     walkConversationTree(child, ({ conversation }) => {
-      rollup.total += 1;
-      if (predicates.isRunning?.(conversation)) rollup.running += 1;
-      rollup.pendingConfirmations += predicates.pendingConfirmations?.(conversation) ?? 0;
-      if (predicates.hasError?.(conversation)) rollup.hasError = true;
+      total += 1;
+      const state = stateOf(conversation);
+      counts[state] += 1;
+      worst = moreUrgent(worst, state);
     });
   }
-  return rollup;
+  return { total, counts, worst };
 };
 
 /** Deepest depth below `node`, relative to `node` (a leaf is 0). */

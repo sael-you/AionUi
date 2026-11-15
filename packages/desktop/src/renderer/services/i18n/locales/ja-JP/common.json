@@ -198,7 +198,8 @@
   "clear": "クリア",
   "unit": {
     "minute_short": "分",
-    "second_short": "秒"
+    "second_short": "秒",
+    "hour_short": "時間"
   },
   "selectedCount": "選択済み {{count}}",
   "selectedSkills": "選択済みスキル",

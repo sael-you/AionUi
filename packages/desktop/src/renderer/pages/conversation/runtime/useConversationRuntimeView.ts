@@ -7,6 +7,7 @@
 import { ipcBridge } from '@/common';
 import type { TConversationRuntimeSummary } from '@/common/config/storage';
 import {
+  reconcileBackgroundFromRuntime,
   reconcileGeneratingFromRuntime,
   reconcileWaitingConfirmationFromRuntime,
 } from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
@@ -103,6 +104,7 @@ export const useConversationRuntimeView = (conversation_id: string): UseConversa
         if (runtime) {
           reconcileGeneratingFromRuntime(conversation_id, runtime.is_processing === true);
           reconcileWaitingConfirmationFromRuntime(conversation_id, runtime.pending_confirmations ?? 0);
+          reconcileBackgroundFromRuntime(conversation_id, runtime.background_active ?? 0);
         }
       })
       .catch((error: unknown) => {

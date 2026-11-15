@@ -55,19 +55,22 @@ const Harness: React.FC<Partial<ProjectGroupProps> & { rows?: number; initiallyE
 const projectRow = () => screen.getByTestId(`project-row-${WS}`);
 
 describe('ProjectGroup row', () => {
-  it('is a tree item with aria-expanded and the count; no colour dot or folder icon', () => {
+  it('is a tree item with aria-expanded; the count shows only while collapsed; no colour dot or folder icon', () => {
     const { container } = render(<Harness rows={3} />);
     const row = projectRow();
     expect(row.getAttribute('role')).toBe('treeitem');
     expect(row.getAttribute('aria-expanded')).toBe('true');
     expect(row.getAttribute('aria-level')).toBe('2');
-    expect(screen.getByTestId(`project-count-${WS}`).textContent).toBe('3');
+    // Expanded: the rows are visible, so no count (C21).
+    expect(screen.queryByTestId(`project-count-${WS}`)).toBeNull();
     // Project tokens live on the group, so the guide / badge use the project accent.
     const group = container.querySelector('[data-project-color]') as HTMLElement;
     expect(group.style.getPropertyValue('--project-accent')).toMatch(/^#[0-9a-f]{6}$/);
     expect(row.getAttribute('aria-label')).toContain('conversation.sidebar.project.count:3');
     expect(row.querySelector('svg, img')).not.toBeNull(); // the chevron only
     expect(row.querySelectorAll('span[aria-hidden="true"]:empty')).toHaveLength(0);
+    fireEvent.click(row);
+    expect(screen.getByTestId(`project-count-${WS}`).textContent).toBe('3');
   });
 
   it('marks its conversations as project children (compact rows) while the sidebar is open', () => {

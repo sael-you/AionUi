@@ -198,7 +198,8 @@
   "clear": "Temizle",
   "unit": {
     "minute_short": "dk",
-    "second_short": "sn"
+    "second_short": "sn",
+    "hour_short": "sa"
   },
   "selectedCount": "{{count}} seçili",
   "selectedSkills": "Seçili beceriler",

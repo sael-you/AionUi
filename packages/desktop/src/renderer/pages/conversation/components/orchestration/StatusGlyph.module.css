@@ -1,0 +1,95 @@
+/* Status glyph (C21). Colours come from the --status-* tokens (default-color-scheme.css). */
+.glyph {
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.track {
+  fill: none;
+  stroke: var(--status-run);
+  stroke-opacity: 0.28;
+  stroke-width: 1.8;
+}
+
+/* Reduced motion: the arc stays a static three-quarter ring. */
+.arc {
+  fill: none;
+  stroke: var(--status-run);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.arcMoving {
+  display: none;
+}
+
+.disc {
+  stroke: none;
+}
+
+.waiting .disc {
+  fill: var(--status-wait);
+}
+
+.done .disc {
+  fill: var(--status-done);
+}
+
+.failed .disc {
+  fill: var(--status-fail);
+}
+
+.mark {
+  fill: var(--status-on);
+}
+
+.stroke {
+  fill: none;
+  stroke: var(--status-on);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dashed {
+  fill: none;
+  stroke: var(--status-idle);
+  stroke-width: 1.5;
+  stroke-dasharray: 2.2 2.1;
+}
+
+.ring {
+  fill: none;
+  stroke: var(--status-idle);
+  stroke-width: 1.5;
+}
+
+.square {
+  fill: var(--status-idle);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Moving: a quarter arc that turns. */
+  .arcMoving {
+    display: inline;
+    transform-origin: 8px 8px;
+    animation: statusGlyphTurn 0.9s linear infinite;
+  }
+
+  .arcStatic {
+    display: none;
+  }
+}
+
+@keyframes statusGlyphTurn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (forced-colors: active) {
+  .glyph {
+    forced-color-adjust: none;
+  }
+}

@@ -877,5 +877,83 @@
       "localUser": "Ви",
       "menu": "Меню облікового запису"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "Потрібні ви",
+      "failed": "Помилка",
+      "running": "Виконується",
+      "done": "Готово",
+      "queued": "Не розпочато",
+      "stopped": "Зупинено",
+      "idle": "Простій"
+    },
+    "count": {
+      "running": "виконується: {{count}}",
+      "waiting": "потрібні ви: {{count}}",
+      "failed": "помилок: {{count}}",
+      "done": "готово: {{count}}",
+      "stopped": "зупинено: {{count}}",
+      "queued": "не розпочато: {{count}}"
+    },
+    "subConversations": "вкладених розмов: {{count}}",
+    "needsYou": {
+      "title": "Потрібні ви",
+      "running": "розмов виконується: {{count}}"
+    },
+    "announce": {
+      "waiting": "{{name}}: потрібні ви",
+      "failed": "{{name}}: помилка",
+      "done": "{{name}}: готово"
+    },
+    "activity": {
+      "worked": "Робота {{duration}}",
+      "working": "У роботі · {{duration}}",
+      "steps": "кроків: {{count}}",
+      "thoughts": "роздумів: {{count}}",
+      "failedSteps": "з помилкою: {{count}}",
+      "thought": "Роздум",
+      "thoughtFor": "роздум {{duration}}",
+      "moreSteps": "ще кроків: {{count}}",
+      "shortThoughts": "коротких роздумів: {{count}}",
+      "messageTo": "Повідомлення → {{name}}",
+      "viewSteps": "Показати кроки",
+      "viewStepsCount": "Показати кроки · {{count}}",
+      "waitingOnBackground": "очікування фонових завдань: {{count}}"
+    },
+    "card": {
+      "title": "Делегована робота",
+      "group": {
+        "conversation": "Розмови",
+        "subagent": "Субагенти",
+        "background": "Фонові завдання"
+      },
+      "review": "Переглянути",
+      "open": "Відкрити",
+      "transcript": "Журнал",
+      "output": "Вивід",
+      "waitingNote": "Очікує вашого схвалення",
+      "failedNote": "Останній хід завершився помилкою",
+      "taskFailedNote": "Завершено з помилкою",
+      "stoppedNote": "Зупинено",
+      "reportedBack": "Звітував {{time}}",
+      "finishedHidden": "Приховано завершених завдань: {{count}} ·",
+      "show": "Показати",
+      "noOutput": "Виводу ще немає",
+      "noSteps": "Кроків ще немає",
+      "collapse": "Згорнути делеговану роботу",
+      "expand": "Розгорнути делеговану роботу"
+    },
+    "report": {
+      "done": "звітував",
+      "failed": "помилка",
+      "stopped": "зупинено",
+      "show": "Показати результат",
+      "hide": "Сховати результат"
+    },
+    "pill": {
+      "label": "Делегована робота: {{summary}}"
+    },
+    "breadcrumb": "Шлях розмови"
   }
 }
