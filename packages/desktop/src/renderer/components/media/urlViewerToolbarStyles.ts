@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/** Toolbar styles shared by the desktop webview host and the web iframe host. */
+/** Toolbar styles of the desktop webview host (the web iframe host uses Arco components). */
 export const URL_VIEWER_TOOLBAR_CSS = `
 .aion-url-viewer-toolbar {
   --viewer-border: var(--color-border-2);

@@ -76,16 +76,13 @@ describe('dev servers, sandbox and permission delegation', () => {
     expect(isDevServerUrl(DEV, '')).toBe(false);
   });
 
-  it('never delegates devices or clipboard without the per-tab opt-in', () => {
+  it('never delegates devices without the per-tab opt-in', () => {
     expect(iframeAllowFor(DEV, APP_HOST, false)).toBe('fullscreen');
     expect(iframeAllowFor('https://example.com/', APP_HOST, true)).toBe('fullscreen');
   });
 
-  it('delegates microphone, camera and clipboard to a dev server after opt-in', () => {
-    const allow = iframeAllowFor(DEV, APP_HOST, true);
-    for (const feature of ['microphone', 'camera', 'clipboard-read', 'clipboard-write', 'fullscreen']) {
-      expect(allow).toContain(feature);
-    }
+  it('delegates only microphone and camera to a dev server after opt-in (never the clipboard)', () => {
+    expect(iframeAllowFor(DEV, APP_HOST, true)).toBe('fullscreen; microphone; camera');
   });
 
   it('keeps popups and the top window sandboxed; modals only for dev servers', () => {

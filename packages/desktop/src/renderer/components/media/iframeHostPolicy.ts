@@ -80,14 +80,13 @@ export const sandboxFor = (url: string, appHostname: string): string =>
   (isDevServerUrl(url, appHostname) ? [...BASE_SANDBOX, 'allow-modals'] : BASE_SANDBOX).join(' ');
 
 /**
- * The iframe `allow` attribute. Nothing is delegated by default; microphone, camera and clipboard
+ * The iframe `allow` attribute. Nothing is delegated by default; microphone and camera
  * are delegated only to a platform dev server **and** only after the user turned them on for this
  * tab (a permission granted to the app would otherwise be inherited by the embedded page).
  */
 export const iframeAllowFor = (url: string, appHostname: string, devicesOptIn: boolean): string => {
   const allow = ['fullscreen'];
-  if (devicesOptIn && isDevServerUrl(url, appHostname))
-    allow.push('microphone', 'camera', 'clipboard-read', 'clipboard-write');
+  if (devicesOptIn && isDevServerUrl(url, appHostname)) allow.push('microphone', 'camera');
   return allow.join('; ');
 };
 

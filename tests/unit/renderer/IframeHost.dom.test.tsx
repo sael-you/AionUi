@@ -48,7 +48,7 @@ describe('IframeHost (web browser panel)', () => {
     expect(address().getAttribute('aria-label')).toBe('preview.browser.addressLabel');
   });
 
-  it("refuses the app's own origin and http pages inside an https app", () => {
+  it("refuses the app's own origin", () => {
     render(<IframeHost url={`${window.location.origin}/conversation/1`} showNavBar />);
     expect(screen.queryByTestId('iframe-host-frame')).toBeNull();
     expect(screen.getByText('preview.browser.cannotEmbedSelf')).toBeTruthy();
@@ -114,15 +114,53 @@ describe('IframeHost (web browser panel)', () => {
     submitAddress('https://example.com/');
     expect(frame()).not.toBe(before);
     expect((screen.getByLabelText('common.historyBack') as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByTestId('iframe-host-loading')).toBeTruthy();
     fireEvent.load(frame());
-    expect(screen.queryByLabelText('common.refresh')).toBeTruthy();
+    expect(screen.queryByTestId('iframe-host-loading')).toBeNull();
   });
 
-  it('follows url prop changes, including clearing to blank', () => {
+  it('labels a tab opened with an address on its first load', () => {
+    const onTitleChange = vi.fn();
+    render(<IframeHost url='https://example.com/x' showNavBar onTitleChange={onTitleChange} />);
+    expect(onTitleChange).not.toHaveBeenCalled();
+    fireEvent.load(frame());
+    expect(onTitleChange).toHaveBeenLastCalledWith('example.com');
+  });
+
+  it('reports a blank page as loaded after going back to it', () => {
+    const onDidFinishLoad = vi.fn();
+    render(<IframeHost url='about:blank' showNavBar onDidFinishLoad={onDidFinishLoad} />);
+    onDidFinishLoad.mockClear();
+    submitAddress('example.org');
+    fireEvent.click(screen.getByLabelText('common.historyBack'));
+    expect(screen.queryByTestId('iframe-host-frame')).toBeNull();
+    expect(onDidFinishLoad).toHaveBeenCalled();
+  });
+
+  it('offers the devices toggle only for dev servers and delegates mic/camera after opt-in', () => {
+    const { rerender } = render(<IframeHost url='https://example.com/' showNavBar />);
+    expect(screen.queryByTestId('iframe-host-devices')).toBeNull();
+    rerender(<IframeHost url={`https://app-3000.${window.location.hostname}/`} showNavBar />);
+    const toggle = screen.getByTestId('iframe-host-devices');
+    expect(frame().getAttribute('allow')).toBe('fullscreen');
+    fireEvent.click(toggle);
+    expect(frame().getAttribute('allow')).toBe('fullscreen; microphone; camera');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('restores the address on Escape', () => {
+    render(<IframeHost url='https://example.com/' showNavBar />);
+    fireEvent.change(address(), { target: { value: 'something else' } });
+    fireEvent.keyDown(address(), { key: 'Escape' });
+    expect(address().value).toBe('https://example.com/');
+  });
+
+  it('follows url prop changes with a fresh history, including clearing to blank', () => {
     const onDidFinishLoad = vi.fn();
     const { rerender } = render(<IframeHost url='https://example.com/' showNavBar onDidFinishLoad={onDidFinishLoad} />);
     rerender(<IframeHost url='https://example.net/' showNavBar onDidFinishLoad={onDidFinishLoad} />);
     expect(frame().getAttribute('src')).toBe('https://example.net/');
+    expect((screen.getByLabelText('common.historyBack') as HTMLButtonElement).disabled).toBe(true);
     rerender(<IframeHost url='' showNavBar onDidFinishLoad={onDidFinishLoad} />);
     expect(screen.queryByTestId('iframe-host-frame')).toBeNull();
     expect(onDidFinishLoad).toHaveBeenCalled();

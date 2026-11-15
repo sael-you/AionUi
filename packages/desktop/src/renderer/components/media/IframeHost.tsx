@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from '@arco-design/web-react';
 import { Left, Right, Refresh, Loading, LinkOut, Microphone, Close } from '@icon-park/react';
@@ -76,11 +76,19 @@ const IframeHost: React.FC<WebviewHostProps> = ({
   const devServer = decision.kind === 'embed' && isDevServerUrl(decision.url, appHostname);
   const frameKey = `${index}#${currentUrl}#${reloadKey}#${devicesOptIn ? 'dev' : ''}`;
 
-  // Every new frame (navigation, reload, permission change) starts a fresh load cycle.
-  useEffect(() => {
+  // Every new frame (navigation, reload, permission change) starts a fresh load cycle. Layout effect: it must run at
+  // commit, before a fast or cached page can fire its load event.
+  useLayoutEffect(() => {
     loadCount.current = 0;
     setNavigatedAway(false);
   }, [frameKey]);
+
+  // A blank or refused page renders no frame, so no load event follows: report it after commit (the owner's url
+  // state is then up to date, e.g. BrowserViewer's blank-tab title).
+  useEffect(() => {
+    if (decision.kind !== 'embed') onDidFinishLoad?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per frame, not on every callback identity change
+  }, [frameKey, decision.kind]);
 
   const show = useCallback(
     (next: string) => {
@@ -92,10 +100,8 @@ const IframeHost: React.FC<WebviewHostProps> = ({
       onUrlChange?.(next);
       onTitleChange?.(labelForUrl(next));
       onFaviconChange?.('');
-      // A blank or refused page renders no frame, so no load event will follow.
-      if (kind !== 'embed') onDidFinishLoad?.();
     },
-    [appOrigin, onUrlChange, onTitleChange, onFaviconChange, onDidFinishLoad]
+    [appOrigin, onUrlChange, onTitleChange, onFaviconChange]
   );
 
   const handleRefresh = useCallback(() => {
@@ -117,13 +123,17 @@ const IframeHost: React.FC<WebviewHostProps> = ({
     [currentUrl, index, show, handleRefresh]
   );
 
-  // A new `url` prop (e.g. the panel opened another address) navigates the frame; empty = blank.
+  // A new `url` prop from outside (e.g. a reused tab) starts a fresh history, like the desktop host
+  // (`shouldResetHistoryForUrlProp`); echoes of our own navigation match `currentUrl` and are ignored. Empty = blank.
   useEffect(() => {
     const next = url || BLANK_URL;
     if (next === lastPropUrl.current) return;
     lastPropUrl.current = next;
-    if (next !== currentUrl) navigate(next);
-  }, [url, currentUrl, navigate]);
+    if (next === currentUrl) return;
+    setHistory([next]);
+    setIndex(0);
+    show(next);
+  }, [url, currentUrl, show]);
 
   const handleGoBack = useCallback(() => {
     if (index === 0) return;
@@ -167,9 +177,15 @@ const IframeHost: React.FC<WebviewHostProps> = ({
       return;
     }
     loadCount.current += 1;
-    if (loadCount.current > 1) setNavigatedAway(true);
+    if (loadCount.current === 1) {
+      // The first address of a tab never went through show(): label it now.
+      onTitleChange?.(labelForUrl(currentUrl));
+      onFaviconChange?.('');
+    } else {
+      setNavigatedAway(true);
+    }
     onDidFinishLoad?.();
-  }, [appOrigin, onDidFinishLoad]);
+  }, [appOrigin, currentUrl, onDidFinishLoad, onTitleChange, onFaviconChange]);
 
   const dismissHint = useCallback(() => {
     setHintDismissed(true);
@@ -195,7 +211,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
         <div className='flex items-center gap-6px h-40px px-10px bg-bg-2 border-b border-border-1 flex-shrink-0'>
           <Button
             size='small'
-            icon={<Left theme='outline' size={16} />}
+            icon={<Left theme='outline' size={16} className='rtl:rotate-180' />}
             onClick={handleGoBack}
             disabled={index === 0}
             title={t('common.historyBack')}
@@ -203,7 +219,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
           />
           <Button
             size='small'
-            icon={<Right theme='outline' size={16} />}
+            icon={<Right theme='outline' size={16} className='rtl:rotate-180' />}
             onClick={handleGoForward}
             disabled={index >= history.length - 1}
             title={t('common.forward')}
@@ -213,7 +229,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
             size='small'
             icon={
               isLoading ? (
-                <Loading theme='outline' size={16} className='animate-spin' />
+                <Loading theme='outline' size={16} className='animate-spin' data-testid='iframe-host-loading' />
               ) : (
                 <Refresh theme='outline' size={16} />
               )
@@ -224,7 +240,6 @@ const IframeHost: React.FC<WebviewHostProps> = ({
           />
           <Input
             size='small'
-            className='flex-1 min-w-0'
             value={inputUrl}
             onChange={(value) => setInputUrl(value)}
             onPressEnter={handleSubmit}
@@ -233,9 +248,15 @@ const IframeHost: React.FC<WebviewHostProps> = ({
             placeholder={t('preview.browser.addressPlaceholder')}
             aria-label={t('preview.browser.addressLabel')}
             title={navigatedAway ? t('preview.browser.mayHaveNavigated') : undefined}
-            style={navigatedAway ? { color: 'var(--color-text-3)', fontStyle: 'italic' } : undefined}
+            className={`flex-1 min-w-0 ${navigatedAway ? 'text-t-tertiary italic' : ''}`}
+            aria-describedby={navigatedAway ? 'iframe-host-stale' : undefined}
             data-testid='iframe-host-address'
           />
+          {navigatedAway && (
+            <span id='iframe-host-stale' className='sr-only'>
+              {t('preview.browser.mayHaveNavigated')}
+            </span>
+          )}
           {devServer && (
             <Button
               size='small'
@@ -243,7 +264,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
               icon={<Microphone theme='outline' size={16} />}
               onClick={() => setDevicesOptIn((on) => !on)}
               title={devicesOptIn ? t('preview.browser.devicesOn') : t('preview.browser.allowDevices')}
-              aria-label={devicesOptIn ? t('preview.browser.devicesOn') : t('preview.browser.allowDevices')}
+              aria-label={t('preview.browser.allowDevices')}
               aria-pressed={devicesOptIn}
               data-testid='iframe-host-devices'
             />
@@ -263,7 +284,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
         <div className='flex items-start gap-6px px-10px py-4px text-11px text-t-tertiary bg-bg-2 border-b border-border-1 flex-shrink-0'>
           <span className='flex-1'>{t('preview.browser.webModeHint')}</span>
           <Button
-            size='mini'
+            size='small'
             type='text'
             icon={<Close theme='outline' size={12} />}
             onClick={dismissHint}
@@ -284,6 +305,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
             sandbox={sandboxFor(decision.url, appHostname)}
             allow={iframeAllowFor(decision.url, appHostname, devicesOptIn)}
             referrerPolicy='strict-origin-when-cross-origin'
+            // bg-white on purpose: like a browser's default canvas, so pages without a background stay readable in dark mode
             className='border-0 absolute inset-0 w-full h-full bg-white'
             onLoad={handleLoad}
             data-testid='iframe-host-frame'
