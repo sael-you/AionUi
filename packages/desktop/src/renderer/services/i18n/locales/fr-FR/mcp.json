@@ -71,5 +71,215 @@
     "normal": "Normal",
     "high": "Élevé",
     "urgent": "Urgent"
+  },
+  "market": {
+    "search": "Rechercher des MCP et des modèles",
+    "loading": "Chargement des MCP…",
+    "loadFailed": "Impossible de charger le marché des MCP : {{detail}}",
+    "empty": "Aucun MCP pour l'instant. Ajoutez-en un à partir d'un modèle.",
+    "browseTemplates": "Parcourir les modèles",
+    "filter": {
+      "label": "Filtrer par statut",
+      "all": "Tous",
+      "active": "Actifs",
+      "dormant": "En veille",
+      "revoked": "Révoqués",
+      "missing": "Valeurs manquantes"
+    },
+    "group": {
+      "global": "Global",
+      "globalHint": "Disponibles dans tous les projets : serveurs AionUi, serveurs d'extensions et MCP du marché rattachés globalement.",
+      "globalEmpty": "Aucun MCP global.",
+      "projectEmpty": "Rien n'est encore rattaché à ce projet.",
+      "unassigned": "Non attribués",
+      "unassignedEmpty": "Chaque MCP est rattaché quelque part.",
+      "templates": "Modèles",
+      "templatesEmpty": "Aucun modèle dans le catalogue.",
+      "count": "{{count}} MCP"
+    },
+    "status": {
+      "active": "Actif",
+      "dormant": "En veille",
+      "revoked": "Révoqué"
+    },
+    "tier": {
+      "read": "Lecture",
+      "write": "Écriture"
+    },
+    "environment": {
+      "production": "Production",
+      "staging": "Préproduction",
+      "sandbox": "Bac à sable",
+      "local": "Local"
+    },
+    "cli": {
+      "claude": "Claude",
+      "codex": "Codex",
+      "gemini": "Gemini"
+    },
+    "scope": {
+      "global": "Global",
+      "assistantIn": "assistant {{name}}",
+      "unknownProject": "Projet {{id}} (absent de la barre latérale)"
+    },
+    "actions": {
+      "add": "Ajouter",
+      "create": "Créer",
+      "duplicate": "Dupliquer",
+      "manage": "Gérer",
+      "attach": "Rattacher",
+      "detach": "Détacher",
+      "activate": "Activer",
+      "makeDormant": "Mettre en veille",
+      "revoke": "Révoquer",
+      "delete": "Supprimer",
+      "test": "Tester la connexion",
+      "refreshTemplate": "Mettre à jour le modèle",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "retry": "Réessayer"
+    },
+    "instance": {
+      "fromTemplate": "Modèle : {{template}}",
+      "attachedTo": "Rattaché à",
+      "notAttached": "Non rattaché",
+      "secrets": "Secrets :",
+      "missing": "Valeurs obligatoires manquantes : {{keys}}",
+      "problems": "Problèmes de règles : {{count}}",
+      "problemsTitle": "Problèmes de règles",
+      "enforcement": "Appliqué par : {{value}}",
+      "approvalRecorded": "Approbation du propriétaire enregistrée",
+      "writeNote": "Niveau écriture : peut modifier des données en dehors de cette machine. Claude uniquement, et chaque appel d'outil demande d'abord confirmation."
+    },
+    "secret": {
+      "set": "Défini",
+      "notSet": "Non défini",
+      "required": "Obligatoire",
+      "changedAt": "modifié le {{date}}",
+      "replace": "Remplacer",
+      "setValue": "Définir la valeur",
+      "clear": "Effacer",
+      "clearConfirm": "Effacer ce secret ? Le MCP ne peut pas démarrer sans un secret obligatoire.",
+      "placeholder": "Saisissez la valeur",
+      "writeOnlyHint": "Écriture seule : la valeur est stockée chiffrée et ne sera plus jamais affichée.",
+      "emptyValue": "Saisissez une valeur, ou utilisez Effacer pour supprimer la valeur enregistrée."
+    },
+    "create": {
+      "title": "Ajouter {{name}}",
+      "duplicateTitle": "Dupliquer {{name}}",
+      "name": "Nom",
+      "nameRules": "Lettres minuscules, chiffres et tirets simples ; commence par une lettre ; {{max}} caractères au maximum ; unique. Il devient le préfixe des outils.",
+      "nameProblem": {
+        "required": "Saisissez un nom.",
+        "pattern": "Utilisez des lettres minuscules, des chiffres et des tirets simples, en commençant par une lettre.",
+        "tooLong": "{{max}} caractères au maximum.",
+        "reserved": "Ce nom est réservé.",
+        "notInMarket": "Ce MCP n'est pas proposé sur le marché.",
+        "taken": "Un MCP portant ce nom existe déjà."
+      },
+      "duplicateNote": "La copie reprend le même modèle, l'environnement, le niveau, les CLI, les valeurs simples et les listes d'outils. Les secrets ne sont pas copiés : définissez-les sur le nouveau MCP. La copie démarre en veille.",
+      "environment": "Environnement",
+      "environmentPlaceholder": "Choisissez un environnement",
+      "tier": "Niveau",
+      "readTierNote": "Lecture : ne modifie rien en dehors de cette machine. Les outils restent bloqués jusqu'à ce que vous les autorisiez après un test de connexion.",
+      "writeTierNote": "Écriture : peut modifier des données de production, de l'argent, des publicités, des e-mails ou des publications publiques. Claude uniquement ; les MCP d'écriture en production restent en veille jusqu'à l'enregistrement de l'approbation écrite du propriétaire.",
+      "clis": "CLI",
+      "plainEnv": "Paramètres",
+      "secrets": "Secrets",
+      "forcedByTier": "Défini par le niveau {{tier}}.",
+      "dormantUntilComplete": "Reste en veille jusqu'à ce que ces champs soient remplis : {{keys}}",
+      "startsDormant": "Les nouveaux MCP démarrent en veille. Activez-en un lorsque ses valeurs sont définies et que le test de connexion réussit."
+    },
+    "attach": {
+      "title": "Rattacher {{name}}",
+      "pickTitle": "Rattacher un MCP",
+      "instance": "MCP",
+      "instancePlaceholder": "Choisissez un MCP",
+      "noInstances": "Aucun MCP à rattacher. Ajoutez-en d'abord un à partir d'un modèle.",
+      "scope": "Où",
+      "wholeProject": "Tout le projet (fichiers du projet)",
+      "assistant": "Un assistant dans un projet",
+      "project": "Projet",
+      "projectPlaceholder": "Choisissez un projet",
+      "noProjects": "Aucun projet auquel rattacher.",
+      "assistantPlaceholder": "Choisissez un assistant",
+      "assistantNote": "S'applique uniquement aux nouvelles conversations et aux membres d'équipe inactifs.",
+      "clis": "CLI",
+      "writeClaudeOnly": "Les MCP d'écriture sont réservés à Claude.",
+      "notActiveNote": "Ce MCP n'est pas actif : le rattachement est enregistré, mais rien ne le démarre tant qu'il n'est pas activé.",
+      "globalBlocked": {
+        "write": "Les MCP d'écriture ne sont jamais globaux.",
+        "notGlobal": "Seuls context7 et studio-memory peuvent être globaux."
+      },
+      "conflict": {
+        "alreadyAttached": "{{cli}} : déjà rattaché ici.",
+        "otherChannel": "{{cli}} : atteint déjà ce projet par l'autre voie (fichiers du projet ou un assistant, jamais les deux)."
+      }
+    },
+    "activate": {
+      "title": "Activer {{name}} ?",
+      "body": "Les MCP actifs sont démarrés pour les projets, assistants et CLI auxquels ils sont rattachés.",
+      "missing": "Remplissez d'abord les valeurs obligatoires : {{keys}}",
+      "productionWrite": "Il s'agit d'un MCP d'écriture en production. Il reste en veille jusqu'à l'enregistrement de l'approbation écrite du propriétaire pour la modification exacte.",
+      "approvalLabel": "Référence d'approbation",
+      "approvalHelp": "approbation écrite du propriétaire pour la modification exacte",
+      "approvalFormat": "Format : OA-<yyyymmdd>-<slug>",
+      "approvalRequired": "La référence d'approbation est obligatoire.",
+      "approvalInvalid": "Utilisez le format OA-<yyyymmdd>-<slug>, par exemple une date et un nom court en minuscules."
+    },
+    "confirm": {
+      "revoke": {
+        "title": "Révoquer {{name}} ?",
+        "body": "Il cesse immédiatement d'être démarré et les copies en cours s'arrêtent à leur prochaine vérification. Les rattachements et les secrets sont conservés, il peut donc être réactivé.",
+        "ok": "Révoquer"
+      },
+      "delete": {
+        "title": "Supprimer {{name}} ?",
+        "body": "Cette action supprime le MCP, ses rattachements et ses secrets enregistrés. Elle est irréversible.",
+        "ok": "Supprimer"
+      },
+      "dormant": {
+        "title": "Mettre {{name}} en veille ?",
+        "body": "Il n'est plus démarré nulle part jusqu'à ce qu'il soit réactivé. Rien n'est supprimé.",
+        "ok": "Mettre en veille"
+      },
+      "refresh": {
+        "title": "Mettre à jour le modèle de {{name}} ?",
+        "body": "Le MCP passe au modèle actuel du catalogue. Les secrets et les rattachements sont conservés ; les paramètres que le nouveau modèle ne comporte plus sont supprimés.",
+        "ok": "Mettre à jour"
+      }
+    },
+    "template": {
+      "updateAvailable": "Mise à jour du modèle",
+      "updateBody": "Un modèle plus récent est disponible dans le catalogue ({{from}} → {{to}}).",
+      "refreshed": "Modèle mis à jour vers {{version}}.",
+      "unchanged": "Le modèle était déjà à jour.",
+      "added": "Nouvelles clés : {{keys}}.",
+      "removed": "Clés supprimées : {{keys}}.",
+      "needsSecrets": "Secrets requis : {{keys}}"
+    },
+    "tools": {
+      "allowTitle": "Outils autorisés",
+      "allowHint": "Les MCP de lecture bloquent tous les outils qui ne sont pas cochés ici (blocage par défaut).",
+      "blockTitle": "Outils bloqués",
+      "blockHint": "Les outils cochés sont bloqués ; Claude demande confirmation avant tout autre appel d'outil.",
+      "none": "Aucun outil détecté pour l'instant. Lancez Tester la connexion pour les lister."
+    },
+    "test": {
+      "success": "La connexion fonctionne. Outils trouvés : {{count}}."
+    },
+    "errors": {
+      "generic": "La requête a échoué. Réessayez.",
+      "maskedValue": "Une valeur s'affiche sous la forme « ••• » parce qu'elle est masquée, et non parce qu'il s'agit de la vraie valeur. Saisissez à nouveau la vraie valeur, puis enregistrez.",
+      "sessionRequired": "Les modifications du marché des MCP nécessitent votre session de navigateur connectée. Reconnectez-vous et réessayez ; les agents ne peuvent pas effectuer ces modifications.",
+      "csrf": "La vérification de sécurité de votre session a échoué. Rechargez la page et réessayez.",
+      "catalogueUnavailable": "Le catalogue de modèles MCP n'est pas disponible pour le moment.",
+      "templateSecretMissing": "Définissez d'abord le secret requis par le nouveau modèle ; le MCP reste sur son modèle actuel. {{detail}}",
+      "notFound": "Ce MCP ou ce rattachement n'existe plus. La liste a été actualisée.",
+      "alreadyAttached": "Ce MCP est déjà rattaché à cet endroit pour cette CLI. {{detail}}",
+      "nameTaken": "Ce nom est déjà utilisé. Choisissez-en un autre. {{detail}}",
+      "conflict": "Cela entre en conflit avec l'état actuel. {{detail}}",
+      "rejected": "Le serveur a refusé cette modification : {{detail}}"
+    }
   }
 }

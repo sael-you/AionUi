@@ -71,5 +71,215 @@
     "normal": "一般",
     "high": "高",
     "urgent": "緊急"
+  },
+  "market": {
+    "search": "搜尋 MCP 和範本",
+    "loading": "正在載入 MCP…",
+    "loadFailed": "無法載入 MCP 市集：{{detail}}",
+    "empty": "尚無 MCP。可從範本新增。",
+    "browseTemplates": "瀏覽範本",
+    "filter": {
+      "label": "依狀態篩選",
+      "all": "全部",
+      "active": "已啟用",
+      "dormant": "休眠",
+      "revoked": "已撤銷",
+      "missing": "缺少值"
+    },
+    "group": {
+      "global": "全域",
+      "globalHint": "在所有專案中皆可使用：AionUi 伺服器、擴充功能伺服器，以及全域掛載的市集 MCP。",
+      "globalEmpty": "沒有全域 MCP。",
+      "projectEmpty": "此專案尚未掛載任何內容。",
+      "unassigned": "未指派",
+      "unassignedEmpty": "所有 MCP 都已掛載。",
+      "templates": "範本",
+      "templatesEmpty": "目錄中沒有範本。",
+      "count": "{{count}} 個 MCP"
+    },
+    "status": {
+      "active": "已啟用",
+      "dormant": "休眠",
+      "revoked": "已撤銷"
+    },
+    "tier": {
+      "read": "唯讀",
+      "write": "寫入"
+    },
+    "environment": {
+      "production": "正式",
+      "staging": "預備",
+      "sandbox": "沙箱",
+      "local": "本機"
+    },
+    "cli": {
+      "claude": "Claude",
+      "codex": "Codex",
+      "gemini": "Gemini"
+    },
+    "scope": {
+      "global": "全域",
+      "assistantIn": "助理 {{name}}",
+      "unknownProject": "專案 {{id}}（不在側邊欄中）"
+    },
+    "actions": {
+      "add": "新增",
+      "create": "建立",
+      "duplicate": "複製",
+      "manage": "管理",
+      "attach": "掛載",
+      "detach": "卸載",
+      "activate": "啟用",
+      "makeDormant": "設為休眠",
+      "revoke": "撤銷",
+      "delete": "刪除",
+      "test": "測試連線",
+      "refreshTemplate": "更新範本",
+      "save": "儲存",
+      "cancel": "取消",
+      "retry": "重試"
+    },
+    "instance": {
+      "fromTemplate": "範本：{{template}}",
+      "attachedTo": "掛載至",
+      "notAttached": "未掛載",
+      "secrets": "機密：",
+      "missing": "缺少必填值：{{keys}}",
+      "problems": "規則問題：{{count}}",
+      "problemsTitle": "規則問題",
+      "enforcement": "執行者：{{value}}",
+      "approvalRecorded": "已記錄擁有者核准",
+      "writeNote": "寫入層級：可變更本機以外的資料。僅限 Claude，且每次呼叫工具前都會先詢問。"
+    },
+    "secret": {
+      "set": "已設定",
+      "notSet": "未設定",
+      "required": "必填",
+      "changedAt": "變更於 {{date}}",
+      "replace": "取代",
+      "setValue": "設定值",
+      "clear": "清除",
+      "clearConfirm": "要清除此機密嗎？缺少必填機密時 MCP 無法啟動。",
+      "placeholder": "輸入值",
+      "writeOnlyHint": "唯寫：此值會加密儲存，之後不會再顯示。",
+      "emptyValue": "請輸入值，或使用「清除」移除已儲存的值。"
+    },
+    "create": {
+      "title": "新增 {{name}}",
+      "duplicateTitle": "複製 {{name}}",
+      "name": "名稱",
+      "nameRules": "僅限小寫字母、數字和單一連字號；以字母開頭；最多 {{max}} 個字元；不可重複。此名稱會成為工具前綴。",
+      "nameProblem": {
+        "required": "請輸入名稱。",
+        "pattern": "請使用小寫字母、數字和單一連字號，並以字母開頭。",
+        "tooLong": "最多 {{max}} 個字元。",
+        "reserved": "此名稱為保留名稱。",
+        "notInMarket": "市集未提供此 MCP。",
+        "taken": "已有同名的 MCP。"
+      },
+      "duplicateNote": "副本會沿用相同的範本、環境、層級、CLI、一般值和工具清單。機密不會被複製：請在新的 MCP 上設定。副本以休眠狀態開始。",
+      "environment": "環境",
+      "environmentPlaceholder": "選擇環境",
+      "tier": "層級",
+      "readTierNote": "唯讀：不會變更本機以外的任何內容。連線測試後在您允許之前，工具會保持封鎖。",
+      "writeTierNote": "寫入：可變更正式環境資料、金錢、廣告、電子郵件或公開貼文。僅限 Claude；在記錄擁有者的書面核准之前，正式環境寫入 MCP 會保持休眠。",
+      "clis": "CLI",
+      "plainEnv": "設定",
+      "secrets": "機密",
+      "forcedByTier": "由{{tier}}層級設定。",
+      "dormantUntilComplete": "在填寫以下項目之前會保持休眠：{{keys}}",
+      "startsDormant": "新的 MCP 以休眠狀態開始。設定好值並通過連線測試後即可啟用。"
+    },
+    "attach": {
+      "title": "掛載 {{name}}",
+      "pickTitle": "掛載 MCP",
+      "instance": "MCP",
+      "instancePlaceholder": "選擇 MCP",
+      "noInstances": "沒有可掛載的 MCP。請先從範本新增。",
+      "scope": "位置",
+      "wholeProject": "整個專案（專案檔案）",
+      "assistant": "專案中的某個助理",
+      "project": "專案",
+      "projectPlaceholder": "選擇專案",
+      "noProjects": "沒有可掛載的專案。",
+      "assistantPlaceholder": "選擇助理",
+      "assistantNote": "僅適用於新的對話和閒置的團隊成員。",
+      "clis": "CLI",
+      "writeClaudeOnly": "寫入 MCP 僅限 Claude。",
+      "notActiveNote": "此 MCP 未啟用：掛載已儲存，但在啟用之前不會啟動。",
+      "globalBlocked": {
+        "write": "寫入 MCP 不能設為全域。",
+        "notGlobal": "只有 context7 和 studio-memory 可以設為全域。"
+      },
+      "conflict": {
+        "alreadyAttached": "{{cli}}：已掛載於此。",
+        "otherChannel": "{{cli}}：已透過另一種方式連到此專案（專案檔案或助理，兩者不可同時使用）。"
+      }
+    },
+    "activate": {
+      "title": "要啟用 {{name}} 嗎？",
+      "body": "已啟用的 MCP 會為其掛載的專案、助理和 CLI 啟動。",
+      "missing": "請先填寫必填值：{{keys}}",
+      "productionWrite": "這是正式環境寫入 MCP。在記錄擁有者對確切變更的書面核准之前，它會保持休眠。",
+      "approvalLabel": "核准編號",
+      "approvalHelp": "擁有者對確切變更的書面核准",
+      "approvalFormat": "格式：OA-<yyyymmdd>-<slug>",
+      "approvalRequired": "必須填寫核准編號。",
+      "approvalInvalid": "請使用 OA-<yyyymmdd>-<slug> 格式，例如日期加上簡短的小寫名稱。"
+    },
+    "confirm": {
+      "revoke": {
+        "title": "要撤銷 {{name}} 嗎？",
+        "body": "它會立即停止被啟動，執行中的副本會在下次檢查時停止。掛載和機密會保留，因此可以再次啟用。",
+        "ok": "撤銷"
+      },
+      "delete": {
+        "title": "要刪除 {{name}} 嗎？",
+        "body": "這會移除此 MCP、其掛載和已儲存的機密。此動作無法復原。",
+        "ok": "刪除"
+      },
+      "dormant": {
+        "title": "要將 {{name}} 設為休眠嗎？",
+        "body": "在再次啟用之前，它不會在任何地方啟動。不會刪除任何內容。",
+        "ok": "設為休眠"
+      },
+      "refresh": {
+        "title": "要更新 {{name}} 的範本嗎？",
+        "body": "此 MCP 會切換為目錄中目前的範本。機密和掛載會保留；新範本已不包含的設定將被移除。",
+        "ok": "更新"
+      }
+    },
+    "template": {
+      "updateAvailable": "範本更新",
+      "updateBody": "目錄中有較新的範本（{{from}} → {{to}}）。",
+      "refreshed": "範本已更新至 {{version}}。",
+      "unchanged": "範本已是最新版本。",
+      "added": "新增的鍵：{{keys}}。",
+      "removed": "移除的鍵：{{keys}}。",
+      "needsSecrets": "需要機密：{{keys}}"
+    },
+    "tools": {
+      "allowTitle": "允許的工具",
+      "allowHint": "唯讀 MCP 會封鎖此處未勾選的所有工具（預設拒絕）。",
+      "blockTitle": "封鎖的工具",
+      "blockHint": "勾選的工具會被封鎖；呼叫其他工具前 Claude 都會先詢問。",
+      "none": "尚未偵測到工具。執行「測試連線」以列出工具。"
+    },
+    "test": {
+      "success": "連線正常。找到的工具：{{count}} 個。"
+    },
+    "errors": {
+      "generic": "要求失敗，請再試一次。",
+      "maskedValue": "某個值顯示為「•••」是因為它已被隱藏，並非真實值。請重新輸入真實值，然後儲存。",
+      "sessionRequired": "變更 MCP 市集需要您已登入的瀏覽器工作階段。請重新登入後再試；代理程式無法進行這些變更。",
+      "csrf": "工作階段的安全性檢查失敗。請重新載入頁面後再試一次。",
+      "catalogueUnavailable": "MCP 範本目錄目前無法使用。",
+      "templateSecretMissing": "請先設定新範本所需的機密；此 MCP 仍會使用目前的範本。{{detail}}",
+      "notFound": "此 MCP 或掛載已不存在。清單已重新整理。",
+      "alreadyAttached": "此 MCP 已針對該 CLI 掛載於該處。{{detail}}",
+      "nameTaken": "此名稱已被使用，請選擇其他名稱。{{detail}}",
+      "conflict": "此操作與目前狀態衝突。{{detail}}",
+      "rejected": "伺服器拒絕了此變更：{{detail}}"
+    }
   }
 }

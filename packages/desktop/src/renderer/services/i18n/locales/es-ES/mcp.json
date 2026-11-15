@@ -71,5 +71,215 @@
     "normal": "Normal",
     "high": "Alta",
     "urgent": "Urgente"
+  },
+  "market": {
+    "search": "Buscar MCP y plantillas",
+    "loading": "Cargando MCP…",
+    "loadFailed": "No se pudo cargar el mercado de MCP: {{detail}}",
+    "empty": "Aún no hay MCP. Añade uno desde una plantilla.",
+    "browseTemplates": "Ver plantillas",
+    "filter": {
+      "label": "Filtrar por estado",
+      "all": "Todos",
+      "active": "Activos",
+      "dormant": "Inactivos",
+      "revoked": "Revocados",
+      "missing": "Faltan valores"
+    },
+    "group": {
+      "global": "Global",
+      "globalHint": "Disponible en todos los proyectos: servidores de AionUi, servidores de extensiones y MCP del mercado vinculados globalmente.",
+      "globalEmpty": "No hay MCP globales.",
+      "projectEmpty": "Todavía no hay nada vinculado a este proyecto.",
+      "unassigned": "Sin asignar",
+      "unassignedEmpty": "Todos los MCP están vinculados a algún sitio.",
+      "templates": "Plantillas",
+      "templatesEmpty": "No hay plantillas en el catálogo.",
+      "count": "{{count}} MCP"
+    },
+    "status": {
+      "active": "Activo",
+      "dormant": "Inactivo",
+      "revoked": "Revocado"
+    },
+    "tier": {
+      "read": "Lectura",
+      "write": "Escritura"
+    },
+    "environment": {
+      "production": "Producción",
+      "staging": "Preproducción",
+      "sandbox": "Sandbox",
+      "local": "Local"
+    },
+    "cli": {
+      "claude": "Claude",
+      "codex": "Codex",
+      "gemini": "Gemini"
+    },
+    "scope": {
+      "global": "Global",
+      "assistantIn": "asistente {{name}}",
+      "unknownProject": "Proyecto {{id}} (no está en la barra lateral)"
+    },
+    "actions": {
+      "add": "Añadir",
+      "create": "Crear",
+      "duplicate": "Duplicar",
+      "manage": "Gestionar",
+      "attach": "Vincular",
+      "detach": "Desvincular",
+      "activate": "Activar",
+      "makeDormant": "Desactivar",
+      "revoke": "Revocar",
+      "delete": "Eliminar",
+      "test": "Probar conexión",
+      "refreshTemplate": "Actualizar plantilla",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "retry": "Reintentar"
+    },
+    "instance": {
+      "fromTemplate": "Plantilla: {{template}}",
+      "attachedTo": "Vinculado a",
+      "notAttached": "Sin vincular",
+      "secrets": "Secretos:",
+      "missing": "Faltan valores obligatorios: {{keys}}",
+      "problems": "Problemas de reglas: {{count}}",
+      "problemsTitle": "Problemas de reglas",
+      "enforcement": "Aplicado por: {{value}}",
+      "approvalRecorded": "Aprobación del propietario registrada",
+      "writeNote": "Nivel de escritura: puede cambiar datos fuera de esta máquina. Solo Claude, y cada llamada a una herramienta pide confirmación antes."
+    },
+    "secret": {
+      "set": "Definido",
+      "notSet": "Sin definir",
+      "required": "Obligatorio",
+      "changedAt": "cambiado el {{date}}",
+      "replace": "Reemplazar",
+      "setValue": "Definir valor",
+      "clear": "Borrar",
+      "clearConfirm": "¿Borrar este secreto? El MCP no puede iniciarse sin un secreto obligatorio.",
+      "placeholder": "Introduce el valor",
+      "writeOnlyHint": "Solo escritura: el valor se guarda cifrado y no se vuelve a mostrar.",
+      "emptyValue": "Introduce un valor o usa Borrar para eliminar el valor guardado."
+    },
+    "create": {
+      "title": "Añadir {{name}}",
+      "duplicateTitle": "Duplicar {{name}}",
+      "name": "Nombre",
+      "nameRules": "Letras minúsculas, dígitos y guiones simples; empieza por una letra; {{max}} caracteres como máximo; único. Se convierte en el prefijo de las herramientas.",
+      "nameProblem": {
+        "required": "Introduce un nombre.",
+        "pattern": "Usa letras minúsculas, dígitos y guiones simples, empezando por una letra.",
+        "tooLong": "{{max}} caracteres como máximo.",
+        "reserved": "Este nombre está reservado.",
+        "notInMarket": "Este MCP no se ofrece en el mercado.",
+        "taken": "Ya existe un MCP con este nombre."
+      },
+      "duplicateNote": "La copia recibe la misma plantilla, entorno, nivel, CLI, valores simples y listas de herramientas. Los secretos no se copian: defínelos en el nuevo MCP. La copia empieza inactiva.",
+      "environment": "Entorno",
+      "environmentPlaceholder": "Elige un entorno",
+      "tier": "Nivel",
+      "readTierNote": "Lectura: no cambia nada fuera de esta máquina. Las herramientas permanecen bloqueadas hasta que las permitas tras una prueba de conexión.",
+      "writeTierNote": "Escritura: puede cambiar datos de producción, dinero, anuncios, correo o publicaciones públicas. Solo Claude; los MCP de escritura en producción permanecen inactivos hasta que se registre la aprobación por escrito del propietario.",
+      "clis": "CLI",
+      "plainEnv": "Configuración",
+      "secrets": "Secretos",
+      "forcedByTier": "Definido por el nivel {{tier}}.",
+      "dormantUntilComplete": "Permanece inactivo hasta que se rellenen estos campos: {{keys}}",
+      "startsDormant": "Los MCP nuevos empiezan inactivos. Activa uno cuando sus valores estén definidos y la prueba de conexión sea correcta."
+    },
+    "attach": {
+      "title": "Vincular {{name}}",
+      "pickTitle": "Vincular un MCP",
+      "instance": "MCP",
+      "instancePlaceholder": "Elige un MCP",
+      "noInstances": "No hay MCP para vincular. Añade uno desde una plantilla primero.",
+      "scope": "Dónde",
+      "wholeProject": "Todo el proyecto (archivos del proyecto)",
+      "assistant": "Un asistente de un proyecto",
+      "project": "Proyecto",
+      "projectPlaceholder": "Elige un proyecto",
+      "noProjects": "No hay proyectos a los que vincular.",
+      "assistantPlaceholder": "Elige un asistente",
+      "assistantNote": "Solo se aplica a conversaciones nuevas y a miembros del equipo inactivos.",
+      "clis": "CLI",
+      "writeClaudeOnly": "Los MCP de escritura son solo para Claude.",
+      "notActiveNote": "Este MCP no está activo: el vínculo se ha guardado, pero nada lo inicia hasta que se active.",
+      "globalBlocked": {
+        "write": "Los MCP de escritura nunca son globales.",
+        "notGlobal": "Solo context7 y studio-memory pueden ser globales."
+      },
+      "conflict": {
+        "alreadyAttached": "{{cli}}: ya está vinculado aquí.",
+        "otherChannel": "{{cli}}: ya llega a este proyecto por la otra vía (archivos del proyecto o un asistente, nunca ambos)."
+      }
+    },
+    "activate": {
+      "title": "¿Activar {{name}}?",
+      "body": "Los MCP activos se inician para los proyectos, asistentes y CLI a los que están vinculados.",
+      "missing": "Rellena primero los valores obligatorios: {{keys}}",
+      "productionWrite": "Este es un MCP de escritura en producción. Permanece inactivo hasta que se registre la aprobación por escrito del propietario para el cambio exacto.",
+      "approvalLabel": "Referencia de aprobación",
+      "approvalHelp": "aprobación por escrito del propietario para el cambio exacto",
+      "approvalFormat": "Formato: OA-<yyyymmdd>-<slug>",
+      "approvalRequired": "La referencia de aprobación es obligatoria.",
+      "approvalInvalid": "Usa el formato OA-<yyyymmdd>-<slug>, por ejemplo una fecha y un nombre corto en minúsculas."
+    },
+    "confirm": {
+      "revoke": {
+        "title": "¿Revocar {{name}}?",
+        "body": "Deja de iniciarse de inmediato y las copias en ejecución se detienen en la siguiente comprobación. Los vínculos y secretos se conservan, así que puede volver a activarse.",
+        "ok": "Revocar"
+      },
+      "delete": {
+        "title": "¿Eliminar {{name}}?",
+        "body": "Se eliminarán el MCP, sus vínculos y sus secretos guardados. No se puede deshacer.",
+        "ok": "Eliminar"
+      },
+      "dormant": {
+        "title": "¿Desactivar {{name}}?",
+        "body": "Ya no se iniciará en ningún sitio hasta que se vuelva a activar. No se elimina nada.",
+        "ok": "Desactivar"
+      },
+      "refresh": {
+        "title": "¿Actualizar la plantilla de {{name}}?",
+        "body": "El MCP pasa a usar la plantilla actual del catálogo. Los secretos y vínculos se conservan; los ajustes que ya no tiene la nueva plantilla se descartan.",
+        "ok": "Actualizar"
+      }
+    },
+    "template": {
+      "updateAvailable": "Actualización de plantilla",
+      "updateBody": "Hay una plantilla más reciente en el catálogo ({{from}} → {{to}}).",
+      "refreshed": "Plantilla actualizada a {{version}}.",
+      "unchanged": "La plantilla ya estaba actualizada.",
+      "added": "Claves nuevas: {{keys}}.",
+      "removed": "Claves descartadas: {{keys}}.",
+      "needsSecrets": "Necesita secretos: {{keys}}"
+    },
+    "tools": {
+      "allowTitle": "Herramientas permitidas",
+      "allowHint": "Los MCP de lectura bloquean todas las herramientas que no estén marcadas aquí (bloqueo por defecto).",
+      "blockTitle": "Herramientas bloqueadas",
+      "blockHint": "Las herramientas marcadas se bloquean; Claude pregunta antes de cualquier otra llamada a herramientas.",
+      "none": "Aún no se han detectado herramientas. Ejecuta Probar conexión para listarlas."
+    },
+    "test": {
+      "success": "La conexión funciona. Herramientas encontradas: {{count}}."
+    },
+    "errors": {
+      "generic": "La solicitud ha fallado. Inténtalo de nuevo.",
+      "maskedValue": "Un valor aparece como «•••» porque está oculto, no porque sea el valor real. Vuelve a escribir el valor real y guarda.",
+      "sessionRequired": "Los cambios en el mercado de MCP requieren tu sesión del navegador con la sesión iniciada. Vuelve a iniciar sesión e inténtalo de nuevo; los agentes no pueden hacer estos cambios.",
+      "csrf": "La comprobación de seguridad de tu sesión ha fallado. Recarga la página e inténtalo de nuevo.",
+      "catalogueUnavailable": "El catálogo de plantillas de MCP no está disponible en este momento.",
+      "templateSecretMissing": "Define primero el secreto que necesita la nueva plantilla; el MCP se mantiene en su plantilla actual. {{detail}}",
+      "notFound": "Este MCP o vínculo ya no existe. Se ha actualizado la lista.",
+      "alreadyAttached": "Este MCP ya está vinculado ahí para esa CLI. {{detail}}",
+      "nameTaken": "Ese nombre ya está en uso. Elige otro nombre. {{detail}}",
+      "conflict": "Esto entra en conflicto con el estado actual. {{detail}}",
+      "rejected": "El servidor ha rechazado este cambio: {{detail}}"
+    }
   }
 }
