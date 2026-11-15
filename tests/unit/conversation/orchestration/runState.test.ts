@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import {
   conversationRunState,
   formatRunDuration,
+  isOutcomeSeen,
   readLastOutcome,
   toolStatusRunState,
   worstRunState,
@@ -15,6 +16,7 @@ import {
 import {
   applyBackgroundTransition,
   backgroundTransitionOf,
+  runningRowsToHydrate,
 } from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
 import { stepOfFrame } from '@/renderer/pages/conversation/components/orchestration/DelegatedWork/liveSteps';
 
@@ -39,10 +41,22 @@ describe('one status language', () => {
     expect(conversationRunState({ ...base, waiting: true, generating: true })).toBe('waiting');
     expect(conversationRunState({ ...base, backgroundActive: true, lastOutcome: 'error' })).toBe('running');
     expect(conversationRunState({ ...base, lastOutcome: 'error', doneUnread: true })).toBe('failed');
+    // FIXES 2: a failure clears once the owner opened the conversation.
+    expect(conversationRunState({ ...base, lastOutcome: 'error', outcomeSeen: true })).toBe('idle');
     expect(conversationRunState({ ...base, doneUnread: true, lastOutcome: 'finished' })).toBe('done');
     expect(conversationRunState({ ...base, notStarted: true })).toBe('queued');
     // Cancelled by the user, nothing unread: quiet.
     expect(conversationRunState({ ...base, lastOutcome: 'cancelled' })).toBe('idle');
+  });
+
+  it('a failure is seen when opened after it happened, and shows again when it fails again', () => {
+    expect(isOutcomeSeen({ last_outcome: 'error', last_outcome_at: 10 })).toBe(false);
+    expect(isOutcomeSeen({ last_outcome: 'error', last_outcome_at: 10, last_outcome_seen_at: 20 })).toBe(true);
+    expect(isOutcomeSeen({ last_outcome: 'error', last_outcome_at: 30, last_outcome_seen_at: 20 })).toBe(false);
+    // Opened just now, before the list refresh carries the persisted mark.
+    expect(isOutcomeSeen({ last_outcome: 'error', last_outcome_at: 30 }, 40)).toBe(true);
+    // Rows from before last_outcome_at existed: any seen mark counts.
+    expect(isOutcomeSeen({ last_outcome: 'error', last_outcome_seen_at: 1 })).toBe(true);
   });
 
   it('reads extra.last_outcome defensively', () => {
@@ -104,5 +118,22 @@ describe('background work tracking (C21)', () => {
       stepOfFrame({ type: 'acp_tool_call', data: { update: { title: 'Read a.rs', status: 'in_progress' } } })
     ).toBe('Read a.rs');
     expect(stepOfFrame({ type: 'finish' })).toBeNull();
+  });
+});
+
+describe('waiting after a reload (FIXES 3)', () => {
+  it('fetches the live runtime of every row the database says is mid-turn, once per running episode', () => {
+    const rows = [
+      { id: 'a', status: 'running' as const },
+      { id: 'b', status: 'finished' as const },
+      { id: 'c', status: 'running' as const },
+    ];
+    const first = runningRowsToHydrate(rows, new Set());
+    expect(first.fetch).toEqual(['a', 'c']);
+    // Already hydrated rows are not fetched again; finished ones are forgotten.
+    const second = runningRowsToHydrate(rows, first.keep);
+    expect(second.fetch).toEqual([]);
+    const later = runningRowsToHydrate([{ id: 'a', status: 'finished' as const }], second.keep);
+    expect(later.keep.size).toBe(0);
   });
 });

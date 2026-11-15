@@ -57,6 +57,22 @@ export const readLastOutcome = (extra: unknown): LastOutcome | undefined => {
   return value === 'finished' || value === 'error' || value === 'cancelled' ? value : undefined;
 };
 
+const numberOf = (value: unknown): number | undefined => (typeof value === 'number' ? value : undefined);
+
+/**
+ * Whether the owner opened the conversation after its last turn ended
+ * (`extra.last_outcome_seen_at` ≥ `last_outcome_at`, AionCore C21), or
+ * `localSeenAt` (the open just happened, before the list refreshed) does.
+ */
+export const isOutcomeSeen = (extra: unknown, localSeenAt?: number): boolean => {
+  const fields = extra as { last_outcome_at?: unknown; last_outcome_seen_at?: unknown } | undefined;
+  const outcomeAt = numberOf(fields?.last_outcome_at);
+  const seenAt = Math.max(numberOf(fields?.last_outcome_seen_at) ?? -1, localSeenAt ?? -1);
+  if (seenAt < 0) return false;
+  // Rows written before `last_outcome_at` existed: any seen mark counts.
+  return outcomeAt === undefined || seenAt >= outcomeAt;
+};
+
 export type ConversationRunInputs = {
   waiting: boolean;
   generating: boolean;
@@ -67,17 +83,19 @@ export type ConversationRunInputs = {
   /** DB status `pending`: created, no turn yet. */
   notStarted: boolean;
   lastOutcome?: LastOutcome;
+  /** The owner opened it since the last turn ended: a failure no longer needs them. */
+  outcomeSeen?: boolean;
 };
 
 /**
  * A conversation's state in the sidebar. Waiting beats running (a paused turn
- * still streams frames); a failed last turn stays visible until a new turn
- * starts; done shows only until the conversation is opened.
+ * still streams frames); a failed last turn and done both show only until the
+ * conversation is opened (a later failure shows again).
  */
 export const conversationRunState = (input: ConversationRunInputs): RunState => {
   if (input.waiting) return 'waiting';
   if (input.generating || input.backgroundActive) return 'running';
-  if (input.lastOutcome === 'error') return 'failed';
+  if (input.lastOutcome === 'error' && !input.outcomeSeen) return 'failed';
   if (input.doneUnread) return 'done';
   if (input.notStarted) return 'queued';
   return 'idle';

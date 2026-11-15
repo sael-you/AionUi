@@ -63,6 +63,8 @@ export const useConversations = () => {
     isConversationWaitingConfirmation,
     hasCompletionUnread,
     hasBackgroundActive,
+    outcomeSeenAt,
+    markOutcomeSeen,
     clearCompletionUnread,
     isManualUnread,
     markManualUnread,
@@ -106,6 +108,8 @@ export const useConversations = () => {
     setActiveConversation(id);
     clearCompletionUnread(id);
     clearManualUnread(id);
+    // C21: opening a failed conversation means the failure has been seen.
+    markOutcomeSeen(id);
 
     if (revealedIdRef.current === id) return;
 
@@ -219,6 +223,7 @@ export const useConversations = () => {
     isConversationWaitingConfirmation,
     hasCompletionUnread,
     hasBackgroundActive,
+    outcomeSeenAt,
     isManualUnread,
     markManualUnread,
     clearManualUnread,

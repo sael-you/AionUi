@@ -20,6 +20,7 @@ import type { TimelineSection } from '@/renderer/pages/conversation/GroupedHisto
 const state = vi.hoisted(() => ({
   generating: new Set<string>(),
   waiting: new Set<string>(),
+  seen: new Map<string, number>(),
 }));
 
 const mk = (id: string, name: string, workspace?: string): TChatConversation =>
@@ -73,6 +74,7 @@ vi.mock('@/renderer/hooks/context/ConversationHistoryContext', () => ({
     isConversationWaitingConfirmation: (id: string) => state.waiting.has(id),
     hasCompletionUnread: () => false,
     hasBackgroundActive: () => false,
+    outcomeSeenAt: (id: string) => state.seen.get(id),
     clearCompletionUnread: () => {},
     isManualUnread: () => false,
     markManualUnread: () => {},
@@ -117,6 +119,7 @@ beforeEach(() => {
   localStorage.clear();
   state.generating.clear();
   state.waiting.clear();
+  state.seen.clear();
   fixture.empty = false;
 });
 
@@ -232,6 +235,27 @@ describe('sidebar list', () => {
   it('lists what waits across projects in the Needs-you box, only while something waits (C21)', () => {
     renderSidebar();
     expect(screen.queryByTestId('sidebar-needs-you')).toBeNull();
+  });
+
+  it('drops a failed conversation from Needs-you and its row once it was opened (FIXES 2)', () => {
+    const extra = A2.extra;
+    A2.extra = { ...extra, last_outcome: 'error', last_outcome_at: 10 } as typeof extra;
+    try {
+      const { rerender } = renderSidebar();
+      expect(within(screen.getByTestId('sidebar-needs-you')).getByTestId('sidebar-needs-you-a2')).toBeInTheDocument();
+      expect(screen.getByTestId('conversation-failed-a2')).toBeInTheDocument();
+      // Opened: recorded locally first (the list refresh then carries last_outcome_seen_at).
+      state.seen.set('a2', 20);
+      rerender(
+        <MemoryRouter>
+          <Sidebar />
+        </MemoryRouter>
+      );
+      expect(screen.queryByTestId('sidebar-needs-you')).toBeNull();
+      expect(screen.queryByTestId('conversation-failed-a2')).toBeNull();
+    } finally {
+      A2.extra = extra;
+    }
   });
 
   it('shows the Needs-you box with the waiting conversation, its project and the running count', () => {
