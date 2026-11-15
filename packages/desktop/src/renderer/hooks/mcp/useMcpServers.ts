@@ -35,8 +35,9 @@ export const useMcpServers = () => {
         }
 
         // Catalogue entries are MCP market templates; the market lists them itself (R1 #16).
+        // `/api/extensions/mcp-servers` names the contributing extension in `_extensionName`.
         const converted: IMcpServer[] = extServers
-          .filter((server) => server.extension_name !== MCP_CATALOG_EXTENSION)
+          .filter((server) => server._extensionName !== MCP_CATALOG_EXTENSION)
           .map((server) => ({
             id: String(server.id || ''),
             name: String(server.name || ''),
