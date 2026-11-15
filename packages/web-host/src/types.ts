@@ -41,6 +41,8 @@ export type WebHostOptions = {
   backend: { kind: 'ownBackend'; resolveBackend: BackendBinaryResolver } | { kind: 'useExistingBackend'; port: number };
   /** AionCore identity for an own backend (card C11). Default `local`. */
   identity?: 'local' | 'webui';
+  /** A `local` start may replace a `webui` identity marker (deliberate rollback; web CLI only). */
+  allowIdentityRollback?: boolean;
 };
 
 /**

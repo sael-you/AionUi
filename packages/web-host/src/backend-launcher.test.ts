@@ -19,6 +19,7 @@ vi.mock('node:fs', () => ({
   mkdirSync: vi.fn(),
   readFileSync: vi.fn(),
   renameSync: vi.fn(),
+  rmSync: vi.fn(),
   statSync: vi.fn(),
   writeFileSync: vi.fn(),
 }));
@@ -33,7 +34,7 @@ vi.mock('./agent-process-registry.js', () => ({
 }));
 
 import { spawn } from 'node:child_process';
-import { chmodSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { connect, createServer } from 'node:net';
 import { cleanupRegisteredAgentProcesses } from './agent-process-registry.js';
 import {
@@ -41,8 +42,10 @@ import {
   buildSpawnArgs,
   buildSpawnEnv,
   findAvailablePort,
+  isExplicitLocalIdentity,
   readIdentityMarker,
   resolveBackendIdentity,
+  writeIdentityMarker,
   BackendLifecycleManager,
   BackendStartupError,
 } from './backend-launcher.js';
@@ -501,7 +504,11 @@ describe('backend identity (card C11)', () => {
     expect(args).not.toContain('--local');
   });
 
-  const spawnWith = async (env: Record<string, string | undefined>, identity?: 'local' | 'webui') => {
+  const spawnWith = async (
+    env: Record<string, string | undefined>,
+    identity?: 'local' | 'webui',
+    allowIdentityRollback?: boolean
+  ) => {
     const saved = Object.fromEntries(Object.keys(env).map((key) => [key, process.env[key]]));
     Object.entries(env).forEach(([key, value]) => {
       if (value === undefined) delete process.env[key];
@@ -518,7 +525,7 @@ describe('backend identity (card C11)', () => {
       const mgr =
         identity === undefined
           ? new BackendLifecycleManager(APP_META_PACKAGED, resolve)
-          : new BackendLifecycleManager(APP_META_PACKAGED, resolve, identity);
+          : new BackendLifecycleManager(APP_META_PACKAGED, resolve, identity, allowIdentityRollback);
       const started = mgr.start('/db', '/log', { cacheDir: '/c', workDir: '/w', logDir: '/l' });
       await Promise.resolve();
       emitListening(child, 55555);
@@ -592,6 +599,55 @@ describe('backend identity (card C11)', () => {
     } finally {
       warnSpy.mockRestore();
     }
+  });
+
+  it('counts only an explicit AIONUI_BACKEND_IDENTITY=local as a deliberate rollback', () => {
+    expect(isExplicitLocalIdentity({ AIONUI_BACKEND_IDENTITY: 'local' })).toBe(true);
+    expect(isExplicitLocalIdentity({ AIONUI_BACKEND_IDENTITY: ' local\n' })).toBe(true);
+    expect(isExplicitLocalIdentity({})).toBe(false);
+    expect(isExplicitLocalIdentity({ AIONUI_BACKEND_IDENTITY: '' })).toBe(false);
+    expect(isExplicitLocalIdentity({ AIONUI_BACKEND_IDENTITY: 'webui' })).toBe(false);
+    expect(isExplicitLocalIdentity({ AIONUI_BACKEND_IDENTITY: 'LOCAL' })).toBe(false);
+  });
+
+  it('a stray local start keeps a webui marker (and still starts --local)', async () => {
+    vi.mocked(writeFileSync).mockClear();
+    vi.mocked(readFileSync).mockReturnValueOnce('webui\n');
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const { args } = await spawnWith({}, 'local');
+      expect(args).toContain('--local');
+      expect(vi.mocked(writeFileSync)).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('keeping its identity marker'));
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it('a deliberate rollback replaces a webui marker with local', async () => {
+    vi.mocked(writeFileSync).mockClear();
+    vi.mocked(readFileSync).mockClear();
+    // Whatever the marker says (webui here), the rollback writes local without reading it.
+    await spawnWith({}, 'local', true);
+    expect(vi.mocked(readFileSync)).not.toHaveBeenCalledWith('/db/identity-mode', 'utf8');
+    const [temp, content] = vi.mocked(writeFileSync).mock.calls[0];
+    expect(content).toBe('local\n');
+    expect(vi.mocked(renameSync)).toHaveBeenCalledWith(temp, '/db/identity-mode');
+  });
+
+  it('removes the temp file when the marker write or rename fails', () => {
+    vi.mocked(rmSync).mockClear();
+    vi.mocked(renameSync).mockImplementationOnce(() => {
+      throw new Error('EXDEV');
+    });
+    expect(() => writeIdentityMarker('/db', 'webui')).toThrow('EXDEV');
+    const temp = vi.mocked(writeFileSync).mock.calls.at(-1)?.[0];
+    expect(vi.mocked(rmSync)).toHaveBeenCalledWith(temp, { force: true });
+    vi.mocked(writeFileSync).mockImplementationOnce(() => {
+      throw new Error('ENOSPC');
+    });
+    expect(() => writeIdentityMarker('/db', 'webui')).toThrow('ENOSPC');
+    expect(vi.mocked(rmSync)).toHaveBeenCalledTimes(2);
   });
 
   it('reads the marker back, and treats a missing or unknown marker as none', () => {

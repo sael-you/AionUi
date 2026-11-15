@@ -12,7 +12,9 @@ export {
   buildSpawnEnv,
   findAvailablePort,
   resolveBackendIdentity,
+  isExplicitLocalIdentity,
   readIdentityMarker,
+  recordIdentityMarker,
   writeIdentityMarker,
   IDENTITY_MARKER_FILE,
   BACKEND_IDENTITY_ENV_KEYS,
@@ -49,6 +51,7 @@ export async function startWebHost(opts: WebHostOptions): Promise<WebHostHandle>
       logDir: opts.logDir,
       dirs: opts.dirs,
       identity: opts.identity ?? 'local',
+      allowIdentityRollback: opts.allowIdentityRollback === true,
     });
   } else {
     // useExistingBackend: create a fake handle
