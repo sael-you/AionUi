@@ -22,32 +22,33 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Whether activation replaced an older worker's caches (an upgrade, not a first install).
+function isUpgrade(cacheKeys) {
+  return cacheKeys.some((key) => key !== CACHE_NAME);
+}
+
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys.map((key) => {
-            if (key === CACHE_NAME) {
-              return Promise.resolve();
+    caches.keys().then((keys) => {
+      const upgrading = isUpgrade(keys);
+      return Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+        .then(() => self.clients.claim())
+        .then(() => {
+          // After an upgrade, tell open WebUI tabs that ran under the previous SW
+          // to reload so they pick up the fixed fetch handler immediately; without
+          // this an open tab keeps the old v1 SW until the user refreshes.
+          // Not on a first install: no tab ran under an older worker, and reloading
+          // the page that just registered this one would cancel its in-flight
+          // requests (the first visit's /api/auth/user failed with "Failed to
+          // fetch") and load the app twice.
+          if (!upgrading) return undefined;
+          return self.clients.matchAll({ type: 'window' }).then((clients) => {
+            for (const client of clients) {
+              client.navigate(client.url).catch(() => undefined);
             }
-            return caches.delete(key);
-          })
-        )
-      )
-      .then(() => self.clients.claim())
-      // After claim, tell any open WebUI tabs running under the previous SW
-      // to reload so they pick up the fixed fetch handler immediately.
-      // Without this, an already-open tab keeps serving from the old v1 SW
-      // until the user manually refreshes.
-      .then(() =>
-        self.clients.matchAll({ type: 'window' }).then((clients) => {
-          for (const client of clients) {
-            client.navigate(client.url).catch(() => undefined);
-          }
-        })
-      )
+          });
+        });
+    })
   );
 });
 
