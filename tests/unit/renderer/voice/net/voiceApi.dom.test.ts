@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
 import type { Mock } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CSRF_HEADER_NAME } from '@/common/adapter/csrf';
@@ -59,6 +62,16 @@ describe('voiceApi', () => {
   it('has no CSRF code of its own', () => {
     const exported = Object.keys(voiceApiModule);
     expect(exported.some((name) => /csrf/i.test(name))).toBe(false);
+    // The source itself: no csrf import, cookie read or header outside comments.
+    const source = readFileSync(
+      path.resolve(__dirname, '../../../../../packages/desktop/src/renderer/voice/net/voiceApi.ts'),
+      'utf-8'
+    );
+    const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    expect(code).not.toMatch(/csrf/i);
+    expect(code).not.toMatch(/document\.cookie/);
+    expect(code).not.toMatch(/authorization/i);
+    expect(code).not.toMatch(/from ['"][^'"]*csrf['"]/);
   });
 
   it('sends every write through the shared httpRequest with no headers of its own', async () => {
