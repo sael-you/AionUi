@@ -4,7 +4,7 @@ import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import type { AddressInfo } from 'node:net';
-import { startStaticServer, type StaticServerHandle } from './static-server.js';
+import { peekWsRoute, startStaticServer, type StaticServerHandle } from './static-server.js';
 
 async function mkRendererFixture(): Promise<string> {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'ws-static-'));
@@ -335,6 +335,61 @@ describe('static-server', () => {
     expect(status).toMatch(/HTTP\/1\.1 101/i);
   });
 
+  it('/api/voice/ws WebSocket upgrade (voice mode) is spliced to backend', async () => {
+    const { createHash } = await import('node:crypto');
+    const net = await import('node:net');
+    const httpMod = await import('node:http');
+    const backendServer = httpMod.createServer();
+    backendServer.on('upgrade', (req, socket) => {
+      const wsKey = (req.headers['sec-websocket-key'] as string) || '';
+      const accept = createHash('sha1')
+        .update(wsKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')
+        .digest('base64');
+      socket.write('HTTP/1.1 101 Switching Protocols\r\n');
+      socket.write('Upgrade: websocket\r\n');
+      socket.write('Connection: Upgrade\r\n');
+      socket.write(`Sec-WebSocket-Accept: ${accept}\r\n\r\n`);
+      socket.write(Buffer.from([0x81, 0x00]));
+      socket.end();
+    });
+    await new Promise<void>((r) => backendServer.listen(0, '127.0.0.1', () => r()));
+    stopBackend = () => new Promise<void>((r) => backendServer.close(() => r()));
+    const backendPort = (backendServer.address() as { port: number }).port;
+
+    handle = await startStaticServer({ staticDir, backendPort, port: 0 });
+
+    const { port: publicPort } = handle;
+    const status: string = await new Promise((resolve, reject) => {
+      const sock = net.connect({ host: '127.0.0.1', port: publicPort }, () => {
+        sock.write(
+          'GET /api/voice/ws HTTP/1.1\r\n' +
+            `Host: 127.0.0.1:${publicPort}\r\n` +
+            'Upgrade: websocket\r\n' +
+            'Connection: Upgrade\r\n' +
+            'Sec-WebSocket-Version: 13\r\n' +
+            'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n' +
+            '\r\n'
+        );
+      });
+      let buf = Buffer.alloc(0);
+      sock.on('data', (d) => {
+        buf = Buffer.concat([buf, d]);
+        const headEnd = buf.indexOf('\r\n\r\n');
+        if (headEnd >= 0) {
+          const firstLine = buf.slice(0, buf.indexOf(0x0a)).toString('ascii');
+          sock.destroy();
+          resolve(firstLine.trim());
+        }
+      });
+      sock.on('error', reject);
+      setTimeout(() => {
+        sock.destroy();
+        reject(new Error('timeout waiting for 101'));
+      }, 3000).unref();
+    });
+    expect(status).toMatch(/HTTP\/1\.1 101/i);
+  });
+
   it('POST body with a large payload is fully forwarded to backend (no byte drop during splice)', async () => {
     // Regression for #4058: WebUI uploads hang forever at 100%. When the routing
     // decision fired on the first chunk, the pre-router removed its 'data'
@@ -419,5 +474,27 @@ describe('static-server', () => {
     // may still be undefined on CI machines without a LAN interface
     expect(typeof h2.networkUrl === 'string' || h2.networkUrl === undefined).toBe(true);
     await h2.stop();
+  });
+});
+
+const line = (s: string) => Buffer.from(`${s}\r\nHost: x\r\n\r\n`, 'ascii');
+
+describe('peekWsRoute (which request lines are spliced to the backend)', () => {
+  it('splices the WebSocket endpoints, with or without a query', () => {
+    expect(peekWsRoute(line('GET /ws HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/stt/stream?lang=en HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/voice/ws HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/voice/ws?x=1 HTTP/1.1'))).toBe(true);
+  });
+
+  it('does not splice look-alike voice paths or other methods', () => {
+    expect(peekWsRoute(line('GET /api/voice/wsx HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('GET /api/voice/ws/x HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('POST /api/voice/ws HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('GET /api/voice/sessions HTTP/1.1'))).toBe(false);
+  });
+
+  it('waits for the end of the request line', () => {
+    expect(peekWsRoute(Buffer.from('GET /api/voice/w', 'ascii'))).toBeNull();
   });
 });

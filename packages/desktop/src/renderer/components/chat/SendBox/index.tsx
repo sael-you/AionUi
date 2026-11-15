@@ -66,6 +66,7 @@ import { useAbortUploadsOnConversationChange } from '@renderer/hooks/file/useAbo
 import UploadProgressBar from '@renderer/components/media/UploadProgressBar';
 import { allSupportedExts } from '@renderer/services/FileService';
 import SpeechInputButton from '@/renderer/components/chat/SpeechInputButton';
+import { buildVoiceSlashCommand, runVoiceSlashCommand, useVoiceAvailable, VoiceComposerButton } from '@renderer/voice';
 import { appendSpeechTranscript } from '@/renderer/hooks/system/useSpeechInput';
 import { createChainedDispatch, useLiveTranscriptInsertion } from '@/renderer/hooks/system/useLiveTranscriptInsertion';
 import { getConversationInputHistory, isCaretOnFirstLine } from '@/renderer/utils/chat/messageHistory';
@@ -591,6 +592,7 @@ const SendBox: React.FC<{
     });
   }, [allAtFileQueries, selectedWorkspaceItems]);
 
+  const voiceAvailable = useVoiceAvailable();
   const builtinSlashCommands = useMemo<SlashCommandItem[]>(() => {
     const commands: SlashCommandItem[] = [];
     if (enableBtw) {
@@ -617,13 +619,15 @@ const SendBox: React.FC<{
         kind: 'builtin',
         source: 'builtin',
       });
+      // `/voice` only while voice is turned on in settings (off by default).
+      if (voiceAvailable) commands.push(buildVoiceSlashCommand(t));
       // The `/export` slash command is intentionally not registered (kanban #14)
       // so it never appears in the command list and cannot open the export flow.
       // The `name === 'export'` branch below and the conversationExport hook are
       // kept intact for a future per-platform re-enable.
     }
     return commands;
-  }, [conversationContext?.conversation_id, enableBtw, onSlashBuiltinCommand, t]);
+  }, [conversationContext?.conversation_id, enableBtw, onSlashBuiltinCommand, t, voiceAvailable]);
 
   // Skills loaded into this conversation are also invokable via slash. We reuse
   // the global skills index (shared SWR key `skills-index`) purely to attach a
@@ -666,6 +670,8 @@ const SendBox: React.FC<{
         }
       } else if (name === 'export') {
         void conversationExport.openExportFlow();
+      } else if (runVoiceSlashCommand(name, conversationContext?.conversation_id)) {
+        // `/voice` arms voice mode inside this keydown/click gesture.
       } else {
         onSlashBuiltinCommand?.(name);
       }
@@ -1868,7 +1874,12 @@ const SendBox: React.FC<{
   const renderedTools = isMobileCompact ? mobilePlusButton : tools;
   const renderedRightTools = isMobileCompact ? null : rightTools;
   const renderedSpeechButton = (
-    <SpeechInputButton onLiveTranscript={handleLiveTranscript} onTranscript={handleSpeechTranscript} />
+    <>
+      {conversationContext?.conversation_id && (
+        <VoiceComposerButton conversationId={conversationContext.conversation_id} />
+      )}
+      <SpeechInputButton onLiveTranscript={handleLiveTranscript} onTranscript={handleSpeechTranscript} />
+    </>
   );
 
   const renderHighlightedInputValue = useCallback(() => {

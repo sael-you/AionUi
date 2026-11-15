@@ -1,0 +1,174 @@
+{
+  "orb": {
+    "tooltip": "Mode vocal ({{shortcut}})",
+    "state": {
+      "off": "Mode vocal désactivé",
+      "arming": "Préparation…",
+      "armed": "Prêt",
+      "connecting": "Connexion…",
+      "listening": "À l'écoute",
+      "thinking": "Réflexion",
+      "speaking": "Parle",
+      "offline": "Hors ligne — reconnexion",
+      "frozen": "En pause en arrière-plan"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "Fermer le panneau vocal"
+  },
+  "actions": {
+    "arm": "Activer la voix",
+    "disarm": "Arrêter la voix",
+    "talk": "Parler",
+    "hangUp": "Raccrocher",
+    "mute": "Couper le micro",
+    "unmute": "Réactiver le micro",
+    "settings": "Paramètres vocaux",
+    "back": "Retour"
+  },
+  "status": {
+    "wakeWordLoading": "Chargement du mot d'activation…",
+    "wakeWordReady": "Dites « Hey Jarvis » ou touchez Parler",
+    "wakeWordUnavailable": "Mot d'activation indisponible — touchez Parler",
+    "wakeWordOff": "Mot d'activation désactivé — touchez Parler",
+    "screenMaySleep": "L'écran peut se mettre en veille et mettre Jarvis en pause",
+    "systemPaused": "Audio mis en pause par le système",
+    "readback": "Relecture du brouillon…",
+    "muted": "Micro coupé",
+    "awaitingConfirm": "En attente de votre confirmation",
+    "awaitingChoice": "En attente du choix de la cible",
+    "holding": "Envoi imminent — vous pouvez encore annuler",
+    "asking": "Un agent vous a posé une question — répondez maintenant ; Jarvis raccroche après votre réponse"
+  },
+  "captions": {
+    "title": "Sous-titres en direct",
+    "empty": "Les sous-titres s'affichent ici pendant que vous parlez.",
+    "role": {
+      "user": "Vous",
+      "assistant": "Jarvis",
+      "agent": "Agent"
+    }
+  },
+  "draft": {
+    "title": "Brouillon",
+    "to": "À",
+    "noTarget": "Destinataire pas encore identifié",
+    "send": "Envoyer",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "editHint": "Dites « change it to … » et Jarvis relit la nouvelle version.",
+    "holding": "Envoi dans {{seconds}} s — dites « cancel » ou touchez Annuler",
+    "holdFrozen": "En pause pendant que vous parlez — dites « cancel » ou touchez Annuler",
+    "diffLabel": "Modifications par rapport à vos paroles",
+    "transform": {
+      "filler": "mots de remplissage supprimés",
+      "reference": "nom identifié",
+      "reorder": "réordonné"
+    },
+    "delivery": {
+      "new_turn": "Démarre un nouveau tour",
+      "steer": "Oriente le tour en cours",
+      "queue_busy": "En file d'attente jusqu'à la fin du tour en cours",
+      "queue_approval": "Attend une approbation en suspens",
+      "new_conversation": "Crée une nouvelle conversation"
+    },
+    "state": {
+      "drafted": "Dites « send » ou touchez Envoyer",
+      "ambiguous": "Lequel ? Dites le nom ou touchez Annuler",
+      "pending_transcript": "Vérification de ce que vous avez dit…",
+      "confirmed": "Confirmé",
+      "committing": "Attente avant l'envoi",
+      "sending": "Envoi…",
+      "queued": "En file d'attente",
+      "sent": "Envoyé",
+      "failed": "Non envoyé — échec",
+      "saved_not_started": "Enregistré, mais pas démarré — ouvrez la conversation pour le lancer",
+      "cancelled": "Annulé",
+      "expired": "Expiré",
+      "interrupted": "Interrompu — veuillez confirmer à nouveau",
+      "superseded": "Remplacé par une nouvelle version",
+      "draftedTapOnly": "Touchez Envoyer pour confirmer"
+    },
+    "chooseTarget": "Lequel ?",
+    "options": "Cibles possibles",
+    "openTarget": "Ouvrir la conversation",
+    "editNeedsCall": "Les modifications se dictent pendant l’appel qui a créé le brouillon"
+  },
+  "followUps": {
+    "title": "Suivis récents",
+    "open": "Ouvrir la conversation",
+    "status": {
+      "finished": "Terminé",
+      "failed": "Échec",
+      "needs_approval": "Votre approbation est requise",
+      "says": "Dit",
+      "asks": "Demande",
+      "sent": "Envoyé",
+      "queued": "En file d’attente",
+      "saved_not_started": "Pas démarré",
+      "expired": "Expiré",
+      "interrupted": "Interrompu",
+      "confirm_rejected": "Non confirmé"
+    }
+  },
+  "budget": {
+    "title": "Budget vocal du jour",
+    "usage": "${{used}} sur ${{limit}}",
+    "warning": "Limite du jour presque atteinte",
+    "reached": "La limite du jour est atteinte"
+  },
+  "notice": {
+    "disabled": "La voix est désactivée. Activez-la dans les paramètres vocaux.",
+    "audioUnavailable": "L'audio n'est pas disponible dans ce navigateur.",
+    "micDenied": "L'accès au micro a été refusé.",
+    "micLost": "Le micro a été déconnecté.",
+    "armFailed": "Impossible de démarrer la voix.",
+    "offline": "Aucune connexion au serveur. Réessayez dans un instant.",
+    "busy": "Jarvis a répondu sur votre autre appareil.",
+    "callFailed": "Impossible de démarrer l'appel.",
+    "networkLost": "Réseau perdu — Jarvis reprendra dès que vous serez de nouveau en ligne.",
+    "budget": "Le budget vocal du jour est épuisé.",
+    "clipFailed": "Impossible de lire la relecture. Lisez le brouillon à l'écran.",
+    "cannotConfirm": "Ce brouillon ne peut pas encore être confirmé d'un simple toucher.",
+    "server": "Erreur vocale : {{message}}",
+    "unauthorized": "Votre session a expiré. Veuillez vous reconnecter.",
+    "forbidden": "La voix n'est pas autorisée pour cette session.",
+    "unavailable": "La voix est temporairement indisponible.",
+    "network": "Erreur réseau. Réessayez.",
+    "callIdle": "L’appel s’est terminé après 3 minutes de silence. Jarvis reste armé.",
+    "callHardCap": "L’appel a atteint sa limite de 55 minutes. Touchez Parler pour en lancer un nouveau.",
+    "callDropped": "L’appel a été coupé. Touchez Parler pour réessayer.",
+    "noProvider": "Aucun fournisseur vocal n’est encore configuré pour votre compte.",
+    "rateLimited": "Trop de requêtes vocales. Patientez un instant puis réessayez."
+  },
+  "settings": {
+    "title": "Paramètres vocaux",
+    "enabled": "Mode vocal",
+    "enabledHint": "Désactivé par défaut. Une fois désactivé, aucun appel ne peut démarrer et les appareils prêts s'arrêtent.",
+    "engine": "Moteur",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "disponible plus tard",
+    "wakeWord": "Mot d'activation « Hey Jarvis »",
+    "wakeWordHint": "Fonctionne uniquement sur cet appareil. S'il est désactivé, touchez Parler pour commencer.",
+    "carMode": "Mode voiture",
+    "carModeHint": "Modèle plus léger, réduction du bruit en champ lointain, attend plus longtemps avant de répondre.",
+    "budget": "Budget quotidien",
+    "shortcut": "Raccourci clavier",
+    "shortcutRecord": "Appuyez sur une combinaison de touches",
+    "shortcutReset": "Réinitialiser",
+    "loadFailed": "Impossible de charger les paramètres vocaux.",
+    "saveFailed": "Impossible d'enregistrer le paramètre.",
+    "privacy": "L'audio reste sur cet appareil jusqu'au début d'un appel et n'est jamais stocké."
+  },
+  "slash": {
+    "description": "Parler à Jarvis de cette conversation"
+  },
+  "composer": {
+    "tooltip": "Mode vocal pour cette conversation"
+  }
+}

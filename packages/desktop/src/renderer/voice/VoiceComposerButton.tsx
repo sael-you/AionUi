@@ -1,0 +1,55 @@
+/**
+ * @license
+ * Copyright 2025 AionUi (aionui.com)
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * Composer mic for voice mode (plan §1 "Arm, in a conversation"): arms voice
+ * focused on this conversation, or stops it. Distinct from the dictation
+ * button (SpeechInputButton), which only transcribes into the text box.
+ */
+
+import { Button, Tooltip } from '@arco-design/web-react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { getVoiceController } from './core/effects';
+import type { VoiceController } from './core/VoiceController';
+import { useVoiceView } from './core/voiceStore';
+import VoiceOrbGlyph from './ui/VoiceOrbGlyph';
+import { useVoiceAvailable } from './ui/useVoiceAvailable';
+
+export type VoiceComposerButtonProps = {
+  conversationId: string;
+  disabled?: boolean;
+  controller?: VoiceController;
+};
+
+const VoiceComposerButton: React.FC<VoiceComposerButtonProps> = ({
+  conversationId,
+  disabled,
+  controller: injected,
+}) => {
+  const { t } = useTranslation();
+  const controller = injected ?? getVoiceController();
+  const view = useVoiceView(controller.store);
+  const available = useVoiceAvailable(controller);
+  const label = t('voice.composer.tooltip');
+  if (!available) return null;
+  return (
+    <Tooltip content={label} mini>
+      <Button
+        type='text'
+        shape='circle'
+        disabled={disabled}
+        aria-label={label}
+        aria-pressed={view.machine.mode !== 'off'}
+        data-testid='voice-composer-button'
+        icon={<VoiceOrbGlyph state={view.orb} size={16} />}
+        onClick={() => controller.toggle({ focusConversationId: conversationId })}
+      />
+    </Tooltip>
+  );
+};
+
+export default VoiceComposerButton;

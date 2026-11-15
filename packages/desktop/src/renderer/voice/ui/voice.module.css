@@ -1,0 +1,196 @@
+/* Voice mode ("Jarvis") — orb glyph + overlay. Colors only via theme tokens. */
+
+.orb {
+  position: relative;
+  display: inline-block;
+  width: var(--voice-orb-size, 18px);
+  height: var(--voice-orb-size, 18px);
+  flex: none;
+}
+
+.orbCore {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: transparent;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.orbRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.orb[data-state='armed'] .orbCore {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.orb[data-state='arming'] .orbCore,
+.orb[data-state='connecting'] .orbCore {
+  border-color: var(--primary);
+  border-style: dashed;
+  animation: voice-spin 1.2s linear infinite;
+}
+
+.orb[data-state='listening'] .orbCore {
+  border-color: var(--success);
+  background: var(--success);
+}
+
+.orb[data-state='listening'] .orbRing {
+  border-color: var(--success);
+  animation: voice-pulse 1.4s ease-out infinite;
+}
+
+.orb[data-state='thinking'] .orbCore {
+  border-color: var(--primary);
+  background: var(--primary);
+  animation: voice-breathe 1s ease-in-out infinite;
+}
+
+.orb[data-state='speaking'] .orbCore {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.orb[data-state='speaking'] .orbRing {
+  border-color: var(--primary);
+  animation: voice-pulse 0.8s ease-out infinite;
+}
+
+.orb[data-state='offline'] .orbCore {
+  border-color: var(--warning);
+  border-style: dotted;
+}
+
+.orb[data-state='frozen'] .orbCore {
+  border-color: var(--text-disabled);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.stateRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  --voice-orb-size: 44px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Touch targets ≥ 44px on phones; icon-park icons need an explicit gap inside Arco buttons. */
+.controls :global(.arco-btn) {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Desktop: the side panel starts below the title bar so the orb stays visible and tappable. */
+.desktopWrap {
+  top: var(--titlebar-height, 40px) !important;
+}
+
+.drawer :global(.arco-drawer-header-title) {
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+}
+
+.captions {
+  max-height: 28vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.caption {
+  margin: 0;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.captionPartial {
+  opacity: 0.65;
+}
+
+.card {
+  border: 1px solid var(--border-base);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--bg-1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.diff {
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.diffInsert {
+  background: color-mix(in srgb, var(--success) 18%, transparent);
+  border-radius: 3px;
+  text-decoration: none;
+}
+
+.diffDelete {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+@keyframes voice-pulse {
+  from {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+@keyframes voice-breathe {
+  0%,
+  100% {
+    transform: scale(0.85);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes voice-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbCore,
+  .orbRing {
+    animation: none !important;
+    transition: none;
+  }
+}

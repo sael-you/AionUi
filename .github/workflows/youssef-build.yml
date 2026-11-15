@@ -95,6 +95,15 @@ jobs:
         with:
           bun-version: ${{ env.BUN_VERSION }}
 
+      - name: Fetch voice wake-word assets (sha256-pinned)
+        working-directory: aionui
+        # Into public/voice/ (gitignored); the web build copies them next to the app. The openWakeWord
+        # models are CC BY-NC-SA 4.0 (personal / non-commercial use only) and are never committed; see
+        # scripts/fetch-voice-assets.js. A mismatch aborts the build.
+        run: |
+          node scripts/fetch-voice-assets.js
+          node scripts/fetch-voice-assets.js --check
+
       - name: Build aionui-web
         working-directory: aionui
         env:

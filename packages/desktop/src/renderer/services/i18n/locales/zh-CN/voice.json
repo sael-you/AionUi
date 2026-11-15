@@ -1,0 +1,174 @@
+{
+  "orb": {
+    "tooltip": "语音模式（{{shortcut}}）",
+    "state": {
+      "off": "语音模式已关闭",
+      "arming": "准备中…",
+      "armed": "已就绪",
+      "connecting": "连接中…",
+      "listening": "正在聆听",
+      "thinking": "思考中",
+      "speaking": "正在说话",
+      "offline": "离线 — 正在重新连接",
+      "frozen": "已在后台暂停"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "关闭语音面板"
+  },
+  "actions": {
+    "arm": "启用语音",
+    "disarm": "停止语音",
+    "talk": "说话",
+    "hangUp": "挂断",
+    "mute": "麦克风静音",
+    "unmute": "取消麦克风静音",
+    "settings": "语音设置",
+    "back": "返回"
+  },
+  "status": {
+    "wakeWordLoading": "正在加载唤醒词…",
+    "wakeWordReady": "说“Hey Jarvis”或点按“说话”",
+    "wakeWordUnavailable": "唤醒词不可用 — 请点按“说话”",
+    "wakeWordOff": "唤醒词已关闭 — 请点按“说话”",
+    "screenMaySleep": "屏幕可能会休眠并暂停 Jarvis",
+    "systemPaused": "音频已被系统暂停",
+    "readback": "正在朗读草稿…",
+    "muted": "麦克风已静音",
+    "awaitingConfirm": "等待你的确认",
+    "awaitingChoice": "等待你选择目标",
+    "holding": "即将发送 — 仍可取消",
+    "asking": "有智能体向你提问 — 请现在回答；回答后 Jarvis 会挂断"
+  },
+  "captions": {
+    "title": "实时字幕",
+    "empty": "你说话时，字幕会显示在这里。",
+    "role": {
+      "user": "你",
+      "assistant": "Jarvis",
+      "agent": "Agent"
+    }
+  },
+  "draft": {
+    "title": "草稿",
+    "to": "发送给",
+    "noTarget": "尚未确定目标",
+    "send": "发送",
+    "edit": "编辑",
+    "cancel": "取消",
+    "editHint": "说“change it to …”，Jarvis 会朗读新版本。",
+    "holding": "{{seconds}} 秒后发送 — 说“cancel”或点按“取消”",
+    "holdFrozen": "你说话时已暂停——说“cancel”或点按“取消”",
+    "diffLabel": "与你所说内容的差异",
+    "transform": {
+      "filler": "已删除口头语",
+      "reference": "已解析名称",
+      "reorder": "已调整顺序"
+    },
+    "delivery": {
+      "new_turn": "开始新一轮",
+      "steer": "引导当前进行中的一轮",
+      "queue_busy": "排队等待当前一轮结束",
+      "queue_approval": "等待待处理的审批",
+      "new_conversation": "新建会话"
+    },
+    "state": {
+      "drafted": "说“send”或点按“发送”",
+      "ambiguous": "是哪一个？说出名称或点按“取消”",
+      "pending_transcript": "正在核对你说的内容…",
+      "confirmed": "已确认",
+      "committing": "发送前稍候",
+      "sending": "发送中…",
+      "queued": "已排队",
+      "sent": "已发送",
+      "failed": "未发送 — 发送失败",
+      "saved_not_started": "已保存但未启动 — 打开会话以启动",
+      "cancelled": "已取消",
+      "expired": "已过期",
+      "interrupted": "已中断 — 请重新确认",
+      "superseded": "已被新版本替换",
+      "draftedTapOnly": "点按“发送”确认"
+    },
+    "chooseTarget": "哪一个？",
+    "options": "可能的目标",
+    "openTarget": "打开会话",
+    "editNeedsCall": "修改需在创建草稿的通话中口述"
+  },
+  "followUps": {
+    "title": "最近的跟进",
+    "open": "打开会话",
+    "status": {
+      "finished": "已完成",
+      "failed": "失败",
+      "needs_approval": "需要你的审批",
+      "says": "说",
+      "asks": "询问",
+      "sent": "已发送",
+      "queued": "已排队",
+      "saved_not_started": "未启动",
+      "expired": "已过期",
+      "interrupted": "已中断",
+      "confirm_rejected": "未确认"
+    }
+  },
+  "budget": {
+    "title": "今日语音预算",
+    "usage": "${{used}} / ${{limit}}",
+    "warning": "即将达到今日上限",
+    "reached": "已达到今日上限"
+  },
+  "notice": {
+    "disabled": "语音已关闭。请在语音设置中开启。",
+    "audioUnavailable": "此浏览器不支持音频。",
+    "micDenied": "麦克风访问被拒绝。",
+    "micLost": "麦克风已断开连接。",
+    "armFailed": "语音无法启动。",
+    "offline": "未连接到服务器。请稍后重试。",
+    "busy": "Jarvis 已在你的另一台设备上应答。",
+    "callFailed": "无法发起通话。",
+    "networkLost": "网络已断开 — 恢复联网后 Jarvis 将继续。",
+    "budget": "今日语音预算已用完。",
+    "clipFailed": "无法播放朗读音频。请在屏幕上阅读草稿。",
+    "cannotConfirm": "此草稿暂时无法通过点按确认。",
+    "server": "语音错误：{{message}}",
+    "unauthorized": "登录已过期，请重新登录。",
+    "forbidden": "此会话不允许使用语音。",
+    "unavailable": "语音暂时不可用。",
+    "network": "网络错误，请重试。",
+    "callIdle": "静默 3 分钟后通话已结束。Jarvis 仍处于待命状态。",
+    "callHardCap": "通话已达 55 分钟上限。点按“说话”开始新的通话。",
+    "callDropped": "通话已中断。点按“说话”重试。",
+    "noProvider": "你的账户尚未配置语音服务提供方。",
+    "rateLimited": "语音请求过多。请稍候再试。"
+  },
+  "settings": {
+    "title": "语音设置",
+    "enabled": "语音模式",
+    "enabledHint": "默认关闭。关闭后无法发起通话，已就绪的设备也会停止。",
+    "engine": "引擎",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "即将推出",
+    "wakeWord": "唤醒词“Hey Jarvis”",
+    "wakeWordHint": "仅在此设备上运行。关闭后请点按“说话”开始。",
+    "carMode": "车载模式",
+    "carModeHint": "使用更小的模型和远场降噪，回答前会等待更久。",
+    "budget": "每日预算",
+    "shortcut": "键盘快捷键",
+    "shortcutRecord": "请按下组合键",
+    "shortcutReset": "重置",
+    "loadFailed": "无法加载语音设置。",
+    "saveFailed": "无法保存该设置。",
+    "privacy": "通话开始前，音频只保留在此设备上，且从不存储。"
+  },
+  "slash": {
+    "description": "与 Jarvis 讨论此会话"
+  },
+  "composer": {
+    "tooltip": "此会话的语音模式"
+  }
+}

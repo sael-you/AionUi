@@ -20,6 +20,7 @@ const WebuiSettings = React.lazy(() => import('@renderer/pages/settings/WebuiSet
 const PetSettings = React.lazy(() => import('@renderer/pages/settings/PetSettings'));
 const ArchivedSettings = React.lazy(() => import('@renderer/pages/settings/ArchivedSettings'));
 const ExtensionSettingsPage = React.lazy(() => import('@renderer/pages/settings/ExtensionSettingsPage'));
+const VoiceSettingsPage = React.lazy(() => import('@renderer/voice/ui/VoiceSettingsPage'));
 const LoginPage = React.lazy(() => import('@renderer/pages/login'));
 const ComponentsShowcase = React.lazy(() => import('@renderer/pages/TestShowcase'));
 const ScheduledTasksPage = React.lazy(() => import('@renderer/pages/cron/ScheduledTasksPage'));
@@ -103,6 +104,7 @@ const PanelRoute: React.FC<{ layout: React.ReactElement }> = ({ layout }) => {
           <Route path='/settings/display' element={<Navigate to='/settings/appearance' replace />} />
           <Route path='/settings/webui' element={withRouteFallback(WebuiSettings)} />
           <Route path='/settings/pet' element={withRouteFallback(PetSettings)} />
+          <Route path='/settings/voice' element={withRouteFallback(VoiceSettingsPage)} />
           <Route path='/settings/archived' element={withRouteFallback(ArchivedSettings)} />
           <Route path='/settings/system' element={withRouteFallback(SystemSettings)} />
           <Route path='/settings/about' element={withRouteFallback(SystemSettings)} />

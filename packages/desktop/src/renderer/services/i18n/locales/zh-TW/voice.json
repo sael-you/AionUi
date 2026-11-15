@@ -1,0 +1,174 @@
+{
+  "orb": {
+    "tooltip": "語音模式（{{shortcut}}）",
+    "state": {
+      "off": "語音模式已關閉",
+      "arming": "準備中…",
+      "armed": "已就緒",
+      "connecting": "連線中…",
+      "listening": "正在聆聽",
+      "thinking": "思考中",
+      "speaking": "正在說話",
+      "offline": "離線 — 正在重新連線",
+      "frozen": "已在背景暫停"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "關閉語音面板"
+  },
+  "actions": {
+    "arm": "啟用語音",
+    "disarm": "停止語音",
+    "talk": "說話",
+    "hangUp": "掛斷",
+    "mute": "將麥克風靜音",
+    "unmute": "取消麥克風靜音",
+    "settings": "語音設定",
+    "back": "返回"
+  },
+  "status": {
+    "wakeWordLoading": "正在載入喚醒詞…",
+    "wakeWordReady": "說「Hey Jarvis」或點一下「說話」",
+    "wakeWordUnavailable": "無法使用喚醒詞 — 請點一下「說話」",
+    "wakeWordOff": "喚醒詞已關閉 — 請點一下「說話」",
+    "screenMaySleep": "螢幕可能會進入休眠並暫停 Jarvis",
+    "systemPaused": "音訊已被系統暫停",
+    "readback": "正在朗讀草稿…",
+    "muted": "麥克風已靜音",
+    "awaitingConfirm": "等待你的確認",
+    "awaitingChoice": "等待你選擇目標",
+    "holding": "即將傳送 — 仍可取消",
+    "asking": "有代理向你提問 — 請現在回答；回答後 Jarvis 會掛斷"
+  },
+  "captions": {
+    "title": "即時字幕",
+    "empty": "你說話時，字幕會顯示在這裡。",
+    "role": {
+      "user": "你",
+      "assistant": "Jarvis",
+      "agent": "Agent"
+    }
+  },
+  "draft": {
+    "title": "草稿",
+    "to": "傳送給",
+    "noTarget": "尚未確定目標",
+    "send": "發送",
+    "edit": "編輯",
+    "cancel": "取消",
+    "editHint": "說「change it to …」，Jarvis 會朗讀新版本。",
+    "holding": "{{seconds}} 秒後發送 — 說「cancel」或點一下「取消」",
+    "holdFrozen": "你說話時已暫停——說「cancel」或點一下「取消」",
+    "diffLabel": "與你所說內容的差異",
+    "transform": {
+      "filler": "已移除贅詞",
+      "reference": "已解析名稱",
+      "reorder": "已調整順序"
+    },
+    "delivery": {
+      "new_turn": "開始新一輪",
+      "steer": "引導目前進行中的一輪",
+      "queue_busy": "排隊等候目前這一輪結束",
+      "queue_approval": "等候待處理的核准",
+      "new_conversation": "建立新對話"
+    },
+    "state": {
+      "drafted": "說「send」或點一下「發送」",
+      "ambiguous": "是哪一個？說出名稱或點一下「取消」",
+      "pending_transcript": "正在確認你說的內容…",
+      "confirmed": "已確認",
+      "committing": "發送前稍候",
+      "sending": "發送中…",
+      "queued": "已排入佇列",
+      "sent": "已發送",
+      "failed": "未發送 — 發送失敗",
+      "saved_not_started": "已儲存但未啟動 — 開啟對話以啟動",
+      "cancelled": "已取消",
+      "expired": "已過期",
+      "interrupted": "已中斷 — 請重新確認",
+      "superseded": "已被新版本取代",
+      "draftedTapOnly": "點按「發送」確認"
+    },
+    "chooseTarget": "哪一個？",
+    "options": "可能的目標",
+    "openTarget": "開啟對話",
+    "editNeedsCall": "修改需在建立草稿的通話中口述"
+  },
+  "followUps": {
+    "title": "最近的後續訊息",
+    "open": "開啟對話",
+    "status": {
+      "finished": "已完成",
+      "failed": "失敗",
+      "needs_approval": "需要你的核准",
+      "says": "表示",
+      "asks": "詢問",
+      "sent": "已傳送",
+      "queued": "已排隊",
+      "saved_not_started": "未啟動",
+      "expired": "已過期",
+      "interrupted": "已中斷",
+      "confirm_rejected": "未確認"
+    }
+  },
+  "budget": {
+    "title": "今日語音預算",
+    "usage": "${{used}} / ${{limit}}",
+    "warning": "即將達到今日上限",
+    "reached": "已達到今日上限"
+  },
+  "notice": {
+    "disabled": "語音已關閉。請在語音設定中開啟。",
+    "audioUnavailable": "此瀏覽器無法使用音訊。",
+    "micDenied": "麥克風存取權遭拒。",
+    "micLost": "麥克風已中斷連線。",
+    "armFailed": "無法啟動語音。",
+    "offline": "未連線到伺服器。請稍後再試。",
+    "busy": "Jarvis 已在你的另一台裝置上回應。",
+    "callFailed": "無法開始通話。",
+    "networkLost": "網路已中斷 — 恢復連線後 Jarvis 會繼續。",
+    "budget": "今日語音預算已用完。",
+    "clipFailed": "無法播放朗讀音訊。請在螢幕上閱讀草稿。",
+    "cannotConfirm": "此草稿目前還無法透過點按確認。",
+    "server": "語音錯誤：{{message}}",
+    "unauthorized": "登入階段已過期，請重新登入。",
+    "forbidden": "此工作階段不允許使用語音。",
+    "unavailable": "語音暫時無法使用。",
+    "network": "網路錯誤，請再試一次。",
+    "callIdle": "靜默 3 分鐘後通話已結束。Jarvis 仍處於待命狀態。",
+    "callHardCap": "通話已達 55 分鐘上限。點按「說話」開始新的通話。",
+    "callDropped": "通話已中斷。點按「說話」重試。",
+    "noProvider": "你的帳戶尚未設定語音服務提供者。",
+    "rateLimited": "語音請求過多。請稍候再試。"
+  },
+  "settings": {
+    "title": "語音設定",
+    "enabled": "語音模式",
+    "enabledHint": "預設為關閉。關閉時無法開始通話，已就緒的裝置也會停止。",
+    "engine": "引擎",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "即將推出",
+    "wakeWord": "喚醒詞「Hey Jarvis」",
+    "wakeWordHint": "僅在此裝置上執行。關閉時請點一下「說話」開始。",
+    "carMode": "車用模式",
+    "carModeHint": "使用較小的模型與遠場降噪，回答前會等候較久。",
+    "budget": "每日預算",
+    "shortcut": "鍵盤快捷鍵",
+    "shortcutRecord": "請按下組合鍵",
+    "shortcutReset": "重設",
+    "loadFailed": "無法載入語音設定。",
+    "saveFailed": "無法儲存此設定。",
+    "privacy": "通話開始前，音訊只會保留在此裝置上，且絕不會儲存。"
+  },
+  "slash": {
+    "description": "與 Jarvis 討論這段對話"
+  },
+  "composer": {
+    "tooltip": "這段對話的語音模式"
+  }
+}

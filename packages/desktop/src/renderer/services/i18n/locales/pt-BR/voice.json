@@ -1,0 +1,174 @@
+{
+  "orb": {
+    "tooltip": "Modo de voz ({{shortcut}})",
+    "state": {
+      "off": "Modo de voz desativado",
+      "arming": "Preparando…",
+      "armed": "Pronto",
+      "connecting": "Conectando…",
+      "listening": "Ouvindo",
+      "thinking": "Pensando",
+      "speaking": "Falando",
+      "offline": "Offline — reconectando",
+      "frozen": "Pausado em segundo plano"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "Fechar painel de voz"
+  },
+  "actions": {
+    "arm": "Ativar voz",
+    "disarm": "Parar voz",
+    "talk": "Falar",
+    "hangUp": "Desligar",
+    "mute": "Silenciar microfone",
+    "unmute": "Reativar microfone",
+    "settings": "Configurações de voz",
+    "back": "Voltar"
+  },
+  "status": {
+    "wakeWordLoading": "Carregando a palavra de ativação…",
+    "wakeWordReady": "Diga “Hey Jarvis” ou toque em Falar",
+    "wakeWordUnavailable": "Palavra de ativação indisponível — toque em Falar",
+    "wakeWordOff": "Palavra de ativação desativada — toque em Falar",
+    "screenMaySleep": "A tela pode entrar em repouso e pausar o Jarvis",
+    "systemPaused": "Áudio pausado pelo sistema",
+    "readback": "Lendo o rascunho em voz alta…",
+    "muted": "Microfone silenciado",
+    "awaitingConfirm": "Aguardando sua confirmação",
+    "awaitingChoice": "Aguardando você escolher o destino",
+    "holding": "Enviando em breve — você ainda pode cancelar",
+    "asking": "Um agente fez uma pergunta — responda agora; o Jarvis desliga após sua resposta"
+  },
+  "captions": {
+    "title": "Legendas ao vivo",
+    "empty": "As legendas aparecem aqui enquanto você fala.",
+    "role": {
+      "user": "Você",
+      "assistant": "Jarvis",
+      "agent": "Agente"
+    }
+  },
+  "draft": {
+    "title": "Rascunho",
+    "to": "Para",
+    "noTarget": "Destino ainda não identificado",
+    "send": "Enviar",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "editHint": "Diga “change it to …” e o Jarvis lê a nova versão em voz alta.",
+    "holding": "Enviando em {{seconds}} s — diga “cancel” ou toque em Cancelar",
+    "holdFrozen": "Pausado enquanto você fala — diga “cancel” ou toque em Cancelar",
+    "diffLabel": "Mudanças em relação ao que você disse",
+    "transform": {
+      "filler": "vícios de linguagem removidos",
+      "reference": "nome identificado",
+      "reorder": "reordenado"
+    },
+    "delivery": {
+      "new_turn": "Inicia um novo turno",
+      "steer": "Direciona o turno em andamento",
+      "queue_busy": "Na fila até o turno atual terminar",
+      "queue_approval": "Aguarda uma aprovação pendente",
+      "new_conversation": "Cria uma nova conversa"
+    },
+    "state": {
+      "drafted": "Diga “send” ou toque em Enviar",
+      "ambiguous": "Qual deles? Diga o nome ou toque em Cancelar",
+      "pending_transcript": "Conferindo o que você disse…",
+      "confirmed": "Confirmado",
+      "committing": "Aguardando antes de enviar",
+      "sending": "Enviando…",
+      "queued": "Na fila",
+      "sent": "Enviado",
+      "failed": "Não enviado — falhou",
+      "saved_not_started": "Salvo, mas não iniciado — abra a conversa para iniciá-lo",
+      "cancelled": "Cancelado",
+      "expired": "Expirado",
+      "interrupted": "Interrompido — confirme novamente",
+      "superseded": "Substituído por uma nova versão",
+      "draftedTapOnly": "Toque em Enviar para confirmar"
+    },
+    "chooseTarget": "Qual?",
+    "options": "Destinos possíveis",
+    "openTarget": "Abrir conversa",
+    "editNeedsCall": "As alterações são ditas durante a chamada que criou o rascunho"
+  },
+  "followUps": {
+    "title": "Retornos recentes",
+    "open": "Abrir conversa",
+    "status": {
+      "finished": "Concluído",
+      "failed": "Falhou",
+      "needs_approval": "Precisa da sua aprovação",
+      "says": "Diz",
+      "asks": "Pergunta",
+      "sent": "Enviado",
+      "queued": "Na fila",
+      "saved_not_started": "Não iniciado",
+      "expired": "Expirado",
+      "interrupted": "Interrompido",
+      "confirm_rejected": "Não confirmado"
+    }
+  },
+  "budget": {
+    "title": "Orçamento de voz de hoje",
+    "usage": "${{used}} de ${{limit}}",
+    "warning": "Quase no limite de hoje",
+    "reached": "O limite de hoje foi atingido"
+  },
+  "notice": {
+    "disabled": "A voz está desativada. Ative-a nas Configurações de voz.",
+    "audioUnavailable": "Áudio não disponível neste navegador.",
+    "micDenied": "O acesso ao microfone foi negado.",
+    "micLost": "O microfone foi desconectado.",
+    "armFailed": "Não foi possível iniciar a voz.",
+    "offline": "Sem conexão com o servidor. Tente novamente em instantes.",
+    "busy": "O Jarvis respondeu no seu outro dispositivo.",
+    "callFailed": "Não foi possível iniciar a chamada.",
+    "networkLost": "Rede perdida — o Jarvis retoma quando você estiver online novamente.",
+    "budget": "O orçamento de voz de hoje acabou.",
+    "clipFailed": "Não foi possível reproduzir a leitura. Leia o rascunho na tela.",
+    "cannotConfirm": "Este rascunho ainda não pode ser confirmado por toque.",
+    "server": "Erro de voz: {{message}}",
+    "unauthorized": "Sua sessão expirou. Faça login novamente.",
+    "forbidden": "A voz não é permitida nesta sessão.",
+    "unavailable": "A voz está temporariamente indisponível.",
+    "network": "Erro de rede. Tente novamente.",
+    "callIdle": "A chamada terminou após 3 minutos de silêncio. O Jarvis continua ativo.",
+    "callHardCap": "A chamada atingiu o limite de 55 minutos. Toque em Falar para iniciar outra.",
+    "callDropped": "A chamada caiu. Toque em Falar para tentar de novo.",
+    "noProvider": "Ainda não há um provedor de voz configurado para sua conta.",
+    "rateLimited": "Muitas solicitações de voz. Aguarde um momento e tente de novo."
+  },
+  "settings": {
+    "title": "Configurações de voz",
+    "enabled": "Modo de voz",
+    "enabledHint": "Desativado por padrão. Quando desativado, nenhuma chamada pode começar e os dispositivos prontos param.",
+    "engine": "Mecanismo",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "disponível em breve",
+    "wakeWord": "Palavra de ativação “Hey Jarvis”",
+    "wakeWordHint": "Funciona apenas neste dispositivo. Quando desativada, toque em Falar para começar.",
+    "carMode": "Modo carro",
+    "carModeHint": "Modelo menor, redução de ruído de campo distante, espera mais antes de responder.",
+    "budget": "Orçamento diário",
+    "shortcut": "Atalho de teclado",
+    "shortcutRecord": "Pressione uma combinação de teclas",
+    "shortcutReset": "Redefinir",
+    "loadFailed": "Não foi possível carregar as configurações de voz.",
+    "saveFailed": "Não foi possível salvar a configuração.",
+    "privacy": "O áudio fica neste dispositivo até uma chamada começar e nunca é armazenado."
+  },
+  "slash": {
+    "description": "Falar com o Jarvis sobre esta conversa"
+  },
+  "composer": {
+    "tooltip": "Modo de voz para esta conversa"
+  }
+}

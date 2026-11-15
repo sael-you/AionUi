@@ -238,3 +238,6 @@ graphify-out/
 .analysis/
 temp/
 .playwright-mcp/
+
+# Voice mode wake-word runtime + models (fetched by scripts/fetch-voice-assets.js; models are CC BY-NC-SA)
+public/voice/
