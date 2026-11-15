@@ -115,12 +115,25 @@ const renderAuthProvider = async (children?: React.ReactNode) => {
 };
 
 describe('reading the CSRF cookie', () => {
-  it('over HTTPS reads only the __Host- cookie, over HTTP only the legacy one', () => {
+  it('over HTTPS reads only the __Host- cookie', () => {
     const both = `a=1; aionui-csrf-token=${tok('1')}; __Host-aionui-csrf-token=${tok('2')}`;
     expect(readCsrfCookie(both, 'https:')).toBe(tok('2'));
-    expect(readCsrfCookie(both, 'http:')).toBe(tok('1'));
     // A plain-named cookie (settable by a sibling subdomain) is ignored over HTTPS.
     expect(readCsrfCookie(`aionui-csrf-token=${tok('1')}`, 'https:')).toBe('');
+    expect(readCsrfCookie(`__Host-aionui-csrf-token=${tok('A')}; aionui-csrf-token=${tok('1')}`, 'https:')).toBe('');
+  });
+
+  it('over HTTP reads the __Host- cookie first, then the legacy one', () => {
+    const both = `a=1; aionui-csrf-token=${tok('1')}; __Host-aionui-csrf-token=${tok('2')}`;
+    expect(readCsrfCookie(both, 'http:')).toBe(tok('2'));
+    // Webui loopback staging (AIONUI_HTTPS=true behind http://127.0.0.1) sets only the __Host- name.
+    expect(readCsrfCookie(`__Host-aionui-csrf-token=${tok('3')}`, 'http:')).toBe(tok('3'));
+    expect(readCsrfCookie(`aionui-csrf-token=${tok('1')}`, 'http:')).toBe(tok('1'));
+    // A malformed __Host- cookie falls back to a well-formed legacy one.
+    expect(readCsrfCookie(`__Host-aionui-csrf-token=${tok('A')}; aionui-csrf-token=${tok('1')}`, 'http:')).toBe(
+      tok('1')
+    );
+    expect(readCsrfCookie(`__Host-aionui-csrf-token=${tok('g')}`, 'http:')).toBe('');
     expect(readCsrfCookie('other=1', 'http:')).toBe('');
   });
 

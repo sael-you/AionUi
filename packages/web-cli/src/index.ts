@@ -1,4 +1,4 @@
-import { resolveBackendIdentity, startWebHost, startStaticServer } from '@aionui/web-host';
+import { isExplicitLocalIdentity, resolveBackendIdentity, startWebHost, startStaticServer } from '@aionui/web-host';
 import type { WebHostHandle, StaticServerHandle } from '@aionui/web-host';
 import { setTimeout as delay } from 'node:timers/promises';
 import fs from 'node:fs';
@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openBrowserUrl, shouldAutoOpenBrowser } from './browser.js';
 import { ensureAdminPassword, WEBUI_PASSWORD_PROCEDURE } from './ensureAdminPassword.js';
-import { passwordToolsIdentity } from './passwordGuard.js';
+import { passwordToolsIdentity, startPasswordPolicy } from './passwordGuard.js';
 
 // tarball layout:
 //   aionui-web/
@@ -197,9 +197,12 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
     console.log('');
     console.log('Press Ctrl+C to stop.');
   } else {
-    // Read before the start rewrites the marker: a data dir last served in WebUI
-    // identity is never seeded, whatever this shell's environment says (card C11).
-    const seedingIdentity = passwordToolsIdentity(dataDir);
+    // The only place the identity comes from the environment (card C11).
+    const identity = resolveBackendIdentity();
+    // Read before the start rewrites the marker: messages follow this start's
+    // identity, but a data dir last served in WebUI identity is never seeded,
+    // whatever this shell's environment says (card C11).
+    const passwordPolicy = startPasswordPolicy(identity, dataDir);
     const handle = await startWebHost({
       app: {
         version,
@@ -210,8 +213,10 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
       staticDir,
       port,
       allowRemote,
-      // The only place the identity comes from the environment (card C11).
-      identity: resolveBackendIdentity(),
+      identity,
+      // Only an explicit AIONUI_BACKEND_IDENTITY=local (the production launcher
+      // after a rollback) may replace a `webui` marker with `local`.
+      allowIdentityRollback: isExplicitLocalIdentity(),
       dataDir,
       logDir,
       dirs: {
@@ -236,7 +241,12 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
     // backend and print plaintext credentials. Failure must not abort startup —
     // the user can always fall back to running resetpass manually.
     await ensureAdminPassword(
-      { backendPort: handle.backendPort, resetCommand: RESET_COMMAND, identity: seedingIdentity },
+      {
+        backendPort: handle.backendPort,
+        resetCommand: RESET_COMMAND,
+        identity: passwordPolicy.identity,
+        seedingAllowed: passwordPolicy.seedingAllowed,
+      },
       {
         fetch: (...args) => fetch(...args),
         log: (msg) => console.log(msg),

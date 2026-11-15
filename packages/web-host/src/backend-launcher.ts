@@ -9,7 +9,7 @@
  */
 
 import { type ChildProcess, spawn } from 'node:child_process';
-import { chmodSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { connect, createServer, type Socket } from 'node:net';
 import { cleanupRegisteredAgentProcesses } from './agent-process-registry.js';
@@ -100,6 +100,8 @@ export type BackendLaunchOptions = {
   dirs?: BackendDirConfig;
   /** Caller identity choice (card C11); the launcher never reads it from the env. Default `local`. */
   identity?: BackendIdentity;
+  /** A `local` start may replace a `webui` identity marker (deliberate rollback, see {@link recordIdentityMarker}). */
+  allowIdentityRollback?: boolean;
 };
 
 export type BackendHandle = {
@@ -212,6 +214,16 @@ export function resolveBackendIdentity(env: NodeJS.ProcessEnv = process.env): Ba
 }
 
 /**
+ * Whether `AIONUI_BACKEND_IDENTITY` says `local` explicitly (trimmed). The
+ * production launcher (the Token Pool's env.sh) always exports the word it read
+ * from its identity file, so only its starts carry it; an unset variable (a shell,
+ * a dev script, an agent: aioncore strips it from its children) does not count.
+ */
+export function isExplicitLocalIdentity(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.AIONUI_BACKEND_IDENTITY?.trim() === 'local';
+}
+
+/**
  * Marker the launcher writes in the data dir at every start, so tools that act
  * on the same data dir later (password reset, first-start seeding) know how the
  * backend last ran — whatever their own environment says.
@@ -221,9 +233,44 @@ export const IDENTITY_MARKER_FILE = 'identity-mode';
 export function writeIdentityMarker(dataDir: string, identity: BackendIdentity): void {
   const target = join(dataDir, IDENTITY_MARKER_FILE);
   const temp = `${target}.${process.pid}.tmp`;
-  writeFileSync(temp, `${identity}\n`, { mode: 0o600 });
-  chmodSync(temp, 0o600);
-  renameSync(temp, target);
+  try {
+    writeFileSync(temp, `${identity}\n`, { mode: 0o600 });
+    chmodSync(temp, 0o600);
+    renameSync(temp, target);
+  } catch (error) {
+    // Never leave a half-written temp file behind in the data dir.
+    try {
+      rmSync(temp, { force: true });
+    } catch {
+      // The original error is the one worth reporting.
+    }
+    throw error;
+  }
+}
+
+/**
+ * Record this start's identity in the data dir, except that a `webui` marker
+ * stays until a deliberate rollback (switch prerequisite of card C11).
+ *
+ * The marker is what keeps the local password tools (`resetpass`, first-start
+ * seeding) away from a data dir served in WebUI identity. A stray local start on
+ * the same data dir (`aionui-web` from a shell without the variable, `bun run
+ * webui`, the desktop app) must not overwrite `webui` with `local`, or the next
+ * `resetpass` would reset a password the gateway's internal.json depends on.
+ *
+ * Rule: a `local` start replaces a `webui` marker only when the caller passes
+ * `allowRollback`, which only the web CLI's `start` does, and only when
+ * AIONUI_BACKEND_IDENTITY is explicitly `local` ({@link isExplicitLocalIdentity}):
+ * that is the production launcher after the operator wrote `local` into its
+ * identity file. Every other case writes as before (`webui` always; `local`
+ * over `local` or no marker).
+ *
+ * @returns `false` when the `webui` marker was kept.
+ */
+export function recordIdentityMarker(dataDir: string, identity: BackendIdentity, allowRollback = false): boolean {
+  if (identity === 'local' && !allowRollback && readIdentityMarker(dataDir) === 'webui') return false;
+  writeIdentityMarker(dataDir, identity);
+  return true;
 }
 
 /** The identity recorded in the data dir, or `null` when there is no (valid) marker. */
@@ -583,7 +630,9 @@ export class BackendLifecycleManager {
     private readonly appMeta: AppMetadata,
     private readonly resolveBackend: BackendBinaryResolver,
     /** Caller identity choice (card C11). Electron passes `local`; never read from the env here. */
-    private readonly identity: BackendIdentity = 'local'
+    private readonly identity: BackendIdentity = 'local',
+    /** Deliberate rollback: a `local` start may replace a `webui` marker ({@link recordIdentityMarker}). */
+    private readonly allowIdentityRollback = false
   ) {}
 
   get port(): number {
@@ -744,10 +793,15 @@ export class BackendLifecycleManager {
       throw makeStartupError('spawn', 'aioncore startup directory preparation failed', error);
     }
 
-    // Record how this data dir is run, for later tools on it (card C11). Never
-    // fatal: a read-only marker must not keep the app from starting.
+    // Record how this data dir is run, for later tools on it (card C11); a
+    // `webui` marker survives a stray local start. Never fatal: a read-only
+    // marker must not keep the app from starting.
     try {
-      writeIdentityMarker(dbPath, identity);
+      if (!recordIdentityMarker(dbPath, identity, this.allowIdentityRollback)) {
+        console.warn(
+          `[aioncore] ${dbPath} was served in WebUI identity: keeping its identity marker (local start without AIONUI_BACKEND_IDENTITY=local)`
+        );
+      }
     } catch (error) {
       console.warn(`[aioncore] could not record the identity marker in ${dbPath}: ${getErrorMessage(error)}`);
     }
@@ -1142,7 +1196,12 @@ export class BackendLifecycleManager {
  * directly to preserve current stop/port getter semantics).
  */
 export async function startBackend(opts: BackendLaunchOptions): Promise<BackendHandle> {
-  const manager = new BackendLifecycleManager(opts.app, opts.resolveBackend, opts.identity ?? 'local');
+  const manager = new BackendLifecycleManager(
+    opts.app,
+    opts.resolveBackend,
+    opts.identity ?? 'local',
+    opts.allowIdentityRollback === true
+  );
   const dataDir = opts.dataDir ?? '';
   if (!dataDir) {
     throw new Error('startBackend: dataDir is required');

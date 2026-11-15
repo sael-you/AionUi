@@ -15,8 +15,10 @@
  *
  * Rules every write path follows:
  * - read the cookie per request: over HTTPS only the `__Host-` name (a plain
- *   name there could be planted by a sibling subdomain), over HTTP only the
- *   legacy one; anything but AionCore's 64 lowercase hex digits counts as none;
+ *   name there could be planted by a sibling subdomain); over HTTP the `__Host-`
+ *   name first (an AionCore started with `AIONUI_HTTPS=true` behind a plain-HTTP
+ *   loopback, e.g. webui staging, sets only that one), then the legacy one;
+ *   anything but AionCore's 64 lowercase hex digits counts as none;
  * - when it is missing, wait for ONE `GET /api/auth/user` per page load — the
  *   AuthProvider's own check, registered while it renders
  *   ({@link expectAuthUserRequest}) so child effects that write first wait for
@@ -61,15 +63,8 @@ export const isUnsafeMethod = (method: string): boolean => UNSAFE_METHODS.has(me
 
 const currentProtocol = (): string => (typeof location === 'undefined' ? 'http:' : location.protocol);
 
-/**
- * The CSRF cookie value, or `''`: the `__Host-` cookie over HTTPS, the legacy one
- * otherwise, and only a well-formed token.
- */
-export function readCsrfCookie(
-  cookies: string = typeof document === 'undefined' ? '' : document.cookie,
-  protocol: string = currentProtocol()
-): string {
-  const name = protocol === 'https:' ? CSRF_COOKIE_NAMES[0] : CSRF_COOKIE_NAMES[1];
+/** The first cookie named `name`, if it holds a well-formed token; else `''`. */
+function readTokenCookie(cookies: string, name: string): string {
   for (const part of cookies.split(';')) {
     const index = part.indexOf('=');
     if (index < 0 || part.slice(0, index).trim() !== name) continue;
@@ -80,6 +75,22 @@ export function readCsrfCookie(
       return '';
     }
     return CSRF_TOKEN_PATTERN.test(value) ? value : '';
+  }
+  return '';
+}
+
+/**
+ * The CSRF cookie value, or `''`: over HTTPS only the `__Host-` cookie; over HTTP
+ * the `__Host-` cookie first, then the legacy one. Only a well-formed token counts.
+ */
+export function readCsrfCookie(
+  cookies: string = typeof document === 'undefined' ? '' : document.cookie,
+  protocol: string = currentProtocol()
+): string {
+  const names = protocol === 'https:' ? CSRF_COOKIE_NAMES.slice(0, 1) : CSRF_COOKIE_NAMES;
+  for (const name of names) {
+    const value = readTokenCookie(cookies, name);
+    if (value) return value;
   }
   return '';
 }
