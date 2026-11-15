@@ -138,7 +138,9 @@
     "network": "Error de red. Inténtalo de nuevo.",
     "callIdle": "La llamada terminó tras 3 minutos de silencio. Jarvis sigue activo.",
     "callHardCap": "La llamada llegó al límite de 55 minutos. Toca Hablar para iniciar otra.",
-    "callDropped": "La llamada se cortó. Toca Hablar para intentarlo de nuevo."
+    "callDropped": "La llamada se cortó. Toca Hablar para intentarlo de nuevo.",
+    "noProvider": "Aún no hay un proveedor de voz configurado para tu cuenta.",
+    "rateLimited": "Demasiadas solicitudes de voz. Espera un momento e inténtalo de nuevo."
   },
   "settings": {
     "title": "Configuración de voz",

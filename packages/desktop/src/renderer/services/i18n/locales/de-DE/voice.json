@@ -138,7 +138,9 @@
     "network": "Netzwerkfehler. Versuche es erneut.",
     "callIdle": "Das Gespräch endete nach 3 Minuten Stille. Jarvis bleibt bereit.",
     "callHardCap": "Das Gespräch hat das 55-Minuten-Limit erreicht. Tippe auf Sprechen für ein neues.",
-    "callDropped": "Das Gespräch ist abgebrochen. Tippe auf Sprechen, um es erneut zu versuchen."
+    "callDropped": "Das Gespräch ist abgebrochen. Tippe auf Sprechen, um es erneut zu versuchen.",
+    "noProvider": "Für dein Konto ist noch kein Sprachanbieter eingerichtet.",
+    "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut."
   },
   "settings": {
     "title": "Spracheinstellungen",

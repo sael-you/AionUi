@@ -138,7 +138,9 @@
     "network": "Ağ hatası. Tekrar deneyin.",
     "callIdle": "Arama 3 dakikalık sessizlikten sonra sona erdi. Jarvis hâlâ hazır.",
     "callHardCap": "Arama 55 dakika sınırına ulaştı. Yenisi için Konuş’a dokunun.",
-    "callDropped": "Arama düştü. Tekrar denemek için Konuş’a dokunun."
+    "callDropped": "Arama düştü. Tekrar denemek için Konuş’a dokunun.",
+    "noProvider": "Hesabınız için henüz bir ses sağlayıcısı ayarlanmadı.",
+    "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin."
   },
   "settings": {
     "title": "Ses ayarları",

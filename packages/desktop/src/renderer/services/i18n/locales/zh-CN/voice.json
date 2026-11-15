@@ -138,7 +138,9 @@
     "network": "网络错误，请重试。",
     "callIdle": "静默 3 分钟后通话已结束。Jarvis 仍处于待命状态。",
     "callHardCap": "通话已达 55 分钟上限。点按“说话”开始新的通话。",
-    "callDropped": "通话已中断。点按“说话”重试。"
+    "callDropped": "通话已中断。点按“说话”重试。",
+    "noProvider": "你的账户尚未配置语音服务提供方。",
+    "rateLimited": "语音请求过多。请稍候再试。"
   },
   "settings": {
     "title": "语音设置",

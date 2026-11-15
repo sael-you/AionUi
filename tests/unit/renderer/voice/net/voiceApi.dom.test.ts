@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { BackendHttpError } from '@/common/adapter/httpBridge';
 import {
   CSRF_HEADER_NAME,
   readCsrfCookie,
@@ -113,5 +114,16 @@ describe('voiceErrorCode', () => {
   it('maps errors to UI codes', () => {
     expect(voiceErrorCode(new VoiceBusyError())).toBe('busy');
     expect(voiceErrorCode(new TypeError('Failed to fetch'))).toBe('network');
+  });
+
+  it('maps the POST /api/voice/sessions refusals of PROTOCOL.md', () => {
+    const err = (status: number, code: string) =>
+      new BackendHttpError({ method: 'POST', path: '/api/voice/sessions', status, body: { success: false, code } });
+    expect(voiceErrorCode(err(403, 'VOICE_DISABLED'))).toBe('disabled');
+    expect(voiceErrorCode(err(412, 'VOICE_NO_PROVIDER'))).toBe('noProvider');
+    expect(voiceErrorCode(err(429, 'VOICE_BUDGET_REACHED'))).toBe('budget');
+    expect(voiceErrorCode(err(429, 'RATE_LIMITED'))).toBe('rateLimited');
+    expect(voiceErrorCode(err(502, 'BAD_GATEWAY'))).toBe('callFailed');
+    expect(voiceErrorCode(err(401, 'UNAUTHORIZED'))).toBe('unauthorized');
   });
 });

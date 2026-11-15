@@ -55,6 +55,9 @@ export function voiceErrorCode(error: unknown): string {
     const code = error.code || error.backendMessage;
     if (/disabled|kill/i.test(code)) return 'disabled';
     if (/budget/i.test(code) || error.status === 402) return 'budget';
+    if (error.status === 412 || /no_provider/i.test(code)) return 'noProvider';
+    if (error.status === 429) return 'rateLimited';
+    if (error.status === 502) return 'callFailed';
     if (error.status === 401) return 'unauthorized';
     if (error.status === 403) return code ? 'forbidden' : 'disabled';
     if (error.status === 503) return 'unavailable';

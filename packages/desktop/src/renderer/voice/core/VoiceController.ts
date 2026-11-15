@@ -624,6 +624,10 @@ export class VoiceController {
           this.store.update({ notice: { code: 'unauthorized' }, overlayOpen: true });
           return;
         }
+        if (frame.code === 'RATE_LIMITED') {
+          this.store.update({ notice: { code: 'rateLimited' } });
+          return;
+        }
         this.store.update({ notice: { code: 'server', message: frame.message } });
         return;
       default:

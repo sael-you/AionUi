@@ -138,7 +138,9 @@
     "network": "網路錯誤，請再試一次。",
     "callIdle": "靜默 3 分鐘後通話已結束。Jarvis 仍處於待命狀態。",
     "callHardCap": "通話已達 55 分鐘上限。點按「說話」開始新的通話。",
-    "callDropped": "通話已中斷。點按「說話」重試。"
+    "callDropped": "通話已中斷。點按「說話」重試。",
+    "noProvider": "你的帳戶尚未設定語音服務提供者。",
+    "rateLimited": "語音請求過多。請稍候再試。"
   },
   "settings": {
     "title": "語音設定",

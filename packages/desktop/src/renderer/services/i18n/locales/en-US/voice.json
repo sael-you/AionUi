@@ -138,7 +138,9 @@
     "network": "Network error. Try again.",
     "callIdle": "The call ended after 3 minutes of silence. Jarvis is still armed.",
     "callHardCap": "The call reached its 55-minute limit. Tap Talk to start a new one.",
-    "callDropped": "The call dropped. Tap Talk to try again."
+    "callDropped": "The call dropped. Tap Talk to try again.",
+    "noProvider": "No voice provider is set up for your account yet.",
+    "rateLimited": "Too many voice requests. Wait a moment and try again."
   },
   "settings": {
     "title": "Voice settings",
