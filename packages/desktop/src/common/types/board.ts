@@ -321,7 +321,8 @@ export type CreateBoardCardRequest = {
   tier?: BoardTier | null;
   labels?: string[];
   skills?: string[];
-  column_key?: string;
+  /** Target column key (the server's field is `column`, not `column_key`; unknown fields are rejected). */
+  column?: string;
 };
 
 /** `PATCH /api/board/cards/{id}` body: changed fields + the `version` the edit was based on. */

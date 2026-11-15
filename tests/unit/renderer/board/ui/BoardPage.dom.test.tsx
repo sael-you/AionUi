@@ -171,7 +171,7 @@ describe('board columns', () => {
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', keyCode: 13, which: 13 });
 
     await waitFor(() =>
-      expect(bridge.createCard).toHaveBeenCalledWith({ project_id: 'p1', title: 'Write docs', column_key: 'triage' })
+      expect(bridge.createCard).toHaveBeenCalledWith({ project_id: 'p1', title: 'Write docs', column: 'triage' })
     );
     expect(await within(region(/^Triage/)).findByText('Card 10')).toBeInTheDocument();
   });

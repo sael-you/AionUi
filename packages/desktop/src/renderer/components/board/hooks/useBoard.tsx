@@ -370,7 +370,7 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
         const created = await ipcBridge.board.createCard.invoke({
           project_id: projectId,
           title,
-          column_key: columnKey,
+          column: columnKey,
         });
         await update((snapshot) => upsertCard(snapshot, created, includeArchived));
         const text = t('board.quickAdd.created', { ref: cardRef(created.number) });
