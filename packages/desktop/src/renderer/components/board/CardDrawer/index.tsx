@@ -12,7 +12,7 @@
  * from (the card) on close.
  */
 
-import { Button, Drawer, Modal, Skeleton, Tag, type DrawerProps } from '@arco-design/web-react';
+import { Button, Drawer, Modal, Skeleton, Tag } from '@arco-design/web-react';
 import { Close, Inbox, Lightning, Lock, Undo, Unlock, UserToUserTransmission } from '@icon-park/react';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -276,7 +276,7 @@ export const CardDrawer: React.FC<{ board: BoardController; cardId: string | nul
       // (not undefined) hides it: undefined would render Arco's default OK/Cancel.
       footer={controller.detail && !board.readOnly ? <DrawerActions board={board} controller={controller} /> : null}
       // The dialog semantics sit on the drawer wrapper so they cover the content and the action bar.
-      {...(dialogAttributes as Partial<DrawerProps>)}
+      {...(dialogAttributes as React.AriaAttributes & { role: string })}
       closable={false}
       focusLock
       autoFocus

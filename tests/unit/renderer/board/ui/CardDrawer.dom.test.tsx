@@ -6,8 +6,9 @@
 
 /** Card drawer: fields, sanitised markdown, edits with versions, comments, activity, block/archive, focus. */
 
-import { Message, Modal, Notification } from '@arco-design/web-react';
-import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { Button, Message, Modal, Notification } from '@arco-design/web-react';
+import { Lock } from '@icon-park/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -22,6 +23,7 @@ vi.mock('@/renderer/hooks/context/AuthContext', () => ({
   useOptionalAuth: () => ({ user: { id: 'u1', username: 'me' } }),
 }));
 
+import { iconLabelButton } from '@/renderer/components/board/utils/boardStyles';
 import { BoardPage } from '@/renderer/pages/board';
 
 import {
@@ -275,6 +277,27 @@ describe('drawer layout', () => {
       expect(button.className).toContain('gap-8px');
       expect(button.className).toContain('!inline-flex');
     }
+  });
+
+  it('puts the dialog semantics on the drawer wrapper (Arco passes them through)', async () => {
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    expect(dialog).toHaveClass('arco-drawer-wrapper');
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(dialog.querySelector('.arco-drawer-footer')).not.toBeNull();
+  });
+
+  it('does not double the icon gap while a button is loading', () => {
+    const { container } = render(
+      <Button loading className={iconLabelButton('small')} icon={<Lock theme='outline' size='14' />}>
+        Unblock
+      </Button>
+    );
+    const button = container.querySelector('button')!;
+    // Loading swaps in Arco's bare-svg spinner, which Arco spaces with `> svg + span` margins.
+    expect(button.querySelector(':scope > svg + span')).not.toBeNull();
+    expect(button.className).toContain('[&>svg+span]:!m-0');
+    expect(button.className).toContain('gap-6px');
   });
 
   it('shows no action bar on a read-only board', async () => {

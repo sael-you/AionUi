@@ -2,6 +2,7 @@
 // (index.html) for failed script requests, causing "module script MIME text/html"
 // errors when the server was down or served a different asset hash. The v2
 // activate handler deletes v1, flushing any poisoned cached entries.
+// Bump to flush caches and force open tabs to reload on activation.
 const CACHE_NAME = 'aionui-webui-v2';
 const NON_CACHEABLE_PATHS = new Set(['/qr-login']);
 const OFFLINE_PAGE_URL = new URL('./index.html', self.location.href).toString();
@@ -34,9 +35,9 @@ self.addEventListener('activate', (event) => {
       return Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
         .then(() => self.clients.claim())
         .then(() => {
-          // After an upgrade, tell open WebUI tabs that ran under the previous SW
-          // to reload so they pick up the fixed fetch handler immediately; without
-          // this an open tab keeps the old v1 SW until the user refreshes.
+          // After an upgrade, reload open WebUI tabs. claim() above already moves
+          // them under this worker; the reload discards pages that may have loaded
+          // broken assets through the previous worker's (possibly poisoned) cache.
           // Not on a first install: no tab ran under an older worker, and reloading
           // the page that just registered this one would cancel its in-flight
           // requests (the first visit's /api/auth/user failed with "Failed to
