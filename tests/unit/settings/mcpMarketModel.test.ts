@@ -194,7 +194,9 @@ describe('rules explained client-side', () => {
     expect(
       templateUpdate({ template_update_available: true, template_version: '0.1.0', template_current_version: '0.2.0' })
     ).toEqual({ from: '0.1.0', to: '0.2.0' });
-    expect(templateUpdate({ template_update_available: false, template_version: '0.1.0', template_current_version: '0.2.0' })).toBeNull();
+    expect(
+      templateUpdate({ template_update_available: false, template_version: '0.1.0', template_current_version: '0.2.0' })
+    ).toBeNull();
   });
 
   it('lists the secret keys a pending template adds', () => {
@@ -288,7 +290,9 @@ describe('describeMarketError', () => {
       [500, 'SOMETHING_NEW', 'mcp.market.errors.internal'],
     ];
     for (const [status, code, key] of cases) expect(describeMarketError(t, err(status, code))).toBe(key);
-    expect(describeMarketError(t, err(400, 'MCP_MARKET_INVALID', 'R3'))).toBe('mcp.market.errors.rejected|{"detail":"R3"}');
+    expect(describeMarketError(t, err(400, 'MCP_MARKET_INVALID', 'R3'))).toBe(
+      'mcp.market.errors.rejected|{"detail":"R3"}'
+    );
   });
 
   it('shows the server rule for a 400 and falls back to a generic message', () => {

@@ -288,7 +288,9 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
             {instance.description && <p className='m-0 text-13px text-t-secondary'>{instance.description}</p>}
             {isWrite && <Alert type='warning' content={t('mcp.market.instance.writeNote')} />}
             <TemplateUpdateBadge instance={instance} />
-            {!instance.template_in_catalogue && <Alert type='warning' content={t('mcp.market.template.notInCatalogue')} />}
+            {!instance.template_in_catalogue && (
+              <Alert type='warning' content={t('mcp.market.template.notInCatalogue')} />
+            )}
           </div>
 
           {refreshResult && (

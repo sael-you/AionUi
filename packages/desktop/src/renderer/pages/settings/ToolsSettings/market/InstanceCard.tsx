@@ -20,10 +20,7 @@ import type {
   McpMarketTemplate,
 } from '@/common/config/storage';
 import type { Assistant } from '@/common/types/agent/assistantTypes';
-import {
-  summarizeAttachments,
-  type MarketProject,
-} from '@/renderer/hooks/mcp/market/marketModel';
+import { summarizeAttachments, type MarketProject } from '@/renderer/hooks/mcp/market/marketModel';
 import { CliTag, MarketStatusTag, ScopeLabel, TemplateUpdateBadge, touchClass, useIsMobileLayout } from './shared';
 
 type InstanceCardProps = {

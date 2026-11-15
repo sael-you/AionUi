@@ -95,7 +95,9 @@ export const globalBlockReason = (instance: Pick<McpMarketInstance, 'name' | 'ti
 export const templateUpdate = (
   instance: Pick<McpMarketInstance, 'template_update_available' | 'template_version' | 'template_current_version'>
 ): { from?: string; to?: string } | null =>
-  instance.template_update_available ? { from: instance.template_version, to: instance.template_current_version } : null;
+  instance.template_update_available
+    ? { from: instance.template_version, to: instance.template_current_version }
+    : null;
 
 /**
  * Secret keys the catalogue's current template declares that the instance's
@@ -114,7 +116,12 @@ export const pendingTemplateSecretKeys = (
 export const missingSecretKeysOf = (error: unknown): string[] => {
   if (!isBackendHttpError(error) || error.code !== 'MCP_TEMPLATE_SECRET_MISSING') return [];
   const match = /needs secrets? (.+?) first/.exec(error.backendMessage);
-  return match ? match[1].split(',').map((k) => k.trim()).filter(Boolean) : [];
+  return match
+    ? match[1]
+        .split(',')
+        .map((k) => k.trim())
+        .filter(Boolean)
+    : [];
 };
 
 /** Plain env keys of a template, sorted. */
