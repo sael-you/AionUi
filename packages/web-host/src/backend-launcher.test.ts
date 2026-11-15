@@ -33,9 +33,11 @@ import { mkdirSync, statSync } from 'node:fs';
 import { connect, createServer } from 'node:net';
 import { cleanupRegisteredAgentProcesses } from './agent-process-registry.js';
 import {
+  BACKEND_IDENTITY_ENV_KEYS,
   buildSpawnArgs,
   buildSpawnEnv,
   findAvailablePort,
+  resolveBackendIdentity,
   BackendLifecycleManager,
   BackendStartupError,
 } from './backend-launcher.js';
@@ -468,6 +470,83 @@ describe('BackendLifecycleManager.start (success path)', () => {
       fetchSpy.mockRestore();
       infoSpy.mockRestore();
     }
+  });
+});
+
+describe('backend identity (card C11)', () => {
+  it('runs WebUI identity only for exactly AIONUI_BACKEND_IDENTITY=webui', () => {
+    expect(resolveBackendIdentity({ AIONUI_BACKEND_IDENTITY: 'webui' })).toBe('webui');
+    expect(resolveBackendIdentity({ AIONUI_BACKEND_IDENTITY: ' webui\n' })).toBe('webui');
+    expect(resolveBackendIdentity({})).toBe('local');
+    expect(resolveBackendIdentity({ AIONUI_BACKEND_IDENTITY: 'local' })).toBe('local');
+    expect(resolveBackendIdentity({ AIONUI_BACKEND_IDENTITY: 'WebUI' })).toBe('local');
+    expect(resolveBackendIdentity({ AIONUI_BACKEND_IDENTITY: 'aionpro' })).toBe('local');
+  });
+
+  it('passes --identity-mode webui instead of --local in WebUI identity', () => {
+    const args = buildSpawnArgs({
+      port: 0,
+      dbPath: '/db',
+      local: false,
+      identityMode: 'webui',
+      appVersion: '1',
+      isPackaged: true,
+    });
+    expect(args.slice(-2)).toEqual(['--identity-mode', 'webui']);
+    expect(args).not.toContain('--local');
+  });
+
+  const spawnWith = async (env: Record<string, string | undefined>) => {
+    const saved = Object.fromEntries(Object.keys(env).map((key) => [key, process.env[key]]));
+    Object.entries(env).forEach(([key, value]) => {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    });
+    const child = makeFakeChild();
+    vi.mocked(spawn).mockReturnValue(child as unknown as ChildProcess);
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('ok', { status: 200 }) as unknown as Response);
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    try {
+      const mgr = new BackendLifecycleManager(
+        APP_META_PACKAGED,
+        vi.fn(() => '/abs/aioncore')
+      );
+      const started = mgr.start('/db', '/log', { cacheDir: '/c', workDir: '/w', logDir: '/l' });
+      await Promise.resolve();
+      emitListening(child, 55555);
+      await started;
+      const call = vi.mocked(spawn).mock.calls[0];
+      return { args: call[1] as string[], env: (call[2] as { env: NodeJS.ProcessEnv }).env };
+    } finally {
+      fetchSpy.mockRestore();
+      infoSpy.mockRestore();
+      Object.entries(saved).forEach(([key, value]) => {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      });
+    }
+  };
+
+  it('keeps --local when the identity is not set (production today: zero change)', async () => {
+    const { args } = await spawnWith({ AIONUI_BACKEND_IDENTITY: undefined });
+    expect(args).toContain('--local');
+    expect(args).not.toContain('--identity-mode');
+  });
+
+  it('starts WebUI identity and passes the public origin, allowed origins and HTTPS through', async () => {
+    const { args, env } = await spawnWith({
+      AIONUI_BACKEND_IDENTITY: 'webui',
+      AIONUI_PUBLIC_ORIGIN: 'https://y.talkseeds.com',
+      AIONUI_ALLOWED_ORIGINS: 'https://y.talkseeds.com',
+      AIONUI_HTTPS: 'true',
+    });
+    expect(args).toEqual(expect.arrayContaining(['--identity-mode', 'webui']));
+    expect(args).not.toContain('--local');
+    for (const key of BACKEND_IDENTITY_ENV_KEYS) expect(env[key]).toBeDefined();
+    expect(env.AIONUI_PUBLIC_ORIGIN).toBe('https://y.talkseeds.com');
+    expect(env.AIONUI_HTTPS).toBe('true');
   });
 });
 

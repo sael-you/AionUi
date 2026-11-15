@@ -65,6 +65,8 @@ type SpawnConfig = {
   port: number;
   dbPath: string;
   local: boolean;
+  /** `webui` ⇒ `--identity-mode webui` (AionCore enforces sessions/CSRF itself) instead of `--local`. */
+  identityMode?: 'webui';
   parentPid?: number;
   logDir?: string;
   workDir?: string;
@@ -193,6 +195,26 @@ export class BackendStartupCancelledError extends Error {
   }
 }
 
+/**
+ * How AionCore identifies callers (card C11). `AIONUI_BACKEND_IDENTITY=webui`
+ * runs it in WebUI mode (it checks sessions, CSRF and origins itself); any other
+ * value — or none — keeps the `--local` mode used so far. Exact match only, so a
+ * typo can never switch the mode.
+ */
+export type BackendIdentity = 'local' | 'webui';
+
+export function resolveBackendIdentity(env: NodeJS.ProcessEnv = process.env): BackendIdentity {
+  return env.AIONUI_BACKEND_IDENTITY?.trim() === 'webui' ? 'webui' : 'local';
+}
+
+/**
+ * Settings AionCore reads in WebUI mode (allowed origins, the public origin used
+ * by the CSRF/Origin checks, Secure + `__Host-` cookies). They reach the backend
+ * through the inherited environment (`buildSpawnEnv`); listed here so the
+ * pass-through is explicit and tested.
+ */
+export const BACKEND_IDENTITY_ENV_KEYS = ['AIONUI_PUBLIC_ORIGIN', 'AIONUI_ALLOWED_ORIGINS', 'AIONUI_HTTPS'] as const;
+
 export function buildSpawnArgs(config: SpawnConfig): string[] {
   const logLevel = process.env.AIONUI_LOG_LEVEL || (config.isPackaged ? 'info' : 'debug');
   const args = [
@@ -210,7 +232,8 @@ export function buildSpawnArgs(config: SpawnConfig): string[] {
   if (!config.isPackaged && process.env.AIONUI_DUMP_PROMPTS === '1') args.push('--dump-prompts');
   if (config.logDir) args.push('--log-dir', config.logDir);
   if (config.workDir) args.push('--work-dir', config.workDir);
-  if (config.local) args.push('--local');
+  if (config.identityMode === 'webui') args.push('--identity-mode', 'webui');
+  else if (config.local) args.push('--local');
   if (config.recoverCorruptedDatabase) args.push('--recover-corrupted-database');
   return args;
 }
@@ -662,10 +685,12 @@ export class BackendLifecycleManager {
       );
     };
 
+    const identity = resolveBackendIdentity();
     const args = buildSpawnArgs({
       port: this._port,
       dbPath,
-      local: true,
+      local: identity === 'local',
+      ...(identity === 'webui' ? { identityMode: 'webui' as const } : {}),
       parentPid: process.pid,
       logDir,
       workDir: dirs?.workDir,
