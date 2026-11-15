@@ -135,7 +135,6 @@
       "delete": "Sil",
       "test": "Bağlantıyı test et",
       "refreshTemplate": "Şablonu güncelle",
-      "checkTemplate": "Şablon güncellemesini denetle",
       "save": "Kaydet",
       "cancel": "Vazgeç",
       "retry": "Yeniden dene"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "Şablon güncellemesi",
-      "updateBody": "Katalogda daha yeni bir şablon var ({{from}} → {{to}}).",
-      "refreshed": "Şablon {{version}} sürümüne güncellendi.",
+      "updateAvailable": "Güncelleme var",
+      "refreshed": "Şablon güncellendi ({{from}} → {{to}}).",
       "unchanged": "Şablon zaten güncel.",
       "added": "Yeni anahtarlar: {{keys}}.",
       "removed": "Kaldırılan anahtarlar: {{keys}}.",
-      "needsSecrets": "Gizli anahtar gerekli: {{keys}}"
+      "needsSecrets": "Gizli anahtar gerekli: {{keys}}",
+      "updateAvailableVersions": "Güncelleme var ({{from}} → {{to}})",
+      "notInCatalogue": "Bu şablon artık katalogda yok; MCP kayıtlı kopyasıyla çalışmaya devam eder.",
+      "pendingSecretsTitle": "Şablon güncellemesinin gerektirdiği gizli anahtarlar",
+      "pendingSecretsHint": "Güncellemeden önce bunları ayarlayın; o zamana kadar MCP mevcut şablonunda kalır."
     },
     "tools": {
       "allowTitle": "İzin verilen araçlar",
@@ -275,12 +277,18 @@
       "sessionRequired": "MCP pazarı değişiklikleri, oturum açılmış tarayıcı oturumunuzu gerektirir. Yeniden oturum açıp tekrar deneyin; ajanlar bu değişiklikleri yapamaz.",
       "csrf": "Oturumunuzun güvenlik denetimi başarısız oldu. Sayfayı yeniden yükleyip tekrar deneyin.",
       "catalogueUnavailable": "MCP şablon kataloğu şu anda kullanılamıyor.",
-      "templateSecretMissing": "Önce yeni şablonun gerektirdiği gizli anahtarı ayarlayın; MCP mevcut şablonunda kalır. {{detail}}",
+      "templateSecretMissing": "Önce {{keys}} ayarlayın: yeni şablon bunu gerektiriyor. MCP mevcut şablonunda kalır.",
       "notFound": "Bu MCP veya bağlantı artık mevcut değil. Liste yenilendi.",
       "alreadyAttached": "Bu MCP, o CLI için zaten oraya bağlı. {{detail}}",
       "nameTaken": "Bu ad zaten kullanılıyor. Başka bir ad seçin. {{detail}}",
       "conflict": "Bu, mevcut durumla çakışıyor. {{detail}}",
-      "rejected": "Sunucu bu değişikliği reddetti: {{detail}}"
+      "rejected": "Sunucu bu değişikliği reddetti: {{detail}}",
+      "templateSecretMissingUnknown": "Önce yeni şablonun gerektirdiği gizli anahtarları ayarlayın; MCP mevcut şablonunda kalır. {{detail}}",
+      "forbidden": "Bu değişikliğe buradan izin verilmiyor. Oturum açılmış tarayıcı oturumunuzu kullanın.",
+      "tooLarge": "İstek çok büyük.",
+      "rateLimited": "Çok fazla istek. Biraz bekleyip tekrar deneyin.",
+      "internal": "Sunucuda dahili bir hata oluştu. Tekrar deneyin; sürerse AionUi günlüklerine bakın.",
+      "upstream": "Sunucunun arkasındaki bir hizmet zamanında yanıt vermedi. Tekrar deneyin."
     }
   }
 }

@@ -135,7 +135,6 @@
       "delete": "Excluir",
       "test": "Testar conexão",
       "refreshTemplate": "Atualizar modelo",
-      "checkTemplate": "Verificar atualização do modelo",
       "save": "Salvar",
       "cancel": "Cancelar",
       "retry": "Tentar novamente"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "Atualização de modelo",
-      "updateBody": "Há um modelo mais recente no catálogo ({{from}} → {{to}}).",
-      "refreshed": "Modelo atualizado para {{version}}.",
+      "updateAvailable": "Atualização disponível",
+      "refreshed": "Modelo atualizado ({{from}} → {{to}}).",
       "unchanged": "O modelo já estava atualizado.",
       "added": "Novas chaves: {{keys}}.",
       "removed": "Chaves descartadas: {{keys}}.",
-      "needsSecrets": "Precisa de segredos: {{keys}}"
+      "needsSecrets": "Precisa de segredos: {{keys}}",
+      "updateAvailableVersions": "Atualização disponível ({{from}} → {{to}})",
+      "notInCatalogue": "Este modelo não está mais no catálogo; o MCP continua usando a cópia salva.",
+      "pendingSecretsTitle": "Segredos exigidos pela atualização do modelo",
+      "pendingSecretsHint": "Defina-os antes de atualizar; até lá o MCP mantém o modelo atual."
     },
     "tools": {
       "allowTitle": "Ferramentas permitidas",
@@ -275,12 +277,18 @@
       "sessionRequired": "Alterações no mercado de MCPs exigem sua sessão do navegador com login. Entre novamente e tente de novo; agentes não podem fazer essas alterações.",
       "csrf": "A verificação de segurança da sua sessão falhou. Recarregue a página e tente novamente.",
       "catalogueUnavailable": "O catálogo de modelos de MCP não está disponível no momento.",
-      "templateSecretMissing": "Defina primeiro o segredo de que o novo modelo precisa; o MCP permanece no modelo atual. {{detail}}",
+      "templateSecretMissing": "Defina {{keys}} primeiro: o novo modelo precisa disso. O MCP mantém o modelo atual.",
       "notFound": "Este MCP ou anexo não existe mais. A lista foi atualizada.",
       "alreadyAttached": "Este MCP já está anexado ali para essa CLI. {{detail}}",
       "nameTaken": "Esse nome já está em uso. Escolha outro nome. {{detail}}",
       "conflict": "Isso entra em conflito com o estado atual. {{detail}}",
-      "rejected": "O servidor recusou esta alteração: {{detail}}"
+      "rejected": "O servidor recusou esta alteração: {{detail}}",
+      "templateSecretMissingUnknown": "Defina primeiro os segredos que o novo modelo exige; o MCP mantém o modelo atual. {{detail}}",
+      "forbidden": "Esta alteração não é permitida daqui. Use sua sessão do navegador conectada.",
+      "tooLarge": "A solicitação é grande demais.",
+      "rateLimited": "Solicitações demais. Aguarde um pouco e tente novamente.",
+      "internal": "O servidor teve um erro interno. Tente novamente; se persistir, verifique os logs do AionUi.",
+      "upstream": "Um serviço por trás do servidor não respondeu a tempo. Tente novamente."
     }
   }
 }

@@ -135,7 +135,6 @@
       "delete": "삭제",
       "test": "연결 테스트",
       "refreshTemplate": "템플릿 업데이트",
-      "checkTemplate": "템플릿 업데이트 확인",
       "save": "저장",
       "cancel": "취소",
       "retry": "다시 시도"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "템플릿 업데이트",
-      "updateBody": "카탈로그에 더 새로운 템플릿이 있습니다({{from}} → {{to}}).",
-      "refreshed": "템플릿이 {{version}}(으)로 업데이트되었습니다.",
+      "updateAvailable": "업데이트 있음",
+      "refreshed": "템플릿을 업데이트했습니다 ({{from}} → {{to}}).",
       "unchanged": "템플릿이 이미 최신 상태입니다.",
       "added": "새 키: {{keys}}.",
       "removed": "제거된 키: {{keys}}.",
-      "needsSecrets": "시크릿 필요: {{keys}}"
+      "needsSecrets": "시크릿 필요: {{keys}}",
+      "updateAvailableVersions": "업데이트 있음 ({{from}} → {{to}})",
+      "notInCatalogue": "이 템플릿은 더 이상 카탈로그에 없습니다. MCP는 저장된 사본으로 계속 실행됩니다.",
+      "pendingSecretsTitle": "템플릿 업데이트에 필요한 시크릿",
+      "pendingSecretsHint": "업데이트하기 전에 설정하세요. 그때까지 MCP는 현재 템플릿을 유지합니다."
     },
     "tools": {
       "allowTitle": "허용된 도구",
@@ -275,12 +277,18 @@
       "sessionRequired": "MCP 마켓을 변경하려면 로그인된 브라우저 세션이 필요합니다. 다시 로그인한 후 재시도하세요. 에이전트는 이러한 변경을 할 수 없습니다.",
       "csrf": "세션 보안 확인에 실패했습니다. 페이지를 새로고침한 후 다시 시도하세요.",
       "catalogueUnavailable": "현재 MCP 템플릿 카탈로그를 사용할 수 없습니다.",
-      "templateSecretMissing": "먼저 새 템플릿에 필요한 시크릿을 설정하세요. MCP는 현재 템플릿을 유지합니다. {{detail}}",
+      "templateSecretMissing": "먼저 {{keys}}을(를) 설정하세요. 새 템플릿에 필요합니다. MCP는 현재 템플릿을 유지합니다.",
       "notFound": "이 MCP 또는 연결이 더 이상 존재하지 않습니다. 목록을 새로고침했습니다.",
       "alreadyAttached": "이 MCP는 해당 CLI에 대해 이미 그곳에 연결되어 있습니다. {{detail}}",
       "nameTaken": "이미 사용 중인 이름입니다. 다른 이름을 선택하세요. {{detail}}",
       "conflict": "현재 상태와 충돌합니다. {{detail}}",
-      "rejected": "서버가 이 변경을 거부했습니다: {{detail}}"
+      "rejected": "서버가 이 변경을 거부했습니다: {{detail}}",
+      "templateSecretMissingUnknown": "먼저 새 템플릿에 필요한 시크릿을 설정하세요. MCP는 현재 템플릿을 유지합니다. {{detail}}",
+      "forbidden": "여기서는 이 변경이 허용되지 않습니다. 로그인한 브라우저 세션을 사용하세요.",
+      "tooLarge": "요청이 너무 큽니다.",
+      "rateLimited": "요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
+      "internal": "서버 내부 오류가 발생했습니다. 다시 시도하고, 계속되면 AionUi 로그를 확인하세요.",
+      "upstream": "서버 뒤의 서비스가 제때 응답하지 않았습니다. 다시 시도하세요."
     }
   }
 }

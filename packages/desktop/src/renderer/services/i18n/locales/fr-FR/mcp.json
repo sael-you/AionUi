@@ -135,7 +135,6 @@
       "delete": "Supprimer",
       "test": "Tester la connexion",
       "refreshTemplate": "Mettre à jour le modèle",
-      "checkTemplate": "Rechercher une mise à jour du modèle",
       "save": "Enregistrer",
       "cancel": "Annuler",
       "retry": "Réessayer"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "Mise à jour du modèle",
-      "updateBody": "Un modèle plus récent est disponible dans le catalogue ({{from}} → {{to}}).",
-      "refreshed": "Modèle mis à jour vers {{version}}.",
+      "updateAvailable": "Mise à jour disponible",
+      "refreshed": "Modèle mis à jour ({{from}} → {{to}}).",
       "unchanged": "Le modèle était déjà à jour.",
       "added": "Nouvelles clés : {{keys}}.",
       "removed": "Clés supprimées : {{keys}}.",
-      "needsSecrets": "Secrets requis : {{keys}}"
+      "needsSecrets": "Secrets requis : {{keys}}",
+      "updateAvailableVersions": "Mise à jour disponible ({{from}} → {{to}})",
+      "notInCatalogue": "Ce modèle n'est plus dans le catalogue ; le MCP continue avec la copie enregistrée.",
+      "pendingSecretsTitle": "Secrets requis par la mise à jour du modèle",
+      "pendingSecretsHint": "Définissez-les avant la mise à jour ; d'ici là, le MCP garde son modèle actuel."
     },
     "tools": {
       "allowTitle": "Outils autorisés",
@@ -275,12 +277,18 @@
       "sessionRequired": "Les modifications du marché des MCP nécessitent votre session de navigateur connectée. Reconnectez-vous et réessayez ; les agents ne peuvent pas effectuer ces modifications.",
       "csrf": "La vérification de sécurité de votre session a échoué. Rechargez la page et réessayez.",
       "catalogueUnavailable": "Le catalogue de modèles MCP n'est pas disponible pour le moment.",
-      "templateSecretMissing": "Définissez d'abord le secret requis par le nouveau modèle ; le MCP reste sur son modèle actuel. {{detail}}",
+      "templateSecretMissing": "Définissez d'abord {{keys}} : le nouveau modèle en a besoin. Le MCP garde son modèle actuel.",
       "notFound": "Ce MCP ou ce rattachement n'existe plus. La liste a été actualisée.",
       "alreadyAttached": "Ce MCP est déjà rattaché à cet endroit pour cette CLI. {{detail}}",
       "nameTaken": "Ce nom est déjà utilisé. Choisissez-en un autre. {{detail}}",
       "conflict": "Cela entre en conflit avec l'état actuel. {{detail}}",
-      "rejected": "Le serveur a refusé cette modification : {{detail}}"
+      "rejected": "Le serveur a refusé cette modification : {{detail}}",
+      "templateSecretMissingUnknown": "Définissez d'abord les secrets requis par le nouveau modèle ; le MCP garde son modèle actuel. {{detail}}",
+      "forbidden": "Cette modification n'est pas autorisée d'ici. Utilisez votre session de navigateur connectée.",
+      "tooLarge": "La requête est trop volumineuse.",
+      "rateLimited": "Trop de requêtes. Patientez un instant puis réessayez.",
+      "internal": "Erreur interne du serveur. Réessayez ; si elle persiste, consultez les journaux AionUi.",
+      "upstream": "Un service derrière le serveur n'a pas répondu à temps. Réessayez."
     }
   }
 }

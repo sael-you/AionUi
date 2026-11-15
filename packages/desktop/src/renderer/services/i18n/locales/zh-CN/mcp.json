@@ -135,7 +135,6 @@
       "delete": "删除",
       "test": "测试连接",
       "refreshTemplate": "更新模板",
-      "checkTemplate": "检查模板更新",
       "save": "保存",
       "cancel": "取消",
       "retry": "重试"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "模板更新",
-      "updateBody": "目录中有更新的模板（{{from}} → {{to}}）。",
-      "refreshed": "模板已更新至 {{version}}。",
+      "updateAvailable": "有可用更新",
+      "refreshed": "模板已更新（{{from}} → {{to}}）。",
       "unchanged": "模板已是最新版本。",
       "added": "新增键：{{keys}}。",
       "removed": "移除的键：{{keys}}。",
-      "needsSecrets": "需要密钥：{{keys}}"
+      "needsSecrets": "需要密钥：{{keys}}",
+      "updateAvailableVersions": "有可用更新（{{from}} → {{to}}）",
+      "notInCatalogue": "此模板已不在目录中；MCP 继续使用已保存的副本。",
+      "pendingSecretsTitle": "模板更新所需的密钥",
+      "pendingSecretsHint": "请先设置这些密钥再更新；在此之前 MCP 保持当前模板。"
     },
     "tools": {
       "allowTitle": "允许的工具",
@@ -275,12 +277,18 @@
       "sessionRequired": "更改 MCP 市场需要您已登录的浏览器会话。请重新登录后重试；代理无法进行这些更改。",
       "csrf": "会话安全检查失败。请重新加载页面后重试。",
       "catalogueUnavailable": "MCP 模板目录当前不可用。",
-      "templateSecretMissing": "请先设置新模板所需的密钥；该 MCP 仍使用当前模板。{{detail}}",
+      "templateSecretMissing": "请先设置 {{keys}}：新模板需要它。MCP 保持当前模板。",
       "notFound": "此 MCP 或挂载已不存在。列表已刷新。",
       "alreadyAttached": "此 MCP 已针对该 CLI 挂载在该处。{{detail}}",
       "nameTaken": "该名称已被使用，请换一个名称。{{detail}}",
       "conflict": "此操作与当前状态冲突。{{detail}}",
-      "rejected": "服务器拒绝了此更改：{{detail}}"
+      "rejected": "服务器拒绝了此更改：{{detail}}",
+      "templateSecretMissingUnknown": "请先设置新模板所需的密钥；MCP 保持当前模板。{{detail}}",
+      "forbidden": "不允许从这里进行此更改。请使用已登录的浏览器会话。",
+      "tooLarge": "请求过大。",
+      "rateLimited": "请求过多，请稍后再试。",
+      "internal": "服务器内部错误。请重试；如仍出现，请查看 AionUi 日志。",
+      "upstream": "服务器后方的服务未及时响应，请重试。"
     }
   }
 }

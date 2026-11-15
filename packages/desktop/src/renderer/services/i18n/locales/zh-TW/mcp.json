@@ -135,7 +135,6 @@
       "delete": "刪除",
       "test": "測試連線",
       "refreshTemplate": "更新範本",
-      "checkTemplate": "檢查範本更新",
       "save": "儲存",
       "cancel": "取消",
       "retry": "重試"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "範本更新",
-      "updateBody": "目錄中有較新的範本（{{from}} → {{to}}）。",
-      "refreshed": "範本已更新至 {{version}}。",
+      "updateAvailable": "有可用更新",
+      "refreshed": "範本已更新（{{from}} → {{to}}）。",
       "unchanged": "範本已是最新版本。",
       "added": "新增的鍵：{{keys}}。",
       "removed": "移除的鍵：{{keys}}。",
-      "needsSecrets": "需要機密：{{keys}}"
+      "needsSecrets": "需要機密：{{keys}}",
+      "updateAvailableVersions": "有可用更新（{{from}} → {{to}}）",
+      "notInCatalogue": "此範本已不在目錄中；MCP 會繼續使用已儲存的副本。",
+      "pendingSecretsTitle": "範本更新所需的密鑰",
+      "pendingSecretsHint": "請先設定這些密鑰再更新；在此之前 MCP 維持目前的範本。"
     },
     "tools": {
       "allowTitle": "允許的工具",
@@ -275,12 +277,18 @@
       "sessionRequired": "變更 MCP 市集需要您已登入的瀏覽器工作階段。請重新登入後再試；代理程式無法進行這些變更。",
       "csrf": "工作階段的安全性檢查失敗。請重新載入頁面後再試一次。",
       "catalogueUnavailable": "MCP 範本目錄目前無法使用。",
-      "templateSecretMissing": "請先設定新範本所需的機密；此 MCP 仍會使用目前的範本。{{detail}}",
+      "templateSecretMissing": "請先設定 {{keys}}：新範本需要它。MCP 維持目前的範本。",
       "notFound": "此 MCP 或掛載已不存在。清單已重新整理。",
       "alreadyAttached": "此 MCP 已針對該 CLI 掛載於該處。{{detail}}",
       "nameTaken": "此名稱已被使用，請選擇其他名稱。{{detail}}",
       "conflict": "此操作與目前狀態衝突。{{detail}}",
-      "rejected": "伺服器拒絕了此變更：{{detail}}"
+      "rejected": "伺服器拒絕了此變更：{{detail}}",
+      "templateSecretMissingUnknown": "請先設定新範本所需的密鑰；MCP 維持目前的範本。{{detail}}",
+      "forbidden": "不允許從這裡進行此變更。請使用已登入的瀏覽器工作階段。",
+      "tooLarge": "請求過大。",
+      "rateLimited": "請求過多，請稍後再試。",
+      "internal": "伺服器發生內部錯誤。請重試；若持續發生，請查看 AionUi 記錄。",
+      "upstream": "伺服器後方的服務未及時回應，請重試。"
     }
   }
 }

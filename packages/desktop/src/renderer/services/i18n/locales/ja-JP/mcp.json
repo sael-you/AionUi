@@ -135,7 +135,6 @@
       "delete": "削除",
       "test": "接続テスト",
       "refreshTemplate": "テンプレートを更新",
-      "checkTemplate": "テンプレートの更新を確認",
       "save": "保存",
       "cancel": "キャンセル",
       "retry": "再試行"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "テンプレートの更新",
-      "updateBody": "カタログに新しいテンプレートがあります（{{from}} → {{to}}）。",
-      "refreshed": "テンプレートを {{version}} に更新しました。",
+      "updateAvailable": "更新あり",
+      "refreshed": "テンプレートを更新しました（{{from}} → {{to}}）。",
       "unchanged": "テンプレートはすでに最新です。",
       "added": "新しいキー: {{keys}}。",
       "removed": "削除されたキー: {{keys}}。",
-      "needsSecrets": "シークレットが必要: {{keys}}"
+      "needsSecrets": "シークレットが必要: {{keys}}",
+      "updateAvailableVersions": "更新あり（{{from}} → {{to}}）",
+      "notInCatalogue": "このテンプレートはカタログにありません。MCP は保存済みのコピーで動作し続けます。",
+      "pendingSecretsTitle": "テンプレート更新に必要なシークレット",
+      "pendingSecretsHint": "更新の前に設定してください。それまで MCP は現在のテンプレートのままです。"
     },
     "tools": {
       "allowTitle": "許可するツール",
@@ -275,12 +277,18 @@
       "sessionRequired": "MCP マーケットの変更には、サインイン済みのブラウザーセッションが必要です。再度サインインしてから再試行してください。エージェントはこれらの変更を行えません。",
       "csrf": "セッションのセキュリティチェックに失敗しました。ページを再読み込みしてもう一度お試しください。",
       "catalogueUnavailable": "MCP テンプレートカタログは現在利用できません。",
-      "templateSecretMissing": "まず新しいテンプレートに必要なシークレットを設定してください。MCP は現在のテンプレートのままです。{{detail}}",
+      "templateSecretMissing": "先に {{keys}} を設定してください。新しいテンプレートに必要です。MCP は現在のテンプレートのままです。",
       "notFound": "この MCP または接続はもう存在しません。一覧を更新しました。",
       "alreadyAttached": "この MCP は、その CLI 向けにすでにそこへ接続されています。{{detail}}",
       "nameTaken": "その名前はすでに使われています。別の名前を選んでください。{{detail}}",
       "conflict": "現在の状態と競合しています。{{detail}}",
-      "rejected": "サーバーがこの変更を拒否しました: {{detail}}"
+      "rejected": "サーバーがこの変更を拒否しました: {{detail}}",
+      "templateSecretMissingUnknown": "先に新しいテンプレートに必要なシークレットを設定してください。MCP は現在のテンプレートのままです。{{detail}}",
+      "forbidden": "この変更はここからは許可されていません。サインイン済みのブラウザセッションを使用してください。",
+      "tooLarge": "リクエストが大きすぎます。",
+      "rateLimited": "リクエストが多すぎます。少し待ってから再試行してください。",
+      "internal": "サーバーで内部エラーが発生しました。再試行し、続く場合は AionUi のログを確認してください。",
+      "upstream": "サーバーの背後のサービスが時間内に応答しませんでした。再試行してください。"
     }
   }
 }

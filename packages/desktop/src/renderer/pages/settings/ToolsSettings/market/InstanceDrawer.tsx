@@ -16,6 +16,7 @@ import { Alert, Button, Checkbox, Drawer, Input, Message, Modal, Select, Tag } f
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type {
+  McpMarketTemplateRefreshResult,
   McpMarketAssignment,
   McpMarketInstance,
   McpMarketInstanceHealth,
@@ -28,13 +29,15 @@ import {
   forcedPlainEnv,
   plainKeys,
   summarizeAttachments,
-  templateRefreshOffer,
+  missingSecretKeysOf,
+  pendingTemplateSecretKeys,
+  templateUpdate,
   type MarketProject,
 } from '@/renderer/hooks/mcp/market/marketModel';
 import type { McpMarketController } from '@/renderer/hooks/mcp/market/useMcpMarket';
 import ActivateModal from './ActivateModal';
 import SecretField from './SecretField';
-import { CliTag, MarketStatusTag, ScopeLabel, touchClass, useIsMobileLayout } from './shared';
+import { CliTag, MarketStatusTag, ScopeLabel, TemplateUpdateBadge, touchClass, useIsMobileLayout } from './shared';
 
 type ConfirmKind = 'revoke' | 'delete' | 'dormant' | 'refresh';
 
@@ -86,6 +89,11 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ConfirmKind | null>(null);
   const [activating, setActivating] = useState(false);
+  const [refreshResult, setRefreshResult] = useState<McpMarketTemplateRefreshResult | null>(null);
+  /** Keys a refused refresh named (409 MCP_TEMPLATE_SECRET_MISSING). */
+  const [refreshNeeds, setRefreshNeeds] = useState<string[]>([]);
+  /** Secrets of the pending template set in this drawer (the instance lists only its snapshot's keys). */
+  const [pendingSet, setPendingSet] = useState<string[]>([]);
 
   const isWrite = instance?.tier === 'write';
   const storedTools = useMemo(
@@ -102,6 +110,9 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
   useEffect(() => {
     setConfirm(null);
     setActivating(false);
+    setRefreshResult(null);
+    setRefreshNeeds([]);
+    setPendingSet([]);
   }, [instance?.id]);
 
   if (!instance) return null;
@@ -113,8 +124,10 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
   const envDirty = envKeys.some((key) => (plainEnv[key] ?? '') !== (instance.plain_env[key] ?? ''));
   const toolsDirty = !sameList(tools, storedTools);
   const attachments = summarizeAttachments(instance.id, assignments);
-  const refreshOffer = templateRefreshOffer(instance, template);
-  const updateAvailable = refreshOffer === 'update';
+  const update = templateUpdate(instance);
+  const pendingSecrets = [...new Set([...pendingTemplateSecretKeys(instance, template), ...refreshNeeds])].filter(
+    (key) => !instance.secrets.some((s) => s.key === key)
+  );
 
   const run = async (
     key: string,
@@ -178,24 +191,20 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
     if (kind === 'revoke') ok = await run('revoke', () => market.revoke(instance.id), 'generic');
     if (kind === 'dormant') ok = await run('dormant', () => market.deactivate(instance.id), 'generic');
     if (kind === 'refresh') {
-      ok = await run(
-        'refresh',
-        async () => {
-          const result = await market.refreshTemplate(instance.id);
-          const parts = [
-            result.added_keys.length > 0 ? t('mcp.market.template.added', { keys: result.added_keys.join(', ') }) : '',
-            result.removed_keys.length > 0
-              ? t('mcp.market.template.removed', { keys: result.removed_keys.join(', ') })
-              : '',
-          ].filter(Boolean);
-          Message.success(
-            result.changed
-              ? [t('mcp.market.template.refreshed', { version: result.to_version ?? '' }), ...parts].join(' ')
-              : t('mcp.market.template.unchanged')
-          );
-        },
-        'refresh'
-      );
+      setBusy('refresh');
+      setError(null);
+      setRefreshResult(null);
+      try {
+        setRefreshResult(await market.refreshTemplate(instance.id));
+        setRefreshNeeds([]);
+        ok = true;
+      } catch (err) {
+        // "Set <key> first": the keys get a secret field below.
+        setRefreshNeeds(missingSecretKeysOf(err));
+        setError(describeMarketError(t, err, 'refresh'));
+      } finally {
+        setBusy(null);
+      }
     }
     if (kind === 'delete') {
       ok = await run('delete', () => market.remove(instance.id), 'generic');
@@ -229,9 +238,9 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
       <Button onClick={() => onDuplicate(instance)} className={touch}>
         {t('mcp.market.actions.duplicate')}
       </Button>
-      {refreshOffer && (
-        <Button onClick={() => setConfirm('refresh')} className={touch}>
-          {refreshOffer === 'update' ? t('mcp.market.actions.refreshTemplate') : t('mcp.market.actions.checkTemplate')}
+      {update && (
+        <Button onClick={() => setConfirm('refresh')} className={touch} data-testid='mcp-market-refresh'>
+          {t('mcp.market.actions.refreshTemplate')}
         </Button>
       )}
       <Button status='danger' onClick={() => setConfirm('delete')} className={touch}>
@@ -278,16 +287,36 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
             </div>
             {instance.description && <p className='m-0 text-13px text-t-secondary'>{instance.description}</p>}
             {isWrite && <Alert type='warning' content={t('mcp.market.instance.writeNote')} />}
-            {updateAvailable && (
-              <Alert
-                type='info'
-                content={t('mcp.market.template.updateBody', {
-                  from: instance.template_version ?? '',
-                  to: template?.version ?? '',
-                })}
-              />
-            )}
+            <TemplateUpdateBadge instance={instance} />
+            {!instance.template_in_catalogue && <Alert type='warning' content={t('mcp.market.template.notInCatalogue')} />}
           </div>
+
+          {refreshResult && (
+            <Alert
+              type='success'
+              closable
+              onClose={() => setRefreshResult(null)}
+              data-testid='mcp-market-refresh-result'
+              content={
+                <div className='flex flex-col gap-4px'>
+                  <span>
+                    {refreshResult.changed
+                      ? t('mcp.market.template.refreshed', {
+                          from: refreshResult.from_version ?? '—',
+                          to: refreshResult.to_version ?? '—',
+                        })
+                      : t('mcp.market.template.unchanged')}
+                  </span>
+                  {refreshResult.added_keys.length > 0 && (
+                    <span>{t('mcp.market.template.added', { keys: refreshResult.added_keys.join(', ') })}</span>
+                  )}
+                  {refreshResult.removed_keys.length > 0 && (
+                    <span>{t('mcp.market.template.removed', { keys: refreshResult.removed_keys.join(', ') })}</span>
+                  )}
+                </div>
+              }
+            />
+          )}
 
           {error && <Alert type='error' content={error} closable onClose={() => setError(null)} />}
 
@@ -400,6 +429,37 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
                   status={s}
                   onReplace={(value) => market.setSecret(instance.id, s.key, value)}
                   onClear={() => market.clearSecret(instance.id, s.key)}
+                />
+              ))}
+            </Section>
+          )}
+
+          {update && pendingSecrets.length > 0 && (
+            <Section title={t('mcp.market.template.pendingSecretsTitle')} testId='mcp-market-drawer-pending-secrets'>
+              <span className='text-12px text-t-secondary'>{t('mcp.market.template.pendingSecretsHint')}</span>
+              {pendingSecrets.map((key) => (
+                <SecretField
+                  key={key}
+                  mode='edit'
+                  secretKey={key}
+                  required={template?.env[key]?.required === true || refreshNeeds.includes(key)}
+                  description={template?.env[key]?.description}
+                  status={{
+                    key,
+                    name: '',
+                    instance_id: instance.id,
+                    instance_name: instance.name,
+                    required: template?.env[key]?.required === true,
+                    set: pendingSet.includes(key),
+                  }}
+                  onReplace={async (value) => {
+                    await market.setSecret(instance.id, key, value);
+                    setPendingSet((prev) => (prev.includes(key) ? prev : [...prev, key]));
+                  }}
+                  onClear={async () => {
+                    await market.clearSecret(instance.id, key);
+                    setPendingSet((prev) => prev.filter((k) => k !== key));
+                  }}
                 />
               ))}
             </Section>

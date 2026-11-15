@@ -35,6 +35,7 @@ vi.mock('@/renderer/components/workspace/ProjectIdentity', () => ({
 }));
 
 import McpMarketView from '@/renderer/pages/settings/ToolsSettings/market';
+import { BackendHttpError } from '@/common/adapter/httpBridge';
 
 const inst = (name: string, extra: Partial<McpMarketInstance> = {}): McpMarketInstance => ({
   id: `id-${name}`,
@@ -53,6 +54,8 @@ const inst = (name: string, extra: Partial<McpMarketInstance> = {}): McpMarketIn
   tools_block: [],
   tools_seen: [],
   last_test_status: 'unknown',
+  template_in_catalogue: true,
+  template_update_available: false,
   created_at: 1,
   updated_at: 1,
   ...extra,
@@ -235,5 +238,81 @@ describe('McpMarketView', () => {
         `as-${paddle.name}-codex-p-alpha`,
       ])
     );
+  });
+
+  describe('template update', () => {
+    const outdated = inst('tb-outdated', {
+      template_update_available: true,
+      template_version: '0.1.0',
+      template_current_version: '0.2.0',
+    });
+
+    beforeEach(() => {
+      state.market = {
+        ...state.market,
+        templates: [
+          {
+            id: 'paddle',
+            name: 'Paddle',
+            version: '0.2.0',
+            transport: 'stdio',
+            env: { NEW_TOKEN: { kind: 'secret', required: true } },
+            tiers: ['read'],
+            enforcement: 'server',
+            clis: ['claude'],
+          },
+        ],
+        instances: [outdated],
+        assignments: [],
+        refreshTemplate: vi.fn(),
+        setSecret: vi.fn(() => Promise.resolve()),
+      };
+    });
+
+    const openAndRefresh = async () => {
+      renderView();
+      expect(screen.getByTestId('mcp-market-template-update')).toHaveTextContent(
+        'mcp.market.template.updateAvailableVersions'
+      );
+      fireEvent.click(screen.getByText('mcp.market.actions.manage'));
+      fireEvent.click(await screen.findByTestId('mcp-market-refresh'));
+      fireEvent.click(await screen.findByText('mcp.market.confirm.refresh.ok'));
+    };
+
+    it('shows the added and removed keys after a refresh', async () => {
+      (state.market.refreshTemplate as ReturnType<typeof vi.fn>).mockResolvedValue({
+        instance: outdated,
+        from_version: '0.1.0',
+        to_version: '0.2.0',
+        added_keys: ['NEW_MODE'],
+        removed_keys: ['OLD_MODE'],
+        changed: true,
+      });
+      await openAndRefresh();
+      const result = await screen.findByTestId('mcp-market-refresh-result');
+      expect(state.market.refreshTemplate).toHaveBeenCalledWith(outdated.id);
+      expect(result).toHaveTextContent('mcp.market.template.refreshed');
+      expect(result).toHaveTextContent('mcp.market.template.added');
+      expect(result).toHaveTextContent('mcp.market.template.removed');
+    });
+
+    it('explains MCP_TEMPLATE_SECRET_MISSING and offers the missing secret', async () => {
+      (state.market.refreshTemplate as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new BackendHttpError({
+          method: 'POST',
+          path: '/api/mcp/market/instances/x/refresh-template',
+          status: 409,
+          body: {
+            success: false,
+            code: 'MCP_TEMPLATE_SECRET_MISSING',
+            error: 'template paddle 0.2.0 needs secret NEW_TOKEN first; the instance stays on its current version',
+          },
+        })
+      );
+      await openAndRefresh();
+      expect(await screen.findByText('mcp.market.errors.templateSecretMissing')).toBeInTheDocument();
+      const pending = screen.getByTestId('mcp-market-drawer-pending-secrets');
+      expect(within(pending).getByText('NEW_TOKEN')).toBeInTheDocument();
+    });
   });
 });

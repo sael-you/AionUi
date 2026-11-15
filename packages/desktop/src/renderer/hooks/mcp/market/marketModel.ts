@@ -91,25 +91,30 @@ export const globalBlockReason = (instance: Pick<McpMarketInstance, 'name' | 'ti
   return null;
 };
 
-/** Whether the catalogue has a newer template version than the instance runs. */
-export const templateUpdateAvailable = (
-  instance: Pick<McpMarketInstance, 'template_version'>,
-  template: Pick<McpMarketTemplate, 'version'> | undefined
-): boolean => Boolean(template?.version && instance.template_version && template.version !== instance.template_version);
+/** Versions of a pending template update (`from` = the instance's snapshot, `to` = the catalogue). */
+export const templateUpdate = (
+  instance: Pick<McpMarketInstance, 'template_update_available' | 'template_version' | 'template_current_version'>
+): { from?: string; to?: string } | null =>
+  instance.template_update_available ? { from: instance.template_version, to: instance.template_current_version } : null;
 
 /**
- * Which template-refresh action to offer: `update` when the catalogue reports a
- * newer version than the instance runs; `check` when the catalogue has a
- * version but the instance does not report its own (the server compares and
- * answers `changed: false` when nothing changed); `null` otherwise.
+ * Secret keys the catalogue's current template declares that the instance's
+ * snapshot does not have yet: a refresh is refused until the required ones are
+ * set (409 `MCP_TEMPLATE_SECRET_MISSING`); the secrets route accepts them first.
  */
-export const templateRefreshOffer = (
-  instance: Pick<McpMarketInstance, 'template_version'>,
-  template: Pick<McpMarketTemplate, 'version'> | undefined
-): 'update' | 'check' | null => {
-  if (templateUpdateAvailable(instance, template)) return 'update';
-  if (template?.version && !instance.template_version) return 'check';
-  return null;
+export const pendingTemplateSecretKeys = (
+  instance: Pick<McpMarketInstance, 'template_update_available' | 'secrets'>,
+  template: Pick<McpMarketTemplate, 'env'> | undefined
+): string[] =>
+  instance.template_update_available && template
+    ? secretKeys(template).filter((key) => !instance.secrets.some((s) => s.key === key))
+    : [];
+
+/** The keys a `MCP_TEMPLATE_SECRET_MISSING` refusal names ("… needs secret A, B first; …"). */
+export const missingSecretKeysOf = (error: unknown): string[] => {
+  if (!isBackendHttpError(error) || error.code !== 'MCP_TEMPLATE_SECRET_MISSING') return [];
+  const match = /needs secrets? (.+?) first/.exec(error.backendMessage);
+  return match ? match[1].split(',').map((k) => k.trim()).filter(Boolean) : [];
 };
 
 /** Plain env keys of a template, sorted. */
@@ -368,24 +373,46 @@ export const describeMarketError = (t: TFn, error: unknown, context: MarketError
   const detail = error.backendMessage.trim();
   switch (error.code) {
     case 'MCP_MARKET_SESSION_REQUIRED':
+    case 'UNAUTHORIZED':
       return t('mcp.market.errors.sessionRequired');
+    case 'MCP_MARKET_FORBIDDEN':
+    case 'FORBIDDEN':
+      return t('mcp.market.errors.forbidden');
     case 'CSRF_INVALID':
       return t('mcp.market.errors.csrf');
     case 'MCP_MARKET_UNAVAILABLE':
       return t('mcp.market.errors.catalogueUnavailable');
-    case 'MCP_TEMPLATE_SECRET_MISSING':
-      return t('mcp.market.errors.templateSecretMissing', { detail });
+    case 'MCP_TEMPLATE_SECRET_MISSING': {
+      const keys = missingSecretKeysOf(error);
+      return keys.length > 0
+        ? t('mcp.market.errors.templateSecretMissing', { keys: keys.join(', ') })
+        : t('mcp.market.errors.templateSecretMissingUnknown', { detail });
+    }
+    case 'MCP_MARKET_INVALID':
+      return detail ? t('mcp.market.errors.rejected', { detail }) : t('mcp.market.errors.generic');
+    case 'CONFLICT':
+      if (context === 'attach') return t('mcp.market.errors.alreadyAttached', { detail });
+      if (context === 'name') return t('mcp.market.errors.nameTaken', { detail });
+      return t('mcp.market.errors.conflict', { detail });
     case 'NOT_FOUND':
       return t('mcp.market.errors.notFound');
+    case 'PAYLOAD_TOO_LARGE':
+      return t('mcp.market.errors.tooLarge');
+    case 'RATE_LIMITED':
+      return t('mcp.market.errors.rateLimited');
+    case 'INTERNAL_ERROR':
+      return t('mcp.market.errors.internal');
+    case 'BAD_GATEWAY':
+    case 'GATEWAY_TIMEOUT':
+      return t('mcp.market.errors.upstream');
   }
-  if (error.status === 409) {
-    if (context === 'attach') return t('mcp.market.errors.alreadyAttached', { detail });
-    if (context === 'name') return t('mcp.market.errors.nameTaken', { detail });
-    return t('mcp.market.errors.conflict', { detail });
-  }
+  // Codes this view does not know (older or newer backends): by status.
+  if (error.status === 409) return t('mcp.market.errors.conflict', { detail });
   if (error.status === 400 || error.status === 422) {
     return detail ? t('mcp.market.errors.rejected', { detail }) : t('mcp.market.errors.generic');
   }
-  if (error.status === 401 || error.status === 403) return t('mcp.market.errors.sessionRequired');
+  if (error.status === 401) return t('mcp.market.errors.sessionRequired');
+  if (error.status === 403) return t('mcp.market.errors.forbidden');
+  if (error.status >= 500) return t('mcp.market.errors.internal');
   return detail || t('mcp.market.errors.generic');
 };

@@ -22,10 +22,9 @@ import type {
 import type { Assistant } from '@/common/types/agent/assistantTypes';
 import {
   summarizeAttachments,
-  templateUpdateAvailable,
   type MarketProject,
 } from '@/renderer/hooks/mcp/market/marketModel';
-import { CliTag, MarketStatusTag, ScopeLabel, touchClass, useIsMobileLayout } from './shared';
+import { CliTag, MarketStatusTag, ScopeLabel, TemplateUpdateBadge, touchClass, useIsMobileLayout } from './shared';
 
 type InstanceCardProps = {
   instance: McpMarketInstance;
@@ -68,11 +67,7 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
             <Tag size='small'>
               {t(`mcp.market.environment.${instance.environment}`, { defaultValue: instance.environment })}
             </Tag>
-            {templateUpdateAvailable(instance, template) && (
-              <Tag size='small' color='purple'>
-                {t('mcp.market.template.updateAvailable')}
-              </Tag>
-            )}
+            <TemplateUpdateBadge instance={instance} />
           </div>
           <span className='text-12px text-t-secondary truncate'>
             {t('mcp.market.instance.fromTemplate', { template: template?.name ?? instance.template_id })}

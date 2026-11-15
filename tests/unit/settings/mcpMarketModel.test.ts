@@ -21,8 +21,9 @@ import {
   isValidApprovalRef,
   needsApprovalRef,
   summarizeAttachments,
-  templateRefreshOffer,
-  templateUpdateAvailable,
+  missingSecretKeysOf,
+  pendingTemplateSecretKeys,
+  templateUpdate,
   withoutMarketRows,
   allowedClis,
 } from '@/renderer/hooks/mcp/market/marketModel';
@@ -44,6 +45,8 @@ const inst = (name: string, extra: Partial<McpMarketInstance> = {}): McpMarketIn
   tools_block: [],
   tools_seen: [],
   last_test_status: 'unknown',
+  template_in_catalogue: true,
+  template_update_available: false,
   created_at: 1,
   updated_at: 1,
   ...extra,
@@ -187,18 +190,37 @@ describe('rules explained client-side', () => {
     expect(globalBlockReason(inst('tb-x'))).toBe('notGlobal');
   });
 
-  it('offers a template update only when both versions are known and differ', () => {
-    expect(templateUpdateAvailable({ template_version: '1.0.0' }, { version: '1.1.0' })).toBe(true);
-    expect(templateUpdateAvailable({ template_version: '1.1.0' }, { version: '1.1.0' })).toBe(false);
-    expect(templateUpdateAvailable({}, { version: '1.1.0' })).toBe(false);
-    expect(templateUpdateAvailable({ template_version: '1.0.0' }, undefined)).toBe(false);
+  it('reports a pending template update with both versions, from the backend flag', () => {
+    expect(
+      templateUpdate({ template_update_available: true, template_version: '0.1.0', template_current_version: '0.2.0' })
+    ).toEqual({ from: '0.1.0', to: '0.2.0' });
+    expect(templateUpdate({ template_update_available: false, template_version: '0.1.0', template_current_version: '0.2.0' })).toBeNull();
   });
 
-  it('offers a check when the instance does not report its template version', () => {
-    expect(templateRefreshOffer({ template_version: '1.0.0' }, { version: '1.1.0' })).toBe('update');
-    expect(templateRefreshOffer({}, { version: '1.1.0' })).toBe('check');
-    expect(templateRefreshOffer({ template_version: '1.1.0' }, { version: '1.1.0' })).toBeNull();
-    expect(templateRefreshOffer({}, {})).toBeNull();
+  it('lists the secret keys a pending template adds', () => {
+    const template = {
+      env: {
+        API_KEY: { kind: 'secret' as const, required: true },
+        NEW_TOKEN: { kind: 'secret' as const, required: true },
+        MODE: { kind: 'plain' as const },
+      },
+    };
+    const withSecret = inst('tb-x', {
+      template_update_available: true,
+      secrets: [{ key: 'API_KEY', name: 'N', instance_id: 'i', instance_name: 'tb-x', required: true, set: true }],
+    });
+    expect(pendingTemplateSecretKeys(withSecret, template)).toEqual(['NEW_TOKEN']);
+    expect(pendingTemplateSecretKeys({ ...withSecret, template_update_available: false }, template)).toEqual([]);
+  });
+
+  it('reads the keys of a MCP_TEMPLATE_SECRET_MISSING refusal', () => {
+    const refusal = err(
+      409,
+      'MCP_TEMPLATE_SECRET_MISSING',
+      'template paddle 0.2.0 needs secret NEW_TOKEN, OTHER first; the instance stays on its current version'
+    );
+    expect(missingSecretKeysOf(refusal)).toEqual(['NEW_TOKEN', 'OTHER']);
+    expect(missingSecretKeysOf(err(409, 'CONFLICT', 'needs secret X first'))).toEqual([]);
   });
 });
 
@@ -244,10 +266,29 @@ describe('describeMarketError', () => {
     expect(describeMarketError(t, err(403, 'MCP_MARKET_SESSION_REQUIRED'))).toBe('mcp.market.errors.sessionRequired');
     expect(describeMarketError(t, err(403, 'CSRF_INVALID'))).toBe('mcp.market.errors.csrf');
     expect(describeMarketError(t, err(503, 'MCP_MARKET_UNAVAILABLE'))).toBe('mcp.market.errors.catalogueUnavailable');
-    expect(describeMarketError(t, err(409, 'MCP_TEMPLATE_SECRET_MISSING', 'needs secret API_KEY'))).toContain(
-      'mcp.market.errors.templateSecretMissing'
+    expect(
+      describeMarketError(t, err(409, 'MCP_TEMPLATE_SECRET_MISSING', 'template p 2 needs secret API_KEY first; stays'))
+    ).toBe('mcp.market.errors.templateSecretMissing|{"keys":"API_KEY"}');
+    expect(describeMarketError(t, err(409, 'MCP_TEMPLATE_SECRET_MISSING', 'odd'))).toContain(
+      'mcp.market.errors.templateSecretMissingUnknown'
     );
     expect(describeMarketError(t, err(404, 'NOT_FOUND'))).toBe('mcp.market.errors.notFound');
+  });
+
+  it('maps every backend code to its own message', () => {
+    const cases: Array<[number, string, string]> = [
+      [403, 'MCP_MARKET_FORBIDDEN', 'mcp.market.errors.forbidden'],
+      [403, 'FORBIDDEN', 'mcp.market.errors.forbidden'],
+      [401, 'UNAUTHORIZED', 'mcp.market.errors.sessionRequired'],
+      [413, 'PAYLOAD_TOO_LARGE', 'mcp.market.errors.tooLarge'],
+      [429, 'RATE_LIMITED', 'mcp.market.errors.rateLimited'],
+      [500, 'INTERNAL_ERROR', 'mcp.market.errors.internal'],
+      [502, 'BAD_GATEWAY', 'mcp.market.errors.upstream'],
+      [504, 'GATEWAY_TIMEOUT', 'mcp.market.errors.upstream'],
+      [500, 'SOMETHING_NEW', 'mcp.market.errors.internal'],
+    ];
+    for (const [status, code, key] of cases) expect(describeMarketError(t, err(status, code))).toBe(key);
+    expect(describeMarketError(t, err(400, 'MCP_MARKET_INVALID', 'R3'))).toBe('mcp.market.errors.rejected|{"detail":"R3"}');
   });
 
   it('shows the server rule for a 400 and falls back to a generic message', () => {

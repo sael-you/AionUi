@@ -135,7 +135,6 @@
       "delete": "Eliminar",
       "test": "Probar conexión",
       "refreshTemplate": "Actualizar plantilla",
-      "checkTemplate": "Buscar actualización de plantilla",
       "save": "Guardar",
       "cancel": "Cancelar",
       "retry": "Reintentar"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "Actualización de plantilla",
-      "updateBody": "Hay una plantilla más reciente en el catálogo ({{from}} → {{to}}).",
-      "refreshed": "Plantilla actualizada a {{version}}.",
+      "updateAvailable": "Actualización disponible",
+      "refreshed": "Plantilla actualizada ({{from}} → {{to}}).",
       "unchanged": "La plantilla ya estaba actualizada.",
       "added": "Claves nuevas: {{keys}}.",
       "removed": "Claves descartadas: {{keys}}.",
-      "needsSecrets": "Necesita secretos: {{keys}}"
+      "needsSecrets": "Necesita secretos: {{keys}}",
+      "updateAvailableVersions": "Actualización disponible ({{from}} → {{to}})",
+      "notInCatalogue": "Esta plantilla ya no está en el catálogo; el MCP sigue usando la copia guardada.",
+      "pendingSecretsTitle": "Secretos que necesita la actualización de la plantilla",
+      "pendingSecretsHint": "Configúralos antes de actualizar; hasta entonces el MCP mantiene la plantilla actual."
     },
     "tools": {
       "allowTitle": "Herramientas permitidas",
@@ -275,12 +277,18 @@
       "sessionRequired": "Los cambios en el mercado de MCP requieren tu sesión del navegador con la sesión iniciada. Vuelve a iniciar sesión e inténtalo de nuevo; los agentes no pueden hacer estos cambios.",
       "csrf": "La comprobación de seguridad de tu sesión ha fallado. Recarga la página e inténtalo de nuevo.",
       "catalogueUnavailable": "El catálogo de plantillas de MCP no está disponible en este momento.",
-      "templateSecretMissing": "Define primero el secreto que necesita la nueva plantilla; el MCP se mantiene en su plantilla actual. {{detail}}",
+      "templateSecretMissing": "Configura primero {{keys}}: la nueva plantilla lo necesita. El MCP mantiene la plantilla actual.",
       "notFound": "Este MCP o vínculo ya no existe. Se ha actualizado la lista.",
       "alreadyAttached": "Este MCP ya está vinculado ahí para esa CLI. {{detail}}",
       "nameTaken": "Ese nombre ya está en uso. Elige otro nombre. {{detail}}",
       "conflict": "Esto entra en conflicto con el estado actual. {{detail}}",
-      "rejected": "El servidor ha rechazado este cambio: {{detail}}"
+      "rejected": "El servidor ha rechazado este cambio: {{detail}}",
+      "templateSecretMissingUnknown": "Configura primero los secretos que necesita la nueva plantilla; el MCP mantiene la plantilla actual. {{detail}}",
+      "forbidden": "Este cambio no está permitido desde aquí. Usa tu sesión del navegador con la que iniciaste sesión.",
+      "tooLarge": "La solicitud es demasiado grande.",
+      "rateLimited": "Demasiadas solicitudes. Espera un momento y vuelve a intentarlo.",
+      "internal": "El servidor tuvo un error interno. Vuelve a intentarlo; si persiste, revisa los registros de AionUi.",
+      "upstream": "Un servicio detrás del servidor no respondió a tiempo. Vuelve a intentarlo."
     }
   }
 }

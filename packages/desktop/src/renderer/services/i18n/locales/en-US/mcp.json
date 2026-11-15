@@ -135,7 +135,6 @@
       "delete": "Delete",
       "test": "Test connection",
       "refreshTemplate": "Update template",
-      "checkTemplate": "Check for template update",
       "save": "Save",
       "cancel": "Cancel",
       "retry": "Retry"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "Template update",
-      "updateBody": "A newer template is in the catalogue ({{from}} → {{to}}).",
-      "refreshed": "Template updated to {{version}}.",
+      "updateAvailable": "Update available",
+      "refreshed": "Template updated ({{from}} → {{to}}).",
       "unchanged": "The template was already current.",
       "added": "New keys: {{keys}}.",
       "removed": "Dropped keys: {{keys}}.",
-      "needsSecrets": "Needs secrets: {{keys}}"
+      "needsSecrets": "Needs secrets: {{keys}}",
+      "updateAvailableVersions": "Update available ({{from}} → {{to}})",
+      "notInCatalogue": "This template is no longer in the catalogue; the MCP keeps running its stored copy.",
+      "pendingSecretsTitle": "Secrets the template update needs",
+      "pendingSecretsHint": "Set these before updating; the MCP keeps its current template until then."
     },
     "tools": {
       "allowTitle": "Allowed tools",
@@ -275,12 +277,18 @@
       "sessionRequired": "MCP market changes need your signed-in browser session. Sign in again and retry; agents cannot make these changes.",
       "csrf": "Your session's security check failed. Reload the page and try again.",
       "catalogueUnavailable": "The MCP template catalogue is not available right now.",
-      "templateSecretMissing": "Set the secret the new template needs first; the MCP stays on its current template. {{detail}}",
+      "templateSecretMissing": "Set {{keys}} first: the new template needs it. The MCP stays on its current template.",
       "notFound": "This MCP or attachment no longer exists. The list has been refreshed.",
       "alreadyAttached": "This MCP is already attached there for that CLI. {{detail}}",
       "nameTaken": "That name is already used. Choose another name. {{detail}}",
       "conflict": "This conflicts with the current state. {{detail}}",
-      "rejected": "The server refused this change: {{detail}}"
+      "rejected": "The server refused this change: {{detail}}",
+      "templateSecretMissingUnknown": "Set the secrets the new template needs first; the MCP stays on its current template. {{detail}}",
+      "forbidden": "This change is not allowed from here. Use your signed-in browser session.",
+      "tooLarge": "The request is too large.",
+      "rateLimited": "Too many requests. Wait a moment and try again.",
+      "internal": "The server hit an internal error. Try again; if it persists, check the AionUi logs.",
+      "upstream": "A service behind the server did not answer in time. Try again."
     }
   }
 }

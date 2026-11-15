@@ -12,7 +12,8 @@ import { useTranslation } from 'react-i18next';
 import type { Assistant } from '@/common/types/agent/assistantTypes';
 import { ProjectChip, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
-import type { AttachScope, MarketProject } from '@/renderer/hooks/mcp/market/marketModel';
+import type { McpMarketInstance } from '@/common/config/storage';
+import { templateUpdate, type AttachScope, type MarketProject } from '@/renderer/hooks/mcp/market/marketModel';
 
 /** Mobile layout (same signal as the rest of the app). */
 export const useIsMobileLayout = (): boolean => useLayoutContext()?.isMobile ?? false;
@@ -101,5 +102,21 @@ export const MarketErrorNotice: React.FC<{ message: string; onRetry?: () => void
         ) : undefined
       }
     />
+  );
+};
+
+/** "Update available (v1 → v2)" when the catalogue has a newer template than the instance runs. */
+export const TemplateUpdateBadge: React.FC<{
+  instance: Pick<McpMarketInstance, 'template_update_available' | 'template_version' | 'template_current_version'>;
+}> = ({ instance }) => {
+  const { t } = useTranslation();
+  const update = templateUpdate(instance);
+  if (!update) return null;
+  return (
+    <Tag size='small' color='purple' data-testid='mcp-market-template-update'>
+      {update.from && update.to
+        ? t('mcp.market.template.updateAvailableVersions', { from: update.from, to: update.to })
+        : t('mcp.market.template.updateAvailable')}
+    </Tag>
   );
 };

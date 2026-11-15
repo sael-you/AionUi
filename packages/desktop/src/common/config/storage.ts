@@ -697,9 +697,11 @@ export type McpMarketTemplate = {
   version?: string;
   description?: string;
   transport: string;
-  command?: { command: string; args?: string[] };
+  command?: { command: string; args: string[] };
   url?: string;
   headers?: Record<string, string>;
+  /** http with secrets: the pinned stdio bridge the launcher runs. */
+  bridge?: { command: string; args: string[] };
   env: Record<string, McpMarketEnvField>;
   tiers: string[];
   tier_env?: Record<string, Record<string, string>>;
@@ -725,8 +727,14 @@ export type McpMarketInstance = {
   name: string;
   description?: string;
   template_id: string;
-  /** Version of the template snapshot the instance runs, when the backend reports it. */
+  /** Version of the template snapshot the instance runs. */
   template_version?: string;
+  /** Version of the catalogue's current template. */
+  template_current_version?: string;
+  /** Whether the catalogue still has the instance's template. */
+  template_in_catalogue: boolean;
+  /** Whether the catalogue's current template differs from the instance's snapshot. */
+  template_update_available: boolean;
   transport: string;
   environment: string;
   tier: string;

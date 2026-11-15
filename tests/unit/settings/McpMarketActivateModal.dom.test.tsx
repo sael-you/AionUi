@@ -34,6 +34,8 @@ const instance = (extra: Partial<McpMarketInstance> = {}): McpMarketInstance => 
   tools_block: [],
   tools_seen: [],
   last_test_status: 'unknown',
+  template_in_catalogue: true,
+  template_update_available: false,
   created_at: 1,
   updated_at: 1,
   ...extra,

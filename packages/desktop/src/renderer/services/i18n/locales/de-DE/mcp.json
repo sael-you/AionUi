@@ -135,7 +135,6 @@
       "delete": "Löschen",
       "test": "Verbindung testen",
       "refreshTemplate": "Vorlage aktualisieren",
-      "checkTemplate": "Auf Vorlagen-Update prüfen",
       "save": "Speichern",
       "cancel": "Abbrechen",
       "retry": "Erneut versuchen"
@@ -251,13 +250,16 @@
       }
     },
     "template": {
-      "updateAvailable": "Vorlagen-Update",
-      "updateBody": "Im Katalog gibt es eine neuere Vorlage ({{from}} → {{to}}).",
-      "refreshed": "Vorlage auf {{version}} aktualisiert.",
+      "updateAvailable": "Update verfügbar",
+      "refreshed": "Vorlage aktualisiert ({{from}} → {{to}}).",
       "unchanged": "Die Vorlage war bereits aktuell.",
       "added": "Neue Schlüssel: {{keys}}.",
       "removed": "Entfernte Schlüssel: {{keys}}.",
-      "needsSecrets": "Benötigt Geheimnisse: {{keys}}"
+      "needsSecrets": "Benötigt Geheimnisse: {{keys}}",
+      "updateAvailableVersions": "Update verfügbar ({{from}} → {{to}})",
+      "notInCatalogue": "Diese Vorlage ist nicht mehr im Katalog; der MCP läuft mit der gespeicherten Kopie weiter.",
+      "pendingSecretsTitle": "Für das Vorlagen-Update benötigte Secrets",
+      "pendingSecretsHint": "Vor dem Update festlegen; bis dahin bleibt der MCP auf der aktuellen Vorlage."
     },
     "tools": {
       "allowTitle": "Erlaubte Tools",
@@ -275,12 +277,18 @@
       "sessionRequired": "Änderungen am MCP-Marktplatz erfordern Ihre angemeldete Browsersitzung. Melden Sie sich erneut an und versuchen Sie es noch einmal; Agenten können diese Änderungen nicht vornehmen.",
       "csrf": "Die Sicherheitsprüfung Ihrer Sitzung ist fehlgeschlagen. Laden Sie die Seite neu und versuchen Sie es erneut.",
       "catalogueUnavailable": "Der MCP-Vorlagenkatalog ist derzeit nicht verfügbar.",
-      "templateSecretMissing": "Legen Sie zuerst das Geheimnis fest, das die neue Vorlage benötigt; das MCP bleibt bei seiner aktuellen Vorlage. {{detail}}",
+      "templateSecretMissing": "Zuerst {{keys}} festlegen: Die neue Vorlage benötigt es. Der MCP bleibt auf der aktuellen Vorlage.",
       "notFound": "Dieses MCP oder diese Anbindung existiert nicht mehr. Die Liste wurde aktualisiert.",
       "alreadyAttached": "Dieses MCP ist dort für diese CLI bereits angebunden. {{detail}}",
       "nameTaken": "Dieser Name wird bereits verwendet. Wählen Sie einen anderen Namen. {{detail}}",
       "conflict": "Dies steht im Widerspruch zum aktuellen Zustand. {{detail}}",
-      "rejected": "Der Server hat diese Änderung abgelehnt: {{detail}}"
+      "rejected": "Der Server hat diese Änderung abgelehnt: {{detail}}",
+      "templateSecretMissingUnknown": "Zuerst die Secrets festlegen, die die neue Vorlage benötigt; der MCP bleibt auf der aktuellen Vorlage. {{detail}}",
+      "forbidden": "Diese Änderung ist von hier aus nicht erlaubt. Nutze deine angemeldete Browsersitzung.",
+      "tooLarge": "Die Anfrage ist zu groß.",
+      "rateLimited": "Zu viele Anfragen. Kurz warten und erneut versuchen.",
+      "internal": "Interner Serverfehler. Erneut versuchen; falls er bleibt, die AionUi-Logs prüfen.",
+      "upstream": "Ein Dienst hinter dem Server hat nicht rechtzeitig geantwortet. Erneut versuchen."
     }
   }
 }
