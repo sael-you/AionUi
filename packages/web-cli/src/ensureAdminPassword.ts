@@ -51,6 +51,14 @@ export const WEBUI_FIRST_PASSWORD_STEPS: readonly string[] = [
   '  node /opt/aionui-tp/current/token-pool/service/cli.js set-password <user> < <file-with-new-password>',
 ];
 
+/**
+ * Printed instead of a generated password when a local start finds no password
+ * on a data dir that was served in WebUI identity before it (a rollback or a
+ * stray local start): seeding stays refused there.
+ */
+export const SEEDING_REFUSED_AFTER_WEBUI =
+  'This data dir was served in WebUI identity before this start: no initial admin password is generated, its accounts are left as they are.';
+
 export type EnsureAdminPasswordDeps = {
   fetch: typeof fetch;
   log: (msg: string) => void;
@@ -66,8 +74,14 @@ export type EnsureAdminPasswordOptions = {
   statusTimeoutMs?: number;
   /** Poll interval between /api/auth/status attempts. Default: 500ms. */
   statusPollIntervalMs?: number;
-  /** Backend identity (`resolveBackendIdentity()`); `webui` skips the local-only seeding. */
+  /** This start's backend identity (the launcher option); decides the messages. `webui` never seeds. */
   identity?: 'local' | 'webui';
+  /**
+   * Local identity only: whether a missing password may be generated. `false`
+   * when the data dir was served in WebUI identity before this start
+   * (`startPasswordPolicy`). Default `true`.
+   */
+  seedingAllowed?: boolean;
   /**
    * Command to show in fallback hints ("Forgot the password? Run ..."). Varies
    * by launch context — packaged tarball = `aionui-web resetpass`, in-repo dev
@@ -155,6 +169,11 @@ export async function ensureAdminPassword(
   if (opts.identity === 'webui') {
     if (needsSetup) WEBUI_FIRST_PASSWORD_STEPS.forEach((line) => deps.warn(`[aionui-web] ${line}`));
     else WEBUI_PASSWORD_PROCEDURE.forEach((line) => deps.log(`[aionui-web] ${line}`));
+    return;
+  }
+
+  if (needsSetup && opts.seedingAllowed === false) {
+    deps.warn(`[aionui-web] ${SEEDING_REFUSED_AFTER_WEBUI}`);
     return;
   }
 

@@ -26,7 +26,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { resolveBackendIdentity, startWebHost } from '@aionui/web-host';
 import { openBrowserUrl, shouldAutoOpenBrowser } from '../packages/web-cli/src/browser.js';
-import { passwordToolsIdentity } from '../packages/web-cli/src/passwordGuard.js';
+import { SEEDING_REFUSED_AFTER_WEBUI } from '../packages/web-cli/src/ensureAdminPassword.js';
+import { startPasswordPolicy } from '../packages/web-cli/src/passwordGuard.js';
 
 // Aligned with packages/desktop/src/common/config/constants.ts WEBUI_DEFAULT_PORT.
 const DEFAULT_PORT = (() => {
@@ -224,9 +225,12 @@ async function main(): Promise<void> {
   console.log('[webui] backend bin:', backendBin);
   console.log(`[webui] launching  : port=${port} allowRemote=${allowRemote}`);
 
-  // Read before the start rewrites the marker: a data dir last served in WebUI
-  // identity is never seeded, whatever this shell's environment says (card C11).
-  const seedingIdentity = passwordToolsIdentity(workDir);
+  // Same as aionui-web: the identity comes from the environment (card C11).
+  const identity = resolveBackendIdentity();
+  // Read before the start rewrites the marker: messages follow this start's
+  // identity, but a data dir last served in WebUI identity is never seeded,
+  // whatever this shell's environment says (card C11).
+  const passwordPolicy = startPasswordPolicy(identity, workDir);
   const handle = await startWebHost({
     app: {
       version: '0.0.0',
@@ -237,8 +241,8 @@ async function main(): Promise<void> {
     staticDir,
     port,
     allowRemote,
-    // Same as aionui-web: the identity comes from the environment (card C11).
-    identity: resolveBackendIdentity(),
+    // A dev start never replaces a `webui` marker (no allowIdentityRollback).
+    identity,
     dataDir: workDir,
     logDir,
     // Surface the same work dir on /api/system/info so the browser UI shows
@@ -269,12 +273,14 @@ async function main(): Promise<void> {
   // Settings. Always read it from the backend rather than assuming a value.
   // WebUI identity (card C11): accounts are managed outside this helper and the
   // reset endpoint is local-only, so there is nothing to seed here.
-  if (seedingIdentity !== 'webui') {
+  if (passwordPolicy.identity !== 'webui') {
     try {
       const statusRes = await fetch(`http://127.0.0.1:${handle.backendPort}/api/auth/status`);
       if (statusRes.ok) {
         const status = (await statusRes.json()) as { needs_setup?: boolean };
-        if (status.needs_setup === true) {
+        if (status.needs_setup === true && !passwordPolicy.seedingAllowed) {
+          console.warn(`[webui] ${SEEDING_REFUSED_AFTER_WEBUI}`);
+        } else if (status.needs_setup === true) {
           const resetRes = await fetch(`http://127.0.0.1:${handle.backendPort}/api/webui/reset-password`, {
             method: 'POST',
           });

@@ -7,6 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   ensureAdminPassword,
+  SEEDING_REFUSED_AFTER_WEBUI,
   WEBUI_FIRST_PASSWORD_STEPS,
   WEBUI_PASSWORD_PROCEDURE,
   type EnsureAdminPasswordDeps,
@@ -96,6 +97,35 @@ describe('ensureAdminPassword in WebUI identity (card C11)', () => {
     await ensureAdminPassword({ backendPort: 25808, identity: 'local' }, deps);
 
     expect(calls[1].url).toBe('http://127.0.0.1:25808/api/webui/reset-password');
+  });
+});
+
+describe('ensureAdminPassword on the first local start after WebUI identity (rollback)', () => {
+  const procedureLines = [...WEBUI_PASSWORD_PROCEDURE, ...WEBUI_FIRST_PASSWORD_STEPS];
+
+  it('with a password set, prints the local login hint, not the WebUI procedure', async () => {
+    const { deps, calls, logs, warns } = makeDeps({
+      handlers: [() => mockResponse(200, { needs_setup: false }), () => mockResponse(200, { data: { username: 'u' } })],
+    });
+
+    await ensureAdminPassword({ backendPort: 25808, identity: 'local', seedingAllowed: false }, deps);
+
+    expect(calls.map((call) => call.url)).not.toContain('http://127.0.0.1:25808/api/webui/reset-password');
+    expect(logs).toEqual(['[aionui-web] Log in with username "u". Forgot the password? Run `aionui-web resetpass`.']);
+    expect(warns).toEqual([]);
+    for (const line of procedureLines) expect([...logs, ...warns].join('\n')).not.toContain(line);
+  });
+
+  it('without a password, still refuses to seed and prints no WebUI procedure', async () => {
+    const { deps, calls, logs, warns } = makeDeps({
+      handlers: [() => mockResponse(200, { needs_setup: true })],
+    });
+
+    await ensureAdminPassword({ backendPort: 25808, identity: 'local', seedingAllowed: false }, deps);
+
+    expect(calls.map((call) => call.url)).toEqual(['http://127.0.0.1:25808/api/auth/status']);
+    expect(warns).toEqual([`[aionui-web] ${SEEDING_REFUSED_AFTER_WEBUI}`]);
+    expect(logs).toEqual([]);
   });
 });
 
