@@ -289,6 +289,84 @@ describe('403 CSRF_INVALID re-priming', () => {
   });
 });
 
+/**
+ * In-memory `document.cookie` (jsdom refuses `__Host-` cookies over http, which a
+ * browser keeps on a secure-context origin such as localhost).
+ */
+const useCookieJar = (initial: Record<string, string>) => {
+  const jar = new Map(Object.entries(initial));
+  // An own accessor shadows Document.prototype's; deleting it (afterEach) restores the real one.
+  Object.defineProperty(document, 'cookie', {
+    configurable: true,
+    get: () => [...jar].map(([name, value]) => `${name}=${value}`).join('; '),
+    set: (cookie: string) => {
+      const [pair, ...attributes] = cookie.split(';');
+      const index = pair.indexOf('=');
+      const name = pair.slice(0, index).trim();
+      if (attributes.some((attribute) => attribute.trim().toLowerCase() === 'max-age=0')) jar.delete(name);
+      else jar.set(name, pair.slice(index + 1).trim());
+    },
+  });
+  return jar;
+};
+
+describe("over HTTP the backend's cookie name wins over a stale one from another port", () => {
+  const HOST = '__Host-aionui-csrf-token';
+  const LEGACY = 'aionui-csrf-token';
+  afterEach(() => {
+    delete (document as { cookie?: string }).cookie;
+  });
+
+  const acceptOnly = (token: string) => (_url: string, init?: RequestInit) =>
+    sentToken(init) === token ? json(200, { success: true, data: 'ok' }) : csrfRejection();
+
+  it('a rejection the re-prime cannot fix falls back to the other name, for this and every later write', async () => {
+    useCookieJar({ [HOST]: tok('1'), [LEGACY]: tok('2') });
+    const fn = mockFetch(acceptOnly(tok('2')));
+    await expect(httpRequest('POST', '/api/a', {})).resolves.toBe('ok');
+    await expect(httpRequest('POST', '/api/b', {})).resolves.toBe('ok');
+    expect(writes(fn).map(([, init]) => sentToken(init))).toEqual([tok('1'), tok('2'), tok('2')]);
+    expect(authChecks(fn)).toHaveLength(1);
+  });
+
+  it('prefers the name the re-prime refreshed', async () => {
+    const jar = useCookieJar({ [HOST]: tok('1') });
+    const fn = mockFetch(acceptOnly(tok('2')), tok('2')); // the backend sets the legacy name
+    await expect(httpRequest('POST', '/api/a', {})).resolves.toBe('ok');
+    await expect(httpRequest('POST', '/api/b', {})).resolves.toBe('ok');
+    expect(jar.get(HOST)).toBe(tok('1'));
+    expect(writes(fn).map(([, init]) => sentToken(init))).toEqual([tok('1'), tok('2'), tok('2')]);
+  });
+
+  it("prefers the name the page's own auth check set: no rejection at all", async () => {
+    const jar = useCookieJar({ [HOST]: tok('1') });
+    const fn = mockFetch(acceptOnly(tok('2')));
+    noteAuthUserRequest(
+      Promise.resolve().then(() => {
+        jar.set(LEGACY, tok('2'));
+      })
+    );
+    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await expect(httpRequest('POST', '/api/a', {})).resolves.toBe('ok');
+    expect(writes(fn).map(([, init]) => sentToken(init))).toEqual([tok('2')]);
+  });
+
+  it('keeps __Host- first when the backend uses it (webui loopback staging)', async () => {
+    useCookieJar({ [HOST]: tok('3'), [LEGACY]: tok('4') });
+    const fn = mockFetch(acceptOnly(tok('3')));
+    await expect(httpRequest('POST', '/api/a', {})).resolves.toBe('ok');
+    expect(writes(fn).map(([, init]) => sentToken(init))).toEqual([tok('3')]);
+  });
+
+  it('with a single cookie a rejection still retries once and gives up (no name to fall back to)', async () => {
+    useCookieJar({ [HOST]: tok('1') });
+    const fn = mockFetch(() => csrfRejection());
+    await expect(httpRequest('POST', '/api/a', {})).rejects.toMatchObject({ status: 403, code: 'CSRF_INVALID' });
+    expect(writes(fn).map(([, init]) => sentToken(init))).toEqual([tok('1'), tok('1')]);
+  });
+});
+
 describe('WebUI identity: every write path sends the header', () => {
   it('httpBridge (board, client settings, all ipcBridge writes)', async () => {
     setCookie(tok('1'));
