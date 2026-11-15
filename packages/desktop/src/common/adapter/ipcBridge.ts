@@ -400,6 +400,11 @@ export const conversation = {
     (p) => `/api/conversations/${p.conversation_id}/active-lease`,
     () => undefined
   ),
+  /** The owner opened the conversation: its last turn's outcome is seen (C21; a failed turn stops needing them). */
+  markOutcomeSeen: httpPost<{ last_outcome_seen_at: number }, { conversation_id: string }>(
+    (p) => `/api/conversations/${p.conversation_id}/outcome-seen`,
+    () => undefined
+  ),
   stop: httpPost<{ runtime: TConversationRuntimeSummary }, { conversation_id: string; turn_id: string }>(
     (p) => `/api/conversations/${p.conversation_id}/cancel`,
     (p) => ({ turn_id: p.turn_id })

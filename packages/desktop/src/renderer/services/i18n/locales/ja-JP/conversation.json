@@ -881,9 +881,13 @@
       "queued": "未開始 {{count}}"
     },
     "subConversations": "サブ会話 {{count}} 件",
+    "subConversations_one": "サブ会話 {{count}} 件",
+    "subConversations_other": "サブ会話 {{count}} 件",
     "needsYou": {
       "title": "要対応",
-      "running": "{{count}} 件の会話が実行中"
+      "running": "{{count}} 件の会話が実行中",
+      "running_one": "{{count}} 件の会話が実行中",
+      "running_other": "{{count}} 件の会話が実行中"
     },
     "announce": {
       "waiting": "{{name}} が対応を待っています",
@@ -894,16 +898,26 @@
       "worked": "作業時間 {{duration}}",
       "working": "作業中 · {{duration}}",
       "steps": "{{count}} ステップ",
+      "steps_one": "{{count}} ステップ",
+      "steps_other": "{{count}} ステップ",
       "thoughts": "{{count}} 回の思考",
+      "thoughts_one": "{{count}} 回の思考",
+      "thoughts_other": "{{count}} 回の思考",
       "failedSteps": "{{count}} 件失敗",
       "thought": "思考",
       "thoughtFor": "思考 {{duration}}",
       "moreSteps": "ほか {{count}} ステップ",
+      "moreSteps_one": "ほか {{count}} ステップ",
+      "moreSteps_other": "ほか {{count}} ステップ",
       "shortThoughts": "短い思考 {{count}} 回",
+      "shortThoughts_one": "短い思考 {{count}} 回",
+      "shortThoughts_other": "短い思考 {{count}} 回",
       "messageTo": "メッセージ → {{name}}",
       "viewSteps": "ステップを表示",
       "viewStepsCount": "ステップを表示 · {{count}}",
-      "waitingOnBackground": "{{count}} 件のバックグラウンドタスクを待機中"
+      "waitingOnBackground": "{{count}} 件のバックグラウンドタスクを待機中",
+      "waitingOnBackground_one": "{{count}} 件のバックグラウンドタスクを待機中",
+      "waitingOnBackground_other": "{{count}} 件のバックグラウンドタスクを待機中"
     },
     "card": {
       "title": "委任した作業",
@@ -922,6 +936,8 @@
       "stoppedNote": "停止済み",
       "reportedBack": "{{time}}に報告",
       "finishedHidden": "完了したタスク {{count}} 件を非表示 ·",
+      "finishedHidden_one": "完了したタスク {{count}} 件を非表示 ·",
+      "finishedHidden_other": "完了したタスク {{count}} 件を非表示 ·",
       "show": "表示",
       "noOutput": "出力はまだありません",
       "noSteps": "記録されたステップはまだありません",

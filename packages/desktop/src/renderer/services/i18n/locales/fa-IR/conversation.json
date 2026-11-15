@@ -881,9 +881,13 @@
       "queued": "{{count}} شروع نشده"
     },
     "subConversations": "{{count}} زیرگفتگو",
+    "subConversations_one": "{{count}} زیرگفتگو",
+    "subConversations_other": "{{count}} زیرگفتگو",
     "needsYou": {
       "title": "به شما نیاز دارد",
-      "running": "{{count}} گفتگو در حال اجرا"
+      "running": "{{count}} گفتگو در حال اجرا",
+      "running_one": "{{count}} گفتگو در حال اجرا",
+      "running_other": "{{count}} گفتگو در حال اجرا"
     },
     "announce": {
       "waiting": "{{name}} به شما نیاز دارد",
@@ -894,16 +898,26 @@
       "worked": "{{duration}} کار کرد",
       "working": "در حال کار · {{duration}}",
       "steps": "{{count}} مرحله",
+      "steps_one": "{{count}} مرحله",
+      "steps_other": "{{count}} مرحله",
       "thoughts": "{{count}} فکر",
+      "thoughts_one": "{{count}} فکر",
+      "thoughts_other": "{{count}} فکر",
       "failedSteps": "{{count}} ناموفق",
       "thought": "فکر",
       "thoughtFor": "فکر {{duration}}",
       "moreSteps": "{{count}} مرحلهٔ دیگر",
+      "moreSteps_one": "{{count}} مرحلهٔ دیگر",
+      "moreSteps_other": "{{count}} مرحلهٔ دیگر",
       "shortThoughts": "{{count}} فکر کوتاه",
+      "shortThoughts_one": "{{count}} فکر کوتاه",
+      "shortThoughts_other": "{{count}} فکر کوتاه",
       "messageTo": "پیام → {{name}}",
       "viewSteps": "مشاهدهٔ مراحل",
       "viewStepsCount": "مشاهدهٔ مراحل · {{count}}",
-      "waitingOnBackground": "در انتظار {{count}} کار پس‌زمینه"
+      "waitingOnBackground": "در انتظار {{count}} کار پس‌زمینه",
+      "waitingOnBackground_one": "در انتظار {{count}} کار پس‌زمینه",
+      "waitingOnBackground_other": "در انتظار {{count}} کار پس‌زمینه"
     },
     "card": {
       "title": "کارهای واگذارشده",
@@ -922,6 +936,8 @@
       "stoppedNote": "متوقف شد",
       "reportedBack": "{{time}} گزارش داد",
       "finishedHidden": "{{count}} کار تمام‌شده پنهان است ·",
+      "finishedHidden_one": "{{count}} کار تمام‌شده پنهان است ·",
+      "finishedHidden_other": "{{count}} کار تمام‌شده پنهان است ·",
       "show": "نمایش",
       "noOutput": "هنوز خروجی ندارد",
       "noSteps": "هنوز مرحله‌ای ثبت نشده",

@@ -58,6 +58,7 @@ import { buildTreesByRoot } from './utils/conversationTreeIndex';
 import { filterConversations, filterProjectGroup, normalizeSidebarQuery } from './utils/sidebarFilter';
 import {
   conversationRunState,
+  isOutcomeSeen,
   readLastOutcome,
   type RunState,
 } from '@/renderer/pages/conversation/components/orchestration/runState';
@@ -103,6 +104,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     isConversationWaitingConfirmation,
     hasCompletionUnread,
     hasBackgroundActive,
+    outcomeSeenAt,
     isManualUnread,
     markManualUnread,
     clearManualUnread,
@@ -125,8 +127,15 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         doneUnread: hasCompletionUnread(conversation.id),
         notStarted: conversation.status === 'pending',
         lastOutcome: readLastOutcome(conversation.extra),
+        outcomeSeen: isOutcomeSeen(conversation.extra, outcomeSeenAt(conversation.id)),
       }),
-    [hasBackgroundActive, hasCompletionUnread, isConversationGenerating, isConversationWaitingConfirmation]
+    [
+      hasBackgroundActive,
+      hasCompletionUnread,
+      isConversationGenerating,
+      isConversationWaitingConfirmation,
+      outcomeSeenAt,
+    ]
   );
 
   // --- Hierarchy (sub-conversations) ---

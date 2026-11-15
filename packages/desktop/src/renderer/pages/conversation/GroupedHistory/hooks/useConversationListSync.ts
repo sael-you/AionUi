@@ -7,6 +7,7 @@
 import { ipcBridge } from '@/common';
 import type { TChatConversation } from '@/common/config/storage';
 import { addEventListener } from '@/renderer/utils/emitter';
+import { isOutcomeSeen, readLastOutcome } from '@/renderer/pages/conversation/components/orchestration/runState';
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 /**
@@ -220,6 +221,7 @@ type ConversationListSyncSnapshot = {
   completionUnreadConversationIds: Set<string>;
   manualUnreadConversationIds: Set<string>;
   backgroundActiveConversationIds: Set<string>;
+  outcomeSeenAtById: Map<string, number>;
 };
 
 /**
@@ -269,6 +271,11 @@ let completedConversationIdsState = new Set<string>();
 // non-empty set stays "running" after its turn ended.
 let backgroundCallIdsByConversationState = new Map<string, Set<string>>();
 let backgroundActiveConversationIdsState = new Set<string>();
+// Opens recorded locally (C21), so a failed row clears the moment it is opened,
+// before the list refresh brings back extra.last_outcome_seen_at.
+let outcomeSeenAtByIdState = new Map<string, number>();
+// Rows with DB status "running" whose live runtime was already hydrated (C21).
+let hydratedRunningIds = new Set<string>();
 let conversation_idsState = new Set<string>();
 // Full id → owning project_id map over ALL loaded conversations (incl. the team
 // member rows filtered out of `conversationsState`). Every row from
@@ -289,6 +296,7 @@ let snapshotState: ConversationListSyncSnapshot = {
   completionUnreadConversationIds: completionUnreadConversationIdsState,
   manualUnreadConversationIds: manualUnreadConversationIdsState,
   backgroundActiveConversationIds: backgroundActiveConversationIdsState,
+  outcomeSeenAtById: outcomeSeenAtByIdState,
 };
 
 const emitStoreChange = () => {
@@ -299,6 +307,7 @@ const emitStoreChange = () => {
     completionUnreadConversationIds: completionUnreadConversationIdsState,
     manualUnreadConversationIds: manualUnreadConversationIdsState,
     backgroundActiveConversationIds: backgroundActiveConversationIdsState,
+    outcomeSeenAtById: outcomeSeenAtByIdState,
   };
   listeners.forEach((listener) => listener());
 };
@@ -378,6 +387,7 @@ const refreshConversations = () => {
         projectIdByIdState = new Map(items.map((conversation) => [conversation.id, conversation.project_id ?? null]));
         conversationByIdState = new Map(items.map((conversation) => [conversation.id, conversation]));
         emitStoreChange();
+        hydrateRunningRuntimes(items);
         return;
       }
 
@@ -597,6 +607,69 @@ export const reconcileBackgroundFromRuntime = (conversation_id: string, backgrou
   }
 };
 
+/**
+ * Pure: the rows whose live runtime should be fetched (C21). A row the
+ * database says is mid-turn may be waiting for approval or running background
+ * work, which the stream store only learns from frames that arrive after a
+ * reload; each such row is fetched once per running episode.
+ */
+export const runningRowsToHydrate = (
+  rows: readonly Pick<TChatConversation, 'id' | 'status'>[],
+  hydrated: ReadonlySet<string>
+): { fetch: string[]; keep: Set<string> } => {
+  const keep = new Set<string>();
+  const fetch: string[] = [];
+  for (const row of rows) {
+    if (row.status !== 'running') continue;
+    keep.add(row.id);
+    if (!hydrated.has(row.id)) fetch.push(row.id);
+  }
+  return { fetch, keep };
+};
+
+const hydrateRunningRuntimes = (rows: readonly TChatConversation[]) => {
+  const { fetch, keep } = runningRowsToHydrate(rows, hydratedRunningIds);
+  hydratedRunningIds = keep;
+  for (const id of fetch) {
+    void ipcBridge.conversation.get
+      .invoke({ id })
+      .then((conversation) => {
+        const runtime = conversation?.runtime;
+        if (!runtime) return;
+        reconcileGeneratingFromRuntime(id, runtime.is_processing === true);
+        reconcileWaitingConfirmationFromRuntime(id, runtime.pending_confirmations ?? 0);
+        reconcileBackgroundFromRuntime(id, runtime.background_active ?? 0);
+      })
+      .catch(() => {
+        // Retry on the next refresh.
+        hydratedRunningIds.delete(id);
+      });
+  }
+};
+
+/** The row's last turn failed and the owner has not opened it since. */
+const hasUnseenFailure = (conversation_id: string): boolean => {
+  const row = conversationByIdState.get(conversation_id);
+  return (
+    readLastOutcome(row?.extra) === 'error' && !isOutcomeSeen(row?.extra, outcomeSeenAtByIdState.get(conversation_id))
+  );
+};
+
+/**
+ * The owner opened (or is watching) the conversation: record locally so the
+ * failed glyph clears now, and persist it (AionCore C21 `outcome-seen`) so it
+ * stays cleared after a reload and in the parent's counts. No-op unless the
+ * last turn failed and was not seen yet.
+ */
+const markOutcomeSeenState = (conversation_id: string, force = false) => {
+  if (!force && !hasUnseenFailure(conversation_id)) return;
+  outcomeSeenAtByIdState = new Map(outcomeSeenAtByIdState).set(conversation_id, Date.now());
+  emitStoreChange();
+  void ipcBridge.conversation.markOutcomeSeen.invoke({ conversation_id }).catch((error: unknown) => {
+    console.warn('[sidebar] could not mark the outcome seen:', error);
+  });
+};
+
 const markCompletionUnread = (conversation_id: string) => {
   if (completionUnreadConversationIdsState.has(conversation_id)) {
     return;
@@ -763,6 +836,10 @@ const initializeConversationListSyncStore = () => {
     if (isTerminalTurnState(event.state) && activeConversationIdState !== event.session_id) {
       markCompletionUnread(event.session_id);
     }
+    // A failure the owner watched happen is seen already.
+    if (event.last_outcome === 'error' && activeConversationIdState === event.session_id) {
+      markOutcomeSeenState(event.session_id, true);
+    }
     markCompleted(event.session_id, event.turn_id);
     clearGenerating(event.session_id, 'turnCompleted');
     reconcileBackgroundFromRuntime(event.session_id, event.runtime?.background_active);
@@ -782,6 +859,7 @@ export const useConversationListSync = () => {
     completionUnreadConversationIds,
     manualUnreadConversationIds,
     backgroundActiveConversationIds,
+    outcomeSeenAtById,
   } = useSyncExternalStore(
     subscribeConversationListSync,
     getConversationListSyncSnapshot,
@@ -837,6 +915,16 @@ export const useConversationListSync = () => {
     [backgroundActiveConversationIds]
   );
 
+  /** When the owner opened it locally (before the list refresh carries it), if at all. */
+  const outcomeSeenAt = useCallback(
+    (conversation_id: string) => outcomeSeenAtById.get(conversation_id),
+    [outcomeSeenAtById]
+  );
+
+  const markOutcomeSeen = useCallback((conversation_id: string) => {
+    markOutcomeSeenState(conversation_id);
+  }, []);
+
   return {
     conversations,
     isConversationGenerating,
@@ -845,6 +933,8 @@ export const useConversationListSync = () => {
     clearCompletionUnread,
     isManualUnread,
     hasBackgroundActive,
+    outcomeSeenAt,
+    markOutcomeSeen,
     markManualUnread,
     clearManualUnread,
     setActiveConversation,

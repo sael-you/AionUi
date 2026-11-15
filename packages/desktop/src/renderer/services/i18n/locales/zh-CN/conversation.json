@@ -881,9 +881,13 @@
       "queued": "{{count}} 个未开始"
     },
     "subConversations": "{{count}} 个子会话",
+    "subConversations_one": "{{count}} 个子会话",
+    "subConversations_other": "{{count}} 个子会话",
     "needsYou": {
       "title": "需要你",
-      "running": "{{count}} 个会话运行中"
+      "running": "{{count}} 个会话运行中",
+      "running_one": "{{count}} 个会话运行中",
+      "running_other": "{{count}} 个会话运行中"
     },
     "announce": {
       "waiting": "{{name}} 需要你",
@@ -894,16 +898,26 @@
       "worked": "已工作 {{duration}}",
       "working": "工作中 · {{duration}}",
       "steps": "{{count}} 个步骤",
+      "steps_one": "{{count}} 个步骤",
+      "steps_other": "{{count}} 个步骤",
       "thoughts": "{{count}} 次思考",
+      "thoughts_one": "{{count}} 次思考",
+      "thoughts_other": "{{count}} 次思考",
       "failedSteps": "{{count}} 个失败",
       "thought": "思考",
       "thoughtFor": "思考 {{duration}}",
       "moreSteps": "另外 {{count}} 个步骤",
+      "moreSteps_one": "另外 {{count}} 个步骤",
+      "moreSteps_other": "另外 {{count}} 个步骤",
       "shortThoughts": "{{count}} 次短思考",
+      "shortThoughts_one": "{{count}} 次短思考",
+      "shortThoughts_other": "{{count}} 次短思考",
       "messageTo": "消息 → {{name}}",
       "viewSteps": "查看步骤",
       "viewStepsCount": "查看步骤 · {{count}}",
-      "waitingOnBackground": "等待 {{count}} 个后台任务"
+      "waitingOnBackground": "等待 {{count}} 个后台任务",
+      "waitingOnBackground_one": "等待 {{count}} 个后台任务",
+      "waitingOnBackground_other": "等待 {{count}} 个后台任务"
     },
     "card": {
       "title": "委派的工作",
@@ -922,6 +936,8 @@
       "stoppedNote": "已停止",
       "reportedBack": "{{time}}已回报",
       "finishedHidden": "已隐藏 {{count}} 个完成的任务 ·",
+      "finishedHidden_one": "已隐藏 {{count}} 个完成的任务 ·",
+      "finishedHidden_other": "已隐藏 {{count}} 个完成的任务 ·",
       "show": "显示",
       "noOutput": "暂无输出",
       "noSteps": "暂无步骤记录",

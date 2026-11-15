@@ -76,15 +76,17 @@ const TurnActivity: React.FC<{
   endAt?: number;
   /** Subagent names by task id: a SendMessage step reads "Message → <name>", never the id. */
   taskLabels?: ReadonlyMap<string, string>;
-}> = ({ entries, endAt, taskLabels }) => {
+  /** Whether the conversation is processing; `false` freezes steps a restart cut off. */
+  live?: boolean;
+}> = ({ entries, endAt, taskLabels, live }) => {
   const { t } = useTranslation();
   const units = useDurationUnits();
   const [expanded, setExpanded] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [openThought, setOpenThought] = useState<string | null>(null);
-  const probe = summarizeTurnActivity(entries, { endAt, now: Date.now() });
+  const probe = summarizeTurnActivity(entries, { endAt, now: Date.now(), live });
   const now = useTicker(probe.running);
-  const summary = summarizeTurnActivity(entries, { endAt, now });
+  const summary = summarizeTurnActivity(entries, { endAt, now, live });
   const elapsed = formatRunDuration(summary.elapsedMs, units, { seconds: true });
 
   const rows = useMemo<TimelineRow[]>(() => {
