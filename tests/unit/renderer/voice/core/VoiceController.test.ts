@@ -709,6 +709,8 @@ describe('VoiceController — S1b: drafts', () => {
     expect(f.fx.api.fetchClip).toHaveBeenCalledWith('clipR');
     expect(c.store.getSnapshot().draftHint).toBe('Say it again, or tap the card.');
     expect(c.store.getSnapshot().followUps).toHaveLength(0);
+    f.frame({ name: 'voice.draftUpdated', voiceSessionId: 'vs-1', ...draft({ state: 'committing' }) });
+    expect(c.store.getSnapshot().draftHint).toBeNull();
   });
 
   it('an agent line still waits while an ambiguous draft asks "A or B?"', async () => {
@@ -779,6 +781,23 @@ describe('VoiceController — S1b: server wake and agent ask', () => {
     expect(f.fx.api.endSession).toHaveBeenCalledWith('vs-1', 'user');
     expect(c.store.getSnapshot().asking).toBe(false);
     expect(c.state.mode).toBe('armed');
+  });
+
+  it('an ask call that cannot start (busy) leaves answer mode', async () => {
+    const { f, c } = await armed();
+    f.fx.startCall.mockRejectedValueOnce(new VoiceBusyError());
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c9',
+      status: 'asks',
+      line: 'q',
+      clipId: null,
+    });
+    await flush();
+    expect(c.state.call).toBeNull();
+    expect(c.store.getSnapshot().asking).toBe(false);
+    expect(c.store.getSnapshot().notice?.code).toBe('busy');
   });
 
   it('an unanswered ask call closes after 2 minutes', async () => {

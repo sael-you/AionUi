@@ -480,6 +480,7 @@ export class VoiceController {
       })
       .catch((error: unknown) => {
         if (token !== this.armToken) return;
+        this.endAsk();
         this.dispatch({ type: 'callEnded', resumeOf: null });
         this.restoreWakeMode();
         if (error instanceof VoiceBusyError) {
@@ -503,9 +504,7 @@ export class VoiceController {
     this.call = null;
     this.clearTimer('readyTimer');
     this.clearTimer('deadManTimer');
-    this.clearTimer('askTimer');
-    this.clearTimer('askHangupTimer');
-    if (this.store.getSnapshot().asking) this.store.update({ asking: false });
+    this.endAsk();
     this.unregisterMedia?.();
     this.unregisterMedia = null;
     this.capture?.mute();
@@ -726,9 +725,10 @@ export class VoiceController {
     const changed = prevState !== draft.state;
     this.store.update({
       draft,
-      ...(changedVersion ? { overlayOpen: true, draftHint: null } : {}),
-      // A new version or state answers the pending tap.
-      ...(changed ? { draftTap: null } : {}),
+      ...(changedVersion ? { overlayOpen: true } : {}),
+      // A new version or state answers the pending tap and outdates Jarvis's last line about it
+      // (a refused "send" arrives right after the draft went back to `drafted`).
+      ...(changed ? { draftTap: null, draftHint: null } : {}),
       holdUntil: this.holdDeadline(draft, prevState),
     });
     if (!changed) return;
@@ -923,6 +923,13 @@ export class VoiceController {
       draftLine: false,
     });
     if (queued && reason === 'asks' && !this.machine.call) this.askClipId = itemId;
+  }
+
+  /** Leave answer-only mode (call ended or never started). */
+  private endAsk(): void {
+    this.clearTimer('askTimer');
+    this.clearTimer('askHangupTimer');
+    if (this.store.getSnapshot().asking) this.store.update({ asking: false });
   }
 
   /** Open the answer-only call for an agent `ask` (closes after the answer or 2 min). */
