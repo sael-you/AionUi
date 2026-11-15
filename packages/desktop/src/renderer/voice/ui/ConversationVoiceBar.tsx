@@ -98,8 +98,7 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
         size='small'
         className={styles.voiceBarState}
         data-state={state}
-        disabled={!canTalk}
-        aria-label={canTalk ? t('voice.bar.talk') : stateLabel}
+        aria-label={canTalk ? `${stateLabel} · ${t('voice.bar.talk')}` : stateLabel}
         onClick={() => controller.talk()}
         data-testid='voice-bar-talk'
       >

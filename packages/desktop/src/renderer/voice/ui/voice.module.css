@@ -217,6 +217,11 @@
   color: var(--text-primary);
 }
 
+/* The chip is a text button: keep the state readable (Arco's text button would tint it). */
+.voiceBar :global(.arco-btn-text).voiceBarState {
+  color: var(--text-primary);
+}
+
 .voiceBarStateText {
   font-size: 13px;
   font-weight: 500;

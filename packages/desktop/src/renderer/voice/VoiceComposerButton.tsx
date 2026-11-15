@@ -35,19 +35,18 @@ const VoiceComposerButton: React.FC<VoiceComposerButtonProps> = ({
   const view = useVoiceView(controller.store);
   const available = useVoiceAvailable(controller);
   const label = t('voice.composer.tooltip');
+  const pressed =
+    view.machine.mode !== 'off' && view.voiceMode === 'conversation' && view.focusConversationId === conversationId;
   if (!available) return null;
   return (
-    <Tooltip content={label} mini>
+    // While voice mode is on, the bar above the composer explains itself: no tooltip over its buttons.
+    <Tooltip content={label} mini disabled={pressed}>
       <Button
         type='text'
         shape='circle'
         disabled={disabled}
         aria-label={label}
-        aria-pressed={
-          view.machine.mode !== 'off' &&
-          view.voiceMode === 'conversation' &&
-          view.focusConversationId === conversationId
-        }
+        aria-pressed={pressed}
         data-testid='voice-composer-button'
         icon={<VoiceOrbGlyph state={view.orb} size={16} />}
         onClick={() => controller.toggle({ focusConversationId: conversationId, mode: 'conversation' })}
