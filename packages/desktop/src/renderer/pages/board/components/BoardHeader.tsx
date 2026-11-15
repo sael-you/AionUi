@@ -17,6 +17,7 @@ import {
   projectSurfaceClasses,
   type ProjectThemeView,
 } from '@/renderer/components/workspace/ProjectIdentity';
+import { iconLabelButton } from '@/renderer/components/board/utils/boardStyles';
 
 export type BoardHeaderProps = {
   board: BoardController;
@@ -74,6 +75,7 @@ export const BoardHeader: React.FC<BoardHeaderProps> = ({ board, projectName, pr
       {settings?.enabled && (
         <Tooltip content={t('board.keeper.tooltip')} mini>
           <Button
+            className={iconLabelButton('small')}
             size='small'
             loading={openingKeeper}
             icon={<Comment theme='outline' size='14' fill='currentColor' />}
@@ -95,6 +97,7 @@ export const BoardHeader: React.FC<BoardHeaderProps> = ({ board, projectName, pr
       {canConfigure && (
         <>
           <Button
+            className={iconLabelButton('small')}
             size='small'
             icon={<SettingTwo theme='outline' size='14' fill='currentColor' />}
             onClick={onOpenSettings}
