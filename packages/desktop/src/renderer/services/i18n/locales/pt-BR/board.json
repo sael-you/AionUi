@@ -400,10 +400,10 @@
     "separate": "Conversa separada"
   },
   "keeper": {
-    "talk": "Falar com o quadro",
-    "tooltip": "Peça ao Guardião do quadro para criar, atualizar, triar ou resumir cartões",
-    "badge": "Guardião do quadro",
-    "failed": "Não foi possível abrir o Guardião do quadro"
+    "talk": "Falar com o Mordomo",
+    "tooltip": "Peça ao Mordomo do quadro para criar, atualizar, triar ou resumir cartões",
+    "badge": "Mordomo do quadro",
+    "failed": "Não foi possível abrir o Mordomo do quadro"
   },
   "sidebar": {
     "openBoardOf": "Abrir o quadro de {{project}}"

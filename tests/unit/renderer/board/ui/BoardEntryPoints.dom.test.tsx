@@ -87,7 +87,7 @@ const KeeperOpener: React.FC = () => {
   );
 };
 
-describe('Talk to the board from the sidebar menu', () => {
+describe('Talk to the Butler from the sidebar menu', () => {
   const renderOpener = () =>
     renderWithBoard(
       <Routes>
@@ -111,7 +111,7 @@ describe('Talk to the board from the sidebar menu', () => {
     fireEvent.click(screen.getByRole('button', { name: 'talk' }));
     await waitFor(() =>
       expect(notify).toHaveBeenCalledWith({
-        title: "Couldn't open the Board Keeper",
+        title: "Couldn't open the Board Butler",
         content: 'The board is turned off.',
       })
     );
@@ -119,7 +119,7 @@ describe('Talk to the board from the sidebar menu', () => {
   });
 });
 
-describe('Board Keeper badge', () => {
+describe('Board Butler badge', () => {
   const keeper = { extra: { board_keeper: true } };
 
   it('recognises only the conversation the server marks as keeper', () => {
@@ -138,8 +138,8 @@ describe('Board Keeper badge', () => {
     );
     const badges = screen.getAllByTestId('board-keeper-badge');
     expect(badges).toHaveLength(2);
-    expect(badges[0]).toHaveTextContent('Board Keeper');
-    expect(within(badges[1]).getByText('Board Keeper')).toHaveClass('sr-only');
+    expect(badges[0]).toHaveTextContent('Board Butler');
+    expect(within(badges[1]).getByText('Board Butler')).toHaveClass('sr-only');
   });
 });
 

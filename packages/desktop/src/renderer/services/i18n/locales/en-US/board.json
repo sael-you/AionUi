@@ -395,10 +395,10 @@
     "separate": "Separate conversation"
   },
   "keeper": {
-    "talk": "Talk to the board",
-    "tooltip": "Ask the Board Keeper to create, update, triage or summarise cards",
-    "badge": "Board Keeper",
-    "failed": "Couldn't open the Board Keeper"
+    "talk": "Talk to the Butler",
+    "tooltip": "Ask the Board Butler to create, update, triage or summarise cards",
+    "badge": "Board Butler",
+    "failed": "Couldn't open the Board Butler"
   },
   "sidebar": {
     "openBoardOf": "Open the board of {{project}}"

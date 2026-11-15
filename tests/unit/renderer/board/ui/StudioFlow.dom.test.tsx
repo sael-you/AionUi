@@ -259,10 +259,10 @@ describe('studio move errors', () => {
 });
 
 describe('board header', () => {
-  it('opens the existing Board Keeper conversation', async () => {
+  it('opens the existing Board Butler conversation', async () => {
     bridge.get.mockResolvedValue(makeSnapshot({ settings: makeSettings({ keeper_conversation_id: 'keeper-1' }) }));
     renderPage();
-    fireEvent.click(await screen.findByRole('button', { name: 'Talk to the board' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Talk to the Butler' }));
     expect(await screen.findByText('conversation page')).toBeInTheDocument();
     expect(bridge.ensureKeeper).not.toHaveBeenCalled();
   });
@@ -270,7 +270,7 @@ describe('board header', () => {
   it('spaces icon and label in the header buttons', async () => {
     renderPage();
     await screen.findByRole('button', { name: 'Column settings' });
-    for (const name of ['Talk to the board', 'Column settings']) {
+    for (const name of ['Talk to the Butler', 'Column settings']) {
       const button = screen.getByRole('button', { name });
       expect(button.className).toContain('gap-6px');
       expect(button.className).toContain('!inline-flex');
@@ -280,7 +280,7 @@ describe('board header', () => {
   it('creates the keeper conversation when the board has none yet', async () => {
     bridge.ensureKeeper.mockResolvedValue({ conversation_id: 'keeper-2' });
     renderPage();
-    fireEvent.click(await screen.findByRole('button', { name: 'Talk to the board' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Talk to the Butler' }));
     await waitFor(() => expect(bridge.ensureKeeper).toHaveBeenCalledWith({ project_id: 'p1' }));
     expect(await screen.findByText('conversation page')).toBeInTheDocument();
   });
