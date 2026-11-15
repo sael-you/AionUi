@@ -15,6 +15,10 @@
  * nothing anywhere. Scenario per call: ready → captions → "checking" →
  * draft + read-back clip → Send (4 s hold) → sent → follow-up; Cancel works
  * at any point before sending.
+ *
+ * Conversation voice mode (C26): the call is an ear for the bound conversation. Scenario: ready →
+ * your words as captions → `sent` → the agent speaks a 4 s line → `finished`; "Done" commits at
+ * once. `window.__aionuiVoiceMock.emit(frame)` lets a browser check script push any further frame.
  */
 
 import { encodeWavPcm16 } from '@/renderer/services/speech/pcmRecorder';
@@ -33,10 +37,10 @@ export function isVoiceMockEnabled(): boolean {
   }
 }
 
-/** A 0.9 s two-tone WAV standing in for a synthesized read-back. */
-function mockClip(): Promise<ArrayBuffer> {
+/** A two-tone WAV (0.9 s by default) standing in for a synthesized read-back or agent line. */
+function mockClip(seconds = 0.9): Promise<ArrayBuffer> {
   const rate = 24000;
-  const pcm = new Int16Array(Math.round(rate * 0.9));
+  const pcm = new Int16Array(Math.round(rate * seconds));
   for (let i = 0; i < pcm.length; i++) {
     const f = i < pcm.length / 2 ? 330 : 392;
     pcm[i] = Math.round(4000 * Math.sin((2 * Math.PI * f * i) / rate));
@@ -51,6 +55,9 @@ export function withMockBackend(fx: Effects): Effects {
   let sessionSeq = 0;
   let boundSession: string | null = null;
   let draft: VoiceDraft | null = null;
+  let conversationOf: Record<string, string> = {};
+  let committed = false;
+  let conversationPost: (() => void) | null = null;
   const timers: unknown[] = [];
   const later = (ms: number, fn: () => void) => timers.push(fx.timers.setTimeout(fn, ms));
   const emit = (frame: ServerFrame) => open && listener?.onFrame(frame);
@@ -114,8 +121,34 @@ export function withMockBackend(fx: Effects): Effects {
     });
   };
 
+  const runConversationScenario = (voiceSessionId: string, conversationId: string) => {
+    committed = false;
+    const followUp = (status: 'sent' | 'says' | 'finished', line: string, clipId: string | null) =>
+      emit({ name: 'voice.followUp', voiceSessionId, conversationId, status, line, clipId });
+    later(250, () => emit({ name: 'voice.ready', voiceSessionId, engine: 'openai-realtime', model: 'mock' }));
+    later(900, () => emit({ name: 'voice.caption', voiceSessionId, role: 'user', text: 'Also run the', final: false }));
+    const post = () => {
+      if (committed) return;
+      committed = true;
+      emit({
+        name: 'voice.caption',
+        voiceSessionId,
+        role: 'user',
+        text: 'Also run the unit tests, please',
+        final: true,
+      });
+      later(300, () => followUp('sent', 'Sent', null));
+      later(1500, () => followUp('says', 'Running the unit tests now.', 'mock-say-1'));
+      later(9000, () => followUp('finished', 'The unit tests passed.', null));
+    };
+    conversationPost = post;
+    later(2200, post);
+  };
+
   const onClientFrame = (frame: ClientFrame) => {
-    if (frame.name === 'voice.playbackFinished') {
+    if (frame.name === 'voice.commit') {
+      conversationPost?.();
+    } else if (frame.name === 'voice.playbackFinished') {
       emit({ name: 'voice.state', voiceSessionId: sid(), state: 'listening', reason: null });
     } else if (frame.name === 'voice.confirmTap' && draft && frame.hash === draft.hash) {
       setDraft({ state: 'committing' });
@@ -166,9 +199,20 @@ export function withMockBackend(fx: Effects): Effects {
     },
     bindSession: (id: string | null) => {
       boundSession = id;
-      if (id) runScenario(id);
+      if (!id) return;
+      const conversationId = conversationOf[id];
+      if (conversationId) runConversationScenario(id, conversationId);
+      else runScenario(id);
     },
   };
+
+  // Browser checks drive further frames (barge-in outcomes, stop, approvals) from the outside.
+  if (typeof window !== 'undefined') {
+    (window as unknown as { __aionuiVoiceMock?: unknown }).__aionuiVoiceMock = {
+      emit: (frame: ServerFrame) => emit(frame),
+      session: () => boundSession,
+    };
+  }
 
   return {
     ...fx,
@@ -181,16 +225,20 @@ export function withMockBackend(fx: Effects): Effects {
       endSession: async () => {
         draft = null;
       },
-      fetchClip: () => mockClip(),
+      fetchClip: (urlOrId: string) => mockClip(urlOrId.startsWith('mock-say') ? 4 : 0.9),
     },
     createSocket: (l) => {
       listener = l;
       return socket;
     },
-    startCall: async () => {
+    startCall: async (options) => {
       await new Promise<void>((r) => fx.timers.setTimeout(() => r(), 300));
       sessionSeq++;
-      return { voiceSessionId: `mock-${sessionSeq}`, engine: 'openai-realtime', model: 'mock', close: () => undefined };
+      const voiceSessionId = `mock-${sessionSeq}`;
+      if (options.mode === 'conversation' && options.focusConversationId) {
+        conversationOf = { ...conversationOf, [voiceSessionId]: options.focusConversationId };
+      }
+      return { voiceSessionId, engine: 'openai-realtime', model: 'mock', close: () => undefined };
     },
   };
 }
