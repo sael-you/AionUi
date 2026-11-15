@@ -28,6 +28,7 @@ import type {
 } from '@/common/config/storage';
 import type { Assistant } from '@/common/types/agent/assistantTypes';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { McpMarketSecretsNotSavedError } from './marketModel';
 
 export type McpMarketTestResult = { kind: 'ok'; tools: string[] } | { kind: 'failed'; error: unknown };
 
@@ -142,12 +143,14 @@ export const useMcpMarket = (): McpMarketController => {
       after(
         (async () => {
           const created = await mcpService.market.createInstance.invoke(req);
-          // Secrets belong to the instance, so they are set once it exists.
-          await Promise.all(
-            Object.entries(secrets)
-              .filter(([, value]) => value)
-              .map(([key, value]) => mcpService.market.setSecret.invoke({ id: created.id, key, value }))
+          // Secrets belong to the instance, so they are set once it exists. A
+          // failed secret does not undo the create: report which keys are missing.
+          const entries = Object.entries(secrets).filter(([, value]) => value);
+          const results = await Promise.allSettled(
+            entries.map(([key, value]) => mcpService.market.setSecret.invoke({ id: created.id, key, value }))
           );
+          const failed = entries.filter((_, i) => results[i].status === 'rejected').map(([key]) => key);
+          if (failed.length > 0) throw new McpMarketSecretsNotSavedError(created, failed);
           return created;
         })()
       ),

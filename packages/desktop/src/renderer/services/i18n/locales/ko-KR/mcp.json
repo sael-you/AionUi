@@ -188,7 +188,8 @@
       "secrets": "시크릿",
       "forcedByTier": "{{tier}} 등급에 의해 설정됩니다.",
       "dormantUntilComplete": "다음 항목이 입력될 때까지 휴면 상태로 유지됩니다: {{keys}}",
-      "startsDormant": "새 MCP는 휴면 상태로 시작합니다. 값을 설정하고 연결 테스트를 통과하면 활성화하세요."
+      "startsDormant": "새 MCP는 휴면 상태로 시작합니다. 값을 설정하고 연결 테스트를 통과하면 활성화하세요.",
+      "secretsNotSaved": "{{name}}이(가) 생성되었지만 다음 시크릿은 저장되지 않았습니다: {{keys}}. 인스턴스 패널에서 설정하세요."
     },
     "attach": {
       "title": "{{name}} 연결",

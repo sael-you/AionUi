@@ -362,6 +362,21 @@ export const withoutMarketRows = <T extends { id: string; name: string }>(
 // Errors: backend refusal → plain words
 // ---------------------------------------------------------------------------
 
+/**
+ * The instance was created but some of its secrets were not saved (create and
+ * set-secret are separate requests). The instance exists: callers treat the
+ * create as done and tell the user which keys to set in the drawer.
+ */
+export class McpMarketSecretsNotSavedError extends Error {
+  constructor(
+    readonly instance: McpMarketInstance,
+    readonly keys: string[]
+  ) {
+    super(`MCP instance ${instance.name} created; secrets not saved: ${keys.join(', ')}`);
+    this.name = 'McpMarketSecretsNotSavedError';
+  }
+}
+
 export type MarketErrorContext = 'generic' | 'name' | 'attach' | 'secret' | 'refresh' | 'activate';
 
 /** Whether a backend refusal is about a masked ("•••") value that has to be re-entered. */

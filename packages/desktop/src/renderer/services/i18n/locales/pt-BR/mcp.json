@@ -188,7 +188,8 @@
       "secrets": "Segredos",
       "forcedByTier": "Definido pelo nível {{tier}}.",
       "dormantUntilComplete": "Permanece inativo até que estes campos sejam preenchidos: {{keys}}",
-      "startsDormant": "Novos MCPs começam inativos. Ative um quando seus valores estiverem definidos e o teste de conexão for aprovado."
+      "startsDormant": "Novos MCPs começam inativos. Ative um quando seus valores estiverem definidos e o teste de conexão for aprovado.",
+      "secretsNotSaved": "{{name}} foi criado, mas estes segredos não foram salvos: {{keys}}. Defina-os no painel da instância."
     },
     "attach": {
       "title": "Anexar {{name}}",

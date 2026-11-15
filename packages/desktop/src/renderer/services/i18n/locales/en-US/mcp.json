@@ -188,7 +188,8 @@
       "secrets": "Secrets",
       "forcedByTier": "Set by the {{tier}} tier.",
       "dormantUntilComplete": "It stays dormant until these are filled in: {{keys}}",
-      "startsDormant": "New MCPs start dormant. Activate one when its values are set and the connection test passes."
+      "startsDormant": "New MCPs start dormant. Activate one when its values are set and the connection test passes.",
+      "secretsNotSaved": "{{name}} was created, but these secrets were not saved: {{keys}}. Set them in the instance drawer."
     },
     "attach": {
       "title": "Attach {{name}}",

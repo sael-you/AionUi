@@ -188,7 +188,8 @@
       "secrets": "Secrets",
       "forcedByTier": "Défini par le niveau {{tier}}.",
       "dormantUntilComplete": "Reste en veille jusqu'à ce que ces champs soient remplis : {{keys}}",
-      "startsDormant": "Les nouveaux MCP démarrent en veille. Activez-en un lorsque ses valeurs sont définies et que le test de connexion réussit."
+      "startsDormant": "Les nouveaux MCP démarrent en veille. Activez-en un lorsque ses valeurs sont définies et que le test de connexion réussit.",
+      "secretsNotSaved": "{{name}} a été créé, mais ces secrets n'ont pas été enregistrés : {{keys}}. Définissez-les dans le panneau de l'instance."
     },
     "attach": {
       "title": "Rattacher {{name}}",

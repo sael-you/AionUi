@@ -188,7 +188,8 @@
       "secrets": "Secretos",
       "forcedByTier": "Definido por el nivel {{tier}}.",
       "dormantUntilComplete": "Permanece inactivo hasta que se rellenen estos campos: {{keys}}",
-      "startsDormant": "Los MCP nuevos empiezan inactivos. Activa uno cuando sus valores estén definidos y la prueba de conexión sea correcta."
+      "startsDormant": "Los MCP nuevos empiezan inactivos. Activa uno cuando sus valores estén definidos y la prueba de conexión sea correcta.",
+      "secretsNotSaved": "Se creó {{name}}, pero estos secretos no se guardaron: {{keys}}. Configúralos en el panel de la instancia."
     },
     "attach": {
       "title": "Vincular {{name}}",

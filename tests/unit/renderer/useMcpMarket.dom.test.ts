@@ -45,6 +45,7 @@ vi.mock('@/common', () => ({
 }));
 
 import { useMcpMarket } from '@/renderer/hooks/mcp/market/useMcpMarket';
+import { McpMarketSecretsNotSavedError } from '@/renderer/hooks/mcp/market/marketModel';
 import type { McpMarketInstance } from '@/common/config/storage';
 
 const instance = { id: 'i1', name: 'tb-x', created_at: 1, updated_at: 2 } as McpMarketInstance;
@@ -140,6 +141,33 @@ describe('useMcpMarket', () => {
     api.market.revokeInstance.invoke.mockRejectedValue(new Error('refused'));
     const before = api.market.listInstances.invoke.mock.calls.length;
     await expect(act(() => result.current.revoke('i1'))).rejects.toThrow('refused');
+    expect(api.market.listInstances.invoke.mock.calls.length).toBe(before + 1);
+  });
+
+  it('keeps a created instance when a secret fails: names the unsaved keys and still reloads', async () => {
+    api.market.createInstance.invoke.mockResolvedValue({ ...instance, id: 'new' });
+    api.market.setSecret.invoke.mockImplementation(({ key }: { key: string }) =>
+      key === 'B_KEY' ? Promise.reject(new Error('refused')) : Promise.resolve({})
+    );
+    const { result } = await loaded();
+    const before = api.market.listInstances.invoke.mock.calls.length;
+
+    let thrown: unknown;
+    await act(async () => {
+      await result.current
+        .createInstance(
+          { name: 'tb-x', template_id: 'paddle', environment: 'sandbox', tier: 'read', clis: ['claude'] },
+          { A_KEY: 'fake-a', B_KEY: 'fake-b' }
+        )
+        .catch((err: unknown) => {
+          thrown = err;
+        });
+    });
+    expect(thrown).toBeInstanceOf(McpMarketSecretsNotSavedError);
+    expect((thrown as McpMarketSecretsNotSavedError).instance.id).toBe('new');
+    expect((thrown as McpMarketSecretsNotSavedError).keys).toEqual(['B_KEY']);
+    // Both secrets were attempted, and the list reloaded (the instance shows up).
+    expect(api.market.setSecret.invoke).toHaveBeenCalledTimes(2);
     expect(api.market.listInstances.invoke.mock.calls.length).toBe(before + 1);
   });
 
