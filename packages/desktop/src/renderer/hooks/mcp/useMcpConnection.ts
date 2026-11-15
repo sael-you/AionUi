@@ -40,7 +40,7 @@ const getMcpErrorDetails = (details: unknown): McpErrorDetails => {
   return details as McpErrorDetails;
 };
 
-const formatMcpErrorMessage = (t: TFunction, payload: McpErrorPayload): string => {
+export const formatMcpErrorMessage = (t: TFunction, payload: McpErrorPayload): string => {
   const fallback = payload.error || t('settings.mcpError');
   const details = getMcpErrorDetails(payload.details);
 
@@ -111,7 +111,7 @@ const formatMcpErrorMessage = (t: TFunction, payload: McpErrorPayload): string =
   }
 };
 
-const formatThrownMcpErrorMessage = (t: TFunction, error: unknown): string => {
+export const formatThrownMcpErrorMessage = (t: TFunction, error: unknown): string => {
   if (isBackendHttpError(error)) {
     return formatMcpErrorMessage(t, {
       error: error.backendMessage,

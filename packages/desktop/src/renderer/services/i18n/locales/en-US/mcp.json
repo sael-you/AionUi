@@ -71,5 +71,224 @@
     "normal": "Normal",
     "high": "High",
     "urgent": "Urgent"
+  },
+  "market": {
+    "search": "Search MCPs and templates",
+    "loading": "Loading MCPs…",
+    "loadFailed": "Could not load the MCP market: {{detail}}",
+    "empty": "No MCPs yet. Add one from a template.",
+    "browseTemplates": "Browse templates",
+    "filter": {
+      "label": "Filter by status",
+      "all": "All",
+      "active": "Active",
+      "dormant": "Dormant",
+      "revoked": "Revoked",
+      "missing": "Missing values"
+    },
+    "group": {
+      "global": "Global",
+      "globalHint": "Available in every project: AionUi servers, extension servers and market MCPs attached globally.",
+      "globalEmpty": "No global MCPs.",
+      "projectEmpty": "Nothing is attached to this project yet.",
+      "unassigned": "Unassigned",
+      "unassignedEmpty": "Every MCP is attached somewhere.",
+      "templates": "Templates",
+      "templatesEmpty": "No templates in the catalogue.",
+      "count": "{{count}} MCPs"
+    },
+    "status": {
+      "active": "Active",
+      "dormant": "Dormant",
+      "revoked": "Revoked"
+    },
+    "tier": {
+      "read": "Read",
+      "write": "Write"
+    },
+    "environment": {
+      "production": "Production",
+      "staging": "Staging",
+      "sandbox": "Sandbox",
+      "local": "Local"
+    },
+    "cli": {
+      "claude": "Claude",
+      "codex": "Codex",
+      "gemini": "Gemini"
+    },
+    "scope": {
+      "global": "Global",
+      "assistantIn": "assistant {{name}}",
+      "unknownProject": "Project {{id}} (not in the sidebar)"
+    },
+    "actions": {
+      "add": "Add",
+      "create": "Create",
+      "duplicate": "Duplicate",
+      "manage": "Manage",
+      "attach": "Attach",
+      "detach": "Detach",
+      "activate": "Activate",
+      "makeDormant": "Make dormant",
+      "revoke": "Revoke",
+      "delete": "Delete",
+      "test": "Test connection",
+      "refreshTemplate": "Update template",
+      "save": "Save",
+      "cancel": "Cancel",
+      "retry": "Retry"
+    },
+    "instance": {
+      "fromTemplate": "Template: {{template}}",
+      "attachedTo": "Attached to",
+      "notAttached": "Not attached",
+      "secrets": "Secrets:",
+      "missing": "Missing required values: {{keys}}",
+      "problems": "Rule problems: {{count}}",
+      "problemsTitle": "Rule problems",
+      "enforcement": "Enforced by: {{value}}",
+      "approvalRecorded": "Owner approval recorded",
+      "writeNote": "Write tier: it can change data outside this machine. Claude only, and every tool call asks first."
+    },
+    "secret": {
+      "set": "Set",
+      "notSet": "Not set",
+      "required": "Required",
+      "changedAt": "changed {{date}}",
+      "replace": "Replace",
+      "setValue": "Set value",
+      "clear": "Clear",
+      "clearConfirm": "Clear this secret? The MCP cannot start without a required secret.",
+      "placeholder": "Enter the value",
+      "writeOnlyHint": "Write-only: the value is stored encrypted and never shown again.",
+      "emptyValue": "Enter a value, or use Clear to remove the stored one."
+    },
+    "create": {
+      "title": "Add {{name}}",
+      "duplicateTitle": "Duplicate {{name}}",
+      "name": "Name",
+      "nameRules": "Lowercase letters, digits and single hyphens; starts with a letter; at most {{max}} characters; unique. It becomes the tool prefix.",
+      "nameProblem": {
+        "required": "Enter a name.",
+        "pattern": "Use lowercase letters, digits and single hyphens, starting with a letter.",
+        "tooLong": "At most {{max}} characters.",
+        "reserved": "This name is reserved.",
+        "notInMarket": "This MCP is not offered in the market.",
+        "taken": "An MCP with this name already exists."
+      },
+      "duplicateNote": "The copy gets the same template, environment, tier, CLIs, plain values and tool lists. Secrets are not copied: set them on the new MCP. It starts dormant.",
+      "environment": "Environment",
+      "environmentPlaceholder": "Choose an environment",
+      "tier": "Tier",
+      "readTierNote": "Read: changes nothing outside this machine. Tools stay blocked until you allow them after a connection test.",
+      "writeTierNote": "Write: can change production data, money, ads, email or public posts. Claude only; production write MCPs stay dormant until the owner's written approval is recorded.",
+      "clis": "CLIs",
+      "plainEnv": "Settings",
+      "secrets": "Secrets",
+      "forcedByTier": "Set by the {{tier}} tier.",
+      "dormantUntilComplete": "It stays dormant until these are filled in: {{keys}}",
+      "startsDormant": "New MCPs start dormant. Activate one when its values are set and the connection test passes."
+    },
+    "attach": {
+      "title": "Attach {{name}}",
+      "pickTitle": "Attach an MCP",
+      "instance": "MCP",
+      "instancePlaceholder": "Choose an MCP",
+      "noInstances": "No MCPs to attach. Add one from a template first.",
+      "scope": "Where",
+      "wholeProject": "Whole project (project files)",
+      "assistant": "An assistant in a project",
+      "project": "Project",
+      "projectPlaceholder": "Choose a project",
+      "noProjects": "No projects to attach to.",
+      "assistantPlaceholder": "Choose an assistant",
+      "assistantNote": "Applies to new conversations and idle team members only.",
+      "clis": "CLIs",
+      "writeClaudeOnly": "Write MCPs are Claude only.",
+      "notActiveNote": "This MCP is not active: the attachment is saved, but nothing starts it until it is activated.",
+      "globalBlocked": {
+        "write": "Write MCPs are never global.",
+        "notGlobal": "Only context7 and studio-memory can be global."
+      },
+      "conflict": {
+        "alreadyAttached": "{{cli}}: already attached here.",
+        "otherChannel": "{{cli}}: already reaches this project the other way (project files or an assistant, never both)."
+      }
+    },
+    "activate": {
+      "title": "Activate {{name}}?",
+      "body": "Active MCPs are started for the projects, assistants and CLIs they are attached to.",
+      "missing": "Fill in the required values first: {{keys}}",
+      "productionWrite": "This is a production write MCP. It stays dormant until the owner's written approval of the exact change is recorded.",
+      "approvalLabel": "Approval reference",
+      "approvalHelp": "written owner approval of the exact change",
+      "approvalFormat": "Format: OA-<yyyymmdd>-<slug>",
+      "approvalRequired": "The approval reference is required.",
+      "approvalInvalid": "Use the format OA-<yyyymmdd>-<slug>, for example a date and a short lowercase name."
+    },
+    "confirm": {
+      "revoke": {
+        "title": "Revoke {{name}}?",
+        "body": "It stops being started at once and running copies stop at their next check. Attachments and secrets are kept, so it can be activated again.",
+        "ok": "Revoke"
+      },
+      "delete": {
+        "title": "Delete {{name}}?",
+        "body": "This removes the MCP, its attachments and its stored secrets. It cannot be undone.",
+        "ok": "Delete"
+      },
+      "dormant": {
+        "title": "Make {{name}} dormant?",
+        "body": "It is no longer started anywhere until it is activated again. Nothing is deleted.",
+        "ok": "Make dormant"
+      },
+      "refresh": {
+        "title": "Update the template of {{name}}?",
+        "body": "The MCP switches to the catalogue's current template. Secrets and attachments are kept; settings the new template no longer has are dropped.",
+        "ok": "Update"
+      }
+    },
+    "template": {
+      "updateAvailable": "Update available",
+      "refreshed": "Template updated ({{from}} → {{to}}).",
+      "unchanged": "The template was already current.",
+      "added": "New keys: {{keys}}.",
+      "removed": "Dropped keys: {{keys}}.",
+      "needsSecrets": "Needs secrets: {{keys}}",
+      "updateAvailableVersions": "Update available ({{from}} → {{to}})",
+      "notInCatalogue": "This template is no longer in the catalogue; the MCP keeps running its stored copy.",
+      "pendingSecretsTitle": "Secrets the template update needs",
+      "pendingSecretsHint": "Set these before updating; the MCP keeps its current template until then."
+    },
+    "tools": {
+      "allowTitle": "Allowed tools",
+      "allowHint": "Read MCPs block every tool that is not ticked here (fail closed).",
+      "blockTitle": "Blocked tools",
+      "blockHint": "Ticked tools are blocked; Claude asks before every other tool call.",
+      "none": "No tools seen yet. Run Test connection to list them."
+    },
+    "test": {
+      "success": "Connection works. Tools found: {{count}}."
+    },
+    "errors": {
+      "generic": "The request failed. Try again.",
+      "maskedValue": "A value shows as \"•••\" because it is hidden, not because it is the real value. Type the real value in again, then save.",
+      "sessionRequired": "MCP market changes need your signed-in browser session. Sign in again and retry; agents cannot make these changes.",
+      "csrf": "Your session's security check failed. Reload the page and try again.",
+      "catalogueUnavailable": "The MCP template catalogue is not available right now.",
+      "templateSecretMissing": "Set {{keys}} first: the new template needs it. The MCP stays on its current template.",
+      "notFound": "This MCP or attachment no longer exists. The list has been refreshed.",
+      "alreadyAttached": "This MCP is already attached there for that CLI. {{detail}}",
+      "nameTaken": "That name is already used. Choose another name. {{detail}}",
+      "conflict": "This conflicts with the current state. {{detail}}",
+      "rejected": "The server refused this change: {{detail}}",
+      "templateSecretMissingUnknown": "Set the secrets the new template needs first; the MCP stays on its current template. {{detail}}",
+      "forbidden": "This change is not allowed from here. Use your signed-in browser session.",
+      "tooLarge": "The request is too large.",
+      "rateLimited": "Too many requests. Wait a moment and try again.",
+      "internal": "The server hit an internal error. Try again; if it persists, check the AionUi logs.",
+      "upstream": "A service behind the server did not answer in time. Try again."
+    }
   }
 }

@@ -71,5 +71,224 @@
     "normal": "Normal",
     "high": "Yüksek",
     "urgent": "Acil"
+  },
+  "market": {
+    "search": "MCP'leri ve şablonları ara",
+    "loading": "MCP'ler yükleniyor…",
+    "loadFailed": "MCP pazarı yüklenemedi: {{detail}}",
+    "empty": "Henüz MCP yok. Bir şablondan ekleyin.",
+    "browseTemplates": "Şablonlara göz at",
+    "filter": {
+      "label": "Duruma göre filtrele",
+      "all": "Tümü",
+      "active": "Etkin",
+      "dormant": "Uykuda",
+      "revoked": "İptal edildi",
+      "missing": "Eksik değerler"
+    },
+    "group": {
+      "global": "Genel",
+      "globalHint": "Her projede kullanılabilir: AionUi sunucuları, uzantı sunucuları ve genel olarak bağlanan pazar MCP'leri.",
+      "globalEmpty": "Genel MCP yok.",
+      "projectEmpty": "Bu projeye henüz hiçbir şey bağlanmadı.",
+      "unassigned": "Atanmamış",
+      "unassignedEmpty": "Her MCP bir yere bağlı.",
+      "templates": "Şablonlar",
+      "templatesEmpty": "Katalogda şablon yok.",
+      "count": "{{count}} MCP"
+    },
+    "status": {
+      "active": "Etkin",
+      "dormant": "Uykuda",
+      "revoked": "İptal edildi"
+    },
+    "tier": {
+      "read": "Okuma",
+      "write": "Yazma"
+    },
+    "environment": {
+      "production": "Üretim",
+      "staging": "Hazırlık",
+      "sandbox": "Korumalı alan",
+      "local": "Yerel"
+    },
+    "cli": {
+      "claude": "Claude",
+      "codex": "Codex",
+      "gemini": "Gemini"
+    },
+    "scope": {
+      "global": "Genel",
+      "assistantIn": "asistan {{name}}",
+      "unknownProject": "Proje {{id}} (kenar çubuğunda değil)"
+    },
+    "actions": {
+      "add": "Ekle",
+      "create": "Oluştur",
+      "duplicate": "Çoğalt",
+      "manage": "Yönet",
+      "attach": "Bağla",
+      "detach": "Ayır",
+      "activate": "Etkinleştir",
+      "makeDormant": "Uykuya al",
+      "revoke": "İptal et",
+      "delete": "Sil",
+      "test": "Bağlantıyı test et",
+      "refreshTemplate": "Şablonu güncelle",
+      "save": "Kaydet",
+      "cancel": "Vazgeç",
+      "retry": "Yeniden dene"
+    },
+    "instance": {
+      "fromTemplate": "Şablon: {{template}}",
+      "attachedTo": "Bağlı olduğu yer",
+      "notAttached": "Bağlı değil",
+      "secrets": "Gizli anahtarlar:",
+      "missing": "Eksik zorunlu değerler: {{keys}}",
+      "problems": "Kural sorunları: {{count}}",
+      "problemsTitle": "Kural sorunları",
+      "enforcement": "Uygulayan: {{value}}",
+      "approvalRecorded": "Sahip onayı kaydedildi",
+      "writeNote": "Yazma katmanı: bu makinenin dışındaki verileri değiştirebilir. Yalnızca Claude; her araç çağrısından önce onay istenir."
+    },
+    "secret": {
+      "set": "Ayarlandı",
+      "notSet": "Ayarlanmadı",
+      "required": "Zorunlu",
+      "changedAt": "{{date}} tarihinde değiştirildi",
+      "replace": "Değiştir",
+      "setValue": "Değer ayarla",
+      "clear": "Temizle",
+      "clearConfirm": "Bu gizli anahtar temizlensin mi? Zorunlu bir gizli anahtar olmadan MCP başlatılamaz.",
+      "placeholder": "Değeri girin",
+      "writeOnlyHint": "Yalnızca yazma: değer şifreli olarak saklanır ve bir daha gösterilmez.",
+      "emptyValue": "Bir değer girin veya saklanan değeri kaldırmak için Temizle'yi kullanın."
+    },
+    "create": {
+      "title": "{{name}} ekle",
+      "duplicateTitle": "{{name}} çoğalt",
+      "name": "Ad",
+      "nameRules": "Küçük harfler, rakamlar ve tekli kısa çizgiler; bir harfle başlar; en fazla {{max}} karakter; benzersiz. Araç öneki olarak kullanılır.",
+      "nameProblem": {
+        "required": "Bir ad girin.",
+        "pattern": "Bir harfle başlayarak küçük harfler, rakamlar ve tekli kısa çizgiler kullanın.",
+        "tooLong": "En fazla {{max}} karakter.",
+        "reserved": "Bu ad ayrılmış.",
+        "notInMarket": "Bu MCP pazarda sunulmuyor.",
+        "taken": "Bu ada sahip bir MCP zaten var."
+      },
+      "duplicateNote": "Kopya aynı şablonu, ortamı, katmanı, CLI'leri, düz değerleri ve araç listelerini alır. Gizli anahtarlar kopyalanmaz: bunları yeni MCP'de ayarlayın. Kopya uykuda başlar.",
+      "environment": "Ortam",
+      "environmentPlaceholder": "Bir ortam seçin",
+      "tier": "Katman",
+      "readTierNote": "Okuma: bu makinenin dışında hiçbir şeyi değiştirmez. Araçlar, bağlantı testinden sonra siz izin verene kadar engelli kalır.",
+      "writeTierNote": "Yazma: üretim verilerini, parayı, reklamları, e-postayı veya herkese açık gönderileri değiştirebilir. Yalnızca Claude; üretim yazma MCP'leri, sahibin yazılı onayı kaydedilene kadar uykuda kalır.",
+      "clis": "CLI'ler",
+      "plainEnv": "Ayarlar",
+      "secrets": "Gizli anahtarlar",
+      "forcedByTier": "{{tier}} katmanı tarafından ayarlanır.",
+      "dormantUntilComplete": "Şunlar doldurulana kadar uykuda kalır: {{keys}}",
+      "startsDormant": "Yeni MCP'ler uykuda başlar. Değerleri ayarlanıp bağlantı testi geçtiğinde etkinleştirin."
+    },
+    "attach": {
+      "title": "{{name}} bağla",
+      "pickTitle": "Bir MCP bağla",
+      "instance": "MCP",
+      "instancePlaceholder": "Bir MCP seçin",
+      "noInstances": "Bağlanacak MCP yok. Önce bir şablondan ekleyin.",
+      "scope": "Nereye",
+      "wholeProject": "Tüm proje (proje dosyaları)",
+      "assistant": "Projedeki bir asistan",
+      "project": "Proje",
+      "projectPlaceholder": "Bir proje seçin",
+      "noProjects": "Bağlanacak proje yok.",
+      "assistantPlaceholder": "Bir asistan seçin",
+      "assistantNote": "Yalnızca yeni sohbetlere ve boşta olan ekip üyelerine uygulanır.",
+      "clis": "CLI'ler",
+      "writeClaudeOnly": "Yazma MCP'leri yalnızca Claude içindir.",
+      "notActiveNote": "Bu MCP etkin değil: bağlantı kaydedildi, ancak etkinleştirilene kadar hiçbir şey onu başlatmaz.",
+      "globalBlocked": {
+        "write": "Yazma MCP'leri hiçbir zaman genel olamaz.",
+        "notGlobal": "Yalnızca context7 ve studio-memory genel olabilir."
+      },
+      "conflict": {
+        "alreadyAttached": "{{cli}}: zaten buraya bağlı.",
+        "otherChannel": "{{cli}}: bu projeye zaten diğer yoldan erişiyor (proje dosyaları veya bir asistan, asla ikisi birden değil)."
+      }
+    },
+    "activate": {
+      "title": "{{name}} etkinleştirilsin mi?",
+      "body": "Etkin MCP'ler, bağlı oldukları projeler, asistanlar ve CLI'ler için başlatılır.",
+      "missing": "Önce zorunlu değerleri doldurun: {{keys}}",
+      "productionWrite": "Bu bir üretim yazma MCP'sidir. Sahibin tam değişikliğe ilişkin yazılı onayı kaydedilene kadar uykuda kalır.",
+      "approvalLabel": "Onay referansı",
+      "approvalHelp": "sahibin tam değişikliğe ilişkin yazılı onayı",
+      "approvalFormat": "Biçim: OA-<yyyymmdd>-<slug>",
+      "approvalRequired": "Onay referansı zorunludur.",
+      "approvalInvalid": "OA-<yyyymmdd>-<slug> biçimini kullanın, örneğin bir tarih ve kısa, küçük harfli bir ad."
+    },
+    "confirm": {
+      "revoke": {
+        "title": "{{name}} iptal edilsin mi?",
+        "body": "Hemen başlatılmayı bırakır ve çalışan kopyalar bir sonraki denetimde durur. Bağlantılar ve gizli anahtarlar korunur, böylece yeniden etkinleştirilebilir.",
+        "ok": "İptal et"
+      },
+      "delete": {
+        "title": "{{name}} silinsin mi?",
+        "body": "Bu işlem MCP'yi, bağlantılarını ve saklanan gizli anahtarlarını kaldırır. Geri alınamaz.",
+        "ok": "Sil"
+      },
+      "dormant": {
+        "title": "{{name}} uykuya alınsın mı?",
+        "body": "Yeniden etkinleştirilene kadar hiçbir yerde başlatılmaz. Hiçbir şey silinmez.",
+        "ok": "Uykuya al"
+      },
+      "refresh": {
+        "title": "{{name}} şablonu güncellensin mi?",
+        "body": "MCP, katalogdaki güncel şablona geçer. Gizli anahtarlar ve bağlantılar korunur; yeni şablonda artık bulunmayan ayarlar kaldırılır.",
+        "ok": "Güncelle"
+      }
+    },
+    "template": {
+      "updateAvailable": "Güncelleme var",
+      "refreshed": "Şablon güncellendi ({{from}} → {{to}}).",
+      "unchanged": "Şablon zaten güncel.",
+      "added": "Yeni anahtarlar: {{keys}}.",
+      "removed": "Kaldırılan anahtarlar: {{keys}}.",
+      "needsSecrets": "Gizli anahtar gerekli: {{keys}}",
+      "updateAvailableVersions": "Güncelleme var ({{from}} → {{to}})",
+      "notInCatalogue": "Bu şablon artık katalogda yok; MCP kayıtlı kopyasıyla çalışmaya devam eder.",
+      "pendingSecretsTitle": "Şablon güncellemesinin gerektirdiği gizli anahtarlar",
+      "pendingSecretsHint": "Güncellemeden önce bunları ayarlayın; o zamana kadar MCP mevcut şablonunda kalır."
+    },
+    "tools": {
+      "allowTitle": "İzin verilen araçlar",
+      "allowHint": "Okuma MCP'leri burada işaretlenmeyen her aracı engeller (varsayılan olarak kapalı).",
+      "blockTitle": "Engellenen araçlar",
+      "blockHint": "İşaretli araçlar engellenir; Claude diğer her araç çağrısından önce sorar.",
+      "none": "Henüz araç görülmedi. Listelemek için Bağlantıyı test et'i çalıştırın."
+    },
+    "test": {
+      "success": "Bağlantı çalışıyor. Bulunan araçlar: {{count}}."
+    },
+    "errors": {
+      "generic": "İstek başarısız oldu. Yeniden deneyin.",
+      "maskedValue": "Bir değer gizlendiği için \"•••\" olarak görünür; gerçek değer bu değildir. Gerçek değeri yeniden yazın, ardından kaydedin.",
+      "sessionRequired": "MCP pazarı değişiklikleri, oturum açılmış tarayıcı oturumunuzu gerektirir. Yeniden oturum açıp tekrar deneyin; ajanlar bu değişiklikleri yapamaz.",
+      "csrf": "Oturumunuzun güvenlik denetimi başarısız oldu. Sayfayı yeniden yükleyip tekrar deneyin.",
+      "catalogueUnavailable": "MCP şablon kataloğu şu anda kullanılamıyor.",
+      "templateSecretMissing": "Önce {{keys}} ayarlayın: yeni şablon bunu gerektiriyor. MCP mevcut şablonunda kalır.",
+      "notFound": "Bu MCP veya bağlantı artık mevcut değil. Liste yenilendi.",
+      "alreadyAttached": "Bu MCP, o CLI için zaten oraya bağlı. {{detail}}",
+      "nameTaken": "Bu ad zaten kullanılıyor. Başka bir ad seçin. {{detail}}",
+      "conflict": "Bu, mevcut durumla çakışıyor. {{detail}}",
+      "rejected": "Sunucu bu değişikliği reddetti: {{detail}}",
+      "templateSecretMissingUnknown": "Önce yeni şablonun gerektirdiği gizli anahtarları ayarlayın; MCP mevcut şablonunda kalır. {{detail}}",
+      "forbidden": "Bu değişikliğe buradan izin verilmiyor. Oturum açılmış tarayıcı oturumunuzu kullanın.",
+      "tooLarge": "İstek çok büyük.",
+      "rateLimited": "Çok fazla istek. Biraz bekleyip tekrar deneyin.",
+      "internal": "Sunucuda dahili bir hata oluştu. Tekrar deneyin; sürerse AionUi günlüklerine bakın.",
+      "upstream": "Sunucunun arkasındaki bir hizmet zamanında yanıt vermedi. Tekrar deneyin."
+    }
   }
 }

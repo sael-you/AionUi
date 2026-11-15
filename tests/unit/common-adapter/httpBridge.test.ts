@@ -483,6 +483,31 @@ describe('httpBridge', () => {
       expect(fetchSpy.mock.calls[0][1]?.body).toBe('{"key":"value"}');
       expect(fetchSpy.mock.calls[0][1]?.headers).toEqual({ 'Content-Type': 'application/json' });
     });
+
+    it('withholds a sensitive body from the debug log but still sends it', async () => {
+      const fetchSpy = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ data: { set: true } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      );
+      vi.stubGlobal('fetch', fetchSpy);
+      const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+
+      await httpRequest(
+        'PUT',
+        '/api/mcp/market/instances/i1/secrets/API_KEY',
+        { value: 'FAKE-SENTINEL-1234' },
+        {
+          sensitiveBody: true,
+        }
+      );
+
+      expect(fetchSpy.mock.calls[0][1]?.body).toBe('{"value":"FAKE-SENTINEL-1234"}');
+      const logged = JSON.stringify(debugSpy.mock.calls);
+      expect(logged).not.toContain('FAKE-SENTINEL-1234');
+      expect(logged).toContain('(body withheld)');
+    });
   });
 
   describe('httpPut', () => {

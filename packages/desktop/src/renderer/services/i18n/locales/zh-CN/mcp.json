@@ -71,5 +71,224 @@
     "normal": "普通",
     "high": "高",
     "urgent": "紧急"
+  },
+  "market": {
+    "search": "搜索 MCP 和模板",
+    "loading": "正在加载 MCP…",
+    "loadFailed": "无法加载 MCP 市场：{{detail}}",
+    "empty": "还没有 MCP。可从模板添加。",
+    "browseTemplates": "浏览模板",
+    "filter": {
+      "label": "按状态筛选",
+      "all": "全部",
+      "active": "已启用",
+      "dormant": "休眠",
+      "revoked": "已吊销",
+      "missing": "缺少值"
+    },
+    "group": {
+      "global": "全局",
+      "globalHint": "在所有项目中可用：AionUi 服务器、扩展服务器以及全局挂载的市场 MCP。",
+      "globalEmpty": "没有全局 MCP。",
+      "projectEmpty": "此项目尚未挂载任何内容。",
+      "unassigned": "未分配",
+      "unassignedEmpty": "所有 MCP 都已挂载。",
+      "templates": "模板",
+      "templatesEmpty": "目录中没有模板。",
+      "count": "{{count}} 个 MCP"
+    },
+    "status": {
+      "active": "已启用",
+      "dormant": "休眠",
+      "revoked": "已吊销"
+    },
+    "tier": {
+      "read": "只读",
+      "write": "写入"
+    },
+    "environment": {
+      "production": "生产",
+      "staging": "预发布",
+      "sandbox": "沙盒",
+      "local": "本地"
+    },
+    "cli": {
+      "claude": "Claude",
+      "codex": "Codex",
+      "gemini": "Gemini"
+    },
+    "scope": {
+      "global": "全局",
+      "assistantIn": "助手 {{name}}",
+      "unknownProject": "项目 {{id}}（不在侧边栏中）"
+    },
+    "actions": {
+      "add": "添加",
+      "create": "创建",
+      "duplicate": "复制",
+      "manage": "管理",
+      "attach": "挂载",
+      "detach": "卸载",
+      "activate": "启用",
+      "makeDormant": "设为休眠",
+      "revoke": "吊销",
+      "delete": "删除",
+      "test": "测试连接",
+      "refreshTemplate": "更新模板",
+      "save": "保存",
+      "cancel": "取消",
+      "retry": "重试"
+    },
+    "instance": {
+      "fromTemplate": "模板：{{template}}",
+      "attachedTo": "挂载到",
+      "notAttached": "未挂载",
+      "secrets": "密钥：",
+      "missing": "缺少必填值：{{keys}}",
+      "problems": "规则问题：{{count}}",
+      "problemsTitle": "规则问题",
+      "enforcement": "执行方：{{value}}",
+      "approvalRecorded": "已记录所有者批准",
+      "writeNote": "写入级别：可更改本机以外的数据。仅限 Claude，且每次工具调用都会先询问。"
+    },
+    "secret": {
+      "set": "已设置",
+      "notSet": "未设置",
+      "required": "必填",
+      "changedAt": "更改于 {{date}}",
+      "replace": "替换",
+      "setValue": "设置值",
+      "clear": "清除",
+      "clearConfirm": "清除此密钥？缺少必填密钥时 MCP 无法启动。",
+      "placeholder": "输入值",
+      "writeOnlyHint": "只写：该值加密存储，之后不会再显示。",
+      "emptyValue": "请输入值，或使用“清除”删除已存储的值。"
+    },
+    "create": {
+      "title": "添加 {{name}}",
+      "duplicateTitle": "复制 {{name}}",
+      "name": "名称",
+      "nameRules": "仅限小写字母、数字和单个连字符；以字母开头；最多 {{max}} 个字符；不可重复。它将用作工具前缀。",
+      "nameProblem": {
+        "required": "请输入名称。",
+        "pattern": "请使用小写字母、数字和单个连字符，并以字母开头。",
+        "tooLong": "最多 {{max}} 个字符。",
+        "reserved": "此名称为保留名称。",
+        "notInMarket": "市场中未提供此 MCP。",
+        "taken": "已存在同名 MCP。"
+      },
+      "duplicateNote": "副本将沿用相同的模板、环境、级别、CLI、普通值和工具列表。密钥不会被复制：请在新 MCP 上设置。副本以休眠状态启动。",
+      "environment": "环境",
+      "environmentPlaceholder": "选择环境",
+      "tier": "级别",
+      "readTierNote": "只读：不会更改本机以外的任何内容。在连接测试后您允许之前，工具保持阻止状态。",
+      "writeTierNote": "写入：可更改生产数据、资金、广告、电子邮件或公开发布的内容。仅限 Claude；在记录所有者的书面批准之前，生产环境写入 MCP 保持休眠。",
+      "clis": "CLI",
+      "plainEnv": "设置",
+      "secrets": "密钥",
+      "forcedByTier": "由{{tier}}级别设定。",
+      "dormantUntilComplete": "在填写以下各项之前保持休眠：{{keys}}",
+      "startsDormant": "新 MCP 以休眠状态启动。设置好值并通过连接测试后即可启用。"
+    },
+    "attach": {
+      "title": "挂载 {{name}}",
+      "pickTitle": "挂载 MCP",
+      "instance": "MCP",
+      "instancePlaceholder": "选择 MCP",
+      "noInstances": "没有可挂载的 MCP。请先从模板添加。",
+      "scope": "位置",
+      "wholeProject": "整个项目（项目文件）",
+      "assistant": "项目中的某个助手",
+      "project": "项目",
+      "projectPlaceholder": "选择项目",
+      "noProjects": "没有可挂载的项目。",
+      "assistantPlaceholder": "选择助手",
+      "assistantNote": "仅适用于新对话和空闲的团队成员。",
+      "clis": "CLI",
+      "writeClaudeOnly": "写入 MCP 仅限 Claude。",
+      "notActiveNote": "此 MCP 未启用：挂载已保存，但在启用之前不会启动。",
+      "globalBlocked": {
+        "write": "写入 MCP 不能设为全局。",
+        "notGlobal": "只有 context7 和 studio-memory 可以设为全局。"
+      },
+      "conflict": {
+        "alreadyAttached": "{{cli}}：已挂载在此处。",
+        "otherChannel": "{{cli}}：已通过另一种方式接入此项目（项目文件或助手，二者不能同时使用）。"
+      }
+    },
+    "activate": {
+      "title": "启用 {{name}}？",
+      "body": "已启用的 MCP 会为其挂载的项目、助手和 CLI 启动。",
+      "missing": "请先填写必填值：{{keys}}",
+      "productionWrite": "这是生产环境写入 MCP。在记录所有者对具体变更的书面批准之前，它将保持休眠。",
+      "approvalLabel": "批准编号",
+      "approvalHelp": "所有者对具体变更的书面批准",
+      "approvalFormat": "格式：OA-<yyyymmdd>-<slug>",
+      "approvalRequired": "必须填写批准编号。",
+      "approvalInvalid": "请使用 OA-<yyyymmdd>-<slug> 格式，例如日期加简短的小写名称。"
+    },
+    "confirm": {
+      "revoke": {
+        "title": "吊销 {{name}}？",
+        "body": "它将立即停止被启动，正在运行的副本会在下次检查时停止。挂载和密钥会保留，因此可以再次启用。",
+        "ok": "吊销"
+      },
+      "delete": {
+        "title": "删除 {{name}}？",
+        "body": "这将删除该 MCP、其挂载和已存储的密钥。此操作无法撤销。",
+        "ok": "删除"
+      },
+      "dormant": {
+        "title": "将 {{name}} 设为休眠？",
+        "body": "在再次启用之前，它不会在任何地方启动。不会删除任何内容。",
+        "ok": "设为休眠"
+      },
+      "refresh": {
+        "title": "更新 {{name}} 的模板？",
+        "body": "该 MCP 将切换到目录中的当前模板。密钥和挂载会保留；新模板中已不存在的设置将被移除。",
+        "ok": "更新"
+      }
+    },
+    "template": {
+      "updateAvailable": "有可用更新",
+      "refreshed": "模板已更新（{{from}} → {{to}}）。",
+      "unchanged": "模板已是最新版本。",
+      "added": "新增键：{{keys}}。",
+      "removed": "移除的键：{{keys}}。",
+      "needsSecrets": "需要密钥：{{keys}}",
+      "updateAvailableVersions": "有可用更新（{{from}} → {{to}}）",
+      "notInCatalogue": "此模板已不在目录中；MCP 继续使用已保存的副本。",
+      "pendingSecretsTitle": "模板更新所需的密钥",
+      "pendingSecretsHint": "请先设置这些密钥再更新；在此之前 MCP 保持当前模板。"
+    },
+    "tools": {
+      "allowTitle": "允许的工具",
+      "allowHint": "只读 MCP 会阻止此处未勾选的所有工具（默认拒绝）。",
+      "blockTitle": "阻止的工具",
+      "blockHint": "勾选的工具将被阻止；其他工具每次调用前 Claude 都会询问。",
+      "none": "尚未发现工具。运行“测试连接”以列出工具。"
+    },
+    "test": {
+      "success": "连接正常。发现工具：{{count}} 个。"
+    },
+    "errors": {
+      "generic": "请求失败，请重试。",
+      "maskedValue": "某个值显示为“•••”是因为它已被隐藏，而不是真实值。请重新输入真实值，然后保存。",
+      "sessionRequired": "更改 MCP 市场需要您已登录的浏览器会话。请重新登录后重试；代理无法进行这些更改。",
+      "csrf": "会话安全检查失败。请重新加载页面后重试。",
+      "catalogueUnavailable": "MCP 模板目录当前不可用。",
+      "templateSecretMissing": "请先设置 {{keys}}：新模板需要它。MCP 保持当前模板。",
+      "notFound": "此 MCP 或挂载已不存在。列表已刷新。",
+      "alreadyAttached": "此 MCP 已针对该 CLI 挂载在该处。{{detail}}",
+      "nameTaken": "该名称已被使用，请换一个名称。{{detail}}",
+      "conflict": "此操作与当前状态冲突。{{detail}}",
+      "rejected": "服务器拒绝了此更改：{{detail}}",
+      "templateSecretMissingUnknown": "请先设置新模板所需的密钥；MCP 保持当前模板。{{detail}}",
+      "forbidden": "不允许从这里进行此更改。请使用已登录的浏览器会话。",
+      "tooLarge": "请求过大。",
+      "rateLimited": "请求过多，请稍后再试。",
+      "internal": "服务器内部错误。请重试；如仍出现，请查看 AionUi 日志。",
+      "upstream": "服务器后方的服务未及时响应，请重试。"
+    }
   }
 }

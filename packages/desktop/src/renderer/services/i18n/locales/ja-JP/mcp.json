@@ -71,5 +71,224 @@
     "normal": "通常",
     "high": "高",
     "urgent": "緊急"
+  },
+  "market": {
+    "search": "MCP とテンプレートを検索",
+    "loading": "MCP を読み込み中…",
+    "loadFailed": "MCP マーケットを読み込めませんでした: {{detail}}",
+    "empty": "MCP はまだありません。テンプレートから追加してください。",
+    "browseTemplates": "テンプレートを見る",
+    "filter": {
+      "label": "ステータスで絞り込み",
+      "all": "すべて",
+      "active": "有効",
+      "dormant": "休止中",
+      "revoked": "失効",
+      "missing": "未入力の値あり"
+    },
+    "group": {
+      "global": "グローバル",
+      "globalHint": "すべてのプロジェクトで利用可能: AionUi サーバー、拡張機能サーバー、グローバルに接続されたマーケット MCP。",
+      "globalEmpty": "グローバル MCP はありません。",
+      "projectEmpty": "このプロジェクトにはまだ何も接続されていません。",
+      "unassigned": "未割り当て",
+      "unassignedEmpty": "すべての MCP がどこかに接続されています。",
+      "templates": "テンプレート",
+      "templatesEmpty": "カタログにテンプレートがありません。",
+      "count": "{{count}} 件の MCP"
+    },
+    "status": {
+      "active": "有効",
+      "dormant": "休止中",
+      "revoked": "失効"
+    },
+    "tier": {
+      "read": "読み取り",
+      "write": "書き込み"
+    },
+    "environment": {
+      "production": "本番",
+      "staging": "ステージング",
+      "sandbox": "サンドボックス",
+      "local": "ローカル"
+    },
+    "cli": {
+      "claude": "Claude",
+      "codex": "Codex",
+      "gemini": "Gemini"
+    },
+    "scope": {
+      "global": "グローバル",
+      "assistantIn": "アシスタント {{name}}",
+      "unknownProject": "プロジェクト {{id}}（サイドバーにありません）"
+    },
+    "actions": {
+      "add": "追加",
+      "create": "作成",
+      "duplicate": "複製",
+      "manage": "管理",
+      "attach": "接続",
+      "detach": "切断",
+      "activate": "有効化",
+      "makeDormant": "休止にする",
+      "revoke": "失効させる",
+      "delete": "削除",
+      "test": "接続テスト",
+      "refreshTemplate": "テンプレートを更新",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "retry": "再試行"
+    },
+    "instance": {
+      "fromTemplate": "テンプレート: {{template}}",
+      "attachedTo": "接続先",
+      "notAttached": "未接続",
+      "secrets": "シークレット:",
+      "missing": "必須の値が未入力です: {{keys}}",
+      "problems": "ルールの問題: {{count}}",
+      "problemsTitle": "ルールの問題",
+      "enforcement": "適用元: {{value}}",
+      "approvalRecorded": "オーナーの承認を記録済み",
+      "writeNote": "書き込みティア: このマシン外のデータを変更できます。Claude 専用で、ツール呼び出しのたびに事前確認が行われます。"
+    },
+    "secret": {
+      "set": "設定済み",
+      "notSet": "未設定",
+      "required": "必須",
+      "changedAt": "{{date}} に変更",
+      "replace": "置き換え",
+      "setValue": "値を設定",
+      "clear": "クリア",
+      "clearConfirm": "このシークレットをクリアしますか？必須のシークレットがないと MCP は起動できません。",
+      "placeholder": "値を入力",
+      "writeOnlyHint": "書き込み専用: 値は暗号化して保存され、二度と表示されません。",
+      "emptyValue": "値を入力するか、［クリア］で保存済みの値を削除してください。"
+    },
+    "create": {
+      "title": "{{name}} を追加",
+      "duplicateTitle": "{{name}} を複製",
+      "name": "名前",
+      "nameRules": "小文字、数字、単一のハイフンのみ。先頭は英字、最大 {{max}} 文字、重複不可。ツールのプレフィックスになります。",
+      "nameProblem": {
+        "required": "名前を入力してください。",
+        "pattern": "小文字、数字、単一のハイフンを使い、英字で始めてください。",
+        "tooLong": "最大 {{max}} 文字です。",
+        "reserved": "この名前は予約されています。",
+        "notInMarket": "この MCP はマーケットで提供されていません。",
+        "taken": "この名前の MCP はすでに存在します。"
+      },
+      "duplicateNote": "コピーには同じテンプレート、環境、ティア、CLI、通常の値、ツールリストが引き継がれます。シークレットはコピーされないため、新しい MCP で設定してください。コピーは休止状態で開始します。",
+      "environment": "環境",
+      "environmentPlaceholder": "環境を選択",
+      "tier": "ティア",
+      "readTierNote": "読み取り: このマシン外のものは何も変更しません。接続テスト後に許可するまで、ツールはブロックされたままです。",
+      "writeTierNote": "書き込み: 本番データ、お金、広告、メール、公開投稿を変更できます。Claude 専用。本番の書き込み MCP は、オーナーの書面による承認が記録されるまで休止状態のままです。",
+      "clis": "CLI",
+      "plainEnv": "設定",
+      "secrets": "シークレット",
+      "forcedByTier": "{{tier}} ティアにより設定されます。",
+      "dormantUntilComplete": "次の項目が入力されるまで休止状態のままです: {{keys}}",
+      "startsDormant": "新しい MCP は休止状態で開始します。値を設定し、接続テストに合格したら有効化してください。"
+    },
+    "attach": {
+      "title": "{{name}} を接続",
+      "pickTitle": "MCP を接続",
+      "instance": "MCP",
+      "instancePlaceholder": "MCP を選択",
+      "noInstances": "接続できる MCP がありません。まずテンプレートから追加してください。",
+      "scope": "接続先",
+      "wholeProject": "プロジェクト全体（プロジェクトファイル）",
+      "assistant": "プロジェクト内のアシスタント",
+      "project": "プロジェクト",
+      "projectPlaceholder": "プロジェクトを選択",
+      "noProjects": "接続できるプロジェクトがありません。",
+      "assistantPlaceholder": "アシスタントを選択",
+      "assistantNote": "新しい会話とアイドル状態のチームメンバーにのみ適用されます。",
+      "clis": "CLI",
+      "writeClaudeOnly": "書き込み MCP は Claude 専用です。",
+      "notActiveNote": "この MCP は有効ではありません。接続は保存されましたが、有効化されるまで起動されません。",
+      "globalBlocked": {
+        "write": "書き込み MCP はグローバルにできません。",
+        "notGlobal": "グローバルにできるのは context7 と studio-memory のみです。"
+      },
+      "conflict": {
+        "alreadyAttached": "{{cli}}: すでにここに接続されています。",
+        "otherChannel": "{{cli}}: 別の方法ですでにこのプロジェクトに接続されています（プロジェクトファイルかアシスタントのどちらか一方のみ）。"
+      }
+    },
+    "activate": {
+      "title": "{{name}} を有効化しますか？",
+      "body": "有効な MCP は、接続先のプロジェクト、アシスタント、CLI で起動されます。",
+      "missing": "まず必須の値を入力してください: {{keys}}",
+      "productionWrite": "これは本番の書き込み MCP です。具体的な変更に対するオーナーの書面による承認が記録されるまで、休止状態のままです。",
+      "approvalLabel": "承認番号",
+      "approvalHelp": "具体的な変更に対するオーナーの書面による承認",
+      "approvalFormat": "形式: OA-<yyyymmdd>-<slug>",
+      "approvalRequired": "承認番号は必須です。",
+      "approvalInvalid": "OA-<yyyymmdd>-<slug> の形式で入力してください（例: 日付と短い小文字の名前）。"
+    },
+    "confirm": {
+      "revoke": {
+        "title": "{{name}} を失効させますか？",
+        "body": "直ちに起動されなくなり、実行中のコピーは次回のチェック時に停止します。接続とシークレットは保持されるため、再度有効化できます。",
+        "ok": "失効させる"
+      },
+      "delete": {
+        "title": "{{name}} を削除しますか？",
+        "body": "MCP、その接続、保存されたシークレットが削除されます。この操作は元に戻せません。",
+        "ok": "削除"
+      },
+      "dormant": {
+        "title": "{{name}} を休止にしますか？",
+        "body": "再度有効化されるまで、どこでも起動されなくなります。何も削除されません。",
+        "ok": "休止にする"
+      },
+      "refresh": {
+        "title": "{{name}} のテンプレートを更新しますか？",
+        "body": "MCP はカタログの現在のテンプレートに切り替わります。シークレットと接続は保持され、新しいテンプレートにない設定は削除されます。",
+        "ok": "更新"
+      }
+    },
+    "template": {
+      "updateAvailable": "更新あり",
+      "refreshed": "テンプレートを更新しました（{{from}} → {{to}}）。",
+      "unchanged": "テンプレートはすでに最新です。",
+      "added": "新しいキー: {{keys}}。",
+      "removed": "削除されたキー: {{keys}}。",
+      "needsSecrets": "シークレットが必要: {{keys}}",
+      "updateAvailableVersions": "更新あり（{{from}} → {{to}}）",
+      "notInCatalogue": "このテンプレートはカタログにありません。MCP は保存済みのコピーで動作し続けます。",
+      "pendingSecretsTitle": "テンプレート更新に必要なシークレット",
+      "pendingSecretsHint": "更新の前に設定してください。それまで MCP は現在のテンプレートのままです。"
+    },
+    "tools": {
+      "allowTitle": "許可するツール",
+      "allowHint": "読み取り MCP は、ここでチェックされていないツールをすべてブロックします（フェイルクローズ）。",
+      "blockTitle": "ブロックするツール",
+      "blockHint": "チェックしたツールはブロックされます。その他のツールは呼び出しのたびに Claude が確認します。",
+      "none": "まだツールが検出されていません。［接続テスト］を実行して一覧を表示してください。"
+    },
+    "test": {
+      "success": "接続に成功しました。検出されたツール: {{count}}。"
+    },
+    "errors": {
+      "generic": "リクエストに失敗しました。もう一度お試しください。",
+      "maskedValue": "値が「•••」と表示されるのは非表示にされているためで、実際の値ではありません。実際の値を入力し直してから保存してください。",
+      "sessionRequired": "MCP マーケットの変更には、サインイン済みのブラウザーセッションが必要です。再度サインインしてから再試行してください。エージェントはこれらの変更を行えません。",
+      "csrf": "セッションのセキュリティチェックに失敗しました。ページを再読み込みしてもう一度お試しください。",
+      "catalogueUnavailable": "MCP テンプレートカタログは現在利用できません。",
+      "templateSecretMissing": "先に {{keys}} を設定してください。新しいテンプレートに必要です。MCP は現在のテンプレートのままです。",
+      "notFound": "この MCP または接続はもう存在しません。一覧を更新しました。",
+      "alreadyAttached": "この MCP は、その CLI 向けにすでにそこへ接続されています。{{detail}}",
+      "nameTaken": "その名前はすでに使われています。別の名前を選んでください。{{detail}}",
+      "conflict": "現在の状態と競合しています。{{detail}}",
+      "rejected": "サーバーがこの変更を拒否しました: {{detail}}",
+      "templateSecretMissingUnknown": "先に新しいテンプレートに必要なシークレットを設定してください。MCP は現在のテンプレートのままです。{{detail}}",
+      "forbidden": "この変更はここからは許可されていません。サインイン済みのブラウザセッションを使用してください。",
+      "tooLarge": "リクエストが大きすぎます。",
+      "rateLimited": "リクエストが多すぎます。少し待ってから再試行してください。",
+      "internal": "サーバーで内部エラーが発生しました。再試行し、続く場合は AionUi のログを確認してください。",
+      "upstream": "サーバーの背後のサービスが時間内に応答しませんでした。再試行してください。"
+    }
   }
 }

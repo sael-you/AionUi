@@ -19,6 +19,7 @@ import AionSelect from '@/renderer/components/base/AionSelect';
 import TalkToButlerButton from '@/renderer/components/base/TalkToButlerButton';
 import AddMcpServerModal from '@/renderer/pages/settings/components/AddMcpServerModal';
 import McpServerItem from '@/renderer/pages/settings/ToolsSettings/McpServerItem';
+import McpMarketView from '@/renderer/pages/settings/ToolsSettings/market';
 import {
   useMcpServers,
   useMcpConnection,
@@ -194,19 +195,24 @@ const ModalMcpManagementSection: React.FC<{
       </div>
 
       <div className='flex-1 min-h-0'>
-        {visibleMcpServers.length === 0 && extensionMcpServers.length === 0 ? (
-          <div className='py-24px text-center text-t-secondary text-14px border border-dashed border-border-2 rd-12px'>
-            {t('settings.mcpNoServersFound')}
-          </div>
-        ) : (
-          <AionScrollArea
-            className={classNames('max-h-360px', isPageMode && 'max-h-none')}
-            disableOverflow={isPageMode}
-          >
-            <div className='space-y-12px'>
-              {visibleMcpServers.map((server) => (
+        <AionScrollArea className={classNames('max-h-360px', isPageMode && 'max-h-none')} disableOverflow={isPageMode}>
+          <McpMarketView
+            legacyServers={visibleMcpServers}
+            extensionServers={extensionMcpServers}
+            renderLegacyServer={(server, readOnly) =>
+              readOnly ? (
                 <McpServerItem
-                  key={server.id}
+                  server={server}
+                  isCollapsed={mcpCollapseKey[server.id] || false}
+                  isTestingConnection={false}
+                  onToggleCollapse={() => toggleServerCollapse(server.id)}
+                  onTestConnection={handleTestMcpConnection}
+                  onEditServer={() => {}}
+                  onDeleteServer={() => {}}
+                  isReadOnly
+                />
+              ) : (
+                <McpServerItem
                   server={server}
                   isCollapsed={mcpCollapseKey[server.id] || false}
                   isTestingConnection={testingServers[server.id] || false}
@@ -218,23 +224,10 @@ const ModalMcpManagementSection: React.FC<{
                   onDeleteServer={showDeleteConfirm}
                   onOAuthLogin={handleOAuthLogin}
                 />
-              ))}
-              {extensionMcpServers.map((server) => (
-                <McpServerItem
-                  key={server.id}
-                  server={server}
-                  isCollapsed={mcpCollapseKey[server.id] || false}
-                  isTestingConnection={false}
-                  onToggleCollapse={() => toggleServerCollapse(server.id)}
-                  onTestConnection={handleTestMcpConnection}
-                  onEditServer={() => {}}
-                  onDeleteServer={() => {}}
-                  isReadOnly
-                />
-              ))}
-            </div>
-          </AionScrollArea>
-        )}
+              )
+            }
+          />
+        </AionScrollArea>
       </div>
 
       <AddMcpServerModal
