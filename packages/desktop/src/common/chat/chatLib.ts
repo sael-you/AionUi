@@ -219,12 +219,29 @@ export type IMessageToolCall = IMessage<
     name: string;
     args: Record<string, any>;
     error?: string;
-    status?: 'running' | 'completed' | 'error';
+    status?: 'running' | 'completed' | 'error' | 'canceled';
     input?: Record<string, any>;
     output?: string;
     description?: string;
+    /** The Task/Agent call this call runs inside; absent for the main agent's own calls. */
+    parent_call_id?: string;
+    /** Structured identity of delegated work (AionCore C21), on progress-card frames only. */
+    task?: IToolTaskInfo;
   }
 >;
+
+/** Delegated work a progress card tracks (AionCore C21, `ToolCallEventData.task`). */
+export type IToolTaskInfo = {
+  kind: 'subagent' | 'background' | 'workflow';
+  /** The CLI's task id (the id a later SendMessage addresses). */
+  id: string;
+  /** The launching call's own description; absent when it gave none. */
+  label?: string;
+  /** Epoch ms. */
+  started_at: number;
+  /** Epoch ms, once the task settled. */
+  ended_at?: number;
+};
 
 type IMessageToolGroupConfirmationDetailsBase<Type, Extra extends Record<string, any>> = {
   type: Type;

@@ -509,7 +509,9 @@ export const conversation = {
       supports_midturn_delivery: (rawRuntime.supports_midturn_delivery ??
         rawRuntime.supportsMidturnDelivery ??
         false) as boolean,
+      background_active: (rawRuntime.background_active ?? rawRuntime.backgroundActive) as number | undefined,
     };
+    const rawOutcome = r.last_outcome ?? r.lastOutcome;
     const rawModel = (r.model ?? {}) as Record<string, unknown>;
     const model: IConversationTurnCompletedEvent['model'] = {
       platform: (rawModel.platform ?? '') as string,
@@ -525,6 +527,8 @@ export const conversation = {
       detail: (r.detail ?? '') as string,
       can_send_message: (r.can_send_message ?? r.canSendMessage ?? r.status === 'finished') as boolean,
       runtime,
+      last_outcome:
+        rawOutcome === 'finished' || rawOutcome === 'error' || rawOutcome === 'cancelled' ? rawOutcome : undefined,
       workspace: (r.workspace ?? '') as string,
       model,
       last_message,
@@ -2109,6 +2113,8 @@ export interface IConversationTurnCompletedEvent {
     | 'error'
     | 'unknown';
   detail: string;
+  /** How the turn ended (AionCore C21, `extra.last_outcome`); absent on older backends. */
+  last_outcome?: 'finished' | 'error' | 'cancelled';
   can_send_message: boolean;
   runtime: {
     state: 'idle' | 'starting' | 'running' | 'cancelling' | 'waiting_confirmation';
@@ -2117,6 +2123,8 @@ export interface IConversationTurnCompletedEvent {
     task_status?: 'pending' | 'running' | 'finished';
     is_processing: boolean;
     pending_confirmations: number;
+    /** Background work still alive after the turn (AionCore C21); absent when unknown. */
+    background_active?: number;
     turn_id: string | null;
     /** Whether a message sent right now reaches the agent without waiting for
      * the current turn to end. The ONLY capability bit the frontend may gate

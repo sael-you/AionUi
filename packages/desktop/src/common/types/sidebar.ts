@@ -74,6 +74,10 @@ export type SidebarItem =
       descendant_count?: number;
       /** Descendants currently running. */
       running_descendant_count?: number;
+      /** Descendants waiting on the user (a pending approval or question). */
+      waiting_descendant_count?: number;
+      /** Descendants whose last turn ended in an error and that are not running again. */
+      failed_descendant_count?: number;
     }
   | ({ type: 'team' } & SidebarTeamItem);
 
