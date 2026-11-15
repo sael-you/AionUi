@@ -33,7 +33,8 @@ import SecretField from './SecretField';
 import { touchClass, useIsMobileLayout } from './shared';
 
 export type CreateInstanceTarget =
-  { kind: 'template'; template: McpMarketTemplate } | { kind: 'duplicate'; source: McpMarketInstance };
+  | { kind: 'template'; template: McpMarketTemplate }
+  | { kind: 'duplicate'; source: McpMarketInstance };
 
 type CreateInstanceModalProps = {
   target: CreateInstanceTarget | null;

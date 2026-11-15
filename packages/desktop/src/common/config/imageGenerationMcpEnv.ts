@@ -30,7 +30,11 @@ export type ImageGenerationMcpEnvResolveResult =
   | {
       ok: false;
       reason:
-        'missing-selection' | 'provider-not-found' | 'model-not-found' | 'ambiguous-provider' | 'no-provider-match';
+        | 'missing-selection'
+        | 'provider-not-found'
+        | 'model-not-found'
+        | 'ambiguous-provider'
+        | 'no-provider-match';
       message: string;
       candidates?: string[];
     };

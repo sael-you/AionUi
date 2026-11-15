@@ -129,7 +129,12 @@ export type ConversationSource = 'aionui' | 'telegram' | 'lark' | 'dingtalk' | '
 
 export type TChatConversationStatus = 'pending' | 'running' | 'finished';
 export type TConversationRuntimeStateKind =
-  'idle' | 'starting' | 'running' | 'cancelling' | 'restarting' | 'waiting_confirmation';
+  | 'idle'
+  | 'starting'
+  | 'running'
+  | 'cancelling'
+  | 'restarting'
+  | 'waiting_confirmation';
 
 export type TConversationRuntimeSummary = {
   state: TConversationRuntimeStateKind;
@@ -620,7 +625,10 @@ export interface IMcpServerTransportStreamableHTTP {
 }
 
 export type IMcpServerTransport =
-  IMcpServerTransportStdio | IMcpServerTransportSSE | IMcpServerTransportHTTP | IMcpServerTransportStreamableHTTP;
+  | IMcpServerTransportStdio
+  | IMcpServerTransportSSE
+  | IMcpServerTransportHTTP
+  | IMcpServerTransportStreamableHTTP;
 
 export interface IMcpServer {
   id: string;
