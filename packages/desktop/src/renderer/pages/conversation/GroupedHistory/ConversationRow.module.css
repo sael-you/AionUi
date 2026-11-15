@@ -52,6 +52,11 @@
   color: var(--color-text-1);
 }
 
+/* Leading icon slot; an emoji mark takes its size from here. */
+.leading {
+  font-size: 16px;
+}
+
 /* Unread: a small primary dot at the end; hidden while the row shows its actions. */
 .unreadDot {
   flex-shrink: 0;
@@ -194,6 +199,38 @@
   transform: rotate(180deg);
 }
 
+/*
+ * Rows inside a project group (ProjectGroup sets `data-project-children`) are
+ * its children: smaller, lighter text and a smaller icon than the project row
+ * (13px / 600), so the hierarchy reads at a glance.
+ */
+:global([data-project-children]) .row {
+  height: 28px;
+}
+
+:global([data-project-children]) .name {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--color-text-2);
+}
+
+:global([data-project-children]) .rowSelected .name {
+  font-weight: 500;
+  color: var(--color-text-1);
+}
+
+:global([data-project-children]) .leading {
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+}
+
+:global([data-project-children]) .leading :is(svg, img) {
+  width: 14px;
+  height: 14px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .chevronIcon {
     transition: transform 0.15s ease;
@@ -212,6 +249,16 @@
   .name {
     font-size: 15px;
     line-height: 22px;
+  }
+
+  /* Project children keep the 40px touch target; text and icon stay one step smaller. */
+  :global([data-project-children]) .row {
+    height: 40px;
+  }
+
+  :global([data-project-children]) .name {
+    font-size: 14px;
+    line-height: 20px;
   }
 
   .actionButton.actionButton {

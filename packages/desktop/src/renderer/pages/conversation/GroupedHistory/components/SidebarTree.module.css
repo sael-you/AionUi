@@ -121,15 +121,6 @@
   transform: rotate(180deg);
 }
 
-/* Project colour (C8 accent): a dot, not a folder icon. */
-.dot {
-  flex-shrink: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--project-accent);
-}
-
 .projectName {
   flex: 1;
   min-width: 0;
@@ -357,7 +348,6 @@
 /* Windows high-contrast: keep the guide and dots visible. */
 @media (forced-colors: active) {
   .children::before,
-  .dot,
   .statusDot,
   .needsYouBadge {
     forced-color-adjust: none;

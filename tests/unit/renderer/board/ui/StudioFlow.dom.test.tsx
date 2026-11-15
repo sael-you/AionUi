@@ -298,6 +298,6 @@ describe('board header', () => {
     const page = container.querySelector('[data-board-page]');
     expect(page).toHaveAttribute('data-project-surface', 'board');
     expect(page?.getAttribute('style')).toContain('--project-accent');
-    expect(container.querySelector('[data-project-strip="top"]')).not.toBeNull();
+    expect(container.querySelector('[data-project-header="tint"]')).not.toBeNull();
   });
 });

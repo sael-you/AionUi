@@ -65,10 +65,9 @@ export const ProjectLabel: React.FC<ProjectChipProps> = ({ project, className })
   );
 };
 
-/** Class names of the shared project surfaces (accent strips, active tab, active sidebar group). */
+/** Class names of the shared project surfaces (tinted headers, active tab, active sidebar group). */
 export const projectSurfaceClasses = {
-  stripTop: styles.stripTop,
-  stripBottom: styles.stripBottom,
+  headerTint: styles.headerTint,
   activeTab: styles.activeTab,
   activeGroup: styles.activeGroup,
 } as const;

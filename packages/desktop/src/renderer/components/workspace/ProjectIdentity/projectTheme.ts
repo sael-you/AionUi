@@ -13,10 +13,10 @@
  *
  * | Property                    | Use                                              | Guarantee                    |
  * | --------------------------- | ------------------------------------------------ | ---------------------------- |
- * | `--project-accent`          | identity strips, dots (same colour as sidebar)   | palette colour, unchanged    |
+ * | `--project-accent`          | sidebar active bar, guide line, tab underline    | palette colour, unchanged    |
  * | `--project-accent-contrast` | text and icons placed on the tint or background  | ≥ 4.5:1 (WCAG AA, body text) |
  * | `--project-focus`           | focus border of inputs (send box)                | ≥ 3:1 (WCAG 1.4.11)          |
- * | `--project-tint`            | chip / active group background                   | accent at 6 % alpha          |
+ * | `--project-tint`            | chip, active group and header backgrounds        | accent at 6 % alpha          |
  * | `--project-border`          | resting border of the chip and send box          | accent at 40 % alpha         |
  * | `--project-focus-shadow`    | focus glow of the send box                       | soft accent glow             |
  *

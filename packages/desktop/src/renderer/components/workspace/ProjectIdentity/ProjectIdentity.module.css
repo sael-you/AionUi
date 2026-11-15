@@ -50,32 +50,13 @@
 }
 
 /*
- * 2px accent strip along the top (chat column, file panel) or bottom (mobile
- * titlebar) edge. Drawn by a pseudo-element above the surface's children, so
- * opaque headers inside the surface do not cover it.
+ * Project header (chat column, file panel tabs, board, mobile titlebar): the
+ * project tint layered over the header's own background colour, so the
+ * header stays opaque and text keeps the contrast `--project-accent-contrast`
+ * was computed for. No separate accent line.
  */
-.stripTop,
-.stripBottom {
-  position: relative;
-}
-
-.stripTop::before,
-.stripBottom::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  height: 2px;
-  background: var(--project-accent);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.stripTop::before {
-  top: 0;
-}
-
-.stripBottom::after {
-  bottom: 0;
+.headerTint {
+  background-image: linear-gradient(var(--project-tint), var(--project-tint));
 }
 
 /* Active tab of a project panel: accent underline, the label colour stays neutral. */
@@ -103,8 +84,6 @@
 @media (prefers-reduced-motion: no-preference) {
   .chip,
   .mobileLabel,
-  .stripTop::before,
-  .stripBottom::after,
   .activeTab,
   .activeGroup,
   .activeGroup::before {
@@ -123,9 +102,7 @@
     outline-offset: -1px;
   }
 
-  .activeGroup::before,
-  .stripTop::before,
-  .stripBottom::after {
+  .activeGroup::before {
     forced-color-adjust: none;
     background: Highlight;
   }

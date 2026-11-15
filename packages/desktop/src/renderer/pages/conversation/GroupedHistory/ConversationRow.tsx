@@ -118,9 +118,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
 
     const leadingMark = resolveConversationLeadingMark(conversation, assistantInfo, logos);
     if (leadingMark.kind === 'emoji') {
-      return (
-        <span className={classNames('text-16px leading-none flex-shrink-0', composedClass)}>{leadingMark.value}</span>
-      );
+      return <span className={classNames('leading-none flex-shrink-0', composedClass)}>{leadingMark.value}</span>;
     }
     if (leadingMark.kind === 'image') {
       return (
@@ -283,7 +281,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
             }}
           />
         )}
-        <span className='size-20px flex items-center justify-center shrink-0 relative'>
+        <span className={classNames('size-20px flex items-center justify-center shrink-0 relative', styles.leading)}>
           <ConversationStatusMark conversationId={conversation.id} status={status}>
             {renderLeadingIcon()}
           </ConversationStatusMark>

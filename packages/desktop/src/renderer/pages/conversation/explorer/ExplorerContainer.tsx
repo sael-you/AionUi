@@ -580,10 +580,10 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
           the sider's resize handle covers the leftmost 12px and sits above this
           content, so anything placed to its left cannot be clicked. */}
       <div
-        data-project-strip={project ? 'top' : undefined}
+        data-project-header={project ? 'tint' : undefined}
         className={classNames(
           'flex items-center gap-4px ps-12px pe-8px py-4px flex-shrink-0 border-b border-[var(--bg-3)]',
-          project && projectSurfaceClasses.stripTop
+          project && projectSurfaceClasses.headerTint
         )}
       >
         <div className='flex items-center gap-2px overflow-x-auto flex-1 min-w-0'>

@@ -62,9 +62,9 @@ export const BoardHeader: React.FC<BoardHeaderProps> = ({ board, projectName, pr
     <header
       className={classNames(
         'flex flex-wrap items-center gap-8px px-16px pt-12px pb-4px',
-        project && projectSurfaceClasses.stripTop
+        project && projectSurfaceClasses.headerTint
       )}
-      data-project-strip={project ? 'top' : undefined}
+      data-project-header={project ? 'tint' : undefined}
     >
       <h1 className='m-0 text-18px font-medium text-t-primary truncate'>
         {projectName ? t('board.pageTitle', { project: projectName }) : t('board.title')}

@@ -7,7 +7,7 @@
 /**
  * Project colour identity: the 12-hue palette, the per-theme tokens derived from
  * it, the user's colour choices (backend client preference), the current
- * project of the route, and the shared chip / strip visuals.
+ * project of the route, and the shared chip / header tint visuals.
  */
 
 export {
