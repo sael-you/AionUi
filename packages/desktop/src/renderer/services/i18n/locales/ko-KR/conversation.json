@@ -881,9 +881,13 @@
       "queued": "시작 전 {{count}}"
     },
     "subConversations": "하위 대화 {{count}}개",
+    "subConversations_one": "하위 대화 {{count}}개",
+    "subConversations_other": "하위 대화 {{count}}개",
     "needsYou": {
       "title": "확인 필요",
-      "running": "대화 {{count}}개 실행 중"
+      "running": "대화 {{count}}개 실행 중",
+      "running_one": "대화 {{count}}개 실행 중",
+      "running_other": "대화 {{count}}개 실행 중"
     },
     "announce": {
       "waiting": "{{name}}에서 확인이 필요합니다",
@@ -894,16 +898,26 @@
       "worked": "작업 {{duration}}",
       "working": "작업 중 · {{duration}}",
       "steps": "단계 {{count}}개",
+      "steps_one": "단계 {{count}}개",
+      "steps_other": "단계 {{count}}개",
       "thoughts": "생각 {{count}}회",
+      "thoughts_one": "생각 {{count}}회",
+      "thoughts_other": "생각 {{count}}회",
       "failedSteps": "실패 {{count}}개",
       "thought": "생각",
       "thoughtFor": "생각 {{duration}}",
       "moreSteps": "단계 {{count}}개 더",
+      "moreSteps_one": "단계 {{count}}개 더",
+      "moreSteps_other": "단계 {{count}}개 더",
       "shortThoughts": "짧은 생각 {{count}}회",
+      "shortThoughts_one": "짧은 생각 {{count}}회",
+      "shortThoughts_other": "짧은 생각 {{count}}회",
       "messageTo": "메시지 → {{name}}",
       "viewSteps": "단계 보기",
       "viewStepsCount": "단계 보기 · {{count}}",
-      "waitingOnBackground": "백그라운드 작업 {{count}}개 대기 중"
+      "waitingOnBackground": "백그라운드 작업 {{count}}개 대기 중",
+      "waitingOnBackground_one": "백그라운드 작업 {{count}}개 대기 중",
+      "waitingOnBackground_other": "백그라운드 작업 {{count}}개 대기 중"
     },
     "card": {
       "title": "위임한 작업",
@@ -922,6 +936,8 @@
       "stoppedNote": "중지됨",
       "reportedBack": "{{time}} 보고함",
       "finishedHidden": "완료된 작업 {{count}}개 숨김 ·",
+      "finishedHidden_one": "완료된 작업 {{count}}개 숨김 ·",
+      "finishedHidden_other": "완료된 작업 {{count}}개 숨김 ·",
       "show": "보기",
       "noOutput": "아직 출력 없음",
       "noSteps": "아직 기록된 단계 없음",

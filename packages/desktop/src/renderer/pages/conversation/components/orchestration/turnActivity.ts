@@ -47,7 +47,12 @@ export const thoughtDurationMs = (message: IMessageThinking): number =>
  */
 export const summarizeTurnActivity = (
   entries: readonly TurnActivityEntry[],
-  options: { endAt?: number; now: number }
+  options: {
+    endAt?: number;
+    now: number;
+    /** `false` when the conversation is not processing: a step still marked running was cut off (restart). */
+    live?: boolean;
+  }
 ): TurnActivitySummary => {
   let start = Number.POSITIVE_INFINITY;
   let lastEnd = 0;
@@ -79,6 +84,10 @@ export const summarizeTurnActivity = (
         .find((tool) => tool.status === 'running');
       if (live) currentStep = live.description || live.name;
     }
+  }
+  if (options.live === false) {
+    running = false;
+    currentStep = undefined;
   }
   if (!Number.isFinite(start)) start = options.endAt ?? options.now;
   const end = running ? options.now : (options.endAt ?? Math.max(lastEnd, start));

@@ -881,9 +881,13 @@
       "queued": "{{count}} not started"
     },
     "subConversations": "{{count}} sub-conversations",
+    "subConversations_one": "{{count}} sub-conversation",
+    "subConversations_other": "{{count}} sub-conversations",
     "needsYou": {
       "title": "Needs you",
-      "running": "{{count}} conversations running"
+      "running": "{{count}} conversations running",
+      "running_one": "{{count}} conversation running",
+      "running_other": "{{count}} conversations running"
     },
     "announce": {
       "waiting": "{{name}} needs you",
@@ -894,16 +898,26 @@
       "worked": "Worked {{duration}}",
       "working": "Working · {{duration}}",
       "steps": "{{count}} steps",
+      "steps_one": "{{count}} step",
+      "steps_other": "{{count}} steps",
       "thoughts": "{{count}} thoughts",
+      "thoughts_one": "{{count}} thought",
+      "thoughts_other": "{{count}} thoughts",
       "failedSteps": "{{count}} failed",
       "thought": "Thought",
       "thoughtFor": "thought {{duration}}",
       "moreSteps": "{{count}} more steps",
+      "moreSteps_one": "{{count}} more step",
+      "moreSteps_other": "{{count}} more steps",
       "shortThoughts": "{{count}} short thoughts",
+      "shortThoughts_one": "{{count}} short thought",
+      "shortThoughts_other": "{{count}} short thoughts",
       "messageTo": "Message → {{name}}",
       "viewSteps": "View steps",
       "viewStepsCount": "View steps · {{count}}",
-      "waitingOnBackground": "waiting on {{count}} background tasks"
+      "waitingOnBackground": "waiting on {{count}} background tasks",
+      "waitingOnBackground_one": "waiting on {{count}} background task",
+      "waitingOnBackground_other": "waiting on {{count}} background tasks"
     },
     "card": {
       "title": "Delegated work",
@@ -921,7 +935,9 @@
       "taskFailedNote": "Ended with an error",
       "stoppedNote": "Stopped",
       "reportedBack": "Reported back {{time}}",
-      "finishedHidden": "{{count}} finished task(s) hidden ·",
+      "finishedHidden": "{{count}} finished tasks hidden ·",
+      "finishedHidden_one": "{{count}} finished task hidden ·",
+      "finishedHidden_other": "{{count}} finished tasks hidden ·",
       "show": "Show",
       "noOutput": "No output yet",
       "noSteps": "No steps recorded yet",

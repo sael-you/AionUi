@@ -883,9 +883,13 @@
       "queued": "{{count}} başlamadı"
     },
     "subConversations": "{{count}} alt konuşma",
+    "subConversations_one": "{{count}} alt konuşma",
+    "subConversations_other": "{{count}} alt konuşma",
     "needsYou": {
       "title": "Sizi bekliyor",
-      "running": "{{count}} konuşma çalışıyor"
+      "running": "{{count}} konuşma çalışıyor",
+      "running_one": "{{count}} konuşma çalışıyor",
+      "running_other": "{{count}} konuşma çalışıyor"
     },
     "announce": {
       "waiting": "{{name}} sizi bekliyor",
@@ -896,16 +900,26 @@
       "worked": "{{duration}} çalıştı",
       "working": "Çalışıyor · {{duration}}",
       "steps": "{{count}} adım",
+      "steps_one": "{{count}} adım",
+      "steps_other": "{{count}} adım",
       "thoughts": "{{count}} düşünce",
+      "thoughts_one": "{{count}} düşünce",
+      "thoughts_other": "{{count}} düşünce",
       "failedSteps": "{{count}} başarısız",
       "thought": "Düşünce",
       "thoughtFor": "düşünce {{duration}}",
       "moreSteps": "{{count}} adım daha",
+      "moreSteps_one": "{{count}} adım daha",
+      "moreSteps_other": "{{count}} adım daha",
       "shortThoughts": "{{count}} kısa düşünce",
+      "shortThoughts_one": "{{count}} kısa düşünce",
+      "shortThoughts_other": "{{count}} kısa düşünce",
       "messageTo": "Mesaj → {{name}}",
       "viewSteps": "Adımları göster",
       "viewStepsCount": "Adımları göster · {{count}}",
-      "waitingOnBackground": "{{count}} arka plan görevi bekleniyor"
+      "waitingOnBackground": "{{count}} arka plan görevi bekleniyor",
+      "waitingOnBackground_one": "{{count}} arka plan görevi bekleniyor",
+      "waitingOnBackground_other": "{{count}} arka plan görevi bekleniyor"
     },
     "card": {
       "title": "Devredilen işler",
@@ -924,6 +938,8 @@
       "stoppedNote": "Durduruldu",
       "reportedBack": "{{time}} rapor verdi",
       "finishedHidden": "{{count}} biten görev gizlendi ·",
+      "finishedHidden_one": "{{count}} biten görev gizlendi ·",
+      "finishedHidden_other": "{{count}} biten görev gizlendi ·",
       "show": "Göster",
       "noOutput": "Henüz çıktı yok",
       "noSteps": "Henüz kayıtlı adım yok",

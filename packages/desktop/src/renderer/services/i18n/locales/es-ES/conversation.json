@@ -882,9 +882,13 @@
       "queued": "{{count}} sin empezar"
     },
     "subConversations": "{{count}} subconversaciones",
+    "subConversations_one": "{{count}} subconversación",
+    "subConversations_other": "{{count}} subconversaciones",
     "needsYou": {
       "title": "Te necesita",
-      "running": "{{count}} conversaciones en curso"
+      "running": "{{count}} conversaciones en curso",
+      "running_one": "{{count}} conversación en curso",
+      "running_other": "{{count}} conversaciones en curso"
     },
     "announce": {
       "waiting": "{{name}} te necesita",
@@ -895,16 +899,26 @@
       "worked": "Trabajó {{duration}}",
       "working": "Trabajando · {{duration}}",
       "steps": "{{count}} pasos",
+      "steps_one": "{{count}} paso",
+      "steps_other": "{{count}} pasos",
       "thoughts": "{{count}} pensamientos",
+      "thoughts_one": "{{count}} pensamiento",
+      "thoughts_other": "{{count}} pensamientos",
       "failedSteps": "{{count}} fallidos",
       "thought": "Pensamiento",
       "thoughtFor": "pensó {{duration}}",
       "moreSteps": "{{count}} pasos más",
+      "moreSteps_one": "{{count}} paso más",
+      "moreSteps_other": "{{count}} pasos más",
       "shortThoughts": "{{count}} pensamientos cortos",
+      "shortThoughts_one": "{{count}} pensamiento corto",
+      "shortThoughts_other": "{{count}} pensamientos cortos",
       "messageTo": "Mensaje → {{name}}",
       "viewSteps": "Ver pasos",
       "viewStepsCount": "Ver pasos · {{count}}",
-      "waitingOnBackground": "esperando {{count}} tareas en segundo plano"
+      "waitingOnBackground": "esperando {{count}} tareas en segundo plano",
+      "waitingOnBackground_one": "esperando {{count}} tarea en segundo plano",
+      "waitingOnBackground_other": "esperando {{count}} tareas en segundo plano"
     },
     "card": {
       "title": "Trabajo delegado",
@@ -922,7 +936,9 @@
       "taskFailedNote": "Terminó con un error",
       "stoppedNote": "Detenido",
       "reportedBack": "Informó {{time}}",
-      "finishedHidden": "{{count}} tarea(s) terminada(s) oculta(s) ·",
+      "finishedHidden": "{{count}} tareas terminadas ocultas ·",
+      "finishedHidden_one": "{{count}} tarea terminada oculta ·",
+      "finishedHidden_other": "{{count}} tareas terminadas ocultas ·",
       "show": "Mostrar",
       "noOutput": "Aún sin salida",
       "noSteps": "Aún no hay pasos",

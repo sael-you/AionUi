@@ -882,9 +882,13 @@
       "queued": "{{count}} nicht gestartet"
     },
     "subConversations": "{{count}} Unterunterhaltungen",
+    "subConversations_one": "{{count}} Unterunterhaltung",
+    "subConversations_other": "{{count}} Unterunterhaltungen",
     "needsYou": {
       "title": "Braucht dich",
-      "running": "{{count}} Unterhaltungen laufen"
+      "running": "{{count}} Unterhaltungen laufen",
+      "running_one": "{{count}} Unterhaltung läuft",
+      "running_other": "{{count}} Unterhaltungen laufen"
     },
     "announce": {
       "waiting": "{{name}} braucht dich",
@@ -895,16 +899,26 @@
       "worked": "{{duration}} gearbeitet",
       "working": "Arbeitet · {{duration}}",
       "steps": "{{count}} Schritte",
+      "steps_one": "{{count}} Schritt",
+      "steps_other": "{{count}} Schritte",
       "thoughts": "{{count}} Gedanken",
+      "thoughts_one": "{{count}} Gedanke",
+      "thoughts_other": "{{count}} Gedanken",
       "failedSteps": "{{count}} fehlgeschlagen",
       "thought": "Gedanke",
       "thoughtFor": "nachgedacht {{duration}}",
       "moreSteps": "{{count}} weitere Schritte",
+      "moreSteps_one": "{{count}} weiterer Schritt",
+      "moreSteps_other": "{{count}} weitere Schritte",
       "shortThoughts": "{{count}} kurze Gedanken",
+      "shortThoughts_one": "{{count}} kurzer Gedanke",
+      "shortThoughts_other": "{{count}} kurze Gedanken",
       "messageTo": "Nachricht → {{name}}",
       "viewSteps": "Schritte anzeigen",
       "viewStepsCount": "Schritte anzeigen · {{count}}",
-      "waitingOnBackground": "wartet auf {{count}} Hintergrundaufgaben"
+      "waitingOnBackground": "wartet auf {{count}} Hintergrundaufgaben",
+      "waitingOnBackground_one": "wartet auf {{count}} Hintergrundaufgabe",
+      "waitingOnBackground_other": "wartet auf {{count}} Hintergrundaufgaben"
     },
     "card": {
       "title": "Delegierte Arbeit",
@@ -922,7 +936,9 @@
       "taskFailedNote": "Mit Fehler beendet",
       "stoppedNote": "Gestoppt",
       "reportedBack": "Hat {{time}} berichtet",
-      "finishedHidden": "{{count}} fertige Aufgabe(n) ausgeblendet ·",
+      "finishedHidden": "{{count}} fertige Aufgaben ausgeblendet ·",
+      "finishedHidden_one": "{{count}} fertige Aufgabe ausgeblendet ·",
+      "finishedHidden_other": "{{count}} fertige Aufgaben ausgeblendet ·",
       "show": "Anzeigen",
       "noOutput": "Noch keine Ausgabe",
       "noSteps": "Noch keine Schritte",

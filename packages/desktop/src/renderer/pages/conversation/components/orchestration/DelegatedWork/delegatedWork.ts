@@ -158,6 +158,25 @@ export const taskRows = (
   return [...byTask.values()];
 };
 
+/**
+ * Task rows whose card still says "running" while nothing is alive (no turn
+ * processing, no background work reported by the runtime) were cut off — e.g.
+ * by a restart, after which the CLI never settles them. Show them as stopped,
+ * ended at the last thing the conversation recorded, instead of a timer that
+ * runs forever (C21 FIXES 4). Conversation rows carry their own live state.
+ */
+export const settleStaleTaskRows = (
+  rows: DelegatedRow[],
+  options: { live: boolean; lastEnd: number }
+): DelegatedRow[] =>
+  options.live
+    ? rows
+    : rows.map((row) =>
+        row.kind !== 'conversation' && row.state === 'running'
+          ? { ...row, state: 'stopped', endedAt: row.endedAt ?? Math.max(options.lastEnd, row.startedAt ?? 0) }
+          : row
+      );
+
 export const countRunStates = (rows: readonly DelegatedRow[]): RunStateCounts => {
   const counts = emptyRunStateCounts();
   for (const row of rows) counts[row.state] += 1;

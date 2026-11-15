@@ -17,6 +17,7 @@ import DelegatedWorkCard from '@/renderer/pages/conversation/components/orchestr
 import {
   countRunStates,
   publishDelegatedSummary,
+  settleStaleTaskRows,
   taskLabelsById,
 } from '@/renderer/pages/conversation/components/orchestration/DelegatedWork/delegatedWork';
 import {
@@ -633,7 +634,10 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
       };
       return other;
     });
-    return placeDelegatedWork(placement, {
+    // After a restart a card can still say "running" with nothing alive.
+    const live = isProcessing || (history?.hasBackgroundActive(conversationId) ?? false);
+    const lastEnd = list.reduce((latest, message) => Math.max(latest, message.created_at ?? 0), 0);
+    const cards = placeDelegatedWork(placement, {
       conversationId,
       conversations: history?.conversations ?? [],
       labels: taskLabels,
@@ -643,7 +647,8 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
           (history?.isConversationGenerating(id) ?? false) || (history?.hasBackgroundActive(id) ?? false),
       },
     });
-  }, [conversationId, history, processedList, taskLabels]);
+    return cards.map((card) => ({ ...card, rows: settleStaleTaskRows(card.rows, { live, lastEnd }) }));
+  }, [conversationId, history, isProcessing, list, processedList, taskLabels]);
   const cardsAfter = useMemo(() => {
     const map = new Map<number, typeof delegatedCards>();
     for (const card of delegatedCards) map.set(card.afterIndex, [...(map.get(card.afterIndex) ?? []), card]);
@@ -861,7 +866,7 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
           className={`${rowWidthClass} min-w-0 message-item px-8px m-t-6px turn_activity`}
           style={highlighted ? highlightStyle : undefined}
         >
-          <TurnActivity entries={item.entries} endAt={item.endAt} taskLabels={taskLabels} />
+          <TurnActivity entries={item.entries} endAt={item.endAt} taskLabels={taskLabels} live={isProcessing} />
         </div>
       );
     }

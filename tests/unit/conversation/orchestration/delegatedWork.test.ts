@@ -11,6 +11,7 @@ import {
   childRunState,
   descendantConversations,
   latestInnerStep,
+  settleStaleTaskRows,
   taskLabelsById,
   taskRows,
 } from '@/renderer/pages/conversation/components/orchestration/DelegatedWork/delegatedWork';
@@ -181,5 +182,47 @@ describe('turn activity summary', () => {
       { endAt: 5000, now: 60_000 }
     );
     expect(delegated.running).toBe(false);
+  });
+});
+
+describe('stale running rows after a restart (FIXES 4)', () => {
+  const rows = [
+    { key: 'task:a', kind: 'subagent' as const, name: 'a', state: 'running' as const, depth: 0, startedAt: 1000 },
+    {
+      key: 'task:b',
+      kind: 'background' as const,
+      name: 'b',
+      state: 'done' as const,
+      depth: 0,
+      startedAt: 1000,
+      endedAt: 2000,
+    },
+    {
+      key: 'conversation:c',
+      kind: 'conversation' as const,
+      name: 'c',
+      state: 'running' as const,
+      depth: 0,
+      startedAt: 1000,
+    },
+  ];
+
+  it('shows running task rows as stopped at the last recorded time when nothing is alive', () => {
+    const settled = settleStaleTaskRows(rows, { live: false, lastEnd: 9000 });
+    expect(settled.map((r) => [r.key, r.state, r.endedAt])).toEqual([
+      ['task:a', 'stopped', 9000],
+      ['task:b', 'done', 2000],
+      ['conversation:c', 'running', undefined],
+    ]);
+    expect(settleStaleTaskRows(rows, { live: true, lastEnd: 9000 })).toBe(rows);
+  });
+
+  it('does not keep a cut-off turn "working" forever', () => {
+    const cut = summarizeTurnActivity(
+      [{ kind: 'tools', id: 's', created_at: 0, messages: [call('a', 'running', {}, 1000)] }],
+      { now: 1_080_000_000, live: false }
+    );
+    expect(cut.running).toBe(false);
+    expect(cut.elapsedMs).toBe(1000);
   });
 });
