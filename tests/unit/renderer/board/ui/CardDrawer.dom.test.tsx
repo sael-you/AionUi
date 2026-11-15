@@ -255,3 +255,33 @@ describe('card drawer edits', () => {
     expect(within(dialog).queryByRole('textbox', { name: /Write a comment/ })).not.toBeInTheDocument();
   });
 });
+
+describe('drawer layout', () => {
+  it('puts the action bar in the drawer footer, outside the scrolling content (no overlap)', async () => {
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    const actions = within(dialog).getByTestId('board-drawer-actions');
+    expect(actions.closest('.arco-drawer-footer')).not.toBeNull();
+    expect(actions.closest('.arco-drawer-content')).toBeNull();
+    // The last section stays in the scrolling content.
+    expect(within(dialog).getByText('Activity').closest('.arco-drawer-content')).not.toBeNull();
+  });
+
+  it('spaces icon and label in every action button', async () => {
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    for (const name of ['Assign', 'Brainstorm', 'Block', 'Archive']) {
+      const button = within(dialog).getByRole('button', { name });
+      expect(button.className).toContain('gap-8px');
+      expect(button.className).toContain('!inline-flex');
+    }
+  });
+
+  it('shows no action bar on a read-only board', async () => {
+    bridge.get.mockResolvedValue(makeSnapshot({ settings: makeSettings({ archived_at: 1 }), cards: [card1] }));
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    expect(within(dialog).queryByTestId('board-drawer-actions')).not.toBeInTheDocument();
+    expect(dialog.querySelector('.arco-drawer-footer')).toBeNull();
+  });
+});
