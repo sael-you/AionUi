@@ -232,6 +232,27 @@
   color: var(--text-secondary);
 }
 
+.voiceBarOutcome {
+  margin-inline-end: 6px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.voiceBarOutcome::after {
+  content: '·';
+  margin-inline-start: 6px;
+  color: var(--text-secondary);
+}
+
+.voiceBarOutcome:last-child::after {
+  content: none;
+}
+
+.voiceBarNotice {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
 .voiceBarActions {
   display: flex;
   gap: 6px;

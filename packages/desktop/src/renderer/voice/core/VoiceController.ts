@@ -76,6 +76,12 @@ export const FOLLOW_UP_WINDOW_MS = 8_000;
 export const CAR_FOLLOW_UP_WINDOW_MS = 12_000;
 /** Conversation mode: time to answer an agent's spoken question. */
 export const ASK_WINDOW_MS = 30_000;
+/**
+ * Conversation mode: after voice mode starts, a wake word or a tap, the mic stays open this long
+ * without speech (thinking pauses are fine: speech restarts the count), then it goes quiet so the
+ * agent may speak again.
+ */
+export const LISTEN_WINDOW_MS = 15_000;
 /** Conversation-mode outcomes of your utterance: the mic goes quiet again. */
 const HOLD_STATUSES: ReadonlySet<FollowUpStatus> = new Set(['sent', 'added', 'queued', 'silenced', 'stopped']);
 /** Conversation-mode turn ends: the mic opens for the follow-up window. */
@@ -157,8 +163,12 @@ export class VoiceController {
   private windowTimer: unknown = null;
   private windowMs = 0;
   private lastSpeechAt: number | null = null;
-  /** Conversation mode: the clip of an agent question; the answer window opens when it ends. */
-  private windowAfterClipId: string | null = null;
+  /** Conversation mode: the window (answer, follow-up) that opens when this agent clip ends. */
+  private windowAfterClip: { clipId: string; ms: number } | null = null;
+  /** Conversation mode: the user is speaking now (VAD), so the listen window never closes mid-sentence. */
+  private userSpeaking = false;
+  /** Bumped when the agent's speech is stopped: clips fetched or queued before are dropped. */
+  private speechEpoch = 0;
 
   constructor(private readonly fx: Effects) {}
 
@@ -263,7 +273,8 @@ export class VoiceController {
     this.clearTimer('draftTimer');
     this.clearTimer('windowTimer');
     this.autoTalk = false;
-    this.windowAfterClipId = null;
+    this.windowAfterClip = null;
+    this.userSpeaking = false;
     if (this.audioEl) this.audioEl.srcObject = null;
     this.audioEl = null;
     this.clips = null;
@@ -500,9 +511,13 @@ export class VoiceController {
   }
 
   private wake(t: number, resumeOf?: string): void {
-    if (this.isConversationMode && this.machine.mode === 'armed' && this.machine.call) {
-      this.bargeIn(t);
-      return;
+    if (this.isConversationMode && this.machine.mode === 'armed') {
+      // Barge-in: the agent's speech stops at once, whether or not a call is open.
+      this.stopAgentSpeech();
+      if (this.machine.call) {
+        this.bargeIn(t);
+        return;
+      }
     }
     if (this.machine.mode !== 'armed' || this.machine.call || !this.capture || !this.audioEl) return;
     if (this.machine.socket !== 'open') {
@@ -514,7 +529,8 @@ export class VoiceController {
     this.everReady = false;
     // Conversation mode keeps the wake word live during the call: "Hey Jarvis" barges in.
     if (!this.isConversationMode) this.fx.wakeWord.setMode('vad');
-    this.store.update({ overlayOpen: true, notice: null });
+    // Conversation mode lives in the voice bar above the composer, not in the Jarvis panel.
+    this.store.update({ ...(this.isConversationMode ? {} : { overlayOpen: true }), notice: null });
     this.fx.vibrate(40);
     const token = this.armToken;
     const capture = this.capture;
@@ -735,6 +751,7 @@ export class VoiceController {
     this.everReady = true;
     this.reconnectingToned = false;
     this.earcon(first ? 'listening' : 'back');
+    if (this.isConversationMode && first && !this.machine.held) this.openWindow(LISTEN_WINDOW_MS);
   }
 
   /**
@@ -880,7 +897,8 @@ export class VoiceController {
     urlOrId: string,
     clipId: string,
     stillWanted: () => boolean = () => true,
-    draftLine = false
+    draftLine = false,
+    epoch = this.speechEpoch
   ): Promise<void> {
     const clips = this.clips;
     const ctx = this.ctx;
@@ -889,8 +907,11 @@ export class VoiceController {
     let started = false;
     let requeued = false;
     try {
+      if (kind === 'followUp' && epoch !== this.speechEpoch) return;
       const data = await this.fx.api.fetchClip(urlOrId);
       if (this.clips !== clips || !stillWanted()) return;
+      // Barge-in or "stop" while this clip was fetched: it is dropped, never played later.
+      if (kind === 'followUp' && epoch !== this.speechEpoch) return;
       if (kind === 'followUp' && this.followUpBlocked(draftLine)) {
         // Clips are single use: keep the fetched audio's slot and retry later (no tone again).
         this.followUpQueue.unshift({ clipId, urlOrId, tone: null, draftLine });
@@ -926,9 +947,10 @@ export class VoiceController {
       if (this.playingKind === kind) this.playingKind = null;
       if (kind === 'followUp') this.followUpBusy = false;
       if (kind === 'followUp' && this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
-      if (kind === 'followUp' && !requeued && clipId === this.windowAfterClipId) {
-        this.windowAfterClipId = null;
-        this.openWindow(ASK_WINDOW_MS);
+      if (kind === 'followUp' && !requeued && clipId === this.windowAfterClip?.clipId) {
+        const { ms } = this.windowAfterClip;
+        this.windowAfterClip = null;
+        this.openWindow(ms);
       }
       if (kind === 'followUp' && !requeued && clipId === this.askClipId) {
         this.askClipId = null;
@@ -964,8 +986,9 @@ export class VoiceController {
     const [next] = this.followUpQueue.splice(index, 1);
     const endsAt = next.tone ? this.earcon(next.tone) : null;
     const delayMs = endsAt !== null && this.ctx ? Math.max(0, (endsAt - this.ctx.currentTime) * 1000) : 0;
+    const epoch = this.speechEpoch;
     this.fx.timers.setTimeout(
-      () => void this.playClip('followUp', next.urlOrId, next.clipId, undefined, next.draftLine),
+      () => void this.playClip('followUp', next.urlOrId, next.clipId, undefined, next.draftLine, epoch),
       delayMs
     );
   }
@@ -1027,7 +1050,9 @@ export class VoiceController {
     const call = this.machine.call;
     if (HOLD_STATUSES.has(status)) {
       this.store.update({ lastOutcome: { status, line } });
+      // A bare "stop" silences the agent only; "stop the task" / "cancel" also ended the turn.
       if (status === 'silenced' || status === 'stopped') this.stopAgentSpeech();
+      else this.earcon('gotIt');
       this.holdMic();
       if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: null, draftLine: true });
       return true;
@@ -1036,9 +1061,14 @@ export class VoiceController {
       if (status !== 'finished') this.store.update({ lastOutcome: { status, line } });
       if (status === 'needs_approval') this.fx.vibrate([60, 60, 60]);
       const tone: EarconName = status === 'finished' ? 'yourTurn' : 'needsYou';
-      if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone, draftLine: false });
-      else this.earcon(tone);
-      this.openWindow(this.followUpWindowMs());
+      const ms = this.followUpWindowMs();
+      // The window opens after the agent's last line, never over it.
+      if (clipId && this.enqueueClip({ clipId, urlOrId: clipId, tone, draftLine: false })) {
+        this.windowAfterClip = { clipId, ms };
+      } else {
+        if (!clipId) this.earcon(tone);
+        this.openWindow(ms);
+      }
       return true;
     }
     if (status === 'says') {
@@ -1047,7 +1077,7 @@ export class VoiceController {
     }
     if (status === 'asks' && call) {
       if (clipId && this.enqueueClip({ clipId, urlOrId: clipId, tone: 'agent', draftLine: false })) {
-        this.windowAfterClipId = clipId;
+        this.windowAfterClip = { clipId, ms: ASK_WINDOW_MS };
       } else this.openWindow(ASK_WINDOW_MS);
       return true;
     }
@@ -1078,12 +1108,22 @@ export class VoiceController {
     this.armWindowTimer(ms);
   }
 
+  /** Conversation mode: keep the mic open while you speak and for `windowMs` after. */
+  private keepListening(ms: number): void {
+    this.clearTimer('windowTimer');
+    this.windowMs = ms;
+    this.lastSpeechAt = null;
+    this.armWindowTimer(ms);
+  }
+
   private armWindowTimer(ms: number): void {
     this.windowTimer = this.fx.timers.setTimeout(() => {
       this.windowTimer = null;
       const spokeAt = this.lastSpeechAt;
-      if (spokeAt !== null && this.fx.timers.now() - spokeAt < this.windowMs) {
-        this.armWindowTimer(this.windowMs);
+      if (this.userSpeaking || (spokeAt !== null && this.fx.timers.now() - spokeAt < this.windowMs)) {
+        const left =
+          this.userSpeaking || spokeAt === null ? this.windowMs : this.windowMs - (this.fx.timers.now() - spokeAt);
+        this.armWindowTimer(Math.max(1, left));
         return;
       }
       this.holdMic();
@@ -1092,8 +1132,9 @@ export class VoiceController {
 
   /** Stop the agent's speech now (barge-in, "stop"): the playing clip and the queued ones. */
   private stopAgentSpeech(): void {
+    this.speechEpoch++;
     this.followUpQueue = [];
-    this.windowAfterClipId = null;
+    this.windowAfterClip = null;
     if (this.playingKind === 'followUp') this.clips?.stop();
     if (this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
   }
@@ -1104,12 +1145,16 @@ export class VoiceController {
    * is added to the running turn.
    */
   private bargeIn(t: number): void {
-    this.stopAgentSpeech();
-    if (this.machine.call?.phase !== 'ready' || !this.machine.held) return;
-    this.clearTimer('windowTimer');
+    if (this.machine.call?.phase !== 'ready') return;
+    if (!this.machine.held) {
+      // Already listening: the wake word or tap only restarts the listen window.
+      this.keepListening(LISTEN_WINDOW_MS);
+      return;
+    }
     this.pendingPreroll = t;
     this.dispatch({ type: 'hold', held: false });
     this.pendingPreroll = null;
+    this.keepListening(LISTEN_WINDOW_MS);
     this.earcon('listening');
     this.fx.vibrate(40);
   }
@@ -1151,12 +1196,13 @@ export class VoiceController {
   }
 
   private onVad(speech: boolean, t: number): void {
-    if (!speech || !this.machine.call?.voiceSessionId) return;
     if (this.isConversationMode) {
-      // No draft to confirm here: speech only keeps the follow-up window open.
+      // No draft to confirm here: speech only keeps the listen window open.
+      this.userSpeaking = speech;
       this.lastSpeechAt = this.fx.timers.now();
       return;
     }
+    if (!speech || !this.machine.call?.voiceSessionId) return;
     this.socket?.send({ name: 'voice.speechOnset', t });
   }
 

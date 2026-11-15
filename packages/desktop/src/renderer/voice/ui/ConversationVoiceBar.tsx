@@ -68,19 +68,31 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
   if (!active) return null;
 
   const state = voiceBarState(view, running);
-  const lastCaption = view.captions.filter((c) => c.role === 'user').at(-1) ?? null;
-  // While you speak: your words. Afterwards: what happened to them.
-  const caption =
-    state === 'listening' && lastCaption && !lastCaption.final
-      ? lastCaption.text
-      : view.lastOutcome
-        ? t(`voice.bar.outcome.${view.lastOutcome.status}`, { defaultValue: view.lastOutcome.line })
-        : (lastCaption?.text ?? '');
+  const lastCaption = view.captions.findLast((c) => c.role === 'user') ?? null;
+  // Your words as they are heard; after the send, what happened to them ("Added to the running task").
+  const outcome =
+    view.lastOutcome && !(state === 'listening' && lastCaption && !lastCaption.final)
+      ? t(`voice.bar.outcome.${view.lastOutcome.status}`, { defaultValue: view.lastOutcome.line })
+      : null;
+  const notice = view.notice ? t(`voice.notice.${view.notice.code}`, { message: view.notice.message ?? '' }) : null;
   const stateLabel = t(`voice.bar.state.${state}`);
   const canTalk = state !== 'connecting' && state !== 'offline' && state !== 'listening';
 
+  const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    // Escape inside the bar ends voice mode (the buttons cover Tab / Enter / Space).
+    if (event.key !== 'Escape') return;
+    event.stopPropagation();
+    controller.disarm('tap');
+  };
+
   return (
-    <section className={styles.voiceBar} aria-label={t('voice.bar.label')} data-testid='conversation-voice-bar'>
+    <section
+      className={styles.voiceBar}
+      aria-label={t('voice.bar.label')}
+      data-testid='conversation-voice-bar'
+      data-state={state}
+      onKeyDown={onKeyDown}
+    >
       <Button
         type='text'
         size='small'
@@ -95,7 +107,14 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
         <span className={styles.voiceBarStateText}>{stateLabel}</span>
       </Button>
       <div className={styles.voiceBarCaption} role='status' aria-live='polite' data-testid='voice-bar-caption'>
-        {caption}
+        {notice ? (
+          <span className={styles.voiceBarNotice}>{notice}</span>
+        ) : (
+          <>
+            {outcome && <span className={styles.voiceBarOutcome}>{outcome}</span>}
+            {lastCaption && <span data-testid='voice-bar-transcript'>{lastCaption.text}</span>}
+          </>
+        )}
       </div>
       <div className={styles.voiceBarActions}>
         {state === 'listening' && (
@@ -118,6 +137,7 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
           size='mini'
           icon={<CloseSmall theme='outline' size='12' />}
           onClick={() => controller.disarm('tap')}
+          aria-keyshortcuts='Escape'
           data-testid='voice-bar-end'
         >
           {t('voice.bar.end')}
