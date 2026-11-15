@@ -80,7 +80,7 @@ describe('ensureAdminPassword in WebUI identity (card C11)', () => {
     expect(warns).toEqual([]);
     expect(logs).toEqual(WEBUI_PASSWORD_PROCEDURE.map((line) => `[aionui-web] ${line}`));
     expect(logs.join('\n')).toContain('cli.js set-password');
-    expect(logs.join('\n')).toContain('aioncore user disable');
+    expect(logs.join('\n')).toContain('user disable --username');
     expect(logs.join('\n')).not.toContain('users.json');
   });
 
