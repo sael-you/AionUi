@@ -40,6 +40,10 @@ vi.mock('@/renderer/pages/settings/ToolsSettings/McpServerItem', () => ({
   default: () => null,
 }));
 
+vi.mock('@/renderer/pages/settings/ToolsSettings/market', () => ({
+  default: () => null,
+}));
+
 vi.mock('@/renderer/hooks/agent/useConfigModelListWithImage', () => ({
   default: () => ({ modelListWithImage: hooks.modelListWithImage }),
 }));
