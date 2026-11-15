@@ -16,7 +16,24 @@
  * The printed format is load-bearing: scripts/smoke-test-web-cli.sh greps for
  * "Generated initial admin password: <pw>". Do not change it without updating
  * that script.
+ *
+ * WebUI identity (card C11, `AIONUI_BACKEND_IDENTITY=webui`): the reset endpoint
+ * is local-only there and accounts are managed outside aionui-web, so this step
+ * is skipped and the documented procedure is printed instead.
  */
+
+/**
+ * How passwords and sessions are managed when AionCore runs in WebUI identity
+ * (C11 plan, "Password procedure"). Printed by `resetpass` and at start-up.
+ */
+export const WEBUI_PASSWORD_PROCEDURE: readonly string[] = [
+  'AionCore runs in WebUI identity: /api/webui/reset-password is not available.',
+  'Owner password: reset it through the Token Pool CLI (users.json).',
+  'Revoke all sessions: stop AionUi, run `aioncore user disable --username <user>` then',
+  '  `aioncore user enable --username <user>` (bumps the session generation), start AionUi.',
+  'Never run `aioncore user set-password` on its own: it must go together with an atomic',
+  '  rewrite of the gateway credentials (internal.json). See RUNBOOK.md.',
+];
 
 export type EnsureAdminPasswordDeps = {
   fetch: typeof fetch;
@@ -33,6 +50,8 @@ export type EnsureAdminPasswordOptions = {
   statusTimeoutMs?: number;
   /** Poll interval between /api/auth/status attempts. Default: 500ms. */
   statusPollIntervalMs?: number;
+  /** Backend identity (`resolveBackendIdentity()`); `webui` skips the local-only seeding. */
+  identity?: 'local' | 'webui';
   /**
    * Command to show in fallback hints ("Forgot the password? Run ..."). Varies
    * by launch context — packaged tarball = `aionui-web resetpass`, in-repo dev
@@ -103,6 +122,11 @@ export async function ensureAdminPassword(
   const intervalMs = opts.statusPollIntervalMs ?? 500;
   const resetCmd = opts.resetCommand ?? 'aionui-web resetpass';
   const base = `http://127.0.0.1:${opts.backendPort}`;
+
+  if (opts.identity === 'webui') {
+    WEBUI_PASSWORD_PROCEDURE.forEach((line) => deps.log(`[aionui-web] ${line}`));
+    return;
+  }
 
   let status: AuthStatus;
   try {

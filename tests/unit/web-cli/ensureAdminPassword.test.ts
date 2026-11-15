@@ -7,6 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   ensureAdminPassword,
+  WEBUI_PASSWORD_PROCEDURE,
   type EnsureAdminPasswordDeps,
 } from '../../../packages/web-cli/src/ensureAdminPassword.js';
 
@@ -50,6 +51,36 @@ function makeDeps(opts: { handlers: Array<(url: string, init?: RequestInit) => R
   };
   return { deps, calls, logs, warns, sleeps };
 }
+
+describe('ensureAdminPassword in WebUI identity (card C11)', () => {
+  it('never calls the local-only reset endpoint and prints the password procedure', async () => {
+    const { deps, calls, logs, warns } = makeDeps({
+      handlers: [() => mockResponse(200, { needs_setup: true })],
+    });
+
+    await ensureAdminPassword({ backendPort: 25808, identity: 'webui' }, deps);
+
+    expect(calls).toEqual([]);
+    expect(warns).toEqual([]);
+    expect(logs).toEqual(WEBUI_PASSWORD_PROCEDURE.map((line) => `[aionui-web] ${line}`));
+    expect(logs.join('\n')).toContain('aioncore user disable');
+    expect(logs.join('\n')).toContain('Token Pool');
+  });
+
+  it('local identity keeps the seeding flow unchanged', async () => {
+    const { deps, calls } = makeDeps({
+      handlers: [
+        () => mockResponse(200, { needs_setup: true }),
+        () => mockResponse(200, { data: { new_password: 'pw' } }),
+        () => mockResponse(200, { data: { username: 'admin' } }),
+      ],
+    });
+
+    await ensureAdminPassword({ backendPort: 25808, identity: 'local' }, deps);
+
+    expect(calls[1].url).toBe('http://127.0.0.1:25808/api/webui/reset-password');
+  });
+});
 
 describe('ensureAdminPassword', () => {
   it('seeds password on fresh install (needs_setup=true)', async () => {

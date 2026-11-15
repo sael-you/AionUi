@@ -28,7 +28,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { startBackend, stopBackend } from '@aionui/web-host';
+import { resolveBackendIdentity, startBackend, stopBackend } from '@aionui/web-host';
+import { WEBUI_PASSWORD_PROCEDURE } from '../packages/web-cli/src/ensureAdminPassword.js';
 
 const BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
 
@@ -164,6 +165,13 @@ function resolveUsername(): string {
 }
 
 async function main(): Promise<void> {
+  // WebUI identity (card C11): the reset endpoint is local-only and accounts are
+  // managed outside this helper — print the procedure instead.
+  if (resolveBackendIdentity() === 'webui') {
+    WEBUI_PASSWORD_PROCEDURE.forEach((line) => console.error(`[resetpass] ${line}`));
+    process.exitCode = 1;
+    return;
+  }
   const username = resolveUsername();
   const workDir = resolveWorkDir();
   const webuiPort = resolveWebUIProbePort();

@@ -11,10 +11,18 @@ export {
   buildSpawnArgs,
   buildSpawnEnv,
   findAvailablePort,
+  resolveBackendIdentity,
+  BACKEND_IDENTITY_ENV_KEYS,
   startBackend,
   stopBackend,
 } from './backend-launcher.js';
-export type { BackendDirConfig, BackendLaunchOptions, BackendHandle, BackendStartOptions } from './backend-launcher.js';
+export type {
+  BackendDirConfig,
+  BackendIdentity,
+  BackendLaunchOptions,
+  BackendHandle,
+  BackendStartOptions,
+} from './backend-launcher.js';
 
 /**
  * Start WebHost (main entry point).

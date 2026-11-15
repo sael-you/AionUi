@@ -1,4 +1,4 @@
-import { startWebHost, startStaticServer } from '@aionui/web-host';
+import { resolveBackendIdentity, startWebHost, startStaticServer } from '@aionui/web-host';
 import type { WebHostHandle, StaticServerHandle } from '@aionui/web-host';
 import { setTimeout as delay } from 'node:timers/promises';
 import fs from 'node:fs';
@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openBrowserUrl, shouldAutoOpenBrowser } from './browser.js';
-import { ensureAdminPassword } from './ensureAdminPassword.js';
+import { ensureAdminPassword, WEBUI_PASSWORD_PROCEDURE } from './ensureAdminPassword.js';
 
 // tarball layout:
 //   aionui-web/
@@ -230,7 +230,7 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
     // backend and print plaintext credentials. Failure must not abort startup —
     // the user can always fall back to running resetpass manually.
     await ensureAdminPassword(
-      { backendPort: handle.backendPort, resetCommand: RESET_COMMAND },
+      { backendPort: handle.backendPort, resetCommand: RESET_COMMAND, identity: resolveBackendIdentity() },
       {
         fetch: (...args) => fetch(...args),
         log: (msg) => console.log(msg),
@@ -276,6 +276,12 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
  * DB the user normally runs against.
  */
 async function runResetPassword(flags: Map<string, string | true>): Promise<void> {
+  // WebUI identity (card C11): the reset endpoint is local-only and accounts are
+  // managed outside aionui-web — print the procedure instead of starting a backend.
+  if (resolveBackendIdentity() === 'webui') {
+    WEBUI_PASSWORD_PROCEDURE.forEach((line) => console.error(`[aionui-web] ${line}`));
+    process.exit(1);
+  }
   const backendBin = resolveBackendBinary(flags);
   if (!fs.existsSync(backendBin)) {
     console.error(`[aionui-web] backend binary not found: ${backendBin}`);
@@ -377,6 +383,8 @@ async function main(): Promise<void> {
 Commands:
   start              Start the WebUI (default)
   resetpass          Reset the admin password and print the new one
+                     (local identity only; with AIONUI_BACKEND_IDENTITY=webui it
+                     prints the password procedure instead)
   version            Print version
   help               Show this help
 
@@ -396,7 +404,8 @@ Options for resetpass:
 
 Environment variables:
   AIONUI_PORT, AIONUI_ALLOW_REMOTE, AIONUI_DATA_DIR, AIONUI_LOG_DIR,
-  AIONUI_BACKEND_BIN, AIONUI_OPEN_BROWSER
+  AIONUI_BACKEND_BIN, AIONUI_OPEN_BROWSER,
+  AIONUI_BACKEND_IDENTITY (webui = AionCore enforces sessions; default local)
 `);
     return;
   }
