@@ -282,4 +282,35 @@ describe('static server forwards the browser Host as X-Forwarded-Host', () => {
     (backendSocket as net.Socket | null)?.destroy();
     await exchange;
   });
+
+  const REFUSAL_BODY = '{"success":false,"code":"ORIGIN_FORBIDDEN"}';
+  const REFUSAL_HEAD = `HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: ${REFUSAL_BODY.length}\r\n\r\n`;
+
+  it('TASK-77: a refusal whose body arrives in a later chunk is relayed whole, then the connection closes', async () => {
+    await start(
+      (_req, res) => res.end(),
+      (_req, socket) => {
+        socket.write(REFUSAL_HEAD);
+        // Body later; the backend keeps the connection open (keep-alive).
+        setTimeout(() => socket.write(REFUSAL_BODY), 50);
+        socket.on('end', () => socket.destroy());
+      }
+    );
+    const { received, closed } = await rawExchange(UPGRADE_HEAD);
+    expect(received).toBe(REFUSAL_HEAD + REFUSAL_BODY);
+    expect(closed).toBe(true);
+  });
+
+  it('TASK-77: a backend that closes right after its refusal still gets the whole answer to the client', async () => {
+    await start(
+      (_req, res) => res.end(),
+      (_req, socket) => {
+        socket.write(REFUSAL_HEAD);
+        socket.end(REFUSAL_BODY, () => socket.destroy());
+      }
+    );
+    const { received, closed } = await rawExchange(UPGRADE_HEAD);
+    expect(received).toBe(REFUSAL_HEAD + REFUSAL_BODY);
+    expect(closed).toBe(true);
+  });
 });

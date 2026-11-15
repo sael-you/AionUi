@@ -153,6 +153,10 @@ function spliceToTcpEndpoint(client: Socket, targetPort: number, initialBytes: B
 
 /** How long the backend may take to answer an upgrade head. */
 const UPGRADE_ANSWER_TIMEOUT_MS = 10_000;
+/** How long a refusal body may take to arrive, and to flush to the client. */
+const REFUSAL_FLUSH_TIMEOUT_MS = 1_000;
+/** Largest refusal body relayed to the client. */
+const MAX_REFUSAL_BODY_BYTES = 64 * 1024;
 
 /**
  * Splice a WebSocket upgrade to the backend, but only once the backend
@@ -195,8 +199,7 @@ function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffe
     upstream.removeListener('data', onAnswer);
     const statusLine = answer.subarray(0, answer.indexOf('\r\n')).toString('latin1');
     if (!/^HTTP\/1\.[01] 101 /.test(statusLine)) {
-      upstream.destroy();
-      client.end(answer, () => client.destroy());
+      relayRefusal(end + 4);
       return;
     }
     spliced = true;
@@ -205,11 +208,52 @@ function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffe
     upstream.pipe(client);
     client.pipe(upstream);
   };
+  // A refusal (any answer but 101) is relayed whole — the head plus its
+  // Content-Length body, or what arrives until the backend closes or goes
+  // quiet — and the client is closed only after that write has flushed.
+  // Destroying it right away raced the write on bun and lost the body
+  // (TASK-77). Nothing from the client is forwarded meanwhile.
+  let relaying = false;
+  let finishRelay = (): void => {};
+  const relayRefusal = (headLength: number): void => {
+    relaying = true;
+    const lengthMatch = /\r\ncontent-length:\s*(\d+)\s*\r\n/i.exec(answer.subarray(0, headLength).toString('latin1'));
+    const total = lengthMatch ? headLength + Number(lengthMatch[1]) : null;
+    let done = false;
+    let quiet: ReturnType<typeof setTimeout> | undefined;
+    finishRelay = (): void => {
+      if (done) return;
+      done = true;
+      clearTimeout(quiet);
+      upstream.destroy();
+      client.end(total === null ? answer : answer.subarray(0, total));
+      client.once('finish', () => setImmediate(() => client.destroy()));
+      setTimeout(() => client.destroy(), REFUSAL_FLUSH_TIMEOUT_MS).unref?.();
+    };
+    const settle = (): void => {
+      if (total !== null && answer.length >= total) {
+        finishRelay();
+        return;
+      }
+      clearTimeout(quiet);
+      quiet = setTimeout(finishRelay, REFUSAL_FLUSH_TIMEOUT_MS);
+    };
+    upstream.on('data', (chunk: Buffer) => {
+      answer = Buffer.concat([answer, chunk]);
+      if (answer.length > MAX_UPGRADE_HEAD_BYTES + MAX_REFUSAL_BODY_BYTES) finishRelay();
+      else settle();
+    });
+    settle();
+  };
   upstream.once('connect', () => upstream.write(requestHead));
   upstream.on('data', onAnswer);
-  upstream.on('error', close);
+  upstream.on('error', () => (relaying ? finishRelay() : close()));
   client.on('error', close);
-  upstream.on('close', () => (spliced ? close() : client.destroy()));
+  upstream.on('close', () => {
+    if (spliced) close();
+    else if (relaying) finishRelay();
+    else client.destroy();
+  });
   client.on('close', close);
 }
 
