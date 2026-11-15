@@ -7,7 +7,7 @@
 import type { NormalizedToolCall } from '@/common/chat/normalizeToolCall';
 import { normalizeToolMessages } from '@/common/chat/normalizeToolCall';
 import { ToolItemDetail } from '@/renderer/pages/conversation/Messages/components/MessageToolGroupSummary';
-import { Brain, Checklist, Down, FileCode, NetworkTree, Right, Terminal } from '@icon-park/react';
+import { Brain, BranchOne, Checklist, Down, FileCode, ListCheckbox, Right, Terminal } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +36,7 @@ const stepIcon = (name: string): React.ReactNode => {
   if (/^(run|bash|shell|exec)\b/.test(lower) || lower.includes('command'))
     return <Terminal theme='outline' size='14' />;
   if (/^(read|write|edit|create file|update)\b/.test(lower)) return <FileCode theme='outline' size='14' />;
-  if (/^(agent|task|message|created?|delegate)\b/.test(lower)) return <NetworkTree theme='outline' size='14' />;
+  if (/^(agent|task|message|created?|delegate)\b/.test(lower)) return <BranchOne theme='outline' size='14' />;
   return <Checklist theme='outline' size='14' />;
 };
 
@@ -150,7 +150,7 @@ const TurnActivity: React.FC<{
         {summary.running ? (
           <StatusGlyph state='running' size={14} label={null} />
         ) : (
-          <Checklist theme='outline' size='14' className={styles.icon} />
+          <ListCheckbox theme='outline' size='14' className={styles.icon} />
         )}
         <span className={styles.lead}>
           {summary.running

@@ -107,12 +107,15 @@
   gap: 10px;
   height: 34px;
   padding-inline: calc(14px + var(--dw-depth, 0) * 24px) 8px;
-  border-top: 1px solid var(--color-border-1);
   cursor: pointer;
   outline: none;
 }
 
-:global([data-theme='light']) .row {
+.row + .row {
+  border-top: 1px solid var(--color-border-1);
+}
+
+:global([data-theme='light']) .row + .row {
   border-top-color: var(--bg-2);
 }
 

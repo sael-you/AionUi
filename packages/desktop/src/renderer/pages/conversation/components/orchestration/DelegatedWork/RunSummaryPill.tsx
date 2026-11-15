@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { Button } from '@arco-design/web-react';
 import React, { useCallback, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +15,8 @@ import { getDelegatedSummary, subscribeDelegatedSummary } from './delegatedWork'
 import styles from './RunSummaryPill.module.css';
 
 const PILL_STATES: RunState[] = ['running', 'waiting', 'failed'];
+/** Mobile keeps the two counts that ask for action now (C21 §6). */
+const MOBILE_PILL_STATES: RunState[] = ['running', 'waiting'];
 
 /**
  * Header run summary (C21): running / needs-you / failed counts across
@@ -23,6 +26,7 @@ const PILL_STATES: RunState[] = ['running', 'waiting', 'failed'];
  */
 const RunSummaryPill: React.FC<{ conversationId: string }> = ({ conversationId }) => {
   const { t } = useTranslation();
+  const isMobile = useLayoutContext()?.isMobile ?? false;
   const summary = useSyncExternalStore(
     subscribeDelegatedSummary,
     () => getDelegatedSummary(conversationId),
@@ -35,7 +39,7 @@ const RunSummaryPill: React.FC<{ conversationId: string }> = ({ conversationId }
   }, [summary?.latestCardId]);
 
   if (!summary) return null;
-  const shown = PILL_STATES.filter((state) => summary.counts[state] > 0);
+  const shown = (isMobile ? MOBILE_PILL_STATES : PILL_STATES).filter((state) => summary.counts[state] > 0);
   if (shown.length === 0) return null;
   const label = t('conversation.orchestration.pill.label', {
     summary: shown

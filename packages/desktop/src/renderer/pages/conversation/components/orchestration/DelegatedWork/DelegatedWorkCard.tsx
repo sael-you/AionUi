@@ -15,7 +15,7 @@ import { resolveConversationLeadingMark } from '@/renderer/pages/conversation/ut
 import { formatRelativeTime } from '@/renderer/utils/chat/relativeTime';
 import { useAgentLogos } from '@/renderer/utils/model/agentLogo';
 import { Button, Drawer } from '@arco-design/web-react';
-import { ArrowRight, Down, MessageOne, NetworkTree, Right, Robot, ShareOne, Up, ViewList } from '@icon-park/react';
+import { ArrowRight, ArrowRightUp, BranchOne, Down, MessageOne, Right, Robot, Up, ViewList } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -186,7 +186,7 @@ const DelegatedWorkCard: React.FC<DelegatedWorkCardProps> = ({ id, rows, parent,
         tabIndex={-1}
         icon={
           row.kind === 'conversation' ? (
-            <ShareOne theme='outline' size='14' />
+            <ArrowRightUp theme='outline' size='14' />
           ) : row.kind === 'subagent' ? (
             <Right theme='outline' size='14' />
           ) : (
@@ -302,7 +302,7 @@ const DelegatedWorkCard: React.FC<DelegatedWorkCardProps> = ({ id, rows, parent,
     >
       <div className={styles.head}>
         <span className={styles.title}>
-          <NetworkTree theme='outline' size='16' className={styles.titleIcon} />
+          <BranchOne theme='outline' size='16' className={styles.titleIcon} />
           {t('conversation.orchestration.card.title')}
         </span>
         {!isMobile && (
