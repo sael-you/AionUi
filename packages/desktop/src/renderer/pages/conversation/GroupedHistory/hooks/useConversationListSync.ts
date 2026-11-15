@@ -221,6 +221,7 @@ type ConversationListSyncSnapshot = {
   completionUnreadConversationIds: Set<string>;
   manualUnreadConversationIds: Set<string>;
   backgroundActiveConversationIds: Set<string>;
+  backgroundCallIdsByConversation: Map<string, Set<string>>;
   outcomeSeenAtById: Map<string, number>;
 };
 
@@ -274,8 +275,6 @@ let backgroundActiveConversationIdsState = new Set<string>();
 // Opens recorded locally (C21), so a failed row clears the moment it is opened,
 // before the list refresh brings back extra.last_outcome_seen_at.
 let outcomeSeenAtByIdState = new Map<string, number>();
-// Rows with DB status "running" whose live runtime was already hydrated (C21).
-let hydratedRunningIds = new Set<string>();
 let conversation_idsState = new Set<string>();
 // Full id → owning project_id map over ALL loaded conversations (incl. the team
 // member rows filtered out of `conversationsState`). Every row from
@@ -296,6 +295,7 @@ let snapshotState: ConversationListSyncSnapshot = {
   completionUnreadConversationIds: completionUnreadConversationIdsState,
   manualUnreadConversationIds: manualUnreadConversationIdsState,
   backgroundActiveConversationIds: backgroundActiveConversationIdsState,
+  backgroundCallIdsByConversation: backgroundCallIdsByConversationState,
   outcomeSeenAtById: outcomeSeenAtByIdState,
 };
 
@@ -307,6 +307,7 @@ const emitStoreChange = () => {
     completionUnreadConversationIds: completionUnreadConversationIdsState,
     manualUnreadConversationIds: manualUnreadConversationIdsState,
     backgroundActiveConversationIds: backgroundActiveConversationIdsState,
+    backgroundCallIdsByConversation: backgroundCallIdsByConversationState,
     outcomeSeenAtById: outcomeSeenAtByIdState,
   };
   listeners.forEach((listener) => listener());
@@ -387,7 +388,7 @@ const refreshConversations = () => {
         projectIdByIdState = new Map(items.map((conversation) => [conversation.id, conversation.project_id ?? null]));
         conversationByIdState = new Map(items.map((conversation) => [conversation.id, conversation]));
         emitStoreChange();
-        hydrateRunningRuntimes(items);
+        reconcileFromListRows(items);
         return;
       }
 
@@ -562,17 +563,21 @@ export const applyBackgroundTransition = (
 const applyBackground = (conversation_id: string, transition: BackgroundTransition) => {
   const current = backgroundCallIdsByConversationState.get(conversation_id);
   const next = applyBackgroundTransition(current, transition);
+  const unchanged = (current?.size ?? 0) === next.size && [...next].every((id) => current?.has(id));
+  // A live card ticks every second: only a real change re-renders.
+  if (unchanged) return;
   const wasActive = (current?.size ?? 0) > 0;
   const isActive = next.size > 0;
   const nextMap = new Map(backgroundCallIdsByConversationState);
   if (isActive) nextMap.set(conversation_id, next);
   else nextMap.delete(conversation_id);
   backgroundCallIdsByConversationState = nextMap;
-  if (wasActive === isActive) return;
-  const ids = new Set(backgroundActiveConversationIdsState);
-  if (isActive) ids.add(conversation_id);
-  else ids.delete(conversation_id);
-  backgroundActiveConversationIdsState = ids;
+  if (wasActive !== isActive) {
+    const ids = new Set(backgroundActiveConversationIdsState);
+    if (isActive) ids.add(conversation_id);
+    else ids.delete(conversation_id);
+    backgroundActiveConversationIdsState = ids;
+  }
   emitStoreChange();
 };
 
@@ -608,42 +613,18 @@ export const reconcileBackgroundFromRuntime = (conversation_id: string, backgrou
 };
 
 /**
- * Pure: the rows whose live runtime should be fetched (C21). A row the
- * database says is mid-turn may be waiting for approval or running background
- * work, which the stream store only learns from frames that arrive after a
- * reload; each such row is fetched once per running episode.
+ * Reconcile the stream store with what the list says is live (AionCore C21
+ * `live` on list rows): a conversation waiting for approval, mid-turn or
+ * running background work is known right after a reload, before any frame
+ * arrives. Rows without `live` are left alone (frames own their state).
  */
-export const runningRowsToHydrate = (
-  rows: readonly Pick<TChatConversation, 'id' | 'status'>[],
-  hydrated: ReadonlySet<string>
-): { fetch: string[]; keep: Set<string> } => {
-  const keep = new Set<string>();
-  const fetch: string[] = [];
+export const reconcileFromListRows = (rows: readonly Pick<TChatConversation, 'id' | 'live'>[]): void => {
   for (const row of rows) {
-    if (row.status !== 'running') continue;
-    keep.add(row.id);
-    if (!hydrated.has(row.id)) fetch.push(row.id);
-  }
-  return { fetch, keep };
-};
-
-const hydrateRunningRuntimes = (rows: readonly TChatConversation[]) => {
-  const { fetch, keep } = runningRowsToHydrate(rows, hydratedRunningIds);
-  hydratedRunningIds = keep;
-  for (const id of fetch) {
-    void ipcBridge.conversation.get
-      .invoke({ id })
-      .then((conversation) => {
-        const runtime = conversation?.runtime;
-        if (!runtime) return;
-        reconcileGeneratingFromRuntime(id, runtime.is_processing === true);
-        reconcileWaitingConfirmationFromRuntime(id, runtime.pending_confirmations ?? 0);
-        reconcileBackgroundFromRuntime(id, runtime.background_active ?? 0);
-      })
-      .catch(() => {
-        // Retry on the next refresh.
-        hydratedRunningIds.delete(id);
-      });
+    const live = row.live;
+    if (!live) continue;
+    reconcileGeneratingFromRuntime(row.id, live.is_processing === true);
+    reconcileWaitingConfirmationFromRuntime(row.id, live.pending_confirmations ?? 0);
+    reconcileBackgroundFromRuntime(row.id, live.background_active ?? 0);
   }
 };
 
@@ -655,19 +636,38 @@ const hasUnseenFailure = (conversation_id: string): boolean => {
   );
 };
 
-/**
- * The owner opened (or is watching) the conversation: record locally so the
- * failed glyph clears now, and persist it (AionCore C21 `outcome-seen`) so it
- * stays cleared after a reload and in the parent's counts. No-op unless the
- * last turn failed and was not seen yet.
- */
-const markOutcomeSeenState = (conversation_id: string, force = false) => {
-  if (!force && !hasUnseenFailure(conversation_id)) return;
-  outcomeSeenAtByIdState = new Map(outcomeSeenAtByIdState).set(conversation_id, Date.now());
+const setLocalOutcomeSeen = (conversation_id: string, seenAt: number) => {
+  if ((outcomeSeenAtByIdState.get(conversation_id) ?? -1) >= seenAt) return;
+  outcomeSeenAtByIdState = new Map(outcomeSeenAtByIdState).set(conversation_id, seenAt);
   emitStoreChange();
-  void ipcBridge.conversation.markOutcomeSeen.invoke({ conversation_id }).catch((error: unknown) => {
-    console.warn('[sidebar] could not mark the outcome seen:', error);
-  });
+};
+
+/**
+ * The owner opened (or is watching) the conversation: persist it (AionCore C21
+ * `outcome-seen`) so it stays cleared after a reload and in the parent's
+ * counts, and record it locally so the failed glyph clears now. Every time is
+ * the SERVER's: the failure's own `last_outcome_at` (known from the row or the
+ * turn.completed event) and then the returned `last_outcome_seen_at` — never
+ * the browser clock, which can be behind the server. No-op unless the last
+ * turn failed and was not seen yet, or the owner `watched` it fail.
+ */
+const markOutcomeSeenState = (conversation_id: string, watched?: { outcomeAt?: number }) => {
+  if (!watched && !hasUnseenFailure(conversation_id)) return;
+  const outcomeAt = watched?.outcomeAt;
+  const rowOutcomeAt = (conversationByIdState.get(conversation_id)?.extra as { last_outcome_at?: unknown } | undefined)
+    ?.last_outcome_at;
+  const seenUpTo = outcomeAt ?? (typeof rowOutcomeAt === 'number' ? rowOutcomeAt : undefined);
+  if (seenUpTo !== undefined) setLocalOutcomeSeen(conversation_id, seenUpTo);
+  void ipcBridge.conversation.markOutcomeSeen
+    .invoke({ conversation_id })
+    .then((response) => {
+      if (typeof response?.last_outcome_seen_at === 'number') {
+        setLocalOutcomeSeen(conversation_id, response.last_outcome_seen_at);
+      }
+    })
+    .catch((error: unknown) => {
+      console.warn('[sidebar] could not mark the outcome seen:', error);
+    });
 };
 
 const markCompletionUnread = (conversation_id: string) => {
@@ -838,7 +838,7 @@ const initializeConversationListSyncStore = () => {
     }
     // A failure the owner watched happen is seen already.
     if (event.last_outcome === 'error' && activeConversationIdState === event.session_id) {
-      markOutcomeSeenState(event.session_id, true);
+      markOutcomeSeenState(event.session_id, { outcomeAt: event.last_outcome_at });
     }
     markCompleted(event.session_id, event.turn_id);
     clearGenerating(event.session_id, 'turnCompleted');
@@ -859,6 +859,7 @@ export const useConversationListSync = () => {
     completionUnreadConversationIds,
     manualUnreadConversationIds,
     backgroundActiveConversationIds,
+    backgroundCallIdsByConversation,
     outcomeSeenAtById,
   } = useSyncExternalStore(
     subscribeConversationListSync,
@@ -915,6 +916,13 @@ export const useConversationListSync = () => {
     [backgroundActiveConversationIds]
   );
 
+  /** Whether this launching call's delegated work reported itself alive in this session (C21). */
+  const isBackgroundCallLive = useCallback(
+    (conversation_id: string, call_id: string) =>
+      backgroundCallIdsByConversation.get(conversation_id)?.has(call_id) ?? false,
+    [backgroundCallIdsByConversation]
+  );
+
   /** When the owner opened it locally (before the list refresh carries it), if at all. */
   const outcomeSeenAt = useCallback(
     (conversation_id: string) => outcomeSeenAtById.get(conversation_id),
@@ -933,6 +941,7 @@ export const useConversationListSync = () => {
     clearCompletionUnread,
     isManualUnread,
     hasBackgroundActive,
+    isBackgroundCallLive,
     outcomeSeenAt,
     markOutcomeSeen,
     markManualUnread,

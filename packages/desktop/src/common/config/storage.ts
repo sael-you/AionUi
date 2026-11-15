@@ -154,6 +154,13 @@ export type TConversationRuntimeSummary = {
   background_active?: number;
 };
 
+/** Mirrors AionCore `ConversationLiveState` field by field. */
+export type TConversationLiveState = {
+  is_processing: boolean;
+  pending_confirmations: number;
+  background_active: number;
+};
+
 export type TConversationAssistantIdentity = {
   id: string;
   source: string;
@@ -173,6 +180,11 @@ interface IChatConversation<T, Extra> {
   model: TProviderWithModel;
   status?: TChatConversationStatus | undefined;
   runtime?: TConversationRuntimeSummary;
+  /**
+   * List rows only (AionCore C21): present while the conversation's agent is
+   * alive and doing something, so the sidebar is right after a reload.
+   */
+  live?: TConversationLiveState;
   /** 会话来源，默认为 aionui / Conversation source, defaults to aionui */
   source?: ConversationSource;
   /** Channel chat isolation ID (e.g. user:xxx, group:xxx) */
