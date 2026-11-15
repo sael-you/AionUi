@@ -5,6 +5,7 @@
  */
 
 import type { TChatConversation } from '@/common/config/storage';
+import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { getConversationOrNull } from '@/renderer/pages/conversation/utils/conversationCache';
 import { getSnapshotConversation } from '../hooks/useConversationListSync';
 import { MAX_CONVERSATION_DEPTH } from '../utils/conversationTree';
@@ -35,12 +36,14 @@ const ParentBreadcrumbLink: React.FC<{ parentId: string }> = ({ parentId }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: parent } = useSWR(`conversation/${parentId}`, () => getConversationOrNull(parentId));
+  // 390 px: the header has room for "↰ parent" only.
+  const isMobile = useLayoutContext()?.isMobile ?? false;
 
   // Ancestors above the parent, from the loaded list (root first): the header
   // reads "root › parent › (this conversation's title)" (C21).
   const ancestors: Array<{ id: string; name: string }> = [];
   let cursor = getSnapshotConversation(parentId)?.parent_conversation_id ?? parent?.parent_conversation_id;
-  for (let guard = 0; cursor && guard < MAX_CONVERSATION_DEPTH; guard += 1) {
+  for (let guard = 0; !isMobile && cursor && guard < MAX_CONVERSATION_DEPTH; guard += 1) {
     const row = getSnapshotConversation(cursor);
     ancestors.unshift({ id: cursor, name: row?.name || t('conversation.hierarchy.parentFallback') });
     cursor = row?.parent_conversation_id;

@@ -55,13 +55,13 @@ const Harness: React.FC<Partial<ProjectGroupProps> & { rows?: number; initiallyE
 const projectRow = () => screen.getByTestId(`project-row-${WS}`);
 
 describe('ProjectGroup row', () => {
-  it('is a tree item with aria-expanded; the count shows only while collapsed; no colour dot or folder icon', () => {
+  it('is a quiet label tree item: aria-expanded, no count, no dot while nothing happens (C24)', () => {
     const { container } = render(<Harness rows={3} />);
     const row = projectRow();
     expect(row.getAttribute('role')).toBe('treeitem');
     expect(row.getAttribute('aria-expanded')).toBe('true');
     expect(row.getAttribute('aria-level')).toBe('2');
-    // Expanded: the rows are visible, so no count (C21).
+    // C24: no count badge, expanded or collapsed.
     expect(screen.queryByTestId(`project-count-${WS}`)).toBeNull();
     // Project tokens live on the group, so the guide / badge use the project accent.
     const group = container.querySelector('[data-project-color]') as HTMLElement;
@@ -70,7 +70,12 @@ describe('ProjectGroup row', () => {
     expect(row.querySelector('svg, img')).not.toBeNull(); // the chevron only
     expect(row.querySelectorAll('span[aria-hidden="true"]:empty')).toHaveLength(0);
     fireEvent.click(row);
-    expect(screen.getByTestId(`project-count-${WS}`).textContent).toBe('3');
+    expect(screen.queryByTestId(`project-count-${WS}`)).toBeNull();
+    // The chevron comes AFTER the name.
+    const name = row.querySelector('[title]') as HTMLElement;
+    expect(
+      name.compareDocumentPosition(row.querySelector('svg') as SVGElement) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 
   it('marks its conversations as project children (compact rows) while the sidebar is open', () => {
@@ -78,18 +83,20 @@ describe('ProjectGroup row', () => {
     expect(screen.getByTestId(`project-children-${WS}`).hasAttribute('data-project-children')).toBe(true);
   });
 
-  it('shows running and "needs you" on the row, also while collapsed', () => {
+  it('shows one dot for the most urgent state (needs you over running), also while collapsed', () => {
     render(<Harness rows={2} running needsYou={2} initiallyExpanded={false} />);
     expect(projectRow().getAttribute('aria-expanded')).toBe('false');
-    expect(screen.getByTestId(`project-running-${WS}`)).toBeInTheDocument();
-    expect(screen.getByTestId(`project-needs-you-${WS}`).textContent).toBe('2');
+    expect(screen.queryByTestId(`project-running-${WS}`)).toBeNull();
+    expect(screen.getByTestId(`project-needs-you-${WS}`).getAttribute('data-count')).toBe('2');
+    expect(projectRow().getAttribute('aria-label')).toContain('conversation.sidebar.status.running');
     expect(projectRow().getAttribute('aria-label')).toContain('conversation.sidebar.project.needsYou:2');
     expect(screen.queryAllByTestId('row')).toHaveLength(0);
   });
 
-  it('caps the needs-you badge at 99+', () => {
-    render(<Harness rows={1} needsYou={120} />);
-    expect(screen.getByTestId(`project-needs-you-${WS}`).textContent).toBe('99+');
+  it('shows a running dot when something runs and nothing waits', () => {
+    render(<Harness rows={1} running />);
+    expect(screen.getByTestId(`project-running-${WS}`)).toBeInTheDocument();
+    expect(screen.queryByTestId(`project-needs-you-${WS}`)).toBeNull();
   });
 
   it('shows an empty state with a start link for a project without conversations', () => {

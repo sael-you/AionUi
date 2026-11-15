@@ -37,11 +37,11 @@ import { formatRelativeTime } from '@/renderer/utils/chat/relativeTime';
 import { treeArrowIntent } from '@/renderer/hooks/ui/useRovingTree';
 import { getActivityTime } from '@/renderer/utils/chat/timeline';
 
-import StatusGlyph from '@/renderer/pages/conversation/components/orchestration/StatusGlyph';
 import { runStateLabelKey, type RunState } from '@/renderer/pages/conversation/components/orchestration/runState';
 import styles from './ConversationRow.module.css';
 import type { ConversationRowProps } from './types';
 import { MAX_CONVERSATION_DEPTH } from './utils/conversationTree';
+import { rowStatusStyle } from './utils/rowStatusStyle';
 import { isConversationPinned } from './utils/groupingHelpers';
 
 /** Horizontal indent added per nesting level, in px (C21: node x = base + 18 × depth). */
@@ -64,7 +64,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     treeLevel,
     depth = 0,
     treeInfo,
-    guides,
+    treePosition,
     onCreateChild,
     onDetach,
     onMoveUnder,
@@ -192,29 +192,29 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     onOpenMenu(conversation);
   };
 
-  // One status language for every row (C21): when something happens the
-  // status glyph takes the node slot, at rest the slot shows who (the agent
-  // mark). Waiting beats running: a paused turn still streams frames.
+  // One status language (C21), drawn the Claude-desktop / Codex way (C24): the
+  // leading icon stays, the state is colour plus a right-aligned dot. Waiting
+  // beats running: a paused turn still streams frames.
   const runState: RunState = batchMode
     ? 'idle'
     : (props.runState ?? (isWaitingConfirmation ? 'waiting' : isGenerating ? 'running' : 'idle'));
   const activityTime = getActivityTime(conversation);
   const timeAgo = activityTime ? formatRelativeTime(activityTime, i18n?.language ?? 'en') : '';
-
-  // Completion is shown by the "done" glyph; the dot stays for a manual mark.
-  const showUnread = !batchMode && hasUnread && runState === 'idle';
   const rollup = treeInfo?.rollup;
-  const chipLabel = rollup
-    ? [
-        t('conversation.orchestration.subConversations', { count: rollup.total }),
-        rollup.worst !== 'idle' ? t(runStateLabelKey(rollup.worst)) : null,
-      ]
-        .filter(Boolean)
-        .join(', ')
-    : '';
+  const status = rowStatusStyle(runState, {
+    manualUnread: !batchMode && hasUnread,
+    rollupWorst: treeInfo && !treeInfo.expanded ? rollup?.worst : undefined,
+  });
+  const statusWord =
+    status.announce === 'unread'
+      ? t('conversation.sidebar.status.unread')
+      : status.announce
+        ? t(runStateLabelKey(status.announce))
+        : null;
   const accessibleName = [
     conversation.name || t('conversation.welcome.newConversation'),
-    runState !== 'idle' ? t(runStateLabelKey(runState)) : null,
+    rollup ? t('conversation.orchestration.subConversations', { count: rollup.total }) : null,
+    statusWord,
   ]
     .filter(Boolean)
     .join(', ');
@@ -236,6 +236,8 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
           {
             [styles.rowHover]: !batchMode && !selected,
             [styles.rowSelected]: selected,
+            [styles.rowRunning]: status.tintIcon,
+            [styles.rowWaiting]: status.emphasis,
             'bg-[rgba(var(--primary-6),0.08)]': batchMode && checked,
           }
         )}
@@ -245,6 +247,8 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
         role='treeitem'
         aria-label={accessibleName}
         aria-level={(treeLevel ?? 1) + depth}
+        aria-posinset={collapsed ? undefined : treePosition?.posinset}
+        aria-setsize={collapsed ? undefined : treePosition?.setsize}
         aria-expanded={treeInfo ? treeInfo.expanded : undefined}
         aria-selected={selected}
         aria-current={selected ? 'page' : undefined}
@@ -255,22 +259,6 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
         onClick={handleRowClick}
         onContextMenu={handleRowContextMenu}
       >
-        {!collapsed && guides && (
-          <span className={styles.guides} aria-hidden='true'>
-            {guides.continues.map((continues, index) =>
-              continues ? (
-                <span
-                  key={index}
-                  className={styles.guideLine}
-                  style={{ '--guide-level': index + 1 } as React.CSSProperties}
-                />
-              ) : null
-            )}
-            {isChild && <span className={styles.guideElbow} />}
-            {isChild && guides.hasNextSibling && <span className={styles.guideNext} />}
-            {guides.showsChildren && <span className={styles.guideDown} />}
-          </span>
-        )}
         {batchMode && (
           <span
             className='me-8px flex-center'
@@ -283,25 +271,12 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
           </span>
         )}
         <span className={classNames('flex items-center justify-center shrink-0 relative', styles.leading)}>
-          {runState !== 'idle' ? (
-            <StatusGlyph
-              state={runState}
-              size={16}
-              label={null}
-              data-testid={
-                runState === 'waiting'
-                  ? `conversation-waiting-confirmation-${conversation.id}`
-                  : `conversation-${runState}-${conversation.id}`
-              }
-            />
-          ) : (
-            <span className={styles.agentMark}>{renderLeadingIcon()}</span>
-          )}
+          <span className={styles.agentMark}>{renderLeadingIcon()}</span>
           {/* Hover overlay on the leading icon: drag handle for sortable pinned rows, pushpin marker otherwise */}
           {!batchMode &&
             isPinned &&
             !isMobile &&
-            runState === 'idle' &&
+            !status.dot &&
             (dragHandle ?? (
               <span
                 className='absolute inset-0 flex-center text-t-secondary pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity'
@@ -323,6 +298,20 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
           >
             <div className={classNames('chat-history__item-name', styles.name, isChild && styles.childName)}>
               <span className='block overflow-hidden text-ellipsis whitespace-nowrap min-w-0'>{conversation.name}</span>
+              {!collapsed && treeInfo && !batchMode && (
+                // Expand / collapse after the title, as in Claude desktop. Keyboard: → / ← on the row.
+                <span
+                  className={styles.treeToggle}
+                  data-testid={`conversation-rollup-${conversation.id}`}
+                  title={treeInfo.expanded ? t('conversation.hierarchy.collapse') : t('conversation.hierarchy.expand')}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    treeInfo.onToggle();
+                  }}
+                >
+                  {treeInfo.expanded ? <Down theme='outline' size='12' /> : <Right theme='outline' size='12' />}
+                </span>
+              )}
               {forkLineage && (
                 <Tooltip
                   content={
@@ -347,42 +336,18 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
           </Tooltip>
         </FlexFullContainer>
 
-        {!collapsed && treeInfo && !batchMode && (
-          // Children chip: worst descendant state + count while collapsed (always
-          // shown); while expanded it appears on hover / focus so a pointer can
-          // collapse again. Keyboard: → / ← on the row.
+        {!collapsed && status.dot && (
           <span
-            className={classNames(styles.kids, { [styles.kidsExpanded]: treeInfo.expanded })}
-            data-testid={`conversation-rollup-${conversation.id}`}
-            aria-label={chipLabel}
-            title={treeInfo.expanded ? t('conversation.hierarchy.collapse') : t('conversation.hierarchy.expand')}
-            onClick={(event) => {
-              event.stopPropagation();
-              treeInfo.onToggle();
-            }}
-          >
-            {!treeInfo.expanded && treeInfo.rollup.worst !== 'idle' && (
-              <StatusGlyph
-                state={treeInfo.rollup.worst}
-                size={12}
-                label={null}
-                data-testid={`conversation-rollup-${treeInfo.rollup.worst}-${conversation.id}`}
-              />
-            )}
-            <span className={styles.kidsCount}>{treeInfo.rollup.total}</span>
-            {treeInfo.expanded ? (
-              <Down theme='outline' size='10' className={styles.kidsChevron} />
-            ) : (
-              <Right theme='outline' size='10' className={styles.kidsChevron} />
-            )}
-          </span>
-        )}
-        {!collapsed && showUnread && (
-          <span
-            className={styles.unreadDot}
-            data-testid={`conversation-unread-${conversation.id}`}
-            aria-label={t('conversation.sidebar.status.unread')}
-            role='img'
+            className={classNames(styles.statusDot, styles[`dot_${status.dot}`], { [styles.dotPulse]: status.pulse })}
+            data-testid={
+              status.dot === 'waiting'
+                ? `conversation-waiting-confirmation-${conversation.id}`
+                : status.announce === 'unread'
+                  ? `conversation-unread-${conversation.id}`
+                  : `conversation-${status.announce}-${conversation.id}`
+            }
+            data-row-dot={status.dot}
+            aria-hidden='true'
           />
         )}
         {!collapsed && !batchMode && !isMobile && timeAgo && (

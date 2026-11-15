@@ -46,7 +46,7 @@ import {
   useProjectColors,
 } from '@/renderer/components/workspace/ProjectIdentity';
 import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
-import type { ConversationRowProps, WorkspaceGroupedHistoryProps } from './types';
+import type { ConversationRowProps, TreeItemPosition, WorkspaceGroupedHistoryProps } from './types';
 import {
   buildConversationTree,
   collectDescendantIds,
@@ -391,9 +391,15 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   // Row props for a node of the hierarchy (depth, rollup, expand toggle, connectors).
   const getTreeRowProps = (
     node: ConversationTreeNode,
-    position: { continues: boolean[]; hasNextSibling: boolean } = { continues: [], hasNextSibling: false }
+    position: { posinset?: number; setsize?: number } = {}
   ): ConversationRowProps => {
-    const base = getConversationRowProps(node.conversation);
+    const base = {
+      ...getConversationRowProps(node.conversation),
+      treePosition:
+        position.posinset !== undefined && position.setsize !== undefined
+          ? { posinset: position.posinset, setsize: position.setsize }
+          : undefined,
+    };
     if (node.children.length === 0 && node.depth === 0) return base;
     const descendantCount = collectDescendantIds(node).length;
     const expanded = filtering || isTreeExpanded(node.conversation.id);
@@ -401,11 +407,6 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       ...base,
       depth: node.depth,
       descendantCount,
-      guides: {
-        continues: position.continues,
-        hasNextSibling: position.hasNextSibling,
-        showsChildren: node.children.length > 0 && expanded && !collapsed,
-      },
       treeInfo:
         node.children.length > 0
           ? {
@@ -421,18 +422,23 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   // Render a root row; when it has sub-conversations, wrap it with its (expandable)
   // subtree. `treeLevel` is the row's level in the sidebar tree (2 under a
   // section, 3 inside a project); sub-conversations add their depth.
-  const renderConversationRow = (conversation: TChatConversation, treeLevel: number, sortable: boolean) => {
+  const renderConversationRow = (
+    conversation: TChatConversation,
+    treeLevel: number,
+    sortable: boolean,
+    treePosition?: TreeItemPosition
+  ) => {
     const badge = conversationBadge?.(conversation);
     const tree = treesByRoot.get(conversation.id);
     if (!tree) {
-      const rowProps = { ...getConversationRowProps(conversation), treeLevel, badge };
+      const rowProps = { ...getConversationRowProps(conversation), treeLevel, badge, treePosition };
       return sortable ? (
         <SortableConversationRow key={conversation.id} {...rowProps} />
       ) : (
         <ConversationRow key={conversation.id} {...rowProps} />
       );
     }
-    const rootProps = { ...getTreeRowProps(tree), treeLevel, badge };
+    const rootProps = { ...getTreeRowProps(tree), treeLevel, badge, treePosition };
     const showChildren = !collapsed && (filtering || isTreeExpanded(conversation.id));
     return (
       <div key={conversation.id} className='min-w-0'>
@@ -455,8 +461,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     );
   };
 
-  const renderConversation = (conversation: TChatConversation, treeLevel = 2) =>
-    renderConversationRow(conversation, treeLevel, false);
+  const renderConversation = (conversation: TChatConversation, treeLevel = 2, treePosition?: TreeItemPosition) =>
+    renderConversationRow(conversation, treeLevel, false, treePosition);
 
   // Collect all sortable IDs for the pinned section
   const pinnedIds = useMemo(() => pinnedConversations.map((c) => c.id), [pinnedConversations]);
@@ -539,6 +545,16 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         .filter((section) => section.items.length > 0),
     [conversationOnlySections, descendantsOf, filterQueryNormalized]
   );
+  // Position of every loose conversation across the timeline sub-sections (one tree set).
+  const looseConversationIndex = useMemo(() => {
+    const index = new Map<string, number>();
+    for (const section of visibleConversationSections) {
+      for (const item of section.items) {
+        if (item.type === 'conversation' && item.conversation) index.set(item.conversation.id, index.size);
+      }
+    }
+    return index;
+  }, [visibleConversationSections]);
   const hasFilterResults =
     visiblePinned.length > 0 || visibleProjectGroups.length > 0 || visibleConversationSections.length > 0;
 
@@ -546,14 +562,16 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   const projectStatusOf = (projectConversations: readonly TChatConversation[]) => {
     let running = false;
     let needsYou = 0;
+    let failed = 0;
     for (const root of projectConversations) {
       for (const conversation of [root, ...(descendantsByRoot.get(root.id) ?? [])]) {
         const state = runStateOf(conversation);
         if (state === 'waiting') needsYou += 1;
+        else if (state === 'failed') failed += 1;
         else if (state === 'running') running = true;
       }
     }
-    return { running, needsYou };
+    return { running, needsYou, failed };
   };
 
   /** Lead conversations (e.g. the Board Keeper) first, then newest first as grouped. */
@@ -747,6 +765,18 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         </div>
       </AionModal>
 
+      {/* Cross-project "Needs you" (C21): only while something waits or failed. */}
+      {!collapsed && !batchMode && !filtering && (
+        <NeedsYouBox
+          items={attention.items}
+          runningCount={attention.running.length}
+          onOpen={handleConversationClick}
+          onShowRunning={() => {
+            const first = attention.running[0];
+            if (first) handleConversationClick(first);
+          }}
+        />
+      )}
       {/* The sidebar tree (WAI-ARIA tree, roving tabindex): sections → teams /
           projects → conversations → sub-conversations. */}
       <div
@@ -757,18 +787,6 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         onKeyDown={rovingTree.onKeyDown}
         onFocus={rovingTree.onFocus}
       >
-        {/* Cross-project "Needs you" (C21): only while something waits or failed. */}
-        {!collapsed && !batchMode && !filtering && (
-          <NeedsYouBox
-            items={attention.items}
-            runningCount={attention.running.length}
-            onOpen={handleConversationClick}
-            onShowRunning={() => {
-              const first = attention.running[0];
-              if (first) handleConversationClick(first);
-            }}
-          />
-        )}
         {/* L1: Pinned section */}
         <DndContext
           sensors={sensors}
@@ -782,8 +800,11 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
               {(collapsed || isSectionExpanded('pinned')) && (
                 <SortableContext items={pinnedIds} strategy={verticalListSortingStrategy}>
                   <div className='min-w-0' {...sectionGroupProps('pinned')}>
-                    {visiblePinned.map((conversation) =>
-                      renderConversationRow(conversation, sectionRowLevel, isDragEnabled && !filtering)
+                    {visiblePinned.map((conversation, index) =>
+                      renderConversationRow(conversation, sectionRowLevel, isDragEnabled && !filtering, {
+                        posinset: index + 1,
+                        setsize: visiblePinned.length,
+                      })
                     )}
                   </div>
                 </SortableContext>
@@ -818,7 +839,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
               )}
             {(collapsed || isSectionExpanded('projects')) && (
               <div className='min-w-0' {...sectionGroupProps('projects')}>
-                {visibleProjectGroups.map((group) => {
+                {visibleProjectGroups.map((group, projectIndex) => {
                   const accent = projectAccentOf(group.workspace);
                   const colorKey = normalizeWorkspace(group.workspace);
                   const chosenColor = projectColorOverrides[colorKey];
@@ -956,8 +977,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       </Dropdown>
                     </>
                   );
-                  const rows = orderProjectConversations(group.conversations).map((conversation) =>
-                    renderConversation(conversation, projectRowLevel)
+                  const ordered = orderProjectConversations(group.conversations);
+                  const rows = ordered.map((conversation, index) =>
+                    renderConversation(conversation, projectRowLevel, { posinset: index + 1, setsize: ordered.length })
                   );
                   return (
                     <ProjectGroup
@@ -970,11 +992,13 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       count={group.source.conversations.length}
                       running={status.running}
                       needsYou={status.needsYou}
+                      failed={status.failed}
                       actions={actions}
                       actionsVisible={isMobile || menuOpen}
                       onStartConversation={startConversation}
                       siderCollapsed={collapsed}
                       level={2}
+                      treePosition={{ posinset: projectIndex + 1, setsize: visibleProjectGroups.length }}
                     >
                       {rows}
                     </ProjectGroup>
@@ -1000,7 +1024,10 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                     )}
                     {section.items.map((item) =>
                       item.type === 'conversation' && item.conversation
-                        ? renderConversation(item.conversation, sectionRowLevel)
+                        ? renderConversation(item.conversation, sectionRowLevel, {
+                            posinset: (looseConversationIndex.get(item.conversation.id) ?? 0) + 1,
+                            setsize: looseConversationIndex.size,
+                          })
                         : null
                     )}
                   </div>

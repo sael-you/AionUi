@@ -79,24 +79,27 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  box-sizing: border-box;
   height: 32px;
-  margin-top: 1px;
-  padding-inline: 8px 6px;
-  border-radius: 6px;
-  color: var(--color-text-1);
+  margin-top: 6px;
+  padding-inline: 8px 8px;
+  border-radius: 8px;
+  color: var(--status-meta);
   cursor: pointer;
   outline: none;
 }
 
 .projectRow:hover {
   background: var(--status-hover);
+  color: var(--color-text-1);
 }
 
 .projectRow:focus-visible {
   box-shadow: inset 0 0 0 2px var(--status-focus);
 }
 
+/* C24: the chevron sits AFTER the name, as in Claude desktop. */
 .chevron {
   display: inline-flex;
   align-items: center;
@@ -104,7 +107,7 @@
   flex-shrink: 0;
   width: 16px;
   height: 16px;
-  color: var(--color-text-3);
+  color: var(--status-meta);
   line-height: 0;
 }
 
@@ -121,52 +124,41 @@
   transform: rotate(180deg);
 }
 
+/* A quiet label: 13px medium in meta text (>= 4.5:1: text-2 in light, text-3 in dark). */
 .projectName {
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 20px;
 }
 
-.projectEmpty .projectName {
-  color: var(--color-text-2);
-  font-weight: 500;
+.projectSpacer {
+  flex: 1;
 }
 
-.meta {
-  display: flex;
+/* One dot for the most urgent state inside the project. */
+.projectDot {
   flex-shrink: 0;
-  align-items: center;
-  gap: 6px;
-  color: var(--status-meta);
-  font-size: 11px;
-  line-height: 16px;
-  font-variant-numeric: tabular-nums;
+  width: 7px;
+  height: 7px;
+  margin-inline: 4px 2px;
+  border-radius: 999px;
 }
 
-.count {
-  min-width: 14px;
-  text-align: end;
+.projectDot_running {
+  background: var(--status-run);
 }
 
-/* "Needs you" pill (C21): the needs-you status colour, surface-coloured text. */
-.needsYouBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  height: 16px;
-  padding-inline: 4px;
-  border-radius: 8px;
+.projectDot_waiting {
   background: var(--status-wait);
-  color: var(--status-on);
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 16px;
+}
+
+.projectDot_failed {
+  background: var(--status-fail);
 }
 
 /* Actions slot (Board button + menu): on hover / focus on desktop, always on touch. */
@@ -205,9 +197,21 @@
  * Conversations of the group. No project-colour guide line (C21): nesting is
  * shown by real connectors only; the rows indent themselves (root node x 30).
  */
+/* The project's conversations hang off one guide line (C24). */
 .children {
   position: relative;
   min-width: 0;
+}
+
+.children::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  bottom: 4px;
+  inset-inline-start: 14px;
+  width: 1px;
+  background: var(--color-border-2);
+  pointer-events: none;
 }
 
 .emptyHint,
@@ -216,7 +220,7 @@
   align-items: center;
   gap: 4px;
   min-height: 28px;
-  padding-inline: 30px 8px;
+  padding-inline: 22px 8px;
   color: var(--status-meta);
   font-size: 12px;
   line-height: 16px;
@@ -232,10 +236,21 @@
   cursor: pointer;
 }
 
-/* "Show N more" lines up with the root titles (x 54). */
+/* "Show N more" lines up with the titles (x 46): muted text, no underline (C24). */
 .showMore {
-  min-height: 24px;
-  padding-inline-start: 54px;
+  min-height: 28px;
+  padding-inline-start: 46px;
+  border-radius: 8px;
+}
+
+.showMore .link {
+  color: var(--status-meta);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.showMore:hover .link {
+  color: var(--color-text-1);
 }
 
 .actionItem:hover {
@@ -273,7 +288,12 @@
   }
 
   .projectName {
-    font-size: 15px;
+    font-size: 14px;
+  }
+
+  .projectDot {
+    width: 8px;
+    height: 8px;
   }
 
   .sectionHeader {
@@ -299,7 +319,8 @@
 
 /* Windows high-contrast: keep the guide and dots visible. */
 @media (forced-colors: active) {
-  .needsYouBadge {
+  .projectDot,
+  .children::before {
     forced-color-adjust: none;
   }
 }

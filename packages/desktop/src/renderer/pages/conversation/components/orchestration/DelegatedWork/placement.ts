@@ -20,6 +20,8 @@ export type PlacementItem = {
   /** `user` starts a turn; `activity` may launch work. */
   kind: 'user' | 'activity' | 'other';
   created_at: number;
+  /** The newest timestamp inside the item (an activity's last step); defaults to `created_at`. */
+  last_at?: number;
   /** Task progress-card calls inside an activity item. */
   taskCalls: readonly IMessageToolCall[];
 };
@@ -29,6 +31,10 @@ export type PlacedCard = {
   afterIndex: number;
   id: string;
   rows: DelegatedRow[];
+  /** The card's turn is the conversation's latest one (the only one a live turn can belong to). */
+  isLastTurn: boolean;
+  /** The newest thing recorded in the card's own turn: where a cut-off task ends. */
+  turnEnd: number;
 };
 
 /**
@@ -96,7 +102,13 @@ export const placeDelegatedWork = (
       }
       if (afterIndex === -1) afterIndex = turn.last;
     }
+    let turnEnd = turn.start;
+    for (let index = turn.first; index <= turn.last; index += 1) {
+      turnEnd = Math.max(turnEnd, items[index].last_at ?? items[index].created_at);
+    }
     cards.push({
+      isLastTurn: turnIndex === turns.length - 1,
+      turnEnd,
       afterIndex,
       id: `delegated-work-${options.conversationId}-${turnIndex}`,
       rows: [...conversationRows(children.flat(), options.live), ...taskRows(calls, options.labels)],

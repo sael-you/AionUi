@@ -144,8 +144,8 @@ describe('sidebar list', () => {
     state.generating.add('a1');
     state.waiting.add('a2');
     renderSidebar();
-    expect(screen.getByTestId('project-running-/p/alpha')).toBeInTheDocument();
-    expect(screen.getByTestId('project-needs-you-/p/alpha').textContent).toBe('1');
+    // C24: one dot, the most urgent state (needs you over running).
+    expect(screen.getByTestId('project-needs-you-/p/alpha').getAttribute('data-count')).toBe('1');
     expect(screen.getByTestId('conversation-running-a1')).toBeInTheDocument();
     expect(screen.getByTestId('conversation-waiting-confirmation-a2')).toBeInTheDocument();
   });
@@ -229,12 +229,34 @@ describe('sidebar list', () => {
     state.waiting.add('a1');
     renderSidebar({ filterQuery: 'release' });
     expect(screen.queryByText('Fix the login bug')).toBeNull();
-    expect(screen.getByTestId('project-needs-you-/p/alpha').textContent).toBe('1');
+    expect(screen.getByTestId('project-needs-you-/p/alpha').getAttribute('data-count')).toBe('1');
   });
 
   it('lists what waits across projects in the Needs-you box, only while something waits (C21)', () => {
     renderSidebar();
     expect(screen.queryByTestId('sidebar-needs-you')).toBeNull();
+  });
+
+  it('keeps the Needs-you box out of the tree as a labelled region with a list of links', () => {
+    state.waiting.add('a2');
+    renderSidebar();
+    const box = screen.getByRole('region', { name: /conversation.orchestration.needsYou.title/ });
+    expect(box.closest('[role="tree"]')).toBeNull();
+    const items = within(within(box).getByRole('list')).getAllByRole('listitem');
+    expect(within(items[0]).getByRole('link')).toBeInTheDocument();
+    expect(box.querySelector('[data-tree-item]')).toBeNull();
+  });
+
+  it('gives tree items their position among siblings (aria-posinset / aria-setsize)', () => {
+    renderSidebar();
+    const alpha = screen.getByTestId('project-row-/p/alpha');
+    expect(alpha.getAttribute('aria-setsize')).toBe('2');
+    expect(alpha.getAttribute('aria-posinset')).toBe('1');
+    const rows = within(screen.getByTestId('project-children-/p/alpha')).getAllByRole('treeitem');
+    expect(rows.map((row) => `${row.getAttribute('aria-posinset')}/${row.getAttribute('aria-setsize')}`)).toEqual([
+      '1/2',
+      '2/2',
+    ]);
   });
 
   it('drops a failed conversation from Needs-you and its row once it was opened (FIXES 2)', () => {

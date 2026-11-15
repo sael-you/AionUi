@@ -57,18 +57,8 @@ export type ConversationRowTreeInfo = {
   onToggle: () => void;
 };
 
-/**
- * Tree connectors of a nested row (C21): drawn only for real parent → child
- * relations, through the parent node's centre.
- */
-export type ConversationRowGuides = {
-  /** Per ancestor level 1..depth-1: that ancestor has a later sibling, so its line continues past this row. */
-  continues: boolean[];
-  /** A later sibling follows this row at the same depth. */
-  hasNextSibling: boolean;
-  /** The row's own children are shown below it. */
-  showsChildren: boolean;
-};
+/** 1-based position of a tree item among its siblings. */
+export type TreeItemPosition = { posinset: number; setsize: number };
 
 export type ConversationRowProps = {
   conversation: TChatConversation;
@@ -113,8 +103,8 @@ export type ConversationRowProps = {
   depth?: number;
   /** Present only when this row has sub-conversations. */
   treeInfo?: ConversationRowTreeInfo;
-  /** Connectors for nested rows and parents with shown children. */
-  guides?: ConversationRowGuides;
+  /** Position among its siblings (aria-posinset / aria-setsize). */
+  treePosition?: TreeItemPosition;
   /** Total descendants (all levels) — drives "includes N sub-conversations" copy. */
   descendantCount?: number;
   onCreateChild?: (conversation: TChatConversation) => void;

@@ -543,6 +543,7 @@ export const conversation = {
       runtime,
       last_outcome:
         rawOutcome === 'finished' || rawOutcome === 'error' || rawOutcome === 'cancelled' ? rawOutcome : undefined,
+      last_outcome_at: typeof r.last_outcome_at === 'number' ? r.last_outcome_at : undefined,
       workspace: (r.workspace ?? '') as string,
       model,
       last_message,
@@ -2184,6 +2185,8 @@ export interface IConversationTurnCompletedEvent {
   detail: string;
   /** How the turn ended (AionCore C21, `extra.last_outcome`); absent on older backends. */
   last_outcome?: 'finished' | 'error' | 'cancelled';
+  /** Server time the turn ended (AionCore C21 `extra.last_outcome_at`); absent on older backends. */
+  last_outcome_at?: number;
   can_send_message: boolean;
   runtime: {
     state: 'idle' | 'starting' | 'running' | 'cancelling' | 'waiting_confirmation';

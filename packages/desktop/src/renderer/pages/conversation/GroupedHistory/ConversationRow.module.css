@@ -1,26 +1,28 @@
 /*
- * Sidebar conversation row (C21 · Outline). 28px rows inside a project, 30px
- * elsewhere, 40px touch targets on narrow screens. The node (status glyph or
- * agent mark, 16px) sits at x = base + 18 × depth (base 30 inside a project,
- * so root titles align with the project name; 8 elsewhere), the title 8px
- * after it. Hover and selected are different neutral fills; the focus ring is
- * --status-focus (--primary), never --primary-6 (2.13:1 on the dark sidebar).
+ * Sidebar conversation row (C24 · Claude-desktop / Codex look, on the C21
+ * tree). 13px titles; the leading icon is kept at 14px (monochrome at rest, in
+ * colour and tinted while running); status is colour plus a right-aligned dot
+ * instead of status icons. 32px rows, 40px touch targets on narrow screens.
+ * Hover and selected are different neutral fills on an 8px radius; the focus
+ * ring is --status-focus (--primary). Rows indent 18px per level and hang off
+ * ONE guide line per group (.childGroup here, the project's in SidebarTree).
  */
 .row {
   --tree-base: 8px;
   --tree-step: 18px;
-  --tree-row-h: 30px;
+  --tree-row-h: 32px;
   position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  box-sizing: border-box;
   min-width: 0;
   height: var(--tree-row-h);
   margin-top: 1px;
   padding-inline-start: calc(var(--tree-base) + var(--tree-depth, 0) * var(--tree-step));
-  padding-inline-end: 6px;
-  border-radius: 6px;
+  padding-inline-end: 8px;
+  border-radius: 8px;
   cursor: pointer;
   outline: none;
 }
@@ -38,7 +40,12 @@
 }
 
 .rowSelected .name {
-  color: var(--color-text-1);
+  font-weight: 500;
+}
+
+/* Needs you: the title is semibold (and the dot amber). */
+.rowWaiting .name,
+.rowWaiting.rowSelected .name {
   font-weight: 600;
 }
 
@@ -56,12 +63,22 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 20px;
   color: var(--color-text-1);
 }
 
-/* Node slot: the status glyph, or the monochrome agent mark at rest. */
+/* Sub-conversations keep the main text colour (the guide line shows the nesting). */
+.childName {
+  color: var(--color-text-1);
+}
+
+/* Rows past a project's 8 most recent, once shown: long idle, slightly muted. */
+:global([data-older-rows]) .name {
+  color: var(--status-meta);
+}
+
+/* Leading icon slot (agent logo / cron / emoji), 14px. */
 .leading {
   position: relative;
   z-index: 1;
@@ -71,7 +88,7 @@
   line-height: 0;
 }
 
-/* At rest the slot says who, quietly: the coloured logos stay in the composer and picker. */
+/* At rest the icon says who, quietly; a running row shows it in colour, tinted primary. */
 .agentMark {
   display: inline-flex;
   align-items: center;
@@ -81,21 +98,54 @@
   opacity: 0.85;
 }
 
-/* Manual unread: a small dot at the end; hidden while the row shows its actions. */
-.unreadDot {
+.rowRunning .agentMark {
+  color: var(--status-run);
+  filter: none;
+  opacity: 1;
+}
+
+/* Icon-park icons carry their own colour class: tint them too. */
+.rowRunning .agentMark :global(.i-icon) {
+  color: var(--status-run);
+}
+
+.leadingIcon,
+.leadingIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Right-aligned status dot: running (soft pulse), needs you, failed, unread. */
+.statusDot {
   flex-shrink: 0;
-  width: 6px;
-  height: 6px;
-  margin-inline: 4px;
+  width: 7px;
+  height: 7px;
+  margin-inline: 4px 2px;
   border-radius: 999px;
+}
+
+.dot_running {
   background: var(--status-run);
 }
 
-/* Time ago + menu appear on hover / keyboard focus (desktop). Meta never truncates. */
+.dot_waiting {
+  background: var(--status-wait);
+}
+
+.dot_failed {
+  background: var(--status-fail);
+}
+
+.dot_unread {
+  width: 6px;
+  height: 6px;
+  background: var(--status-run);
+}
+
+/* Time ago + menu appear on hover / keyboard focus (desktop) and take the dot's place. */
 .timeAgo {
   display: none;
   flex-shrink: 0;
-  margin-inline-start: -2px;
   font-size: 11px;
   line-height: 16px;
   color: var(--status-meta);
@@ -119,8 +169,8 @@
   display: flex;
 }
 
-.row:hover .unreadDot,
-.row:focus-within .unreadDot {
+.row:hover .statusDot,
+.row:focus-within .statusDot {
   display: none;
 }
 
@@ -138,156 +188,66 @@
   color: var(--color-text-1) !important;
 }
 
-/* Sub-conversation rows: one step quieter than their root. */
-.childRow {
-  --tree-row-h: 28px;
-}
-
-.childName {
-  font-weight: 400;
-  color: var(--color-text-2);
-}
-
-/* Children chip: worst descendant glyph + descendant count + chevron. */
-.kids {
+/* Expand / collapse chevron after a parent's title, as in Claude desktop. */
+.treeToggle {
   display: inline-flex;
-  align-items: center;
-  gap: 3px;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
   height: 18px;
-  padding-inline: 5px 4px;
-  border-radius: 9px;
-  background: var(--color-fill-2);
+  border-radius: 4px;
   color: var(--status-meta);
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 16px;
-  font-variant-numeric: tabular-nums;
+  line-height: 0;
   cursor: pointer;
 }
 
-.kids:hover {
+.treeToggle:hover {
   background: var(--color-fill-3);
   color: var(--color-text-1);
 }
 
-.kidsChevron {
-  display: inline-flex;
-  line-height: 0;
-  color: var(--status-idle);
-}
-
-[dir='rtl'] .kidsChevron {
+[dir='rtl'] .treeToggle {
   transform: scaleX(-1);
 }
 
-/* Expanded parent: the children are visible, so the chip only appears to collapse them. */
-.kidsExpanded {
-  display: none;
+/* Sub-conversations hang off ONE guide line under their parent's icon. */
+.childGroup {
+  --tree-base: 8px;
+  --tree-step: 18px;
+  position: relative;
 }
 
-.row:hover .kidsExpanded,
-.row:focus-visible .kidsExpanded {
-  display: inline-flex;
-}
-
-/* ---- Connectors: only real parent → child relations, 1px --color-border-2 ---- */
-.guides {
+.childGroup::before {
+  content: '';
   position: absolute;
-  inset: 0;
+  top: 2px;
+  bottom: 4px;
+  inset-inline-start: calc(var(--tree-base) + (var(--group-depth, 1) - 1) * var(--tree-step) + 7.5px);
+  width: 1px;
+  background: var(--color-border-2);
   pointer-events: none;
 }
 
-/* x of the line a child at `--tree-depth` hangs from: its parent's node centre. */
-.guideLine,
-.guideElbow,
-.guideNext,
-.guideDown {
-  position: absolute;
-  border-color: var(--color-border-2);
-  border-style: solid;
-  border-width: 0;
-}
-
-/* An ancestor's line continuing past this row (that ancestor has a later sibling). */
-.guideLine {
-  top: -1px;
-  bottom: 0;
-  inset-inline-start: calc(var(--tree-base) + (var(--guide-level) - 1) * var(--tree-step) + 7.5px);
-  border-inline-start-width: 1px;
-}
-
-/* Elbow from the parent's line into this row's node, 6px radius. */
-.guideElbow {
-  top: -1px;
-  height: calc(var(--tree-row-h) / 2 + 1px);
-  inset-inline-start: calc(var(--tree-base) + (var(--tree-depth) - 1) * var(--tree-step) + 7.5px);
-  width: calc(var(--tree-step) - 10.5px);
-  border-inline-start-width: 1px;
-  border-bottom-width: 1px;
-  border-end-start-radius: 6px;
-}
-
-/* The parent's line continues to this row's next sibling. */
-.guideNext {
-  top: calc(var(--tree-row-h) / 2);
-  bottom: 0;
-  inset-inline-start: calc(var(--tree-base) + (var(--tree-depth) - 1) * var(--tree-step) + 7.5px);
-  border-inline-start-width: 1px;
-}
-
-/* A parent with shown children: its line starts under its own node. */
-.guideDown {
-  top: calc(var(--tree-row-h) / 2 + 7px);
-  bottom: 0;
-  inset-inline-start: calc(var(--tree-base) + var(--tree-depth, 0) * var(--tree-step) + 7.5px);
-  border-inline-start-width: 1px;
-}
-
-/*
- * Rows inside a project group (ProjectGroup sets `data-project-children`):
- * 28px, titles 12/18 so the 13/600 project row reads as their anchor; root
- * nodes at x 30 align root titles with the project name.
- */
-:global([data-project-children]) .row {
-  --tree-base: 30px;
-  --tree-row-h: 28px;
-}
-
-:global([data-project-children]) .name {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-}
-
-:global([data-project-children]) .rowSelected .name {
-  font-weight: 500;
-  color: var(--color-text-1);
-}
-
-/* Every icon kind: <img> / mask <span> logos, icon-park wrappers and their <svg>. */
-:global([data-project-children]) .leadingIcon,
-:global([data-project-children]) .leadingIcon svg {
-  width: 14px;
-  height: 14px;
+/* Rows inside a project group (ProjectGroup sets `data-project-children`) start after its guide line. */
+:global([data-project-children]) .row,
+:global([data-project-children]) .childGroup {
+  --tree-base: 22px;
 }
 
 @media (max-width: 768px) {
-  .row,
-  .childRow,
-  :global([data-project-children]) .row {
+  .row {
     --tree-row-h: 40px;
   }
 
   .name {
-    font-size: 15px;
-    line-height: 22px;
+    font-size: 14px;
   }
 
-  /* Project children keep the 40px touch target; titles 14/20. */
-  :global([data-project-children]) .name {
-    font-size: 14px;
-    line-height: 20px;
+  .statusDot,
+  .dot_unread {
+    width: 8px;
+    height: 8px;
   }
 
   .actionButton.actionButton {
@@ -300,10 +260,26 @@
   .row {
     transition: background-color 0.12s ease;
   }
+
+  .dotPulse {
+    animation: rowDotPulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes rowDotPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @media (forced-colors: active) {
-  .guides > span {
+  .statusDot,
+  .childGroup::before {
     forced-color-adjust: none;
   }
 }
