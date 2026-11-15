@@ -1332,6 +1332,7 @@ export type I18nKey =
   | 'preview.browser.dismissHint'
   | 'preview.browser.insecureUrl'
   | 'preview.browser.mayHaveNavigated'
+  | 'preview.browser.navigatedChip'
   | 'preview.browser.newTab'
   | 'preview.browser.openInNewTab'
   | 'preview.browser.tabLimitReached'

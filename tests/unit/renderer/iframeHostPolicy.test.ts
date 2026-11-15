@@ -70,6 +70,7 @@ describe('dev servers, sandbox and permission delegation', () => {
       'https://evil-y.talkseeds.com.attacker.io/',
       'https://a.b-3000.y.talkseeds.com/',
       'https://talkseeds.com/',
+      'https://voice-s0-3870.y.talkseeds.com:8443/',
     ]) {
       expect(isDevServerUrl(url, APP_HOST)).toBe(false);
     }

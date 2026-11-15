@@ -253,8 +253,12 @@ const IframeHost: React.FC<WebviewHostProps> = ({
             data-testid='iframe-host-address'
           />
           {navigatedAway && (
-            <span id='iframe-host-stale' className='sr-only'>
-              {t('preview.browser.mayHaveNavigated')}
+            <span
+              id='iframe-host-stale'
+              className='flex-shrink-0 px-6px py-1px rd-4px text-11px text-warning-6 bg-warning-1 whitespace-nowrap'
+              data-testid='iframe-host-stale'
+            >
+              {t('preview.browser.navigatedChip')}
             </span>
           )}
           {devServer && (
@@ -304,7 +308,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
             title={labelForUrl(decision.url)}
             sandbox={sandboxFor(decision.url, appHostname)}
             allow={iframeAllowFor(decision.url, appHostname, devicesOptIn)}
-            referrerPolicy='strict-origin-when-cross-origin'
+            referrerPolicy='no-referrer'
             // bg-white on purpose: like a browser's default canvas, so pages without a background stay readable in dark mode
             className='border-0 absolute inset-0 w-full h-full bg-white'
             onLoad={handleLoad}

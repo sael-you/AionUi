@@ -44,6 +44,7 @@ describe('IframeHost (web browser panel)', () => {
     expect(frame().getAttribute('src')).toBe('https://example.com/');
     expect(frame().getAttribute('sandbox')).not.toContain('allow-popups-to-escape-sandbox');
     expect(frame().getAttribute('allow')).toBe('fullscreen');
+    expect(frame().getAttribute('referrerpolicy')).toBe('no-referrer');
     expect(screen.getByText('preview.browser.webModeHint')).toBeTruthy();
     expect(address().getAttribute('aria-label')).toBe('preview.browser.addressLabel');
   });
@@ -74,6 +75,7 @@ describe('IframeHost (web browser panel)', () => {
     expect(address().getAttribute('title')).toBeNull();
     fireEvent.load(frame());
     expect(address().getAttribute('title')).toBe('preview.browser.mayHaveNavigated');
+    expect(screen.getByTestId('iframe-host-stale').textContent).toBe('preview.browser.navigatedChip');
   });
 
   it('opens the current page in a new tab without opener', () => {

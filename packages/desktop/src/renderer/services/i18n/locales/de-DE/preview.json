@@ -163,7 +163,8 @@
     "allowDevices": "Mikrofon und Kamera für diesen Dev-Server erlauben",
     "devicesOn": "Mikrofon und Kamera für diese Seite erlaubt",
     "insecureUrl": "Diese Seite nutzt http und kann nicht in der https-App angezeigt werden. Öffne sie in einem neuen Tab.",
-    "dismissHint": "Hinweis ausblenden"
+    "dismissHint": "Hinweis ausblenden",
+    "navigatedChip": "weitergeleitet"
   },
   "saveConflict": "Speichern fehlgeschlagen: Diese Datei wurde auf der Festplatte geändert, nachdem Sie sie geöffnet haben. Neu laden, um die anderen Änderungen zu sehen — Ihre Bearbeitungen sind noch da, ungespeichert.",
   "persistQuotaExceeded": "Der lokale Speicher ist voll, offene Tabs dieses Projekts können nicht mehr gemerkt werden. Schließen Sie einige Tabs oder löschen Sie die Websitedaten.",

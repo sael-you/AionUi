@@ -163,7 +163,8 @@
     "allowDevices": "Bu geliştirme sunucusu için mikrofon ve kameraya izin ver",
     "devicesOn": "Bu sayfa için mikrofon ve kameraya izin verildi",
     "insecureUrl": "Bu sayfa http kullanıyor ve https uygulamasının içinde gösterilemez. Yeni sekmede açın.",
-    "dismissHint": "Bu notu gizle"
+    "dismissHint": "Bu notu gizle",
+    "navigatedChip": "değişti"
   },
   "saveConflict": "Kaydedilemedi: bu dosya siz açtıktan sonra diskte değişti. Diğer değişiklikleri görmek için yeniden yükleyin — düzenlemeleriniz kaydedilmemiş olarak duruyor.",
   "persistQuotaExceeded": "Yerel depolama dolu, bu proje için açık sekmeler artık hatırlanamıyor. Bazı sekmeleri kapatın veya site verilerini temizleyin.",

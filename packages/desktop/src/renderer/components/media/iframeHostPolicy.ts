@@ -21,9 +21,11 @@
  *   that could steer its opener);
  * - `allow-modals` (only for dev servers, see `sandboxFor`): untrusted sites cannot show native
  *   dialogs that look like the app's own.
- * `allow-same-origin` is only dangerous for documents on the app's own origin: those are refused
- * up front (`decideEmbed`) and, if the frame navigates there later, detected on load and removed
- * (`isAppOriginFrame`); the app shell also sends `frame-ancestors 'none'` (gateway).
+ * `allow-same-origin` is only dangerous for documents on the app's own origin. Prevention is server-side: the
+ * app shell sends `frame-ancestors 'none'`, and the gateway refuses app-origin requests made as a frame navigation
+ * by another page (`Sec-Fetch-Dest: iframe` + `Sec-Fetch-Site` ≠ same-origin). Here: such URLs are refused up front
+ * (`decideEmbed`) and a frame found on the app origin after load is removed (`isAppOriginFrame`) — detection, defence
+ * in depth only.
  */
 const BASE_SANDBOX = ['allow-scripts', 'allow-same-origin', 'allow-forms', 'allow-popups', 'allow-downloads'];
 
@@ -68,7 +70,7 @@ export const decideEmbed = (raw: string, appOrigin: string): EmbedDecision => {
  */
 export const isDevServerUrl = (url: string, appHostname: string): boolean => {
   const parsed = parseWebUrl(url);
-  if (!parsed || parsed.protocol !== 'https:' || !appHostname) return false;
+  if (!parsed || parsed.protocol !== 'https:' || parsed.port !== '' || !appHostname) return false;
   const suffix = `.${appHostname}`;
   if (!parsed.hostname.endsWith(suffix)) return false;
   const label = parsed.hostname.slice(0, -suffix.length);

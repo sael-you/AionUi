@@ -163,7 +163,8 @@
     "allowDevices": "Permitir microfone e câmera para este servidor de desenvolvimento",
     "devicesOn": "Microfone e câmera permitidos para esta página",
     "insecureUrl": "Esta página usa http e não pode ser exibida dentro do app https. Abra-a em uma nova aba.",
-    "dismissHint": "Ocultar este aviso"
+    "dismissHint": "Ocultar este aviso",
+    "navigatedChip": "mudou"
   },
   "saveConflict": "Não foi possível salvar: este arquivo mudou no disco depois que você o abriu. Recarregue para ver as outras alterações — suas edições continuam aqui, não salvas.",
   "persistQuotaExceeded": "O armazenamento local está cheio, então as abas abertas deste projeto não podem mais ser lembradas. Feche algumas abas ou limpe os dados do site.",
