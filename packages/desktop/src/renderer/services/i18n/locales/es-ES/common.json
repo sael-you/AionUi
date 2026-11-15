@@ -197,7 +197,8 @@
   "clear": "Limpiar",
   "unit": {
     "minute_short": "m",
-    "second_short": "s"
+    "second_short": "s",
+    "hour_short": "h"
   },
   "goBack": "Back",
   "selectedCount": "{{count}} seleccionado(s)",

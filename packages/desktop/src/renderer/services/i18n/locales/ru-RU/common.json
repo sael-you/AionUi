@@ -200,7 +200,8 @@
   "agentMode": "Режим агента",
   "unit": {
     "minute_short": "мин",
-    "second_short": "с"
+    "second_short": "с",
+    "hour_short": "ч"
   },
   "selectedCount": "Выбрано {{count}}",
   "selectedSkills": "Выбранные навыки",

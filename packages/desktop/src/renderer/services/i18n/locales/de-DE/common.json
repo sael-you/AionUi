@@ -197,7 +197,8 @@
   "clear": "Leeren",
   "unit": {
     "minute_short": "Min",
-    "second_short": "Sek"
+    "second_short": "Sek",
+    "hour_short": "h"
   },
   "goBack": "Zurück",
   "selectedCount": "{{count}} ausgewählt",

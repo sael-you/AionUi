@@ -861,5 +861,83 @@
       "localUser": "You",
       "menu": "Account menu"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "Needs you",
+      "failed": "Failed",
+      "running": "Running",
+      "done": "Done",
+      "queued": "Not started",
+      "stopped": "Stopped",
+      "idle": "Idle"
+    },
+    "count": {
+      "running": "{{count}} running",
+      "waiting": "{{count}} needs you",
+      "failed": "{{count}} failed",
+      "done": "{{count}} done",
+      "stopped": "{{count}} stopped",
+      "queued": "{{count}} not started"
+    },
+    "subConversations": "{{count}} sub-conversations",
+    "needsYou": {
+      "title": "Needs you",
+      "running": "{{count}} conversations running"
+    },
+    "announce": {
+      "waiting": "{{name}} needs you",
+      "failed": "{{name}} failed",
+      "done": "{{name}} finished"
+    },
+    "activity": {
+      "worked": "Worked {{duration}}",
+      "working": "Working · {{duration}}",
+      "steps": "{{count}} steps",
+      "thoughts": "{{count}} thoughts",
+      "failedSteps": "{{count}} failed",
+      "thought": "Thought",
+      "thoughtFor": "thought {{duration}}",
+      "moreSteps": "{{count}} more steps",
+      "shortThoughts": "{{count}} short thoughts",
+      "messageTo": "Message → {{name}}",
+      "viewSteps": "View steps",
+      "viewStepsCount": "View steps · {{count}}",
+      "waitingOnBackground": "waiting on {{count}} background tasks"
+    },
+    "card": {
+      "title": "Delegated work",
+      "group": {
+        "conversation": "Conversations",
+        "subagent": "Subagents",
+        "background": "Background tasks"
+      },
+      "review": "Review",
+      "open": "Open",
+      "transcript": "Transcript",
+      "output": "Output",
+      "waitingNote": "Waiting for your approval",
+      "failedNote": "Last turn failed",
+      "taskFailedNote": "Ended with an error",
+      "stoppedNote": "Stopped",
+      "reportedBack": "Reported back {{time}}",
+      "finishedHidden": "{{count}} finished task(s) hidden ·",
+      "show": "Show",
+      "noOutput": "No output yet",
+      "noSteps": "No steps recorded yet",
+      "collapse": "Collapse delegated work",
+      "expand": "Expand delegated work"
+    },
+    "report": {
+      "done": "reported back",
+      "failed": "failed",
+      "stopped": "stopped",
+      "show": "Show result",
+      "hide": "Hide result"
+    },
+    "pill": {
+      "label": "Delegated work: {{summary}}"
+    },
+    "breadcrumb": "Conversation path"
   }
 }

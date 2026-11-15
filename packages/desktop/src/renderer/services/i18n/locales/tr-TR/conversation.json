@@ -863,5 +863,83 @@
       "localUser": "Siz",
       "menu": "Hesap menüsü"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "Sizi bekliyor",
+      "failed": "Başarısız",
+      "running": "Çalışıyor",
+      "done": "Bitti",
+      "queued": "Başlamadı",
+      "stopped": "Durduruldu",
+      "idle": "Boşta"
+    },
+    "count": {
+      "running": "{{count}} çalışıyor",
+      "waiting": "{{count}} sizi bekliyor",
+      "failed": "{{count}} başarısız",
+      "done": "{{count}} bitti",
+      "stopped": "{{count}} durduruldu",
+      "queued": "{{count}} başlamadı"
+    },
+    "subConversations": "{{count}} alt konuşma",
+    "needsYou": {
+      "title": "Sizi bekliyor",
+      "running": "{{count}} konuşma çalışıyor"
+    },
+    "announce": {
+      "waiting": "{{name}} sizi bekliyor",
+      "failed": "{{name}} başarısız oldu",
+      "done": "{{name}} bitti"
+    },
+    "activity": {
+      "worked": "{{duration}} çalıştı",
+      "working": "Çalışıyor · {{duration}}",
+      "steps": "{{count}} adım",
+      "thoughts": "{{count}} düşünce",
+      "failedSteps": "{{count}} başarısız",
+      "thought": "Düşünce",
+      "thoughtFor": "düşünce {{duration}}",
+      "moreSteps": "{{count}} adım daha",
+      "shortThoughts": "{{count}} kısa düşünce",
+      "messageTo": "Mesaj → {{name}}",
+      "viewSteps": "Adımları göster",
+      "viewStepsCount": "Adımları göster · {{count}}",
+      "waitingOnBackground": "{{count}} arka plan görevi bekleniyor"
+    },
+    "card": {
+      "title": "Devredilen işler",
+      "group": {
+        "conversation": "Konuşmalar",
+        "subagent": "Alt ajanlar",
+        "background": "Arka plan görevleri"
+      },
+      "review": "İncele",
+      "open": "Aç",
+      "transcript": "Döküm",
+      "output": "Çıktı",
+      "waitingNote": "Onayınızı bekliyor",
+      "failedNote": "Son tur başarısız oldu",
+      "taskFailedNote": "Hatayla bitti",
+      "stoppedNote": "Durduruldu",
+      "reportedBack": "{{time}} rapor verdi",
+      "finishedHidden": "{{count}} biten görev gizlendi ·",
+      "show": "Göster",
+      "noOutput": "Henüz çıktı yok",
+      "noSteps": "Henüz kayıtlı adım yok",
+      "collapse": "Devredilen işleri daralt",
+      "expand": "Devredilen işleri genişlet"
+    },
+    "report": {
+      "done": "rapor verdi",
+      "failed": "başarısız",
+      "stopped": "durduruldu",
+      "show": "Sonucu göster",
+      "hide": "Sonucu gizle"
+    },
+    "pill": {
+      "label": "Devredilen işler: {{summary}}"
+    },
+    "breadcrumb": "Konuşma yolu"
   }
 }

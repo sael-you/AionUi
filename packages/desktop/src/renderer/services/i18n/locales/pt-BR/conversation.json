@@ -867,5 +867,83 @@
       "localUser": "Você",
       "menu": "Menu da conta"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "Precisa de você",
+      "failed": "Falhou",
+      "running": "Em execução",
+      "done": "Concluído",
+      "queued": "Não iniciado",
+      "stopped": "Parado",
+      "idle": "Ocioso"
+    },
+    "count": {
+      "running": "{{count}} em execução",
+      "waiting": "{{count}} precisa de você",
+      "failed": "{{count}} falhou",
+      "done": "{{count}} concluído",
+      "stopped": "{{count}} parado",
+      "queued": "{{count}} não iniciado"
+    },
+    "subConversations": "{{count}} subconversas",
+    "needsYou": {
+      "title": "Precisa de você",
+      "running": "{{count}} conversas em execução"
+    },
+    "announce": {
+      "waiting": "{{name}} precisa de você",
+      "failed": "{{name}} falhou",
+      "done": "{{name}} concluiu"
+    },
+    "activity": {
+      "worked": "Trabalhou {{duration}}",
+      "working": "Trabalhando · {{duration}}",
+      "steps": "{{count}} etapas",
+      "thoughts": "{{count}} pensamentos",
+      "failedSteps": "{{count}} com falha",
+      "thought": "Pensamento",
+      "thoughtFor": "pensou {{duration}}",
+      "moreSteps": "mais {{count}} etapas",
+      "shortThoughts": "{{count}} pensamentos curtos",
+      "messageTo": "Mensagem → {{name}}",
+      "viewSteps": "Ver etapas",
+      "viewStepsCount": "Ver etapas · {{count}}",
+      "waitingOnBackground": "aguardando {{count}} tarefas em segundo plano"
+    },
+    "card": {
+      "title": "Trabalho delegado",
+      "group": {
+        "conversation": "Conversas",
+        "subagent": "Subagentes",
+        "background": "Tarefas em segundo plano"
+      },
+      "review": "Revisar",
+      "open": "Abrir",
+      "transcript": "Transcrição",
+      "output": "Saída",
+      "waitingNote": "Aguardando sua aprovação",
+      "failedNote": "O último turno falhou",
+      "taskFailedNote": "Terminou com erro",
+      "stoppedNote": "Parado",
+      "reportedBack": "Reportou {{time}}",
+      "finishedHidden": "{{count}} tarefa(s) concluída(s) oculta(s) ·",
+      "show": "Mostrar",
+      "noOutput": "Ainda sem saída",
+      "noSteps": "Ainda sem etapas registradas",
+      "collapse": "Recolher trabalho delegado",
+      "expand": "Expandir trabalho delegado"
+    },
+    "report": {
+      "done": "reportou",
+      "failed": "falhou",
+      "stopped": "parado",
+      "show": "Mostrar resultado",
+      "hide": "Ocultar resultado"
+    },
+    "pill": {
+      "label": "Trabalho delegado: {{summary}}"
+    },
+    "breadcrumb": "Caminho da conversa"
   }
 }

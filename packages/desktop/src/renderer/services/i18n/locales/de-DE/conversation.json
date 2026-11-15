@@ -862,5 +862,83 @@
       "localUser": "Du",
       "menu": "Kontomenü"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "Braucht dich",
+      "failed": "Fehlgeschlagen",
+      "running": "Läuft",
+      "done": "Fertig",
+      "queued": "Nicht gestartet",
+      "stopped": "Gestoppt",
+      "idle": "Untätig"
+    },
+    "count": {
+      "running": "{{count}} laufen",
+      "waiting": "{{count}} braucht dich",
+      "failed": "{{count}} fehlgeschlagen",
+      "done": "{{count}} fertig",
+      "stopped": "{{count}} gestoppt",
+      "queued": "{{count}} nicht gestartet"
+    },
+    "subConversations": "{{count}} Unterunterhaltungen",
+    "needsYou": {
+      "title": "Braucht dich",
+      "running": "{{count}} Unterhaltungen laufen"
+    },
+    "announce": {
+      "waiting": "{{name}} braucht dich",
+      "failed": "{{name}} ist fehlgeschlagen",
+      "done": "{{name}} ist fertig"
+    },
+    "activity": {
+      "worked": "{{duration}} gearbeitet",
+      "working": "Arbeitet · {{duration}}",
+      "steps": "{{count}} Schritte",
+      "thoughts": "{{count}} Gedanken",
+      "failedSteps": "{{count}} fehlgeschlagen",
+      "thought": "Gedanke",
+      "thoughtFor": "nachgedacht {{duration}}",
+      "moreSteps": "{{count}} weitere Schritte",
+      "shortThoughts": "{{count}} kurze Gedanken",
+      "messageTo": "Nachricht → {{name}}",
+      "viewSteps": "Schritte anzeigen",
+      "viewStepsCount": "Schritte anzeigen · {{count}}",
+      "waitingOnBackground": "wartet auf {{count}} Hintergrundaufgaben"
+    },
+    "card": {
+      "title": "Delegierte Arbeit",
+      "group": {
+        "conversation": "Unterhaltungen",
+        "subagent": "Subagenten",
+        "background": "Hintergrundaufgaben"
+      },
+      "review": "Prüfen",
+      "open": "Öffnen",
+      "transcript": "Protokoll",
+      "output": "Ausgabe",
+      "waitingNote": "Wartet auf deine Freigabe",
+      "failedNote": "Letzter Durchlauf fehlgeschlagen",
+      "taskFailedNote": "Mit Fehler beendet",
+      "stoppedNote": "Gestoppt",
+      "reportedBack": "Hat {{time}} berichtet",
+      "finishedHidden": "{{count}} fertige Aufgabe(n) ausgeblendet ·",
+      "show": "Anzeigen",
+      "noOutput": "Noch keine Ausgabe",
+      "noSteps": "Noch keine Schritte",
+      "collapse": "Delegierte Arbeit einklappen",
+      "expand": "Delegierte Arbeit ausklappen"
+    },
+    "report": {
+      "done": "hat berichtet",
+      "failed": "fehlgeschlagen",
+      "stopped": "gestoppt",
+      "show": "Ergebnis anzeigen",
+      "hide": "Ergebnis ausblenden"
+    },
+    "pill": {
+      "label": "Delegierte Arbeit: {{summary}}"
+    },
+    "breadcrumb": "Pfad der Unterhaltung"
   }
 }

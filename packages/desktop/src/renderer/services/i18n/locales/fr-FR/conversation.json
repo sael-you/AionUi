@@ -861,5 +861,83 @@
       "localUser": "Vous",
       "menu": "Menu du compte"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "Vous attend",
+      "failed": "Échec",
+      "running": "En cours",
+      "done": "Terminé",
+      "queued": "Pas commencé",
+      "stopped": "Arrêté",
+      "idle": "Inactif"
+    },
+    "count": {
+      "running": "{{count}} en cours",
+      "waiting": "{{count}} vous attend",
+      "failed": "{{count}} en échec",
+      "done": "{{count}} terminé",
+      "stopped": "{{count}} arrêté",
+      "queued": "{{count}} pas commencé"
+    },
+    "subConversations": "{{count}} sous-conversations",
+    "needsYou": {
+      "title": "Vous attend",
+      "running": "{{count}} conversations en cours"
+    },
+    "announce": {
+      "waiting": "{{name}} vous attend",
+      "failed": "{{name}} a échoué",
+      "done": "{{name}} a terminé"
+    },
+    "activity": {
+      "worked": "A travaillé {{duration}}",
+      "working": "Au travail · {{duration}}",
+      "steps": "{{count}} étapes",
+      "thoughts": "{{count}} réflexions",
+      "failedSteps": "{{count}} en échec",
+      "thought": "Réflexion",
+      "thoughtFor": "réflexion {{duration}}",
+      "moreSteps": "{{count}} étapes de plus",
+      "shortThoughts": "{{count}} réflexions courtes",
+      "messageTo": "Message → {{name}}",
+      "viewSteps": "Voir les étapes",
+      "viewStepsCount": "Voir les étapes · {{count}}",
+      "waitingOnBackground": "attend {{count}} tâches en arrière-plan"
+    },
+    "card": {
+      "title": "Travail délégué",
+      "group": {
+        "conversation": "Conversations",
+        "subagent": "Sous-agents",
+        "background": "Tâches en arrière-plan"
+      },
+      "review": "Examiner",
+      "open": "Ouvrir",
+      "transcript": "Transcription",
+      "output": "Sortie",
+      "waitingNote": "En attente de votre approbation",
+      "failedNote": "Le dernier tour a échoué",
+      "taskFailedNote": "Terminé avec une erreur",
+      "stoppedNote": "Arrêté",
+      "reportedBack": "A rendu compte {{time}}",
+      "finishedHidden": "{{count}} tâche(s) terminée(s) masquée(s) ·",
+      "show": "Afficher",
+      "noOutput": "Pas encore de sortie",
+      "noSteps": "Pas encore d'étapes",
+      "collapse": "Replier le travail délégué",
+      "expand": "Déplier le travail délégué"
+    },
+    "report": {
+      "done": "a rendu compte",
+      "failed": "a échoué",
+      "stopped": "arrêté",
+      "show": "Afficher le résultat",
+      "hide": "Masquer le résultat"
+    },
+    "pill": {
+      "label": "Travail délégué : {{summary}}"
+    },
+    "breadcrumb": "Chemin de la conversation"
   }
 }

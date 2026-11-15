@@ -861,5 +861,83 @@
       "localUser": "你",
       "menu": "账户菜单"
     }
+  },
+  "orchestration": {
+    "state": {
+      "waiting": "需要你",
+      "failed": "失败",
+      "running": "运行中",
+      "done": "完成",
+      "queued": "未开始",
+      "stopped": "已停止",
+      "idle": "空闲"
+    },
+    "count": {
+      "running": "{{count}} 个运行中",
+      "waiting": "{{count}} 个需要你",
+      "failed": "{{count}} 个失败",
+      "done": "{{count}} 个完成",
+      "stopped": "{{count}} 个已停止",
+      "queued": "{{count}} 个未开始"
+    },
+    "subConversations": "{{count}} 个子会话",
+    "needsYou": {
+      "title": "需要你",
+      "running": "{{count}} 个会话运行中"
+    },
+    "announce": {
+      "waiting": "{{name}} 需要你",
+      "failed": "{{name}} 失败",
+      "done": "{{name}} 已完成"
+    },
+    "activity": {
+      "worked": "已工作 {{duration}}",
+      "working": "工作中 · {{duration}}",
+      "steps": "{{count}} 个步骤",
+      "thoughts": "{{count}} 次思考",
+      "failedSteps": "{{count}} 个失败",
+      "thought": "思考",
+      "thoughtFor": "思考 {{duration}}",
+      "moreSteps": "另外 {{count}} 个步骤",
+      "shortThoughts": "{{count}} 次短思考",
+      "messageTo": "消息 → {{name}}",
+      "viewSteps": "查看步骤",
+      "viewStepsCount": "查看步骤 · {{count}}",
+      "waitingOnBackground": "等待 {{count}} 个后台任务"
+    },
+    "card": {
+      "title": "委派的工作",
+      "group": {
+        "conversation": "会话",
+        "subagent": "子代理",
+        "background": "后台任务"
+      },
+      "review": "查看",
+      "open": "打开",
+      "transcript": "记录",
+      "output": "输出",
+      "waitingNote": "等待你的批准",
+      "failedNote": "上一轮失败",
+      "taskFailedNote": "以错误结束",
+      "stoppedNote": "已停止",
+      "reportedBack": "{{time}}已回报",
+      "finishedHidden": "已隐藏 {{count}} 个完成的任务 ·",
+      "show": "显示",
+      "noOutput": "暂无输出",
+      "noSteps": "暂无步骤记录",
+      "collapse": "折叠委派的工作",
+      "expand": "展开委派的工作"
+    },
+    "report": {
+      "done": "已回报",
+      "failed": "失败",
+      "stopped": "已停止",
+      "show": "显示结果",
+      "hide": "隐藏结果"
+    },
+    "pill": {
+      "label": "委派的工作：{{summary}}"
+    },
+    "breadcrumb": "会话路径"
   }
 }

@@ -198,7 +198,8 @@
   "clear": "Limpar",
   "unit": {
     "minute_short": "m",
-    "second_short": "s"
+    "second_short": "s",
+    "hour_short": "h"
   },
   "selectedCount": "{{count}} selecionado(s)",
   "selectedSkills": "Habilidades selecionadas",

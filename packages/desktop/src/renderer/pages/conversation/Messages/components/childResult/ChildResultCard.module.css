@@ -1,0 +1,67 @@
+/* Child result report row (C21): 32px, fit-content, 8px radius. */
+.report {
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  margin: 4px 0 8px;
+  border: 1px solid var(--bg-3);
+  border-radius: 8px;
+  background: var(--bg-base);
+}
+
+:global([data-theme='dark']) .report {
+  border-color: var(--color-border-1);
+  background: transparent;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 32px;
+  padding-inline: 10px 6px;
+}
+
+.name.name {
+  min-width: 0;
+  height: 24px;
+  padding-inline: 0;
+  color: var(--color-text-1);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.nameText {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub {
+  flex-shrink: 0;
+  color: var(--status-meta);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.toggle.toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding-inline: 6px;
+  color: var(--color-text-2);
+  font-size: 12px;
+}
+
+.body {
+  max-width: 720px;
+  padding: 0 12px 10px;
+  color: var(--color-text-2);
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

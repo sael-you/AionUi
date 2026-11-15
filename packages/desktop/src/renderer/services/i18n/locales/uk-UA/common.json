@@ -201,7 +201,8 @@
   "clear": "Очистити",
   "unit": {
     "minute_short": "хв",
-    "second_short": "с"
+    "second_short": "с",
+    "hour_short": "год"
   },
   "selectedCount": "Вибрано {{count}}",
   "selectedSkills": "Вибрані навички",

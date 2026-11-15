@@ -25,6 +25,7 @@ import { emitter } from '../../../utils/emitter';
 import AcpChat from '../platforms/acp/AcpChat';
 import ChatLayout from './ChatLayout';
 import ParentBreadcrumb from '../GroupedHistory/components/ParentBreadcrumb';
+import RunSummaryPill from './orchestration/DelegatedWork/RunSummaryPill';
 import ChatSlider from './ChatSlider.tsx';
 import AcpModelSelector from '@/renderer/components/agent/AcpModelSelector';
 import AcpRuntimeRestartButton from '@/renderer/components/agent/AcpRuntimeRestartButton';
@@ -213,6 +214,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
       <div className='flex items-center gap-8px'>
         <BoardKeeperBadge conversation={conversation} />
         <ParentBreadcrumb conversation={conversation} />
+        <RunSummaryPill conversationId={conversation.id} />
         <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />
         {!isMobile && (
           <AionrsModelSelector
@@ -415,6 +417,7 @@ const ChatConversation: React.FC<{
     <div className='flex items-center gap-8px'>
       <BoardKeeperBadge conversation={conversation} />
       <ParentBreadcrumb conversation={conversation} />
+      {conversation && <RunSummaryPill conversationId={conversation.id} />}
       {conversation && (
         <div className='shrink-0'>
           <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />

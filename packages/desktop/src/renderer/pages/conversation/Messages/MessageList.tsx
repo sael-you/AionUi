@@ -5,7 +5,31 @@
  */
 
 import type { IConversationArtifact } from '@/common/adapter/ipcBridge';
-import type { IMessageAcpToolCall, IMessageToolCall, IMessageToolGroup, TMessage } from '@/common/chat/chatLib';
+import type {
+  IMessageAcpToolCall,
+  IMessageThinking,
+  IMessageToolCall,
+  IMessageToolGroup,
+  TMessage,
+} from '@/common/chat/chatLib';
+import { useConversationHistoryContextSafe } from '@/renderer/hooks/context/ConversationHistoryContext';
+import DelegatedWorkCard from '@/renderer/pages/conversation/components/orchestration/DelegatedWork/DelegatedWorkCard';
+import {
+  countRunStates,
+  publishDelegatedSummary,
+  taskLabelsById,
+} from '@/renderer/pages/conversation/components/orchestration/DelegatedWork/delegatedWork';
+import {
+  placeDelegatedWork,
+  type PlacementItem,
+} from '@/renderer/pages/conversation/components/orchestration/DelegatedWork/placement';
+import { formatRunDuration } from '@/renderer/pages/conversation/components/orchestration/runState';
+import StatusGlyph from '@/renderer/pages/conversation/components/orchestration/StatusGlyph';
+import TurnActivity, {
+  useDurationUnits,
+  useTicker,
+} from '@/renderer/pages/conversation/components/orchestration/TurnActivity';
+import type { TurnActivityEntry } from '@/renderer/pages/conversation/components/orchestration/turnActivity';
 import { useConversationContextSafe } from '@/renderer/hooks/context/ConversationContext';
 import { useConversationRuntimeView } from '@/renderer/pages/conversation/runtime/useConversationRuntimeView';
 import { getChatSurfaceWidthClass } from '@/renderer/pages/conversation/utils/chatSurfaceWidth';
@@ -61,7 +85,20 @@ type IMessageVO =
       created_at: number;
     };
 type IArtifactVO = { type: 'artifact'; id: string; artifact: IConversationArtifact; created_at: number };
-type IProcessedItem = IMessageVO | IArtifactVO;
+/** Thinking and steps between two answers, folded into one activity line (C21). */
+type ITurnActivityVO = {
+  type: 'turn_activity';
+  id: string;
+  entries: TurnActivityEntry[];
+  sourceMessageIds: string[];
+  created_at: number;
+  /** When the item after the activity (usually the answer) started. */
+  endAt?: number;
+};
+type IProcessedItem = IMessageVO | IArtifactVO | ITurnActivityVO;
+
+const PSEUDO_ITEM_TYPES = new Set(['file_summary', 'tool_summary', 'turn_activity', 'artifact']);
+const isPseudoItem = (item: IProcessedItem): boolean => 'type' in item && PSEUDO_ITEM_TYPES.has(item.type);
 
 type CompactAcpToolCallContent = IMessageAcpToolCall['content'] & {
   _compact?: {
@@ -114,7 +151,7 @@ const getProcessedItemSourceMessageIds = (item: IProcessedItem): string[] => {
   if ('type' in item && item.type === 'artifact') {
     return [item.id];
   }
-  if ('type' in item && item.type === 'tool_summary') {
+  if ('type' in item && (item.type === 'tool_summary' || item.type === 'turn_activity')) {
     return item.sourceMessageIds;
   }
   if ('type' in item && item.type === 'file_summary') {
@@ -136,7 +173,7 @@ const getProcessedItemAnchorId = (item: IProcessedItem): string => {
 };
 
 const getProcessedItemCreatedAt = (item: IProcessedItem): number => {
-  if ('type' in item && ['file_summary', 'tool_summary', 'artifact'].includes(item.type)) {
+  if ('type' in item && ['file_summary', 'tool_summary', 'turn_activity', 'artifact'].includes(item.type)) {
     return item.created_at;
   }
   return item.created_at ?? 0;
@@ -331,6 +368,26 @@ const MessageItem: React.FC<{
         (prev.turnTexts ?? []).every((segment, i) => segment === next.turnTexts?.[i])))
 );
 
+/** "Working · 8m 38s · waiting on 2 background tasks": the turn ended, delegated work did not (C21). */
+const BackgroundLiveLine: React.FC<{ count: number; since: number }> = ({ count, since }) => {
+  const { t } = useTranslation();
+  const units = useDurationUnits();
+  const now = useTicker(true);
+  return (
+    <div className='flex items-center gap-8px h-28px text-13px text-t-secondary' data-testid='background-live-line'>
+      <StatusGlyph state='running' size={14} label={null} />
+      <span className='tabular-nums'>
+        {t('conversation.orchestration.activity.working', {
+          duration: formatRunDuration(now - since, units, { seconds: true }),
+        })}
+      </span>
+      <span className='text-t-secondary opacity-80'>
+        · {t('conversation.orchestration.activity.waitingOnBackground', { count })}
+      </span>
+    </div>
+  );
+};
+
 const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }> = ({ emptySlot }) => {
   const list = useMessageList();
   const isMessageListLoading = useMessageListLoading();
@@ -454,9 +511,46 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
         created_at: artifact.created_at,
       }));
 
-    return [...result, ...visibleArtifacts].toSorted(
+    const sorted: IProcessedItem[] = [...result, ...visibleArtifacts].toSorted(
       (a, b) => getProcessedItemCreatedAt(a) - getProcessedItemCreatedAt(b)
     );
+
+    // C21: every run of thinking + step groups between two answers becomes one
+    // activity line ("Worked 4m 12s · 14 steps · 3 thoughts").
+    const grouped: IProcessedItem[] = [];
+    let run: ITurnActivityVO | null = null;
+    for (const item of sorted) {
+      const isThought = 'type' in item && item.type === 'thinking';
+      const isSteps = 'type' in item && item.type === 'tool_summary';
+      if (isThought || isSteps) {
+        if (!run) {
+          run = {
+            type: 'turn_activity',
+            id: `turn-activity-${item.id}`,
+            entries: [],
+            sourceMessageIds: [],
+            created_at: getProcessedItemCreatedAt(item),
+          };
+          grouped.push(run);
+        }
+        if (isThought) {
+          const thought = item as IMessageThinking;
+          run.entries.push({ kind: 'thought', message: thought });
+          run.sourceMessageIds.push(thought.id);
+        } else {
+          const steps = item as Extract<IMessageVO, { type: 'tool_summary' }>;
+          run.entries.push({ kind: 'tools', id: steps.id, messages: steps.messages, created_at: steps.created_at });
+          run.sourceMessageIds.push(...steps.sourceMessageIds);
+        }
+        continue;
+      }
+      if (run) {
+        run.endAt = getProcessedItemCreatedAt(item);
+        run = null;
+      }
+      grouped.push(item);
+    }
+    return grouped;
   }, [artifacts, list]);
 
   // An AI reply can be split into several messages (thinking / multiple text /
@@ -479,10 +573,7 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
   const lastMessageId = useMemo(() => {
     for (let i = processedList.length - 1; i >= 0; i--) {
       const item = processedList[i];
-      if (
-        'type' in item &&
-        (item.type === 'file_summary' || item.type === 'tool_summary' || item.type === 'artifact')
-      ) {
+      if (isPseudoItem(item)) {
         continue;
       }
       return (item as TMessage).id;
@@ -498,10 +589,7 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
     const ids = new Set<string>();
     let seenAnchor = false;
     for (const item of processedList) {
-      if (
-        'type' in item &&
-        (item.type === 'file_summary' || item.type === 'tool_summary' || item.type === 'artifact')
-      ) {
+      if (isPseudoItem(item)) {
         continue;
       }
       const message = item as TMessage;
@@ -510,6 +598,80 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
     }
     return ids;
   }, [processedList]);
+
+  // --- Delegated work (C21): one card per turn that launched something ---
+  const history = useConversationHistoryContextSafe();
+  const conversationId = conversationContext?.conversation_id;
+  const toolCalls = useMemo(
+    () => list.filter((message): message is IMessageToolCall => message.type === 'tool_call'),
+    [list]
+  );
+  const taskLabels = useMemo(() => taskLabelsById(toolCalls), [toolCalls]);
+  const parentConversation = useMemo(
+    () =>
+      conversationId ? history?.conversations.find((conversation) => conversation.id === conversationId) : undefined,
+    [conversationId, history?.conversations]
+  );
+  const delegatedCards = useMemo(() => {
+    if (!conversationId) return [];
+    const placement: PlacementItem[] = processedList.map((item) => {
+      if ('type' in item && item.type === 'turn_activity') {
+        const taskCalls = item.entries.flatMap((entry) =>
+          entry.kind === 'tools'
+            ? entry.messages.filter(
+                (message): message is IMessageToolCall => message.type === 'tool_call' && Boolean(message.content?.task)
+              )
+            : []
+        );
+        return { kind: 'activity', created_at: item.created_at, taskCalls };
+      }
+      const message = item as TMessage;
+      const other: PlacementItem = {
+        kind: message.position === 'right' && message.type === 'text' ? 'user' : 'other',
+        created_at: getProcessedItemCreatedAt(item),
+        taskCalls: [],
+      };
+      return other;
+    });
+    return placeDelegatedWork(placement, {
+      conversationId,
+      conversations: history?.conversations ?? [],
+      labels: taskLabels,
+      live: {
+        waiting: (id) => history?.isConversationWaitingConfirmation(id) ?? false,
+        running: (id) =>
+          (history?.isConversationGenerating(id) ?? false) || (history?.hasBackgroundActive(id) ?? false),
+      },
+    });
+  }, [conversationId, history, processedList, taskLabels]);
+  const cardsAfter = useMemo(() => {
+    const map = new Map<number, typeof delegatedCards>();
+    for (const card of delegatedCards) map.set(card.afterIndex, [...(map.get(card.afterIndex) ?? []), card]);
+    return map;
+  }, [delegatedCards]);
+  const liveBackground = useMemo(
+    () =>
+      delegatedCards
+        .flatMap((card) => card.rows)
+        .filter((row) => row.kind !== 'conversation' && row.state === 'running'),
+    [delegatedCards]
+  );
+
+  // The header pill reads these counts (it lives outside this list).
+  useEffect(() => {
+    if (!conversationId) return;
+    const rows = delegatedCards.flatMap((card) => card.rows);
+    publishDelegatedSummary(
+      conversationId,
+      rows.length > 0 ? { counts: countRunStates(rows), latestCardId: delegatedCards.at(-1)?.id } : null
+    );
+  }, [conversationId, delegatedCards]);
+  useEffect(
+    () => () => {
+      if (conversationId) publishDelegatedSummary(conversationId, null);
+    },
+    [conversationId]
+  );
 
   // Use auto-scroll hook
   const {
@@ -614,11 +776,7 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
         return;
 
       const targetIndex = processedList.findIndex((item) => {
-        if (
-          (item as { type?: string }).type === 'file_summary' ||
-          (item as { type?: string }).type === 'tool_summary' ||
-          (item as { type?: string }).type === 'artifact'
-        ) {
+        if (isPseudoItem(item)) {
           return false;
         }
         const message = item as TMessage;
@@ -695,6 +853,18 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
         </div>
       );
     }
+    if ('type' in item && item.type === 'turn_activity') {
+      return (
+        <div
+          key={item.id}
+          id={`message-${getProcessedItemAnchorId(item)}`}
+          className={`${rowWidthClass} min-w-0 message-item px-8px m-t-6px turn_activity`}
+          style={highlighted ? highlightStyle : undefined}
+        >
+          <TurnActivity entries={item.entries} endAt={item.endAt} taskLabels={taskLabels} />
+        </div>
+      );
+    }
     if ('type' in item && ['file_summary', 'tool_summary'].includes(item.type)) {
       return (
         <div
@@ -760,8 +930,28 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
             >
               <div className='h-10px' />
               {processedList.map((item, index) => (
-                <React.Fragment key={getProcessedItemAnchorId(item) || index}>{renderItem(index, item)}</React.Fragment>
+                <React.Fragment key={getProcessedItemAnchorId(item) || index}>
+                  {renderItem(index, item)}
+                  {cardsAfter.get(index)?.map((card) => (
+                    <div key={card.id} className={`${rowWidthClass} min-w-0 message-item px-8px delegated_work`}>
+                      <DelegatedWorkCard
+                        id={card.id}
+                        rows={card.rows}
+                        parent={parentConversation}
+                        toolCalls={toolCalls}
+                      />
+                    </div>
+                  ))}
+                </React.Fragment>
               ))}
+              {!isProcessing && liveBackground.length > 0 && (
+                <div className={`${rowWidthClass} min-w-0 message-item px-8px m-t-6px`}>
+                  <BackgroundLiveLine
+                    count={liveBackground.length}
+                    since={Math.min(...liveBackground.map((row) => row.startedAt ?? Date.now()))}
+                  />
+                </div>
+              )}
               <div className='h-20px' />
             </div>
           </div>

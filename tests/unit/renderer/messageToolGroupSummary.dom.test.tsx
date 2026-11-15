@@ -64,7 +64,7 @@ describe('MessageToolGroupSummary', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('View Steps · 1'));
+    fireEvent.click(screen.getByText('conversation.orchestration.activity.viewStepsCount'));
     fireEvent.click(screen.getByText('rg'));
 
     await waitFor(() => {
