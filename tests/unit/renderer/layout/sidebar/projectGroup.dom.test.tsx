@@ -55,17 +55,24 @@ const Harness: React.FC<Partial<ProjectGroupProps> & { rows?: number; initiallyE
 const projectRow = () => screen.getByTestId(`project-row-${WS}`);
 
 describe('ProjectGroup row', () => {
-  it('is a tree item with aria-expanded, the C8 colour dot and the count; no folder icon', () => {
+  it('is a tree item with aria-expanded and the count; no colour dot or folder icon', () => {
     const { container } = render(<Harness rows={3} />);
     const row = projectRow();
     expect(row.getAttribute('role')).toBe('treeitem');
     expect(row.getAttribute('aria-expanded')).toBe('true');
     expect(row.getAttribute('aria-level')).toBe('2');
     expect(screen.getByTestId(`project-count-${WS}`).textContent).toBe('3');
-    // Project tokens live on the group, so the dot / guide / badge use the project accent.
+    // Project tokens live on the group, so the guide / badge use the project accent.
     const group = container.querySelector('[data-project-color]') as HTMLElement;
     expect(group.style.getPropertyValue('--project-accent')).toMatch(/^#[0-9a-f]{6}$/);
     expect(row.getAttribute('aria-label')).toContain('conversation.sidebar.project.count:3');
+    expect(row.querySelector('svg, img')).not.toBeNull(); // the chevron only
+    expect(row.querySelectorAll('span[aria-hidden="true"]:empty')).toHaveLength(0);
+  });
+
+  it('marks its conversations as project children (compact rows) while the sidebar is open', () => {
+    render(<Harness rows={2} />);
+    expect(screen.getByTestId(`project-children-${WS}`).hasAttribute('data-project-children')).toBe(true);
   });
 
   it('shows running and "needs you" on the row, also while collapsed', () => {
@@ -152,5 +159,7 @@ describe('ProjectGroup row', () => {
     render(<Harness rows={2} siderCollapsed initiallyExpanded={false} />);
     expect(screen.queryByTestId(`project-row-${WS}`)).toBeNull();
     expect(screen.getAllByTestId('row')).toHaveLength(2);
+    // Icon-only rows keep their normal size.
+    expect(screen.getByTestId(`project-children-${WS}`).hasAttribute('data-project-children')).toBe(false);
   });
 });

@@ -275,7 +275,7 @@ describe('board header', () => {
     expect(await screen.findByText('conversation page')).toBeInTheDocument();
   });
 
-  it('shows the project chip and accent strip from the project’s workspace', async () => {
+  it('shows the project chip and header tint from the project’s workspace', async () => {
     bridge.projectGet.mockResolvedValue({
       project_id: 'p1',
       name: 'Alpha',
@@ -298,6 +298,6 @@ describe('board header', () => {
     const page = container.querySelector('[data-board-page]');
     expect(page).toHaveAttribute('data-project-surface', 'board');
     expect(page?.getAttribute('style')).toContain('--project-accent');
-    expect(container.querySelector('[data-project-strip="top"]')).not.toBeNull();
+    expect(container.querySelector('[data-project-header="tint"]')).not.toBeNull();
   });
 });

@@ -107,7 +107,9 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
 
   const renderLeadingIcon = () => {
     if (cronStatus !== 'none') {
-      return <CronJobIndicator status={cronStatus} size={16} className='flex-shrink-0' />;
+      return (
+        <CronJobIndicator status={cronStatus} size={16} className={classNames('flex-shrink-0', styles.leadingIcon)} />
+      );
     }
 
     // When the row is pinned, hovering reveals an overlay on the leading icon —
@@ -118,16 +120,14 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
 
     const leadingMark = resolveConversationLeadingMark(conversation, assistantInfo, logos);
     if (leadingMark.kind === 'emoji') {
-      return (
-        <span className={classNames('text-16px leading-none flex-shrink-0', composedClass)}>{leadingMark.value}</span>
-      );
+      return <span className={classNames('leading-none flex-shrink-0', composedClass)}>{leadingMark.value}</span>;
     }
     if (leadingMark.kind === 'image') {
       return (
         <ThemedLogo
           src={leadingMark.value}
           alt={leadingMark.label}
-          className={classNames('w-16px h-16px rounded-50% flex-shrink-0', composedClass)}
+          className={classNames('w-16px h-16px rounded-50% flex-shrink-0', styles.leadingIcon, composedClass)}
         />
       );
     }
@@ -136,7 +136,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
         <Robot
           theme='outline'
           size='16'
-          className={classNames('line-height-0 flex-shrink-0 text-t-secondary', composedClass)}
+          className={classNames('line-height-0 flex-shrink-0 text-t-secondary', styles.leadingIcon, composedClass)}
         />
       );
     }
@@ -145,7 +145,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
       <MessageOne
         theme='outline'
         size='16'
-        className={classNames('line-height-0 flex-shrink-0 text-t-secondary', composedClass)}
+        className={classNames('line-height-0 flex-shrink-0 text-t-secondary', styles.leadingIcon, composedClass)}
       />
     );
   };
@@ -283,7 +283,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
             }}
           />
         )}
-        <span className='size-20px flex items-center justify-center shrink-0 relative'>
+        <span className={classNames('size-20px flex items-center justify-center shrink-0 relative', styles.leading)}>
           <ConversationStatusMark conversationId={conversation.id} status={status}>
             {renderLeadingIcon()}
           </ConversationStatusMark>
