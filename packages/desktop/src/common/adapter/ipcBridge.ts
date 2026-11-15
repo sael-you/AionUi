@@ -1466,9 +1466,7 @@ export const mcpService = {
     clearSecret: httpDelete<McpMarketSecretStatus, { id: string; key: string }>(
       (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}/secrets/${encodeURIComponent(p.key)}`
     ),
-    createAssignments: httpPost<McpMarketAssignment[], McpMarketCreateAssignmentRequest>(
-      '/api/mcp/market/assignments'
-    ),
+    createAssignments: httpPost<McpMarketAssignment[], McpMarketCreateAssignmentRequest>('/api/mcp/market/assignments'),
     deleteAssignment: httpDelete<void, { id: string }>(
       (p) => `/api/mcp/market/assignments/${encodeURIComponent(p.id)}`
     ),

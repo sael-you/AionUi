@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ipcBridge } from '@/common';
 import type { IMcpServer } from '@/common/config/storage';
 import { ensureBackendMcpCatalog } from './catalog';
+import { MCP_CATALOG_EXTENSION } from './market/marketModel';
 
 /**
  * MCP server state hook.
@@ -33,17 +34,20 @@ export const useMcpServers = () => {
           return;
         }
 
-        const converted: IMcpServer[] = extServers.map((server) => ({
-          id: String(server.id || ''),
-          name: String(server.name || ''),
-          description: server.description as string | undefined,
-          enabled: server.enabled !== false,
-          transport: server.transport as IMcpServer['transport'],
-          created_at: (server.created_at as number) || Date.now(),
-          updated_at: (server.updated_at as number) || Date.now(),
-          original_json: String(server.original_json || '{}'),
-          builtin: false,
-        }));
+        // Catalogue entries are MCP market templates; the market lists them itself (R1 #16).
+        const converted: IMcpServer[] = extServers
+          .filter((server) => server.extension_name !== MCP_CATALOG_EXTENSION)
+          .map((server) => ({
+            id: String(server.id || ''),
+            name: String(server.name || ''),
+            description: server.description as string | undefined,
+            enabled: server.enabled !== false,
+            transport: server.transport as IMcpServer['transport'],
+            created_at: (server.created_at as number) || Date.now(),
+            updated_at: (server.updated_at as number) || Date.now(),
+            original_json: String(server.original_json || '{}'),
+            builtin: false,
+          }));
         setExtensionMcpServers(converted);
       })
       .catch((error) => {

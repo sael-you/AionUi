@@ -5,6 +5,7 @@ import { mcpService } from '@/common/adapter/ipcBridge';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import type { IMcpServer } from '@/common/config/storage';
 import { toBackendMcpPayload } from './catalog';
+import { isMaskedValueError } from './market/marketModel';
 
 const mergeServerState = (persisted: IMcpServer, fallback?: Partial<IMcpServer>): IMcpServer => ({
   ...persisted,
@@ -26,7 +27,9 @@ const replaceUserServer = (servers: IMcpServer[], nextServer: IMcpServer) => {
   return remainingServers;
 };
 
-const getMcpRequestErrorMessage = (error: unknown, fallback: string): string => {
+const getMcpRequestErrorMessage = (error: unknown, fallback: string, maskedValueMessage: string): string => {
+  // A value shown as "•••" is hidden, not the real value: it has to be typed in again.
+  if (isMaskedValueError(error)) return maskedValueMessage;
   if (isBackendHttpError(error) && error.backendMessage.trim()) return error.backendMessage;
   if (error instanceof Error && error.message.trim()) return error.message;
   if (typeof error === 'string' && error.trim()) return error;
@@ -55,7 +58,9 @@ export const useMcpServerCRUD = (
         await saveMcpServers((prevServers) => replaceUserServer(prevServers, nextServer));
         return nextServer;
       } catch (error) {
-        Message.error(getMcpRequestErrorMessage(error, t('settings.mcpImportFailed')));
+        Message.error(
+          getMcpRequestErrorMessage(error, t('settings.mcpImportFailed'), t('mcp.market.errors.maskedValue'))
+        );
         return undefined;
       }
     },
@@ -95,7 +100,9 @@ export const useMcpServerCRUD = (
 
         return finalServers;
       } catch (error) {
-        Message.error(getMcpRequestErrorMessage(error, t('settings.mcpImportFailed')));
+        Message.error(
+          getMcpRequestErrorMessage(error, t('settings.mcpImportFailed'), t('mcp.market.errors.maskedValue'))
+        );
         return [];
       }
     },
@@ -129,7 +136,9 @@ export const useMcpServerCRUD = (
         Message.success(t('settings.mcpImportSuccess'));
         return nextServer;
       } catch (error) {
-        Message.error(getMcpRequestErrorMessage(error, t('settings.mcpImportFailed')));
+        Message.error(
+          getMcpRequestErrorMessage(error, t('settings.mcpImportFailed'), t('mcp.market.errors.maskedValue'))
+        );
         return undefined;
       }
     },
