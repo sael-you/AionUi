@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { csrfHeaders, isXhrCsrfRejection } from '@/common/adapter/csrf';
+import { CSRF_HEADER_NAME, csrfHeaders, isXhrCsrfRejection } from '@/common/adapter/csrf';
 import { getBaseUrl } from '@/common/adapter/httpBridge';
 import { trackUpload, type UploadSource } from '@/renderer/hooks/file/useUploadState';
 
@@ -47,8 +47,9 @@ export async function uploadFileViaHttp(
   }
 
   // One attempt; a 403 CSRF_INVALID re-primes the CSRF cookie and retries once (card C11).
-  const attempt = async (retry: boolean): Promise<string> => {
-    const csrf = await csrfHeaders('POST', { force: retry });
+  // `rejected`: the token the previous attempt was refused with (none on the first).
+  const attempt = async (rejected?: string): Promise<string> => {
+    const csrf = await csrfHeaders('POST', rejected === undefined ? {} : { rejected });
     return new Promise<string>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', `${getBaseUrl()}/api/fs/upload`);
@@ -92,8 +93,8 @@ export async function uploadFileViaHttp(
 
       xhr.addEventListener('load', () => {
         detachSignal();
-        if (!retry && isXhrCsrfRejection(xhr)) {
-          attempt(true).then(resolve, reject);
+        if (rejected === undefined && isXhrCsrfRejection(xhr)) {
+          attempt(csrf[CSRF_HEADER_NAME] ?? '').then(resolve, reject);
           return;
         }
         if (xhr.status === 413) {
@@ -129,7 +130,7 @@ export async function uploadFileViaHttp(
       xhr.send(formData);
     });
   };
-  return attempt(false);
+  return attempt();
 }
 
 // ===== 文件类型支持配置 =====

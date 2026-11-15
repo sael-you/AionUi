@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { csrfHeaders, isXhrCsrfRejection } from '@/common/adapter/csrf';
+import { CSRF_HEADER_NAME, csrfHeaders, isXhrCsrfRejection } from '@/common/adapter/csrf';
 import { getBaseUrl } from '@/common/adapter/httpBridge';
 import type { SpeechToTextResult } from '@/common/types/provider/speech';
 
@@ -93,8 +93,9 @@ export async function transcribeAudioBlob(blob: Blob, languageHint?: string): Pr
   }
 
   // One attempt; a 403 CSRF_INVALID re-primes the CSRF cookie and retries once (card C11).
-  const attempt = async (retry: boolean): Promise<SpeechToTextResult> => {
-    const csrf = await csrfHeaders('POST', { force: retry });
+  // `rejected`: the token the previous attempt was refused with (none on the first).
+  const attempt = async (rejected?: string): Promise<SpeechToTextResult> => {
+    const csrf = await csrfHeaders('POST', rejected === undefined ? {} : { rejected });
     return new Promise<SpeechToTextResult>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', `${getBaseUrl()}/api/stt`);
@@ -103,8 +104,8 @@ export async function transcribeAudioBlob(blob: Blob, languageHint?: string): Pr
       // browser rejects for credentialed requests; WebUI is same-origin anyway.
 
       xhr.addEventListener('load', () => {
-        if (!retry && isXhrCsrfRejection(xhr)) {
-          attempt(true).then(resolve, reject);
+        if (rejected === undefined && isXhrCsrfRejection(xhr)) {
+          attempt(csrf[CSRF_HEADER_NAME] ?? '').then(resolve, reject);
           return;
         }
         if (xhr.status < 200 || xhr.status >= 300) {
@@ -130,5 +131,5 @@ export async function transcribeAudioBlob(blob: Blob, languageHint?: string): Pr
       xhr.send(formData);
     });
   };
-  return attempt(false);
+  return attempt();
 }

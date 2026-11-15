@@ -261,10 +261,11 @@ export async function httpRequest<T>(
     }
   }
 
-  // 403 CSRF_INVALID: re-prime the CSRF cookie and retry once.
+  // 403 CSRF_INVALID: re-prime the CSRF cookie (shared by a burst of rejections)
+  // and retry once.
   if (response.status === 403 && isUnsafeMethod(method) && (await isCsrfRejection(response))) {
-    const { [CSRF_HEADER_NAME]: _stale, ...rest } = headers;
-    const retryHeaders = { ...rest, ...(await csrfHeaders(method, { force: true })) };
+    const { [CSRF_HEADER_NAME]: rejected = '', ...rest } = headers;
+    const retryHeaders = { ...rest, ...(await csrfHeaders(method, { rejected })) };
     console.debug(`[httpBridge] ${method} ${path} → 403 CSRF_INVALID, retrying once`);
     response = await sendHttpRequest(method, path, retryHeaders, body);
   }

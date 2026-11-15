@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { PREVIEW_SCOPE_KEY_PREFIX } from '@/renderer/pages/conversation/Preview/context/previewScope';
 import { refreshSession } from '@/common/adapter/sessionRefresh';
 import { STORAGE_KEYS } from '@/common/config/storageKeys';
-import { CSRF_COOKIE_NAMES, fetchWithCsrf, noteAuthUserRequest } from '@/common/adapter/csrf';
+import { CSRF_COOKIE_NAMES, expectAuthUserRequest, fetchWithCsrf, noteAuthUserRequest } from '@/common/adapter/csrf';
 
 /** Expire a cookie readable from JavaScript (the CSRF cookie; `__Host-` names need `Secure`). */
 const clearCookie = (name: string): void => {
@@ -112,6 +112,8 @@ async function fetchCurrentUser(signal?: AbortSignal): Promise<AuthUser | null> 
     });
     // This check also gets the CSRF cookie set in WebUI identity, so the first
     // write of the page waits for it instead of making its own request (C11).
+    // Registered as expected while the AuthProvider renders; an aborted check
+    // primes nothing.
     noteAuthUserRequest(firstCheck);
     let response = await firstCheck;
 
@@ -156,6 +158,12 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [status, setStatus] = useState<AuthStatus>('checking');
   const [ready, setReady] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  // During render, before any child effect can write: the page's auth check is
+  // coming and doubles as the CSRF priming request (C11). Runs once per mount.
+  useState((): null => {
+    if (!isDesktopRuntime) expectAuthUserRequest();
+    return null;
+  });
 
   const refresh = useCallback(async () => {
     if (isDesktopRuntime) {
@@ -288,14 +296,21 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     try {
       // Logout is an unsafe request: it carries the CSRF header in WebUI identity,
       // otherwise the backend refuses it and the session cookie survives (C11).
-      await fetchWithCsrf('/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({}),
-      });
+      const sendLogout = (): Promise<Response> =>
+        fetchWithCsrf('/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({}),
+        });
+      // An expired access cookie → 401: the session is still alive behind the
+      // refresh cookie, so refresh it and log out once more, or it survives.
+      const response = await sendLogout();
+      if (response.status === 401 && (await refreshSession())) {
+        await sendLogout();
+      }
     } catch (error) {
       console.error('Logout request failed:', error);
     } finally {
