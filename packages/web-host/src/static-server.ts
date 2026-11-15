@@ -5,7 +5,9 @@
  * /login and /logout to aioncore. All auth goes to backend's aionui-auth crate;
  * /login and /logout are aionui-auth's top-level paths, the rest live under
  * /api/auth/*. /ws and /api/stt/stream are WebSocket/stream upgrades spliced at
- * TCP level; /api/stt/stream is the STT streaming endpoint.
+ * TCP level; /api/stt/stream is the STT streaming endpoint. Every request and
+ * upgrade reaching aioncore carries X-Forwarded-Host = the Host the browser sent
+ * (forwarded-host.ts).
  *
  * Design: Node native http + serve-handler. No Express. No business routes.
  */
@@ -14,6 +16,7 @@ import http, { type IncomingMessage, type Server, type ServerResponse } from 'no
 import { networkInterfaces } from 'node:os';
 import net, { type Socket } from 'node:net';
 import serveHandler from 'serve-handler';
+import { MAX_UPGRADE_HEAD_BYTES, rewriteUpgradeHead, withForwardedHost } from './forwarded-host.js';
 
 export type StaticServerOptions = {
   staticDir: string;
@@ -82,7 +85,8 @@ function forwardToBackend(req: IncomingMessage, res: ServerResponse, backendPort
     port: backendPort,
     path: req.url,
     method: req.method,
-    headers: { ...req.headers, host: `127.0.0.1:${backendPort}` },
+    // X-Forwarded-Host = the Host the browser sent (overwritten, never the client's).
+    headers: { ...withForwardedHost(req.headers), host: `127.0.0.1:${backendPort}` },
   };
   const proxy = http.request(options, (proxyRes) => {
     res.writeHead(proxyRes.statusCode ?? 502, proxyRes.headers);
@@ -234,9 +238,21 @@ export async function startStaticServer(opts: StaticServerOptions): Promise<Stat
       peeked = Buffer.concat([peeked, chunk]);
       const decision = peekWsRoute(peeked);
       if (decision === null && peeked.length < PEEK_LIMIT_BYTES) return;
+      if (decision !== true) {
+        cleanup();
+        spliceToTcpEndpoint(client, internalPort, peeked);
+        return;
+      }
+      // Upgrades go to the backend untouched except for the forwarded host,
+      // so wait for the whole head (see forwarded-host.ts).
+      const head = rewriteUpgradeHead(peeked);
+      if (head === null && peeked.length < MAX_UPGRADE_HEAD_BYTES) return;
       cleanup();
-      const target = decision === true ? opts.backendPort : internalPort;
-      spliceToTcpEndpoint(client, target, peeked);
+      if (head === null || head === 'invalid') {
+        client.destroy();
+        return;
+      }
+      spliceToTcpEndpoint(client, opts.backendPort, head);
     };
     const onEarlyError = (): void => {
       cleanup();
