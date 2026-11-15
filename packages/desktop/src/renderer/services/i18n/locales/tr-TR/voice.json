@@ -109,7 +109,10 @@
       "saved_not_started": "Başlamadı",
       "expired": "Süresi doldu",
       "interrupted": "Kesintiye uğradı",
-      "confirm_rejected": "Onaylanmadı"
+      "confirm_rejected": "Onaylanmadı",
+      "added": "Eklendi",
+      "stopped": "Durduruldu",
+      "silenced": "Susturuldu"
     }
   },
   "budget": {
@@ -166,9 +169,35 @@
     "privacy": "Ses, bir arama başlayana kadar bu cihazda kalır ve asla saklanmaz."
   },
   "slash": {
-    "description": "Bu konuşma hakkında Jarvis ile konuşun"
+    "description": "Ses modu: bu sohbetin ajanıyla konuş"
   },
   "composer": {
-    "tooltip": "Bu konuşma için ses modu"
+    "tooltip": "Bu sohbet için ses modu"
+  },
+  "messageChip": "Sesli",
+  "bar": {
+    "label": "Ses modu",
+    "talk": "Konuş veya araya gir",
+    "done": "Bitti",
+    "stopTask": "Görevi durdur",
+    "end": "Sesi kapat",
+    "state": {
+      "connecting": "Bağlanıyor…",
+      "armed": "“Hey Jarvis” de veya dokun",
+      "listening": "Dinliyor",
+      "working": "Çalışıyor",
+      "speaking": "Konuşuyor",
+      "waiting": "Konuşmak için dokun",
+      "offline": "Çevrimdışı"
+    },
+    "outcome": {
+      "sent": "Gönderildi",
+      "added": "Çalışan göreve eklendi",
+      "queued": "Tur bitene kadar sırada",
+      "silenced": "Konuşma durduruldu",
+      "stopped": "Görev durduruldu",
+      "failed": "Gönderilemedi",
+      "needs_approval": "Ekranda onayın gerekiyor"
+    }
   }
 }

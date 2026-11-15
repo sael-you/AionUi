@@ -109,7 +109,10 @@
       "saved_not_started": "No iniciado",
       "expired": "Caducado",
       "interrupted": "Interrumpido",
-      "confirm_rejected": "No confirmado"
+      "confirm_rejected": "No confirmado",
+      "added": "Añadido",
+      "stopped": "Detenido",
+      "silenced": "Silenciado"
     }
   },
   "budget": {
@@ -166,9 +169,35 @@
     "privacy": "El audio permanece en este dispositivo hasta que empieza una llamada y nunca se almacena."
   },
   "slash": {
-    "description": "Hablar con Jarvis sobre esta conversación"
+    "description": "Modo de voz: habla con el agente de esta conversación"
   },
   "composer": {
     "tooltip": "Modo de voz para esta conversación"
+  },
+  "messageChip": "Hablado",
+  "bar": {
+    "label": "Modo de voz",
+    "talk": "Hablar o interrumpir",
+    "done": "Listo",
+    "stopTask": "Detener tarea",
+    "end": "Terminar voz",
+    "state": {
+      "connecting": "Conectando…",
+      "armed": "Di «Hey Jarvis» o toca",
+      "listening": "Escuchando",
+      "working": "Trabajando",
+      "speaking": "Hablando",
+      "waiting": "Toca para hablar",
+      "offline": "Sin conexión"
+    },
+    "outcome": {
+      "sent": "Enviado",
+      "added": "Añadido a la tarea en curso",
+      "queued": "En cola hasta que termine el turno",
+      "silenced": "Voz detenida",
+      "stopped": "Tarea detenida",
+      "failed": "No enviado",
+      "needs_approval": "Necesita tu aprobación en pantalla"
+    }
   }
 }

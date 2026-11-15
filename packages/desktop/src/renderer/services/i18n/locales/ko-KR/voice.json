@@ -109,7 +109,10 @@
       "saved_not_started": "시작 안 됨",
       "expired": "만료됨",
       "interrupted": "중단됨",
-      "confirm_rejected": "확인되지 않음"
+      "confirm_rejected": "확인되지 않음",
+      "added": "추가됨",
+      "stopped": "중지됨",
+      "silenced": "음소거"
     }
   },
   "budget": {
@@ -166,9 +169,35 @@
     "privacy": "오디오는 통화가 시작될 때까지 이 기기에만 머물며 절대 저장되지 않습니다."
   },
   "slash": {
-    "description": "이 대화에 대해 Jarvis와 이야기하기"
+    "description": "음성 모드: 이 대화의 에이전트와 대화"
   },
   "composer": {
     "tooltip": "이 대화의 음성 모드"
+  },
+  "messageChip": "음성",
+  "bar": {
+    "label": "음성 모드",
+    "talk": "말하기 또는 끼어들기",
+    "done": "완료",
+    "stopTask": "작업 중지",
+    "end": "음성 종료",
+    "state": {
+      "connecting": "연결 중…",
+      "armed": "“Hey Jarvis”라고 말하거나 탭",
+      "listening": "듣는 중",
+      "working": "작업 중",
+      "speaking": "말하는 중",
+      "waiting": "탭하여 말하기",
+      "offline": "오프라인"
+    },
+    "outcome": {
+      "sent": "보냄",
+      "added": "실행 중인 작업에 추가됨",
+      "queued": "턴이 끝날 때까지 대기",
+      "silenced": "음성 중지됨",
+      "stopped": "작업 중지됨",
+      "failed": "보내지 못함",
+      "needs_approval": "화면에서 승인이 필요합니다"
+    }
   }
 }

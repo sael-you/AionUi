@@ -43,10 +43,14 @@ const VoiceComposerButton: React.FC<VoiceComposerButtonProps> = ({
         shape='circle'
         disabled={disabled}
         aria-label={label}
-        aria-pressed={view.machine.mode !== 'off'}
+        aria-pressed={
+          view.machine.mode !== 'off' &&
+          view.voiceMode === 'conversation' &&
+          view.focusConversationId === conversationId
+        }
         data-testid='voice-composer-button'
         icon={<VoiceOrbGlyph state={view.orb} size={16} />}
-        onClick={() => controller.toggle({ focusConversationId: conversationId })}
+        onClick={() => controller.toggle({ focusConversationId: conversationId, mode: 'conversation' })}
       />
     </Tooltip>
   );

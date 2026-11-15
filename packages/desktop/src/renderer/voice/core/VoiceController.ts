@@ -23,6 +23,12 @@
  *   own evidence from `voice.playbackFinished` + `voice.speechOnset`;
  * - an agent `ask` with no live call opens a short call only to capture the
  *   answer (question → answer → close, at most 2 min, PLAN §3.4).
+ *
+ * Conversation voice mode (C26, `/voice` and the composer mic): the call only transcribes into
+ * the focused conversation; the mic is held quiet after each posted utterance and lifted by the
+ * wake word, a tap (barge-in: the agent's speech stops at once) or the follow-up window after
+ * the turn; the wake word stays live during agent clips when the browser granted
+ * `echoCancellation: "all"`.
  */
 
 import type { Effects } from './effects';
@@ -42,6 +48,7 @@ import {
   type FollowUpStatus,
   type ServerFrame,
   type ServerVoiceState,
+  type VoiceSessionMode,
   type VoiceSettings,
 } from './types';
 import { callEndPolicy } from './endReasons';
@@ -64,6 +71,15 @@ export const ASK_CALL_MAX_MS = 120_000;
 /** Grace after the answer's final transcript before the answer-only call hangs up. */
 export const ASK_HANGUP_DELAY_MS = 1_500;
 const MAX_SEEN_CLIPS = 32;
+/** Conversation mode: the mic stays open this long after the agent's turn ends (car: longer). */
+export const FOLLOW_UP_WINDOW_MS = 8_000;
+export const CAR_FOLLOW_UP_WINDOW_MS = 12_000;
+/** Conversation mode: time to answer an agent's spoken question. */
+export const ASK_WINDOW_MS = 30_000;
+/** Conversation-mode outcomes of your utterance: the mic goes quiet again. */
+const HOLD_STATUSES: ReadonlySet<FollowUpStatus> = new Set(['sent', 'added', 'queued', 'silenced', 'stopped']);
+/** Conversation-mode turn ends: the mic opens for the follow-up window. */
+const TURN_END_STATUSES: ReadonlySet<FollowUpStatus> = new Set(['finished', 'failed', 'needs_approval']);
 /** `voice.state armed` reasons an older backend used to signal a hang-up. */
 const LEGACY_END_REASONS: ReadonlySet<string> = new Set(['idle', 'budget', 'rotation', 'kill', 'ended']);
 /**
@@ -96,7 +112,7 @@ const NEEDS_YOU_STATUSES: ReadonlySet<FollowUpStatus> = new Set([
 
 type QueuedClip = { clipId: string; urlOrId: string; tone: EarconName | null; draftLine: boolean };
 
-export type ArmOptions = { focusConversationId?: string | null };
+export type ArmOptions = { focusConversationId?: string | null; mode?: VoiceSessionMode };
 
 export class VoiceController {
   readonly store = new VoiceStore();
@@ -134,6 +150,15 @@ export class VoiceController {
   private armToken = 0;
   private settingsPromise: Promise<VoiceSettings | null> | null = null;
   private settingsFailedAt: number | null = null;
+  /** Conversation mode opens its call as soon as the mic and the socket are up. */
+  private autoTalk = false;
+  /** The backend hang-up of the previous call (a mode switch waits for it: one call per user). */
+  private pendingEnd: Promise<unknown> | null = null;
+  private windowTimer: unknown = null;
+  private windowMs = 0;
+  private lastSpeechAt: number | null = null;
+  /** Conversation mode: the clip of an agent question; the answer window opens when it ends. */
+  private windowAfterClipId: string | null = null;
 
   constructor(private readonly fx: Effects) {}
 
@@ -145,10 +170,33 @@ export class VoiceController {
     return this.machine;
   }
 
-  /** Orb tap / shortcut / `/voice`: arm when off, disarm otherwise. Must run inside the gesture. */
+  /**
+   * Orb tap / shortcut (Jarvis) or `/voice` / composer mic (conversation mode): arm when off,
+   * disarm when the same mode is on, switch when the other mode (or conversation) is on — one
+   * live voice session per user. Must run inside the gesture.
+   */
   toggle(options: ArmOptions = {}): void {
-    if (this.machine.mode === 'off') this.arm(options);
-    else this.disarm('tap');
+    if (this.machine.mode === 'off') {
+      this.arm(options);
+      return;
+    }
+    const view = this.store.getSnapshot();
+    const mode = options.mode ?? 'jarvis';
+    const same =
+      view.voiceMode === mode &&
+      (mode === 'jarvis' || view.focusConversationId === (options.focusConversationId ?? null));
+    this.disarm('tap');
+    if (!same) this.arm(options);
+  }
+
+  get isConversationMode(): boolean {
+    return this.store.getSnapshot().voiceMode === 'conversation';
+  }
+
+  /** Conversation mode "Done": end your utterance now instead of waiting for the pause. */
+  commitUtterance(): void {
+    if (!this.isConversationMode || this.machine.call?.phase !== 'ready' || this.machine.held) return;
+    this.socket?.send({ name: 'voice.commit' });
   }
 
   /** Arm voice mode. Synchronous part runs in the user gesture. */
@@ -173,11 +221,17 @@ export class VoiceController {
     this.clips = this.fx.createClipPlayer(ctx);
     void this.fx.wakeLock.acquire().then((ok) => this.store.update({ screenMaySleep: !ok }));
     const token = ++this.armToken;
+    const voiceMode = options.mode ?? 'jarvis';
+    this.autoTalk = voiceMode === 'conversation';
     this.dispatch({ type: 'arm' });
     this.store.update({
-      overlayOpen: true,
+      // Conversation mode lives in the voice bar above the composer, not the Jarvis panel.
+      overlayOpen: voiceMode !== 'conversation',
       notice: null,
       focusConversationId: options.focusConversationId ?? null,
+      voiceMode,
+      agentSpeaking: false,
+      lastOutcome: null,
       captions: [],
       draft: null,
       holdUntil: null,
@@ -207,6 +261,9 @@ export class VoiceController {
     this.clearTimer('deadManTimer');
     this.clearTimer('resumeTimer');
     this.clearTimer('draftTimer');
+    this.clearTimer('windowTimer');
+    this.autoTalk = false;
+    this.windowAfterClipId = null;
     if (this.audioEl) this.audioEl.srcObject = null;
     this.audioEl = null;
     this.clips = null;
@@ -223,6 +280,8 @@ export class VoiceController {
       screenMaySleep: false,
       systemPaused: false,
       focusConversationId: null,
+      agentSpeaking: false,
+      lastOutcome: null,
     });
   }
 
@@ -396,6 +455,7 @@ export class VoiceController {
       this.dispatch({ type: 'armed' });
       this.earcon('armed');
       this.fx.vibrate(30);
+      this.maybeAutoTalk();
     } catch (error) {
       if (token !== this.armToken) return;
       const name = (error as { name?: string })?.name;
@@ -432,7 +492,18 @@ export class VoiceController {
   // Calls
   // -------------------------------------------------------------------------
 
+  /** Conversation mode: open the call right after arming (same gesture, no wake word needed). */
+  private maybeAutoTalk(): void {
+    if (!this.autoTalk || this.machine.mode !== 'armed' || this.machine.socket !== 'open' || this.machine.call) return;
+    this.autoTalk = false;
+    this.wake(this.ctx?.currentTime ?? 0);
+  }
+
   private wake(t: number, resumeOf?: string): void {
+    if (this.isConversationMode && this.machine.mode === 'armed' && this.machine.call) {
+      this.bargeIn(t);
+      return;
+    }
     if (this.machine.mode !== 'armed' || this.machine.call || !this.capture || !this.audioEl) return;
     if (this.machine.socket !== 'open') {
       this.store.update({ notice: { code: 'offline' } });
@@ -441,20 +512,26 @@ export class VoiceController {
     this.dispatch({ type: 'wake' });
     this.wakeT = resumeOf ? null : t;
     this.everReady = false;
-    this.fx.wakeWord.setMode('vad');
+    // Conversation mode keeps the wake word live during the call: "Hey Jarvis" barges in.
+    if (!this.isConversationMode) this.fx.wakeWord.setMode('vad');
     this.store.update({ overlayOpen: true, notice: null });
     this.fx.vibrate(40);
     const token = this.armToken;
     const capture = this.capture;
-    const focus = this.store.getSnapshot().focusConversationId;
-    void this.fx
-      .startCall({
+    const { focusConversationId: focus, voiceMode } = this.store.getSnapshot();
+    const audioElement = this.audioEl;
+    const start = () =>
+      this.fx.startCall({
         outgoingTrack: capture.outgoingTrack,
-        audioElement: this.audioEl,
+        audioElement,
         focusConversationId: focus ?? undefined,
         resumeOf,
+        ...(voiceMode === 'conversation' ? { mode: voiceMode } : {}),
         onNetworkLost: () => this.onNetworkLost(),
-      })
+      });
+    // A mode switch ended the previous call a moment ago: one live call per user, so wait for it.
+    const pendingEnd = this.pendingEnd;
+    void (pendingEnd ? pendingEnd.then(start, start) : start())
       .then((call) => {
         if (token !== this.armToken || !this.machine.call || this.machine.call.phase !== 'connecting') {
           call.close();
@@ -474,7 +551,8 @@ export class VoiceController {
         }, READY_TIMEOUT_MS);
         this.unregisterMedia = this.fx.registerMediaSession({
           hangup: () => this.hangUp(),
-          toggleMic: () => this.toggleMute(),
+          // Conversation mode: the headset button talks / barges in.
+          toggleMic: () => (this.isConversationMode ? this.talk() : this.toggleMute()),
           stop: () => this.disarm('media'),
         });
       })
@@ -508,9 +586,18 @@ export class VoiceController {
     this.unregisterMedia?.();
     this.unregisterMedia = null;
     this.capture?.mute();
+    this.clearTimer('windowTimer');
     if (call) {
       call.close();
-      if (notifyBackend) void this.fx.api.endSession(call.voiceSessionId, reason).catch((): undefined => undefined);
+      if (notifyBackend) {
+        const ended: Promise<unknown> = this.fx.api
+          .endSession(call.voiceSessionId, reason)
+          .catch((): undefined => undefined);
+        this.pendingEnd = ended;
+        void ended.then(() => {
+          if (this.pendingEnd === ended) this.pendingEnd = null;
+        });
+      }
     }
     this.socket?.bindSession(null);
     if (this.machine.call) this.dispatch({ type: 'callEnded', resumeOf });
@@ -552,6 +639,7 @@ export class VoiceController {
     this.dispatch({ type: 'socketOpen' });
     // The dead-man timer keeps running: only `voice.ready` proves the call is back.
     this.scheduleResume(0);
+    this.maybeAutoTalk();
   }
 
   private onSocketClose(): void {
@@ -654,6 +742,11 @@ export class VoiceController {
    * rotation re-dials at once with `resume_of`; the other reasons stay armed with a notice.
    */
   private onCallEnded(voiceSessionId: string | null, reason: string): void {
+    // Conversation mode: 3 min without speech and without a running turn ends voice mode.
+    if (this.isConversationMode && reason === 'idle') {
+      this.disarm('idle');
+      return;
+    }
     const policy = callEndPolicy(reason);
     if (policy.disarm) {
       this.disarm(reason === 'sleep' ? 'sleep' : 'error');
@@ -806,14 +899,18 @@ export class VoiceController {
       }
       this.playingKind = kind;
       if (kind === 'readback') this.store.update({ readbackPlaying: true });
+      // Conversation mode with full echo cancellation: the wake word stays live during the
+      // agent's clip so "Hey Jarvis" can barge in (S0 run 4 self-wake test passed with it).
+      const wakeLive = this.isConversationMode && (this.capture?.trackSettings.echoCancellation as unknown) === 'all';
+      if (this.isConversationMode && kind === 'followUp') this.store.update({ agentSpeaking: true });
       const outcome = await clips.play(data, {
         // The wake word ignores our own voice exactly while the clip is heard.
         onStart: (_tStart, tEnd) => {
           started = true;
-          this.fx.wakeWord.suppress(tEnd + 0.3, true);
+          if (!wakeLive) this.fx.wakeWord.suppress(tEnd + 0.3, true);
         },
       });
-      if (!outcome.completed && started) this.fx.wakeWord.suppress(ctx.currentTime + 0.3, true);
+      if (!outcome.completed && started && !wakeLive) this.fx.wakeWord.suppress(ctx.currentTime + 0.3, true);
       if (this.clips !== clips) return;
       if (outcome.completed) {
         this.socket?.send({ name: 'voice.playbackFinished', readbackId: clipId, tEnd: outcome.tEnd });
@@ -828,6 +925,11 @@ export class VoiceController {
       }
       if (this.playingKind === kind) this.playingKind = null;
       if (kind === 'followUp') this.followUpBusy = false;
+      if (kind === 'followUp' && this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
+      if (kind === 'followUp' && !requeued && clipId === this.windowAfterClipId) {
+        this.windowAfterClipId = null;
+        this.openWindow(ASK_WINDOW_MS);
+      }
       if (kind === 'followUp' && !requeued && clipId === this.askClipId) {
         this.askClipId = null;
         this.startAskCall();
@@ -842,6 +944,8 @@ export class VoiceController {
    */
   private followUpBlocked(draftLine = false): boolean {
     if (this.readbackPending > 0 || this.playingKind === 'readback') return true;
+    // Conversation mode: the agent never talks over you while the mic is open.
+    if (this.isConversationMode && this.machine.call?.phase === 'ready' && !this.machine.held) return true;
     if (draftLine) return false;
     const draft = this.store.getSnapshot().draft;
     return Boolean(draft && (CONFIRMABLE_DRAFT_STATES.has(draft.state) || draft.state === 'ambiguous'));
@@ -877,6 +981,12 @@ export class VoiceController {
   }
 
   private onFollowUp(frame: ServerFrame & { name: 'voice.followUp' }): void {
+    if (
+      this.isConversationMode &&
+      frame.conversationId === this.store.getSnapshot().focusConversationId &&
+      this.onConversationFollowUp(frame)
+    )
+      return;
     const draftLine = DRAFT_LINE_STATUSES.has(frame.status);
     if (frame.status === 'confirm_rejected') {
       // About the card on screen, not a conversation event: shown on the card, not in the list.
@@ -909,6 +1019,102 @@ export class VoiceController {
   }
 
   /**
+   * Conversation mode, a line about the bound conversation. Returns false when the generic
+   * follow-up path should handle it (an agent question without a live call opens an answer call).
+   */
+  private onConversationFollowUp(frame: ServerFrame & { name: 'voice.followUp' }): boolean {
+    const { status, line, clipId } = frame;
+    const call = this.machine.call;
+    if (HOLD_STATUSES.has(status)) {
+      this.store.update({ lastOutcome: { status, line } });
+      if (status === 'silenced' || status === 'stopped') this.stopAgentSpeech();
+      this.holdMic();
+      if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: null, draftLine: true });
+      return true;
+    }
+    if (TURN_END_STATUSES.has(status)) {
+      if (status !== 'finished') this.store.update({ lastOutcome: { status, line } });
+      if (status === 'needs_approval') this.fx.vibrate([60, 60, 60]);
+      const tone: EarconName = status === 'finished' ? 'yourTurn' : 'needsYou';
+      if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone, draftLine: false });
+      else this.earcon(tone);
+      this.openWindow(this.followUpWindowMs());
+      return true;
+    }
+    if (status === 'says') {
+      if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: null, draftLine: false });
+      return true;
+    }
+    if (status === 'asks' && call) {
+      if (clipId && this.enqueueClip({ clipId, urlOrId: clipId, tone: 'agent', draftLine: false })) {
+        this.windowAfterClipId = clipId;
+      } else this.openWindow(ASK_WINDOW_MS);
+      return true;
+    }
+    return false;
+  }
+
+  private followUpWindowMs(): number {
+    return this.store.getSnapshot().settings?.car_mode ? CAR_FOLLOW_UP_WINDOW_MS : FOLLOW_UP_WINDOW_MS;
+  }
+
+  /** Conversation mode: quiet the mic (the utterance was posted) and let the agent speak. */
+  private holdMic(): void {
+    this.clearTimer('windowTimer');
+    if (this.machine.call) this.dispatch({ type: 'hold', held: true });
+    this.flushFollowUps();
+  }
+
+  /**
+   * Conversation mode: open the mic for `ms` (follow-up window, answer to a question). Speech
+   * inside the window keeps it open until the transcript is posted (`sent` holds it again).
+   */
+  private openWindow(ms: number): void {
+    if (this.machine.call?.phase !== 'ready') return;
+    this.clearTimer('windowTimer');
+    this.windowMs = ms;
+    this.lastSpeechAt = null;
+    this.dispatch({ type: 'hold', held: false });
+    this.armWindowTimer(ms);
+  }
+
+  private armWindowTimer(ms: number): void {
+    this.windowTimer = this.fx.timers.setTimeout(() => {
+      this.windowTimer = null;
+      const spokeAt = this.lastSpeechAt;
+      if (spokeAt !== null && this.fx.timers.now() - spokeAt < this.windowMs) {
+        this.armWindowTimer(this.windowMs);
+        return;
+      }
+      this.holdMic();
+    }, ms);
+  }
+
+  /** Stop the agent's speech now (barge-in, "stop"): the playing clip and the queued ones. */
+  private stopAgentSpeech(): void {
+    this.followUpQueue = [];
+    this.windowAfterClipId = null;
+    if (this.playingKind === 'followUp') this.clips?.stop();
+    if (this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
+  }
+
+  /**
+   * Conversation mode, wake word or tap while the call is open: the agent's speech stops at
+   * once and the mic opens, replaying from the wake moment (no lost first words). What you say
+   * is added to the running turn.
+   */
+  private bargeIn(t: number): void {
+    this.stopAgentSpeech();
+    if (this.machine.call?.phase !== 'ready' || !this.machine.held) return;
+    this.clearTimer('windowTimer');
+    this.pendingPreroll = t;
+    this.dispatch({ type: 'hold', held: false });
+    this.pendingPreroll = null;
+    this.earcon('listening');
+    this.fx.vibrate(40);
+  }
+
+  /**
    * `voice.wake`: a follow-up, `say` or `ask` arrived while no call is live. Play its clip
    * without opening a provider call (only an `ask` opens one, after the question was heard).
    */
@@ -919,7 +1125,7 @@ export class VoiceController {
     const queued = this.enqueueClip({
       clipId: itemId,
       urlOrId: itemId,
-      tone: reason === 'follow_up' ? null : 'agent',
+      tone: reason === 'follow_up' || (this.isConversationMode && reason === 'says') ? null : 'agent',
       draftLine: false,
     });
     if (queued && reason === 'asks' && !this.machine.call) this.askClipId = itemId;
@@ -946,6 +1152,11 @@ export class VoiceController {
 
   private onVad(speech: boolean, t: number): void {
     if (!speech || !this.machine.call?.voiceSessionId) return;
+    if (this.isConversationMode) {
+      // No draft to confirm here: speech only keeps the follow-up window open.
+      this.lastSpeechAt = this.fx.timers.now();
+      return;
+    }
     this.socket?.send({ name: 'voice.speechOnset', t });
   }
 
@@ -1005,7 +1216,7 @@ export class VoiceController {
   }
 
   private clearTimer(
-    key: 'deadManTimer' | 'readyTimer' | 'draftTimer' | 'resumeTimer' | 'askTimer' | 'askHangupTimer'
+    key: 'deadManTimer' | 'readyTimer' | 'draftTimer' | 'resumeTimer' | 'askTimer' | 'askHangupTimer' | 'windowTimer'
   ): void {
     const handle = this[key];
     if (handle) this.fx.timers.clearTimeout(handle);

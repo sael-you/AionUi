@@ -40,7 +40,7 @@ export type LifecycleHandlers = {
 
 export type StartCallOptions = Pick<
   RealtimeCallOptions,
-  'outgoingTrack' | 'audioElement' | 'focusConversationId' | 'resumeOf' | 'onNetworkLost'
+  'outgoingTrack' | 'audioElement' | 'focusConversationId' | 'resumeOf' | 'mode' | 'onNetworkLost'
 >;
 
 export type Effects = {

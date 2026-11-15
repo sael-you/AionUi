@@ -9,6 +9,8 @@ import {
   AIONUI_SESSION_MESSAGE_MARKER,
   AIONUI_SESSIONS_END_MARKER,
   AIONUI_SESSIONS_MARKER,
+  AIONUI_VOICE_END_MARKER,
+  AIONUI_VOICE_MARKER,
 } from '@/common/config/constants';
 
 export type SessionMentionChip = {
@@ -75,6 +77,15 @@ export function parseSessionsBlock(content: string): { text: string; sessions: S
     });
   }
   return { text: block.text, sessions };
+}
+
+/**
+ * Conversation voice mode (C26): the backend appends an `[[AION_VOICE]]` block (instructions for
+ * the agent) to every spoken message. The bubble shows the transcript and a mic chip instead.
+ */
+export function parseVoiceBlock(content: string): { text: string; spoken: boolean } {
+  const block = extractBlock(content, AIONUI_VOICE_MARKER, AIONUI_VOICE_END_MARKER);
+  return block ? { text: block.text, spoken: true } : { text: content, spoken: false };
 }
 
 /**

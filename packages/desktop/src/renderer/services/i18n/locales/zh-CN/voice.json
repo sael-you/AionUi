@@ -109,7 +109,10 @@
       "saved_not_started": "未启动",
       "expired": "已过期",
       "interrupted": "已中断",
-      "confirm_rejected": "未确认"
+      "confirm_rejected": "未确认",
+      "added": "已加入",
+      "stopped": "已停止",
+      "silenced": "已静音"
     }
   },
   "budget": {
@@ -166,9 +169,35 @@
     "privacy": "通话开始前，音频只保留在此设备上，且从不存储。"
   },
   "slash": {
-    "description": "与 Jarvis 讨论此会话"
+    "description": "语音模式：与此会话的智能体对话"
   },
   "composer": {
     "tooltip": "此会话的语音模式"
+  },
+  "messageChip": "语音",
+  "bar": {
+    "label": "语音模式",
+    "talk": "说话或打断",
+    "done": "完成",
+    "stopTask": "停止任务",
+    "end": "结束语音",
+    "state": {
+      "connecting": "连接中…",
+      "armed": "说“Hey Jarvis”或轻点",
+      "listening": "正在听",
+      "working": "工作中",
+      "speaking": "正在说",
+      "waiting": "轻点说话",
+      "offline": "离线"
+    },
+    "outcome": {
+      "sent": "已发送",
+      "added": "已加入正在运行的任务",
+      "queued": "排队中，等本轮结束",
+      "silenced": "已停止朗读",
+      "stopped": "任务已停止",
+      "failed": "未发送",
+      "needs_approval": "需要你在屏幕上批准"
+    }
   }
 }

@@ -63,6 +63,10 @@ export const AIONUI_FILES_MARKER = '[[AION_FILES]]';
 export const AIONUI_SESSIONS_MARKER = '[[AION_SESSIONS]]';
 export const AIONUI_SESSIONS_END_MARKER = '[[/AION_SESSIONS]]';
 
+/** Conversation voice mode (C26): block the backend appends to a spoken message (hidden, mic chip). */
+export const AIONUI_VOICE_MARKER = '[[AION_VOICE]]';
+export const AIONUI_VOICE_END_MARKER = '[[/AION_VOICE]]';
+
 /** 接收侧：跨会话投递时后端加在消息开头的来源块 */
 export const AIONUI_SESSION_MESSAGE_MARKER = '[[AION_SESSION_MESSAGE]]';
 export const AIONUI_SESSION_MESSAGE_END_MARKER = '[[/AION_SESSION_MESSAGE]]';

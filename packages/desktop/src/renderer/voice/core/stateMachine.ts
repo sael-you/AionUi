@@ -34,6 +34,11 @@ export type VoiceMachineState = {
   socket: SocketPhase;
   call: CallState | null;
   userMuted: boolean;
+  /**
+   * Conversation mode (C26): the mic is held quiet between your utterances while the agent works;
+   * the wake word, a tap or the follow-up window lift it.
+   */
+  held: boolean;
   /** Session to resume after a network handover (§3.6 step 5). */
   resumeOf: string | null;
 };
@@ -56,13 +61,15 @@ export type VoiceEvent =
   | { type: 'resumeConsumed' }
   | { type: 'frozen' }
   | { type: 'resumed' }
-  | { type: 'userMute'; muted: boolean };
+  | { type: 'userMute'; muted: boolean }
+  | { type: 'hold'; held: boolean };
 
 export const INITIAL_VOICE_STATE: VoiceMachineState = {
   mode: 'off',
   socket: 'closed',
   call: null,
   userMuted: false,
+  held: false,
   resumeOf: null,
 };
 
@@ -89,7 +96,7 @@ export function reduceVoice(state: VoiceMachineState, event: VoiceEvent): VoiceM
     case 'wake':
       // Duplicate taps / repeated wake words while a call exists are ignored.
       if (state.mode !== 'armed' || state.call) return state;
-      return { ...state, call: { phase: 'connecting', voiceSessionId: null, serverState: 'listening' } };
+      return { ...state, held: false, call: { phase: 'connecting', voiceSessionId: null, serverState: 'listening' } };
     case 'sessionCreated':
       if (!state.call || state.call.phase !== 'connecting') return state;
       return { ...state, call: { ...state.call, phase: 'awaitingReady', voiceSessionId: event.voiceSessionId } };
@@ -111,7 +118,7 @@ export function reduceVoice(state: VoiceMachineState, event: VoiceEvent): VoiceM
       return { ...state, call: { ...state.call, serverState: event.state } };
     case 'callEnded':
       if (state.mode === 'off') return state;
-      return { ...state, call: null, userMuted: false, resumeOf: event.resumeOf ?? null };
+      return { ...state, call: null, userMuted: false, held: false, resumeOf: event.resumeOf ?? null };
     case 'resumeConsumed':
       return { ...state, resumeOf: null };
     case 'frozen':
@@ -121,6 +128,8 @@ export function reduceVoice(state: VoiceMachineState, event: VoiceEvent): VoiceM
       return state.mode === 'frozen' ? { ...state, mode: 'armed' } : state;
     case 'userMute':
       return state.call ? { ...state, userMuted: event.muted } : state;
+    case 'hold':
+      return state.call && state.held !== event.held ? { ...state, held: event.held } : state;
     default:
       return state;
   }
@@ -128,7 +137,13 @@ export function reduceVoice(state: VoiceMachineState, event: VoiceEvent): VoiceM
 
 /** Outgoing audio may flow only when every gate is open. */
 export function isOutgoingLive(state: VoiceMachineState): boolean {
-  return state.mode === 'armed' && state.socket === 'open' && state.call?.phase === 'ready' && !state.userMuted;
+  return (
+    state.mode === 'armed' &&
+    state.socket === 'open' &&
+    state.call?.phase === 'ready' &&
+    !state.userMuted &&
+    !state.held
+  );
 }
 
 /** True when a transition closes the outgoing gate (the worklet must write silence now). */

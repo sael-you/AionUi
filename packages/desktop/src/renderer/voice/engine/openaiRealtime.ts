@@ -16,7 +16,7 @@
  */
 
 import type { VoiceApi } from '../net/voiceApi';
-import type { CreateVoiceSessionResponse } from '../core/types';
+import type { CreateVoiceSessionResponse, VoiceSessionMode } from '../core/types';
 import type { Timers } from '../net/VoiceSocket';
 import { realTimers } from '../net/VoiceSocket';
 
@@ -37,6 +37,8 @@ export type RealtimeCallOptions = {
   deviceId: string;
   focusConversationId?: string;
   resumeOf?: string;
+  /** `conversation` opens a transcribe-only call bound to `focusConversationId` (C26). */
+  mode?: VoiceSessionMode;
   onNetworkLost: () => void;
   createPeerConnection?: () => RTCPeerConnection;
   timers?: Timers;
@@ -95,6 +97,7 @@ export async function startRealtimeCall(options: RealtimeCallOptions): Promise<R
       device_id: options.deviceId,
       ...(options.focusConversationId ? { focus_conversation_id: options.focusConversationId } : {}),
       ...(options.resumeOf ? { resume_of: options.resumeOf } : {}),
+      ...(options.mode === 'conversation' ? { mode: 'conversation' as const } : {}),
     });
     if (!answer?.voice_session_id || !answer.sdp_answer) throw new Error('malformed session response');
     await pc.setRemoteDescription({ type: 'answer', sdp: answer.sdp_answer });

@@ -109,7 +109,10 @@
       "saved_not_started": "Nicht gestartet",
       "expired": "Abgelaufen",
       "interrupted": "Unterbrochen",
-      "confirm_rejected": "Nicht bestätigt"
+      "confirm_rejected": "Nicht bestätigt",
+      "added": "Hinzugefügt",
+      "stopped": "Gestoppt",
+      "silenced": "Stumm"
     }
   },
   "budget": {
@@ -166,9 +169,35 @@
     "privacy": "Audio bleibt auf diesem Gerät, bis ein Anruf startet, und wird nie gespeichert."
   },
   "slash": {
-    "description": "Mit Jarvis über dieses Gespräch sprechen"
+    "description": "Sprachmodus: mit dem Agenten dieser Unterhaltung sprechen"
   },
   "composer": {
-    "tooltip": "Sprachmodus für dieses Gespräch"
+    "tooltip": "Sprachmodus für diese Unterhaltung"
+  },
+  "messageChip": "Gesprochen",
+  "bar": {
+    "label": "Sprachmodus",
+    "talk": "Sprechen oder unterbrechen",
+    "done": "Fertig",
+    "stopTask": "Aufgabe stoppen",
+    "end": "Sprache beenden",
+    "state": {
+      "connecting": "Verbinden…",
+      "armed": "Sag „Hey Jarvis“ oder tippe",
+      "listening": "Hört zu",
+      "working": "Arbeitet",
+      "speaking": "Spricht",
+      "waiting": "Zum Sprechen tippen",
+      "offline": "Offline"
+    },
+    "outcome": {
+      "sent": "Gesendet",
+      "added": "Zur laufenden Aufgabe hinzugefügt",
+      "queued": "Wartet, bis der Durchlauf endet",
+      "silenced": "Sprachausgabe gestoppt",
+      "stopped": "Aufgabe gestoppt",
+      "failed": "Nicht gesendet",
+      "needs_approval": "Braucht deine Freigabe am Bildschirm"
+    }
   }
 }

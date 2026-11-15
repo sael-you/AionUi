@@ -194,3 +194,57 @@
     transition: none;
   }
 }
+
+/* Conversation voice bar (C26): a slim strip above the composer. */
+.voiceBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-base);
+  border-radius: 12px;
+  background: var(--bg-2);
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.voiceBarState {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  color: var(--text-primary);
+}
+
+.voiceBarStateText {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.voiceBarCaption {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.voiceBarActions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+@media (max-width: 480px) {
+  .voiceBar {
+    flex-wrap: wrap;
+  }
+
+  .voiceBarCaption {
+    order: 3;
+    flex-basis: 100%;
+  }
+}

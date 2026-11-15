@@ -109,7 +109,10 @@
       "saved_not_started": "未開始",
       "expired": "期限切れ",
       "interrupted": "中断",
-      "confirm_rejected": "未確認"
+      "confirm_rejected": "未確認",
+      "added": "追加",
+      "stopped": "停止",
+      "silenced": "消音"
     }
   },
   "budget": {
@@ -166,9 +169,35 @@
     "privacy": "音声は通話が始まるまでこのデバイス上にとどまり、保存されることはありません。"
   },
   "slash": {
-    "description": "この会話について Jarvis と話す"
+    "description": "音声モード：この会話のエージェントと話す"
   },
   "composer": {
     "tooltip": "この会話の音声モード"
+  },
+  "messageChip": "音声",
+  "bar": {
+    "label": "音声モード",
+    "talk": "話す・割り込む",
+    "done": "完了",
+    "stopTask": "タスクを停止",
+    "end": "音声を終了",
+    "state": {
+      "connecting": "接続中…",
+      "armed": "「Hey Jarvis」と言うかタップ",
+      "listening": "聞き取り中",
+      "working": "作業中",
+      "speaking": "話しています",
+      "waiting": "タップして話す",
+      "offline": "オフライン"
+    },
+    "outcome": {
+      "sent": "送信しました",
+      "added": "実行中のタスクに追加しました",
+      "queued": "ターン終了まで待機中",
+      "silenced": "読み上げを停止しました",
+      "stopped": "タスクを停止しました",
+      "failed": "送信できませんでした",
+      "needs_approval": "画面での承認が必要です"
+    }
   }
 }

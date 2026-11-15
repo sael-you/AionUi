@@ -9,13 +9,13 @@ import { parseFileMarker, resolveMessageFilePath } from './fileMarker';
 import ChildResultCard from './childResult/ChildResultCard';
 import { parseChildResultBlocks } from './childResult/childResultBlock';
 import SessionMentionAction from './SessionMentionAction';
-import { parseSessionMessageBlock, parseSessionsBlock } from './sessionMarkers';
+import { parseSessionMessageBlock, parseSessionsBlock, parseVoiceBlock } from './sessionMarkers';
 import { useConversationContextSafe } from '@/renderer/hooks/context/ConversationContext';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useLocalFilePreview } from '@/renderer/pages/conversation/Preview/hooks/useLocalFilePreview';
 import { iconColors } from '@/renderer/styles/colors';
 import { Alert, Message, Tooltip } from '@arco-design/web-react';
-import { Copy } from '@icon-park/react';
+import { Copy, Microphone } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -144,9 +144,14 @@ const MessageText: React.FC<{
   // `[[AION_SESSIONS]]` block is appended to the user's own message, and a
   // delivery is persisted as a user message too. Not parsing them would show
   // raw marker text in a bubble.
-  const { text: textWithoutMentions, sessions: mentionedSessions } = useMemo(
-    () => (isUserMessage ? parseSessionsBlock(text) : { text, sessions: [] }),
+  // Conversation voice mode (C26): a spoken message carries an `[[AION_VOICE]]` block for the agent.
+  const { text: textWithoutVoice, spoken } = useMemo(
+    () => (isUserMessage ? parseVoiceBlock(text) : { text, spoken: false }),
     [isUserMessage, text]
+  );
+  const { text: textWithoutMentions, sessions: mentionedSessions } = useMemo(
+    () => (isUserMessage ? parseSessionsBlock(textWithoutVoice) : { text: textWithoutVoice, sessions: [] }),
+    [isUserMessage, textWithoutVoice]
   );
   const { text: textWithoutDelivery, source: deliverySource } = useMemo(
     () => (isUserMessage ? parseSessionMessageBlock(textWithoutMentions) : { text: textWithoutMentions, source: null }),
@@ -288,6 +293,17 @@ const MessageText: React.FC<{
         {childResults.map((result, index) => (
           <ChildResultCard key={`${result.childId}-${index}`} result={result} />
         ))}
+        {spoken && (
+          <div
+            className={classNames('mb-4px flex items-center gap-4px text-12px text-t-secondary', {
+              'self-end': isUserMessage,
+            })}
+            data-testid='message-voice-chip'
+          >
+            <Microphone theme='outline' size='12' />
+            <span>{t('voice.messageChip')}</span>
+          </div>
+        )}
         {mentionedSessions.length > 0 && (
           <div className={classNames('mb-4px flex flex-wrap gap-4px', { 'self-end': isUserMessage })}>
             {mentionedSessions.map((session) => (

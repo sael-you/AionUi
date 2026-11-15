@@ -66,7 +66,13 @@ import { useAbortUploadsOnConversationChange } from '@renderer/hooks/file/useAbo
 import UploadProgressBar from '@renderer/components/media/UploadProgressBar';
 import { allSupportedExts } from '@renderer/services/FileService';
 import SpeechInputButton from '@/renderer/components/chat/SpeechInputButton';
-import { buildVoiceSlashCommand, runVoiceSlashCommand, useVoiceAvailable, VoiceComposerButton } from '@renderer/voice';
+import {
+  buildVoiceSlashCommand,
+  ConversationVoiceBar,
+  runVoiceSlashCommand,
+  useVoiceAvailable,
+  VoiceComposerButton,
+} from '@renderer/voice';
 import { appendSpeechTranscript } from '@/renderer/hooks/system/useSpeechInput';
 import { createChainedDispatch, useLiveTranscriptInsertion } from '@/renderer/hooks/system/useLiveTranscriptInsertion';
 import { getConversationInputHistory, isCaretOnFirstLine } from '@/renderer/utils/chat/messageHistory';
@@ -1936,6 +1942,13 @@ const SendBox: React.FC<{
         // ThoughtDisplay's tucked band) — z-3 here only needs to beat the
         // panel's own untouched content, not re-fight that outer stacking.
         <div className='absolute end-12px top--28px z-3 pointer-events-auto'>{topRightOverlay}</div>
+      )}
+      {conversationContext?.conversation_id && (
+        <ConversationVoiceBar
+          conversationId={conversationContext.conversation_id}
+          running={Boolean(loading || isLoading)}
+          onStopTask={onStop ? () => void stopHandler() : undefined}
+        />
       )}
       <div
         ref={containerRef}
