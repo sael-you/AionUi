@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { cardProgress, PROGRESS_STALE_MS } from '@/renderer/components/board/utils/cardProgress';
+import { cardProgress, parseUpdatedAt, PROGRESS_STALE_MS } from '@/renderer/components/board/utils/cardProgress';
 
 const NOW = 1_800_000_000_000;
 const card = (metadata: Record<string, unknown> | null | undefined, column_key = 'building') => ({
@@ -58,5 +58,35 @@ describe('cardProgress', () => {
       false
     );
     expect(cardProgress(card({ progress: 30 }, 'building'), NOW)?.stale).toBe(false);
+  });
+});
+
+describe('parseUpdatedAt (Butler writes ISO-8601; epochs in ms or seconds)', () => {
+  const ISO = '2026-11-15T10:00:00.000Z';
+  const MS = Date.parse(ISO);
+
+  it('reads ms, seconds (< 1e12), numeric strings and ISO-8601', () => {
+    expect(parseUpdatedAt(MS)).toBe(MS);
+    expect(parseUpdatedAt(MS / 1000)).toBe(MS);
+    expect(parseUpdatedAt(String(MS))).toBe(MS);
+    expect(parseUpdatedAt(String(MS / 1000))).toBe(MS);
+    expect(parseUpdatedAt(ISO)).toBe(MS);
+    expect(parseUpdatedAt('2026-11-15T11:00:00+01:00')).toBe(MS);
+  });
+
+  it('rejects invalid values', () => {
+    for (const bad of [null, undefined, '', '  ', 'yesterday', 'not-a-date', 0, -5, Number.NaN, Infinity, {}, true]) {
+      expect(parseUpdatedAt(bad), String(bad)).toBeNull();
+    }
+  });
+
+  it('an ISO updated_at drives "updated" and the stale warning', () => {
+    const now = MS + PROGRESS_STALE_MS + 1;
+    const progress = cardProgress(card({ progress: 40, updated_at: ISO }, 'building'), now);
+    expect(progress?.updatedAt).toBe(MS);
+    expect(progress?.stale).toBe(true);
+    expect(cardProgress(card({ progress: 40, updated_at: ISO }, 'building'), MS + 1000)?.stale).toBe(false);
+    // Seconds epoch behaves the same.
+    expect(cardProgress(card({ progress: 40, updated_at: MS / 1000 }, 'building'), now)?.stale).toBe(true);
   });
 });
