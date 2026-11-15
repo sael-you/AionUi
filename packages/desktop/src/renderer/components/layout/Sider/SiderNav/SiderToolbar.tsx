@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from '@arco-design/web-react';
+import { Button, Tooltip } from '@arco-design/web-react';
 import { ListCheckbox, Plus } from '@icon-park/react';
 import classNames from 'classnames';
 import type { SiderTooltipProps } from '@renderer/utils/ui/siderTooltip';
@@ -21,6 +21,7 @@ interface SiderToolbarProps {
   onToggleBatchMode: () => void;
 }
 
+/** Full-width primary "New chat" button, with the batch-select toggle beside it. */
 const SiderToolbar: React.FC<SiderToolbarProps> = ({
   isMobile,
   isBatchMode,
@@ -30,74 +31,51 @@ const SiderToolbar: React.FC<SiderToolbarProps> = ({
   onToggleBatchMode,
 }) => {
   const { t } = useTranslation();
+  const newChatLabel = t('conversation.welcome.newConversation');
+  const batchLabel = isBatchMode ? t('conversation.history.batchModeExit') : t('conversation.history.batchManage');
+  const height = isMobile ? '!h-40px' : '!h-32px';
 
   if (collapsed) {
     return (
-      <div className='shrink-0 flex flex-col items-center gap-2px w-full'>
-        <Tooltip {...siderTooltipProps} content={t('conversation.welcome.newConversation')} position='right'>
-          <div
-            className={classNames(
-              'w-full h-34px flex items-center justify-center cursor-pointer transition-colors text-t-primary rd-8px hover:bg-fill-3 active:bg-fill-4',
-              styles.newChatTrigger
-            )}
+      <div className='shrink-0 flex flex-col items-center w-full'>
+        <Tooltip {...siderTooltipProps} content={newChatLabel} position='right'>
+          <Button
+            type='primary'
+            long
+            aria-label={newChatLabel}
+            data-testid='sider-new-chat'
+            className={classNames(styles.newChatTrigger, height, '!rd-6px !px-0')}
+            icon={<Plus theme='outline' size='16' fill='currentColor' className={styles.newChatIcon} />}
             onClick={onNewChat}
-          >
-            <Plus
-              theme='outline'
-              size='16'
-              fill='currentColor'
-              className={classNames('block leading-none', styles.newChatIcon)}
-              style={{ lineHeight: 0 }}
-            />
-          </div>
+          />
         </Tooltip>
       </div>
     );
   }
 
   return (
-    <div className='shrink-0 flex items-center gap-8px'>
-      <Tooltip {...siderTooltipProps} content={t('conversation.welcome.newConversation')} position='right'>
-        <div
-          className={classNames(
-            styles.newChatTrigger,
-            'h-34px flex-1 flex items-center justify-start gap-8px ps-10px pe-8px rd-0.5rem cursor-pointer group transition-all bg-transparent text-t-primary hover:bg-fill-3 active:bg-fill-4',
-            isMobile && 'sider-action-btn-mobile'
-          )}
-          onClick={onNewChat}
-        >
-          <span className='size-22px rd-6px bg-aou-2 border border-solid border-[var(--color-border-2)] group-hover:bg-fill-3 group-hover:border-transparent flex items-center justify-center shrink-0 transition-colors'>
-            <Plus
-              theme='outline'
-              size='14'
-              fill='currentColor'
-              className={classNames('block leading-none', styles.newChatIcon)}
-              style={{ lineHeight: 0 }}
-            />
-          </span>
-          <span className='collapsed-hidden text-t-primary text-14px font-[500] leading-24px'>
-            {t('conversation.welcome.newConversation')}
-          </span>
-        </div>
-      </Tooltip>
-      <Tooltip
-        {...siderTooltipProps}
-        content={isBatchMode ? t('conversation.history.batchModeExit') : t('conversation.history.batchManage')}
-        position='right'
+    <div className={styles.newChatRow}>
+      <Button
+        type='primary'
+        data-testid='sider-new-chat'
+        className={classNames(styles.newChatTrigger, styles.newChatButton, height, '!rd-6px')}
+        icon={<Plus theme='outline' size='14' fill='currentColor' className={styles.newChatIcon} />}
+        onClick={onNewChat}
       >
-        <div
-          className={classNames(
-            'size-26px rd-6px flex items-center justify-center cursor-pointer shrink-0 transition-colors border border-solid border-transparent text-t-secondary hover:text-t-primary',
-            isMobile && 'sider-action-icon-btn-mobile',
-            {
-              'hover:bg-fill-3': !isBatchMode,
-              'bg-[rgba(var(--primary-6),0.12)] border-[rgba(var(--primary-6),0.24)] !text-primary': isBatchMode,
-            }
-          )}
+        {newChatLabel}
+      </Button>
+      <Tooltip {...siderTooltipProps} content={batchLabel} position='right'>
+        <Button
+          type={isBatchMode ? 'secondary' : 'text'}
+          aria-label={batchLabel}
+          aria-pressed={isBatchMode}
+          data-testid='sider-batch-toggle'
+          className={classNames(isMobile ? '!w-40px !h-40px' : '!w-32px !h-32px', '!rd-6px !px-0 shrink-0', {
+            '!text-primary': isBatchMode,
+          })}
+          icon={<ListCheckbox theme='outline' size='14' fill='currentColor' />}
           onClick={onToggleBatchMode}
-        >
-          <ListCheckbox theme='outline' size='14' className='block leading-none shrink-0' style={{ lineHeight: 0 }} />
-        </div>
+        />
       </Tooltip>
     </div>
   );

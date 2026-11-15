@@ -1,4 +1,113 @@
-/* Sub-conversation rows: thinner, secondary styling with a vertical connector line. */
+/*
+ * Sidebar conversation row. 30px on desktop, 40px touch targets on narrow
+ * screens. Selection is a neutral fill, never the project accent, so the
+ * project colour (group guide line, C8) and the selection never compete.
+ */
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 0;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+}
+
+.row + .row {
+  margin-top: 1px;
+}
+
+.row:focus-visible {
+  box-shadow: inset 0 0 0 2px rgb(var(--primary-6));
+}
+
+.rowHover:hover {
+  background: var(--color-fill-3);
+}
+
+.rowSelected {
+  background: var(--color-fill-3);
+}
+
+.rowSelected .name {
+  color: var(--color-text-1);
+  font-weight: 600;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--color-text-1);
+}
+
+/* Unread: a small primary dot at the end; hidden while the row shows its actions. */
+.unreadDot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-inline: 4px;
+  border-radius: 999px;
+  background: rgb(var(--primary-6));
+}
+
+/* Time ago + menu appear on hover / keyboard focus (desktop). */
+.timeAgo {
+  display: none;
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--color-text-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rowActions {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.row:hover .timeAgo,
+.row:focus-visible .timeAgo,
+.row:hover .rowActions,
+.row:focus-within .rowActions,
+.rowActionsVisible {
+  display: flex;
+}
+
+.row:hover .unreadDot,
+.row:focus-within .unreadDot {
+  display: none;
+}
+
+/* Arco text icon buttons; the doubled selector outranks Arco's sizing. */
+.actionButton.actionButton {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 4px;
+  color: var(--color-text-2);
+}
+
+.actionButton.actionButton:hover {
+  background: var(--color-fill-4) !important;
+  color: var(--color-text-1) !important;
+}
+
+/* Sub-conversation rows: one guide step deeper, same project guide line. */
 .childRow {
   height: 28px;
 }
@@ -9,7 +118,7 @@
   inset-block: 0;
   inset-inline-start: var(--conversation-connector-x, 18px);
   width: 1px;
-  background: var(--color-border-2);
+  background: var(--project-guide, var(--color-border-2));
   pointer-events: none;
 }
 
@@ -37,12 +146,24 @@
   background: var(--color-fill-3);
 }
 
-.rollupAttention {
-  color: rgb(var(--warning-6));
+.rollupDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
 }
 
-.chevron {
+.rollupDotRunning {
+  background: rgb(var(--primary-6));
+}
+
+.rollupDotNeedsYou {
+  background: var(--project-accent-contrast, rgb(var(--warning-6)));
+}
+
+.chevron.chevron {
   display: inline-flex;
+  padding: 0;
   align-items: center;
   justify-content: center;
   width: 16px;
@@ -54,7 +175,53 @@
   cursor: pointer;
 }
 
-.chevron:hover {
-  color: var(--color-text-1);
-  background: var(--color-fill-3);
+.chevron.chevron:hover {
+  color: var(--color-text-1) !important;
+  background: var(--color-fill-3) !important;
+}
+
+/* Chevron: points to the reading direction when collapsed, down when expanded. */
+.chevronIcon {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.chevronIconExpanded {
+  transform: rotate(90deg);
+}
+
+[dir='rtl'] .chevronIcon:not(.chevronIconExpanded) {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chevronIcon {
+    transition: transform 0.15s ease;
+  }
+}
+
+@media (max-width: 768px) {
+  .row {
+    height: 40px;
+  }
+
+  .childRow {
+    height: 40px;
+  }
+
+  .name {
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  .actionButton.actionButton {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .row {
+    transition: background-color 0.12s ease;
+  }
 }

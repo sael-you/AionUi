@@ -15,7 +15,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@/common', async (importOriginal) =>
   (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
-vi.mock('@/renderer/hooks/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'u1', username: 'me' } }) }));
+vi.mock('@/renderer/hooks/context/AuthContext', () => ({
+  useAuth: () => ({ user: { id: 'u1', username: 'me' } }),
+  useOptionalAuth: () => ({ user: { id: 'u1', username: 'me' } }),
+}));
 
 import { BoardKeeperBadge, isBoardKeeperConversation } from '@/renderer/components/board/BoardKeeperBadge';
 import { useOpenBoardKeeper } from '@/renderer/components/board/hooks/useBoardDirectory';
@@ -49,44 +52,26 @@ afterEach(() => {
   removeMatchMedia();
 });
 
-describe('sidebar board button', () => {
-  it('has an accessible name and opens the project board', async () => {
-    renderWithBoard(withBoardRoute(<SidebarBoardButton projectId='p 1' projectName='Alpha' touch={false} />));
+describe('sidebar board button (project row actions slot)', () => {
+  it('has an accessible name, opens the project board and lets the sidebar close itself', async () => {
+    const onNavigate = vi.fn();
+    renderWithBoard(withBoardRoute(<SidebarBoardButton projectId='p 1' projectName='Alpha' onNavigate={onNavigate} />));
     fireEvent.click(screen.getByRole('button', { name: 'Open the board of Alpha' }));
     expect(await screen.findByText('board page')).toBeInTheDocument();
+    expect(onNavigate).toHaveBeenCalledTimes(1);
   });
 
-  it('is a native (Arco) button that stays focusable while hidden on pointer devices', async () => {
-    // The project row header handles Enter/Space itself (React handler, like WorkspaceCollapse).
-    const rowKeyDown = vi.fn();
-    renderWithBoard(
-      withBoardRoute(
-        <div onKeyDown={rowKeyDown}>
-          <SidebarBoardButton projectId='p1' projectName='Alpha' touch={false} />
-        </div>
-      )
-    );
+  it('is an Arco button styled like the row buttons and, like them, outside the Tab order', () => {
+    renderWithBoard(<SidebarBoardButton projectId='p1' projectName='Alpha' className='row-action' />);
     const button = screen.getByRole('button', { name: 'Open the board of Alpha' });
     expect(button.tagName).toBe('BUTTON');
-    expect(button.className).toContain('opacity-0');
-    expect(button.className).toContain('focus:opacity-100');
-    button.focus();
-    expect(document.activeElement).toBe(button);
-    // Enter/Space activation is the browser's own; the row must not see the key.
-    fireEvent.keyDown(button, { key: 'Enter' });
-    expect(rowKeyDown).not.toHaveBeenCalled();
-    fireEvent.click(button);
-    expect(await screen.findByText('board page')).toBeInTheDocument();
-  });
-
-  it('is always visible on touch', () => {
-    renderWithBoard(<SidebarBoardButton projectId='p1' projectName='Alpha' touch />);
-    expect(screen.getByRole('button', { name: 'Open the board of Alpha' }).className).not.toContain('opacity-0');
+    expect(button).toHaveAttribute('tabindex', '-1');
+    expect(button.className).toContain('row-action');
   });
 
   it('is labelled in the user’s language (fa-IR)', () => {
     const i18n = createTestI18n('fa-IR');
-    renderWithBoard(<SidebarBoardButton projectId='p1' projectName='Alpha' touch />, { i18n });
+    renderWithBoard(<SidebarBoardButton projectId='p1' projectName='Alpha' />, { i18n });
     expect(
       screen.getByRole('button', { name: i18n.t('board.sidebar.openBoardOf', { project: 'Alpha' }) })
     ).toBeInTheDocument();

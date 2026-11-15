@@ -61,9 +61,11 @@ const renderRow = (props: Partial<ConversationRowProps>) => render(<Conversation
 const rollup = { total: 3, running: 1, pendingConfirmations: 1, hasError: false };
 
 describe('ConversationRow hierarchy', () => {
-  it('renders no tree semantics or toggle for a plain row', () => {
+  it('renders a plain row as a leaf tree item: no aria-expanded, no toggle', () => {
     const { container } = renderRow({});
-    expect(container.querySelector('[role="treeitem"]')).toBeNull();
+    const row = container.querySelector('[role="treeitem"]');
+    expect(row).not.toBeNull();
+    expect(row?.hasAttribute('aria-expanded')).toBe(false);
     expect(screen.queryByTestId('conversation-tree-toggle-conv-1')).toBeNull();
   });
 
@@ -76,8 +78,10 @@ describe('ConversationRow hierarchy', () => {
     });
     expect(container.querySelector('[role="treeitem"]')?.getAttribute('aria-expanded')).toBe('false');
     expect(screen.getByTestId('conversation-rollup-conv-1').textContent).toContain('2');
+    // Needs-you outranks running in the rollup: one dot, no spinner.
     expect(screen.getByTestId('conversation-rollup-attention-conv-1')).toBeInTheDocument();
-    expect(container.querySelector('.arco-spin')).not.toBeNull();
+    expect(screen.queryByTestId('conversation-rollup-running-conv-1')).toBeNull();
+    expect(container.querySelector('.arco-spin')).toBeNull();
     fireEvent.click(screen.getByTestId('conversation-tree-toggle-conv-1'));
     expect(onToggle).toHaveBeenCalledTimes(1);
     expect(onConversationClick).not.toHaveBeenCalled();
@@ -92,6 +96,6 @@ describe('ConversationRow hierarchy', () => {
     const { container } = renderRow({ depth: 2 });
     const row = container.querySelector('[role="treeitem"]') as HTMLElement;
     expect(row.getAttribute('aria-level')).toBe('3');
-    expect(row.style.paddingInlineStart).toBe('38px');
+    expect(row.style.paddingInlineStart).toBe('40px');
   });
 });

@@ -75,6 +75,20 @@ describe('httpRequest 401 → refresh → replay (WebUI #4124 fix)', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it('with noSessionReplay, throws the 401 without refreshing or replaying', async () => {
+    const fetchMock = vi.fn(async () => errorResponse(401, { code: 'UNAUTHORIZED', error: 'expired' }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(httpRequest('PUT', '/api/settings/client', { k: 1 }, { noSessionReplay: true })).rejects.toMatchObject(
+      {
+        name: 'BackendHttpError',
+        status: 401,
+      }
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls.map((c) => c[0])).toEqual(['/api/settings/client']);
+  });
+
   it('does not refresh when the first response succeeds', async () => {
     const fetchMock = vi.fn(async () => jsonResponse(200, { data: { ok: true } }));
     vi.stubGlobal('fetch', fetchMock);

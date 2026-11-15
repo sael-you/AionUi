@@ -393,7 +393,7 @@ const Layout: React.FC<{
             >
               <ArcoLayout.Header
                 className={classNames(
-                  'flex items-center justify-start pt-8px pb-8px ps-18px pe-16px gap-12px layout-sider-header',
+                  'flex items-center justify-start h-44px py-6px ps-14px pe-8px gap-8px layout-sider-header',
                   isMobile && 'layout-sider-header--mobile',
                   {
                     'cursor-pointer group ': collapsed,
@@ -401,14 +401,14 @@ const Layout: React.FC<{
                 )}
               >
                 <div
-                  className={classNames('bg-black shrink-0 size-32px relative rd-0.5rem', {
-                    '!size-24px': collapsed,
+                  className={classNames('bg-black shrink-0 size-24px relative rd-6px', {
+                    '!size-22px': collapsed,
                   })}
                   onClick={onClick}
                 >
                   <svg
                     className={classNames('w-5.5 h-5.5 absolute inset-0 m-auto', {
-                      'scale-140': !collapsed,
+                      'scale-110': !collapsed,
                     })}
                     viewBox='0 0 80 80'
                     fill='none'
@@ -432,7 +432,7 @@ const Layout: React.FC<{
                 {isSettingsRoute ? (
                   <Tooltip content={t('common.back', { defaultValue: 'Back to Chat' })} position='bottom'>
                     <div
-                      className='text-16px text-t-primary collapsed-hidden font-semibold cursor-pointer'
+                      className='text-14px text-t-primary collapsed-hidden font-semibold cursor-pointer'
                       role='button'
                       tabIndex={0}
                       aria-label={t('common.back', { defaultValue: 'Back to Chat' })}
@@ -448,12 +448,12 @@ const Layout: React.FC<{
                     </div>
                   </Tooltip>
                 ) : (
-                  <div className='text-16px text-t-primary collapsed-hidden font-semibold'>AionUi</div>
+                  <div className='text-14px text-t-primary collapsed-hidden font-semibold'>AionUi</div>
                 )}
                 {isMobile && !collapsed && (
                   <button
                     type='button'
-                    className='app-titlebar__button app-titlebar__button--mobile'
+                    className='app-titlebar__button app-titlebar__button--mobile ms-auto'
                     onClick={() => setCollapsed(true)}
                     title='Collapse sidebar'
                     aria-label='Collapse sidebar'

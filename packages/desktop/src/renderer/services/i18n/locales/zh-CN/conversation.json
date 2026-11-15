@@ -832,5 +832,34 @@
   },
   "projectIdentity": {
     "label": "项目：{{name}}"
+  },
+  "sidebar": {
+    "navLabel": "主导航",
+    "treeLabel": "项目和对话",
+    "conversationActions": "{{name}} 的操作",
+    "status": {
+      "running": "运行中",
+      "needsYou": "需要你处理",
+      "unread": "未读"
+    },
+    "project": {
+      "count": "对话：{{count}}",
+      "needsYou": "等待你处理：{{count}}",
+      "empty": "还没有对话。",
+      "startOne": "开始一个",
+      "showMore": "再显示 {{count}} 个",
+      "showLess": "收起",
+      "add": "添加项目文件夹",
+      "actions": "{{name}} 的项目操作"
+    },
+    "filter": {
+      "placeholder": "筛选项目和对话",
+      "label": "按名称筛选项目和对话",
+      "noResults": "没有匹配的项目或对话"
+    },
+    "footer": {
+      "localUser": "你",
+      "menu": "账户菜单"
+    }
   }
 }

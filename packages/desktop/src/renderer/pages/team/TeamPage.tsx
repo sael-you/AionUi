@@ -1,6 +1,6 @@
 import { Button, Dropdown, Menu, Message, Modal, Spin, Tooltip } from '@arco-design/web-react';
 import { FullScreen, Left, MoreOne, OffScreen, Peoples, Right } from '@icon-park/react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR, { useSWRConfig } from 'swr';
 import { useAuth } from '@renderer/hooks/context/AuthContext';
@@ -642,9 +642,14 @@ const TeamPageContent: React.FC<TeamPageContentProps> = ({
     () => (isTeamWorkspaceTemporary ? null : projectIdentityOf(effectiveWorkspace, teamProjectId)),
     [isTeamWorkspaceTemporary, effectiveWorkspace, teamProjectId]
   );
-  useEffect(() => {
+  // Published before paint (mirrors the conversation route), so the sidebar and
+  // mobile titlebar never show the previous team's project for a frame; cleared
+  // when this team unmounts (team switch / leaving the route) so a next team
+  // still loading shows none rather than this one.
+  useLayoutEffect(() => {
     setCurrentProjectIdentity(teamProjectIdentity);
   }, [teamProjectIdentity]);
+  useLayoutEffect(() => () => setCurrentProjectIdentity(null), []);
 
   // Mirror conversation/index.tsx: close preview only when the isolation scope
   // changes, keep it open when switching between teams that share the same scope.

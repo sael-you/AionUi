@@ -154,6 +154,12 @@ export type HttpRequestOptions = {
   silentStatuses?: number[];
   /** Extra request headers merged on top of the default `Content-Type`. */
   headers?: Record<string, string>;
+  /**
+   * Do not refresh the session and replay the request on a 401; throw the 401
+   * instead. For account-scoped writes: a replay after a refresh could reach a
+   * different account than the one the payload belongs to. Default `false`.
+   */
+  noSessionReplay?: boolean;
 };
 
 const SENSITIVE_LOG_KEY_PATTERN = /api[_-]?key|authorization|auth[_-]?token|access[_-]?token|refresh[_-]?token|secret/i;
@@ -244,7 +250,7 @@ export async function httpRequest<T>(
   // the original request — the WebUI half of the #4124 fix. refreshSession() is a
   // no-op outside browser mode and single-flights concurrent 401s into one POST.
   // The auth endpoints themselves are skipped to avoid recursion.
-  if (response.status === 401 && !isAuthEndpoint(path)) {
+  if (response.status === 401 && !isAuthEndpoint(path) && !options?.noSessionReplay) {
     console.debug(`[httpBridge] ${method} ${path} → 401, attempting session refresh`);
     const refreshed = await refreshSession();
     if (refreshed) {

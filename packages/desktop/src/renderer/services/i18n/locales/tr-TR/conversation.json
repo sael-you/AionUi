@@ -834,5 +834,34 @@
   },
   "projectIdentity": {
     "label": "Proje: {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "Ana gezinme",
+    "treeLabel": "Projeler ve sohbetler",
+    "conversationActions": "{{name}} için işlemler",
+    "status": {
+      "running": "Çalışıyor",
+      "needsYou": "Girdiniz gerekiyor",
+      "unread": "Okunmadı"
+    },
+    "project": {
+      "count": "Sohbetler: {{count}}",
+      "needsYou": "Sizi bekleyen: {{count}}",
+      "empty": "Henüz sohbet yok.",
+      "startOne": "Bir tane başlat",
+      "showMore": "{{count}} tane daha göster",
+      "showLess": "Daha az göster",
+      "add": "Proje klasörü ekle",
+      "actions": "{{name}} için proje işlemleri"
+    },
+    "filter": {
+      "placeholder": "Projeleri ve sohbetleri filtrele",
+      "label": "Projeleri ve sohbetleri ada göre filtrele",
+      "noResults": "Eşleşen proje veya sohbet yok"
+    },
+    "footer": {
+      "localUser": "Siz",
+      "menu": "Hesap menüsü"
+    }
   }
 }

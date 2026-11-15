@@ -14,7 +14,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@/common', async (importOriginal) =>
   (await import('../boardTestUtils')).mockCommonModule(await importOriginal())
 );
-vi.mock('@/renderer/hooks/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'u1', username: 'me' } }) }));
+vi.mock('@/renderer/hooks/context/AuthContext', () => ({
+  useAuth: () => ({ user: { id: 'u1', username: 'me' } }),
+  useOptionalAuth: () => ({ user: { id: 'u1', username: 'me' } }),
+}));
 
 import {
   BOARD_NARROW_QUERY,

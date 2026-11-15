@@ -12,9 +12,8 @@ import { CronJobIndicator } from '@/renderer/pages/cron';
 import { resolveConversationLeadingMark } from '@/renderer/pages/conversation/utils/conversationAssistantIdentity';
 import { cleanupSiderTooltips, getSiderTooltipProps } from '@/renderer/utils/ui/siderTooltip';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
-import { Checkbox, Dropdown, Menu, Spin, Tooltip } from '@arco-design/web-react';
+import { Button, Checkbox, Dropdown, Menu, Tooltip } from '@arco-design/web-react';
 import {
-  Attention,
   EditOne,
   Export,
   FolderClose,
@@ -33,18 +32,20 @@ import ForkBranchIcon from '@renderer/components/base/ForkBranchIcon';
 import classNames from 'classnames';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatRelativeTime } from '@/renderer/utils/chat/relativeTime';
+import { treeArrowIntent } from '@/renderer/hooks/ui/useRovingTree';
+import { getActivityTime } from '@/renderer/utils/chat/timeline';
 
+import ConversationStatusMark, { type ConversationStatus } from './components/ConversationStatusMark';
 import styles from './ConversationRow.module.css';
 import type { ConversationRowProps } from './types';
 import { MAX_CONVERSATION_DEPTH } from './utils/conversationTree';
 import { isConversationPinned } from './utils/groupingHelpers';
-import { BoardKeeperBadge } from '@/renderer/components/board/BoardKeeperBadge';
 
-/** Horizontal indent added per nesting level, in px. */
-const DEPTH_INDENT_PX = 14;
-/** Base start padding of a top-level row (matches `ps-10px` / `ps-34px`). */
-const BASE_PADDING_PX = 10;
-const NESTED_BASE_PADDING_PX = 34;
+/** Horizontal indent added per nesting level, in px (one guide step). */
+export const DEPTH_INDENT_PX = 16;
+/** Base start padding of a row. Project children get their indent from the group container. */
+const BASE_PADDING_PX = 8;
 
 const ConversationRow: React.FC<ConversationRowProps> = (props) => {
   const {
@@ -58,9 +59,9 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     checked,
     selected,
     menuVisible,
-    dimIcon = false,
-    accentColor,
     dragHandle,
+    badge,
+    treeLevel,
     depth = 0,
     treeInfo,
     onCreateChild,
@@ -68,7 +69,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     onMoveUnder,
   } = props;
   const isChild = depth > 0;
-  const rowPaddingStart = (dimIcon ? NESTED_BASE_PADDING_PX : BASE_PADDING_PX) + depth * DEPTH_INDENT_PX;
+  const rowPaddingStart = BASE_PADDING_PX + depth * DEPTH_INDENT_PX;
   // Depth limit (root = 0, max 3): a row already at the limit cannot take children.
   const canCreateChild = Boolean(onCreateChild) && (conversation.depth ?? depth) < MAX_CONVERSATION_DEPTH;
   const canDetach = Boolean(onDetach) && Boolean(conversation.parent_conversation_id);
@@ -89,7 +90,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     isManualUnread,
     getJobStatus,
   } = props;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { info: assistantInfo } = usePresetAssistantInfo(conversation);
   // Pin is root-only: a sub-conversation never renders as pinned.
   const isPinned = !isChild && isConversationPinned(conversation);
@@ -158,10 +159,24 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     onConversationClick(conversation);
   };
 
-  // Keyboard support for the tree: Right expands, Left collapses.
+  // Keyboard support for the row itself (moving between rows is the tree's job,
+  // see useRovingTree): Enter opens, the context-menu key / Shift+F10 opens the
+  // menu, → expands and ← collapses a row with sub-conversations (mirrored in RTL).
   const handleTreeKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!treeInfo || event.target !== event.currentTarget) return;
-    if ((event.key === 'ArrowRight' && !treeInfo.expanded) || (event.key === 'ArrowLeft' && treeInfo.expanded)) {
+    if (event.target !== event.currentTarget) return;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleRowClick();
+      return;
+    }
+    if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) {
+      event.preventDefault();
+      if (!batchMode) onOpenMenu(conversation);
+      return;
+    }
+    if (!treeInfo) return;
+    const intent = treeArrowIntent(event);
+    if ((intent === 'expand' && !treeInfo.expanded) || (intent === 'collapse' && treeInfo.expanded)) {
       event.preventDefault();
       treeInfo.onToggle();
     }
@@ -177,22 +192,20 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     onOpenMenu(conversation);
   };
 
-  // Waiting on the user takes visual precedence over the generating spinner: a
-  // paused turn still streams frames that mark it "generating", so without this
-  // the distinct icon would never win.
-  const showWaitingConfirmation = isWaitingConfirmation && !batchMode;
+  // One status vocabulary for every row: the agent icon stays, a small dot on
+  // it carries the state. Waiting on the user takes precedence over running: a
+  // paused turn still streams frames that mark it "generating".
+  const status: ConversationStatus = batchMode
+    ? 'idle'
+    : isWaitingConfirmation
+      ? 'needsYou'
+      : isGenerating
+        ? 'running'
+        : 'idle';
+  const activityTime = getActivityTime(conversation);
+  const timeAgo = activityTime ? formatRelativeTime(activityTime, i18n?.language ?? 'en') : '';
 
-  const renderCompletionUnreadDot = () => {
-    if (batchMode || !hasUnread || isGenerating || isWaitingConfirmation) {
-      return null;
-    }
-
-    return (
-      <span className='absolute end-8px top-1/2 -translate-y-1/2 flex items-center justify-center group-hover:hidden'>
-        <span className='h-8px w-8px rounded-full bg-#2C7FFF shadow-[0_0_0_2px_rgba(44,127,255,0.18)]' />
-      </span>
-    );
-  };
+  const showUnread = !batchMode && hasUnread && !isGenerating && !isWaitingConfirmation;
 
   return (
     <Tooltip
@@ -204,43 +217,38 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
       <div
         id={'c-' + conversation.id}
         className={classNames(
-          'chat-history__item h-34px rd-8px flex items-center group cursor-pointer relative overflow-hidden shrink-0 conversation-item [&.conversation-item+&.conversation-item]:mt-2px min-w-0 transition-colors',
-          collapsed ? 'justify-center px-0' : 'justify-start gap-8px pe-16px',
-          // dimIcon means this row sits inside a project/cron parent — visually indent the row content while keeping the bg full-width
-          // Sub-conversation rows (depth > 0) are indented per depth via inline padding (see style below)
-          !collapsed && !isChild && (dimIcon ? 'ps-34px' : 'ps-10px'),
+          'chat-history__item group conversation-item',
+          styles.row,
+          collapsed ? 'justify-center px-0' : 'justify-start gap-6px pe-8px',
           isChild && !collapsed && styles.childRow,
           {
-            'hover:bg-fill-3': !batchMode && !selected,
-            '!bg-fill-3': selected,
+            [styles.rowHover]: !batchMode && !selected,
+            [styles.rowSelected]: selected,
             'bg-[rgba(var(--primary-6),0.08)]': batchMode && checked,
           }
         )}
-        tabIndex={treeInfo || isChild ? 0 : undefined}
         style={
-          collapsed || !isChild
+          collapsed
             ? undefined
             : ({
                 paddingInlineStart: rowPaddingStart,
                 '--conversation-connector-x': `${rowPaddingStart - DEPTH_INDENT_PX / 2}px`,
               } as React.CSSProperties)
         }
-        role={treeInfo || isChild ? 'treeitem' : undefined}
-        aria-level={treeInfo || isChild ? depth + 1 : undefined}
+        // Roving tabindex: the sidebar tree navigation gives one row tabIndex 0.
+        tabIndex={-1}
+        role='treeitem'
+        aria-level={(treeLevel ?? 1) + depth}
         aria-expanded={treeInfo ? treeInfo.expanded : undefined}
-        aria-selected={treeInfo || isChild ? selected : undefined}
+        aria-selected={selected}
+        aria-current={selected ? 'page' : undefined}
+        data-tree-item=''
+        data-tree-level={(treeLevel ?? 1) + depth}
+        data-conversation-status={status}
         onKeyDown={handleTreeKeyDown}
         onClick={handleRowClick}
         onContextMenu={handleRowContextMenu}
-        data-project-accent={accentColor}
       >
-        {accentColor && (
-          <span
-            aria-hidden='true'
-            className='absolute inset-y-0 start-0 w-2px pointer-events-none'
-            style={{ background: accentColor }}
-          />
-        )}
         {batchMode && (
           <span
             className='me-8px flex-center'
@@ -253,52 +261,37 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
           </span>
         )}
         {treeInfo && !collapsed && !batchMode && (
-          <span
-            role='button'
-            tabIndex={0}
+          // Pointer shortcut; keyboard users expand / collapse with the arrows on the row.
+          <Button
+            type='text'
+            size='mini'
+            tabIndex={-1}
             className={styles.chevron}
             aria-label={treeInfo.expanded ? t('conversation.hierarchy.collapse') : t('conversation.hierarchy.expand')}
+            aria-expanded={treeInfo.expanded}
             data-testid={`conversation-tree-toggle-${conversation.id}`}
+            icon={
+              <Right
+                theme='outline'
+                size='12'
+                className={classNames(styles.chevronIcon, { [styles.chevronIconExpanded]: treeInfo.expanded })}
+              />
+            }
             onClick={(event) => {
               event.stopPropagation();
               treeInfo.onToggle();
             }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                event.stopPropagation();
-                treeInfo.onToggle();
-              }
-            }}
-          >
-            <Right
-              theme='outline'
-              size='12'
-              className={classNames('block leading-none transition-transform duration-150', {
-                'rotate-90': treeInfo.expanded,
-              })}
-            />
-          </span>
+          />
         )}
-        <span className='size-22px flex items-center justify-center shrink-0 relative'>
-          {showWaitingConfirmation ? (
-            <Attention
-              theme='filled'
-              size='16'
-              className='line-height-0 flex-shrink-0 text-warning animate-wiggle'
-              data-testid={`conversation-waiting-confirmation-${conversation.id}`}
-            />
-          ) : isGenerating && !batchMode ? (
-            <Spin size={16} />
-          ) : (
-            renderLeadingIcon()
-          )}
+        <span className='size-20px flex items-center justify-center shrink-0 relative'>
+          <ConversationStatusMark conversationId={conversation.id} status={status}>
+            {renderLeadingIcon()}
+          </ConversationStatusMark>
           {/* Hover overlay on the leading icon: drag handle for sortable pinned rows, pushpin marker otherwise */}
           {!batchMode &&
             isPinned &&
             !isMobile &&
-            !isGenerating &&
-            !isWaitingConfirmation &&
+            status === 'idle' &&
             (dragHandle ?? (
               <span
                 className='absolute inset-0 flex-center text-t-secondary pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity'
@@ -308,7 +301,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
               </span>
             ))}
         </span>
-        <FlexFullContainer className='h-24px min-w-0 flex-1 collapsed-hidden'>
+        <FlexFullContainer className='h-20px min-w-0 flex-1 collapsed-hidden'>
           <Tooltip
             content={conversation.name}
             disabled={!inlineNameTooltipEnabled}
@@ -318,12 +311,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
             popupHoverStay={false}
             position='top'
           >
-            <div
-              className={classNames(
-                'chat-history__item-name overflow-hidden text-ellipsis flex items-center gap-4px w-full text-14px font-[500] lh-24px whitespace-nowrap min-w-0 text-t-primary',
-                isChild && styles.childName
-              )}
-            >
+            <div className={classNames('chat-history__item-name', styles.name, isChild && styles.childName)}>
               <span className='block overflow-hidden text-ellipsis whitespace-nowrap min-w-0'>{conversation.name}</span>
               {treeInfo && !treeInfo.expanded && (
                 <span
@@ -331,19 +319,22 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
                   data-testid={`conversation-rollup-${conversation.id}`}
                   aria-label={t('conversation.hierarchy.rollupLabel', { count: treeInfo.rollup.total })}
                 >
-                  {treeInfo.rollup.running > 0 && <Spin size={12} />}
-                  <span className={styles.rollupCount}>{treeInfo.childCount}</span>
-                  {treeInfo.rollup.pendingConfirmations > 0 && (
-                    <Attention
-                      theme='filled'
-                      size='12'
-                      className={classNames('line-height-0', styles.rollupAttention)}
+                  {treeInfo.rollup.pendingConfirmations > 0 ? (
+                    <span
+                      className={classNames(styles.rollupDot, styles.rollupDotNeedsYou)}
                       data-testid={`conversation-rollup-attention-${conversation.id}`}
                     />
+                  ) : (
+                    treeInfo.rollup.running > 0 && (
+                      <span
+                        className={classNames(styles.rollupDot, styles.rollupDotRunning)}
+                        data-testid={`conversation-rollup-running-${conversation.id}`}
+                      />
+                    )
                   )}
+                  <span className={styles.rollupCount}>{treeInfo.childCount}</span>
                 </span>
               )}
-              <BoardKeeperBadge conversation={conversation} compact />
               {forkLineage && (
                 <Tooltip
                   content={
@@ -358,20 +349,34 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
                   </span>
                 </Tooltip>
               )}
+              {/* Badge slot (e.g. the Board Keeper badge), after the title. */}
+              {badge && (
+                <span className='flex-shrink-0 line-height-0' data-testid={`conversation-badge-${conversation.id}`}>
+                  {badge}
+                </span>
+              )}
             </div>
           </Tooltip>
         </FlexFullContainer>
 
-        {renderCompletionUnreadDot()}
+        {!collapsed && showUnread && (
+          <span
+            className={styles.unreadDot}
+            data-testid={`conversation-unread-${conversation.id}`}
+            aria-label={t('conversation.sidebar.status.unread')}
+            role='img'
+          />
+        )}
+        {!collapsed && !batchMode && !isMobile && timeAgo && (
+          <span className={styles.timeAgo} data-testid={`conversation-time-${conversation.id}`}>
+            {timeAgo}
+          </span>
+        )}
         {!batchMode && (
           <div
-            className={classNames(
-              'absolute end-8px top-1/2 -translate-y-1/2 items-center justify-end !collapsed-hidden',
-              {
-                flex: isMobile || menuVisible,
-                'hidden group-hover:flex': !isMobile && !menuVisible,
-              }
-            )}
+            className={classNames(styles.rowActions, '!collapsed-hidden', {
+              [styles.rowActionsVisible]: isMobile || menuVisible,
+            })}
             onClick={(event) => {
               event.stopPropagation();
             }}
@@ -493,22 +498,22 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
               getPopupContainer={() => document.body}
               unmountOnExit={false}
             >
-              <span
+              {/* Keyboard: Shift+F10 / the context-menu key on the row opens it. */}
+              <Button
+                type='text'
+                size='mini'
+                tabIndex={-1}
+                aria-label={t('conversation.sidebar.conversationActions', { name: conversation.name })}
+                aria-haspopup='menu'
+                aria-expanded={menuVisible}
                 data-testid={`conversation-row-menu-${conversation.id}`}
-                className={classNames(
-                  'flex-center cursor-pointer transition-colors text-t-secondary hover:text-t-primary size-20px rd-4px sider-action-btn',
-                  {
-                    flex: isMobile || menuVisible,
-                    'hidden group-hover:flex': !isMobile && !menuVisible,
-                  }
-                )}
+                className={classNames('sider-action-btn', styles.actionButton)}
+                icon={<MoreOne theme='outline' size='14' fill='currentColor' />}
                 onClick={(event) => {
                   event.stopPropagation();
                   onOpenMenu(conversation);
                 }}
-              >
-                <MoreOne theme='outline' size='14' fill='currentColor' className='block leading-none' />
-              </span>
+              />
             </Dropdown>
           </div>
         )}

@@ -107,6 +107,14 @@ describe('conversation route — project identity on switch', () => {
     expect(getCurrentProjectIdentity()).toEqual({ projectId: 'p3', workspace: '/root/projects/gamma' });
   });
 
+  it('clears the identity when leaving the conversation route', async () => {
+    const view = render(tree());
+    await act(async () => {});
+    expect(getCurrentProjectIdentity()).not.toBeNull();
+    view.unmount();
+    expect(getCurrentProjectIdentity()).toBeNull();
+  });
+
   it('ignores a response that is not for the routed conversation', async () => {
     const view = render(tree());
     await act(async () => {});

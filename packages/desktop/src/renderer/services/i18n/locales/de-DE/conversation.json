@@ -833,5 +833,34 @@
   },
   "projectIdentity": {
     "label": "Projekt: {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "Hauptnavigation",
+    "treeLabel": "Projekte und Unterhaltungen",
+    "conversationActions": "Aktionen für {{name}}",
+    "status": {
+      "running": "Läuft",
+      "needsYou": "Braucht deine Eingabe",
+      "unread": "Ungelesen"
+    },
+    "project": {
+      "count": "Unterhaltungen: {{count}}",
+      "needsYou": "Wartet auf dich: {{count}}",
+      "empty": "Noch keine Unterhaltungen.",
+      "startOne": "Eine starten",
+      "showMore": "{{count}} weitere anzeigen",
+      "showLess": "Weniger anzeigen",
+      "add": "Projektordner hinzufügen",
+      "actions": "Projektaktionen für {{name}}"
+    },
+    "filter": {
+      "placeholder": "Projekte und Chats filtern",
+      "label": "Projekte und Unterhaltungen nach Namen filtern",
+      "noResults": "Keine passenden Projekte oder Unterhaltungen"
+    },
+    "footer": {
+      "localUser": "Du",
+      "menu": "Kontomenü"
+    }
   }
 }

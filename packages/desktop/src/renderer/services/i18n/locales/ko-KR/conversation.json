@@ -832,5 +832,34 @@
   },
   "projectIdentity": {
     "label": "프로젝트: {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "주 탐색",
+    "treeLabel": "프로젝트 및 대화",
+    "conversationActions": "{{name}} 작업",
+    "status": {
+      "running": "실행 중",
+      "needsYou": "확인이 필요함",
+      "unread": "읽지 않음"
+    },
+    "project": {
+      "count": "대화: {{count}}",
+      "needsYou": "확인 대기: {{count}}",
+      "empty": "아직 대화가 없습니다.",
+      "startOne": "시작하기",
+      "showMore": "{{count}}개 더 보기",
+      "showLess": "간략히 보기",
+      "add": "프로젝트 폴더 추가",
+      "actions": "{{name}} 프로젝트 작업"
+    },
+    "filter": {
+      "placeholder": "프로젝트 및 대화 필터",
+      "label": "이름으로 프로젝트와 대화 필터링",
+      "noResults": "일치하는 프로젝트나 대화가 없습니다"
+    },
+    "footer": {
+      "localUser": "나",
+      "menu": "계정 메뉴"
+    }
   }
 }

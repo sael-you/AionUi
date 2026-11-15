@@ -62,6 +62,9 @@ const ChatConversationIndex: React.FC = () => {
     const snapshot = getSnapshotConversation(id);
     setCurrentProjectIdentity(snapshot ? projectIdentityOfConversation(snapshot) : null);
   }, [id]);
+  // Leaving the route clears the identity in the same commit (the next route
+  // publishes its own), never leaving this project painted for a frame.
+  useLayoutEffect(() => () => setCurrentProjectIdentity(null), []);
 
   // Post-resolve authoritative correction: once `conversation.get` lands, publish
   // its project_id (also the backfill path — a workspace conversation's

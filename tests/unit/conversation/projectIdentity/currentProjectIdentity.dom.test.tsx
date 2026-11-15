@@ -10,15 +10,18 @@ import React from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/common/config/configService', () => ({
-  configService: { whenReady: () => Promise.resolve(), get: () => undefined, set: () => Promise.resolve() },
+vi.mock('@/common/adapter/httpBridge', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/common/adapter/httpBridge')>()),
+  // Project colour preferences: no backend in these tests.
+  httpRequest: vi.fn(async () => undefined),
 }));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-import WorkspaceCollapse from '@/renderer/pages/conversation/components/WorkspaceCollapse';
+import { AuthProvider, useAuth } from '@/renderer/hooks/context/AuthContext';
+import ProjectGroup from '@/renderer/pages/conversation/GroupedHistory/components/ProjectGroup';
 import {
   ProjectLabel,
   projectIdentityOf,
@@ -96,33 +99,45 @@ describe('current project identity store', () => {
   });
 });
 
-const ActiveGroup: React.FC<{ workspace: string; current: string | null }> = ({ workspace, current }) => {
-  const project = useProjectTheme(current);
-  const active = workspace === current;
-  return (
-    <WorkspaceCollapse
-      expanded
-      onToggle={() => {}}
-      header={<span>{workspace}</span>}
-      active={active}
-      activeClassName='active-group'
-      activeStyle={active ? project?.style : undefined}
-    >
-      <div />
-    </WorkspaceCollapse>
-  );
-};
+const ActiveGroup: React.FC<{ workspace: string; current: string | null }> = ({ workspace, current }) => (
+  <ProjectGroup workspace={workspace} name='a' expanded onToggle={() => {}} active={workspace === current} count={0} />
+);
 
 describe('sidebar active project group', () => {
-  it('highlights the group of the current project with its accent and follows a switch', () => {
+  it('highlights the row of the current project with its accent and follows a switch', () => {
     const view = render(<ActiveGroup workspace='/root/projects/a' current='/root/projects/a' />);
-    const header = view.container.querySelector('[data-active-project]') as HTMLElement;
-    expect(header).toHaveClass('active-group');
-    expect(header.style.getPropertyValue('--project-accent')).toMatch(/^#[0-9a-f]{6}$/);
-    expect(header.style.getPropertyValue('--project-tint')).toMatch(/^rgba\(.*, 0\.06\)$/);
+    const row = view.container.querySelector('[data-active-project]') as HTMLElement;
+    expect(row).not.toBeNull();
+    const group = row.closest('[data-project-color]') as HTMLElement;
+    expect(group.style.getPropertyValue('--project-accent')).toMatch(/^#[0-9a-f]{6}$/);
+    expect(group.style.getPropertyValue('--project-tint')).toMatch(/^rgba\(.*, 0\.06\)$/);
 
     view.rerender(<ActiveGroup workspace='/root/projects/a' current='/root/projects/b' />);
     expect(view.container.querySelector('[data-active-project]')).toBeNull();
+  });
+});
+
+describe('sign-out cleanup', () => {
+  it('removes every account copy and unsaved edit of the project colours', () => {
+    localStorage.setItem('aionui_project_colors', '{}');
+    localStorage.setItem('aionui_project_colors:A', '{"/a":"red"}');
+    localStorage.setItem('aionui_project_colors_pending:A', '{"/a":"red"}');
+    localStorage.setItem('unrelated', '1');
+    let clear: (() => void) | undefined;
+    const Grab = () => {
+      clear = useAuth().clearAuthCache;
+      return null;
+    };
+    render(
+      <AuthProvider>
+        <Grab />
+      </AuthProvider>
+    );
+    act(() => clear?.());
+    expect(localStorage.getItem('aionui_project_colors:A')).toBeNull();
+    expect(localStorage.getItem('aionui_project_colors_pending:A')).toBeNull();
+    expect(localStorage.getItem('aionui_project_colors')).toBeNull();
+    expect(localStorage.getItem('unrelated')).toBe('1');
   });
 });
 
