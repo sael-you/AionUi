@@ -100,6 +100,14 @@
   letter-spacing: 0;
 }
 
+.row,
+.collapsedGroup,
+.head,
+.foot,
+.groupHead {
+  box-sizing: border-box;
+}
+
 .row {
   position: relative;
   display: flex;
@@ -164,6 +172,7 @@
   color: var(--color-text-1);
   font-size: 13px;
   font-weight: 500;
+  line-height: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -367,10 +376,16 @@
   .name {
     flex: none;
     font-size: 14px;
+    line-height: 20px;
   }
 
   .sub {
     font-size: 12.5px;
+    line-height: 16px;
+  }
+
+  .duration {
+    line-height: 18px;
   }
 
   .duration {
