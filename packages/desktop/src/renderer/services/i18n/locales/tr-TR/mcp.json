@@ -188,7 +188,8 @@
       "secrets": "Gizli anahtarlar",
       "forcedByTier": "{{tier}} katmanı tarafından ayarlanır.",
       "dormantUntilComplete": "Şunlar doldurulana kadar uykuda kalır: {{keys}}",
-      "startsDormant": "Yeni MCP'ler uykuda başlar. Değerleri ayarlanıp bağlantı testi geçtiğinde etkinleştirin."
+      "startsDormant": "Yeni MCP'ler uykuda başlar. Değerleri ayarlanıp bağlantı testi geçtiğinde etkinleştirin.",
+      "secretsNotSaved": "{{name}} oluşturuldu ancak şu gizli değerler kaydedilmedi: {{keys}}. Bunları örnek panelinde ayarlayın."
     },
     "attach": {
       "title": "{{name}} bağla",

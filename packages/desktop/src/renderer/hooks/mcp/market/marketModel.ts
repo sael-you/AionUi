@@ -12,6 +12,7 @@
  */
 
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
+import { MCP_SECRET_MASK } from '@/common/config/storage';
 import type {
   IMcpServer,
   McpMarketAssignment,
@@ -29,7 +30,8 @@ export const MCP_MARKET_ENVIRONMENTS: readonly string[] = ['production', 'stagin
 /** R1 #14: name length limit. */
 export const MCP_INSTANCE_NAME_MAX = 24;
 /** The response mask of hidden values; never a real value. */
-export const MCP_MASK = '•••';
+/** The mask AionCore shows instead of a secret value (one definition, common/config/storage.ts). */
+export const MCP_MASK = MCP_SECRET_MASK;
 
 const NAME_PATTERN = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const RESERVED_NAMES = new Set(['aionui-team', 'aionui']);
@@ -359,6 +361,21 @@ export const withoutMarketRows = <T extends { id: string; name: string }>(
 // ---------------------------------------------------------------------------
 // Errors: backend refusal → plain words
 // ---------------------------------------------------------------------------
+
+/**
+ * The instance was created but some of its secrets were not saved (create and
+ * set-secret are separate requests). The instance exists: callers treat the
+ * create as done and tell the user which keys to set in the drawer.
+ */
+export class McpMarketSecretsNotSavedError extends Error {
+  constructor(
+    readonly instance: McpMarketInstance,
+    readonly keys: string[]
+  ) {
+    super(`MCP instance ${instance.name} created; secrets not saved: ${keys.join(', ')}`);
+    this.name = 'McpMarketSecretsNotSavedError';
+  }
+}
 
 export type MarketErrorContext = 'generic' | 'name' | 'attach' | 'secret' | 'refresh' | 'activate';
 

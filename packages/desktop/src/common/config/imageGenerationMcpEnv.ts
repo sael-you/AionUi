@@ -5,7 +5,7 @@
  */
 
 import type { ImageGenerationModelSetting } from './clientSettings';
-import type { IProvider } from './storage';
+import { MCP_SECRET_MASK, type IProvider } from './storage';
 
 export const IMAGE_GEN_ENV_KEYS = {
   providerId: 'AIONUI_IMG_PROVIDER_ID',
@@ -162,4 +162,23 @@ export function removeImageGenerationEnvKeys(env: Record<string, string>): Recor
     delete next[key];
   });
   return next;
+}
+
+/**
+ * Whether the stored MCP env already matches `next`. A stored value that came
+ * back masked counts as equal to any non-empty value: the real secret is never
+ * sent to the browser, so comparing it would always differ and re-PUT the
+ * server on every render (train-2 review U1 #1).
+ */
+export function mcpEnvMatchesStored(stored: Record<string, string>, next: Record<string, string>): boolean {
+  const storedKeys = Object.keys(stored);
+  const nextKeys = Object.keys(next);
+  return (
+    storedKeys.length === nextKeys.length &&
+    storedKeys.every(
+      (key) =>
+        Object.prototype.hasOwnProperty.call(next, key) &&
+        (stored[key] === next[key] || (stored[key] === MCP_SECRET_MASK && next[key] !== ''))
+    )
+  );
 }

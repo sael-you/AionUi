@@ -188,7 +188,8 @@
       "secrets": "Geheimnisse",
       "forcedByTier": "Durch die Stufe {{tier}} festgelegt.",
       "dormantUntilComplete": "Bleibt ruhend, bis diese Felder ausgefüllt sind: {{keys}}",
-      "startsDormant": "Neue MCPs starten ruhend. Aktivieren Sie ein MCP, wenn seine Werte festgelegt sind und der Verbindungstest erfolgreich ist."
+      "startsDormant": "Neue MCPs starten ruhend. Aktivieren Sie ein MCP, wenn seine Werte festgelegt sind und der Verbindungstest erfolgreich ist.",
+      "secretsNotSaved": "{{name}} wurde erstellt, aber diese Geheimnisse wurden nicht gespeichert: {{keys}}. Lege sie im Instanzbereich fest."
     },
     "attach": {
       "title": "{{name}} anbinden",

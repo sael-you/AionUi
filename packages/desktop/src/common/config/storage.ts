@@ -661,6 +661,12 @@ export interface IConversationMcpStatus {
 }
 
 /** Stable ID for the built-in image generation MCP server */
+/**
+ * Placeholder AionCore returns instead of a secret MCP value (C15 secret
+ * masking). An update carrying exactly this value keeps the stored secret.
+ */
+export const MCP_SECRET_MASK = '•••';
+
 export const BUILTIN_IMAGE_GEN_ID = 'builtin-image-gen';
 export const BUILTIN_IMAGE_GEN_NAME = 'aionui-image-generation';
 export const BUILTIN_IMAGE_GEN_LEGACY_NAMES = ['AionUi Image Generation', BUILTIN_IMAGE_GEN_ID] as const;

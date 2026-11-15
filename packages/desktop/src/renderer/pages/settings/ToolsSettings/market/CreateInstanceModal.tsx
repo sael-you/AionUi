@@ -12,13 +12,14 @@
  * on the server; it starts dormant.
  */
 
-import { Alert, Checkbox, Input, Modal, Radio, Select } from '@arco-design/web-react';
+import { Alert, Checkbox, Input, Message, Modal, Radio, Select } from '@arco-design/web-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { McpMarketInstance, McpMarketTemplate } from '@/common/config/storage';
 import {
   MCP_INSTANCE_NAME_MAX,
   MCP_MARKET_ENVIRONMENTS,
+  McpMarketSecretsNotSavedError,
   describeMarketError,
   forcedPlainEnv,
   instanceNameProblem,
@@ -150,6 +151,18 @@ const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
         onCreated(created);
       }
     } catch (err) {
+      if (err instanceof McpMarketSecretsNotSavedError) {
+        // The instance exists: close as created (the drawer opens on it) and
+        // say which secrets still have to be set there. A retry here would
+        // only hit "name taken".
+        setSecrets({});
+        Message.warning({
+          content: t('mcp.market.create.secretsNotSaved', { name: err.instance.name, keys: err.keys.join(', ') }),
+          duration: 10000,
+        });
+        onCreated(err.instance);
+        return;
+      }
       setError(describeMarketError(t, err, 'name'));
     } finally {
       setBusy(false);

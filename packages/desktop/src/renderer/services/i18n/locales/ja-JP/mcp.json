@@ -188,7 +188,8 @@
       "secrets": "シークレット",
       "forcedByTier": "{{tier}} ティアにより設定されます。",
       "dormantUntilComplete": "次の項目が入力されるまで休止状態のままです: {{keys}}",
-      "startsDormant": "新しい MCP は休止状態で開始します。値を設定し、接続テストに合格したら有効化してください。"
+      "startsDormant": "新しい MCP は休止状態で開始します。値を設定し、接続テストに合格したら有効化してください。",
+      "secretsNotSaved": "{{name}} は作成されましたが、次のシークレットは保存されませんでした: {{keys}}。インスタンスのパネルで設定してください。"
     },
     "attach": {
       "title": "{{name}} を接続",

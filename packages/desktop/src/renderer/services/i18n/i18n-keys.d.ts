@@ -1732,6 +1732,7 @@ export type I18nKey =
   | 'mcp.market.create.plainEnv'
   | 'mcp.market.create.readTierNote'
   | 'mcp.market.create.secrets'
+  | 'mcp.market.create.secretsNotSaved'
   | 'mcp.market.create.startsDormant'
   | 'mcp.market.create.tier'
   | 'mcp.market.create.title'

@@ -188,7 +188,8 @@
       "secrets": "密钥",
       "forcedByTier": "由{{tier}}级别设定。",
       "dormantUntilComplete": "在填写以下各项之前保持休眠：{{keys}}",
-      "startsDormant": "新 MCP 以休眠状态启动。设置好值并通过连接测试后即可启用。"
+      "startsDormant": "新 MCP 以休眠状态启动。设置好值并通过连接测试后即可启用。",
+      "secretsNotSaved": "{{name}} 已创建，但以下密钥未保存：{{keys}}。请在实例面板中设置。"
     },
     "attach": {
       "title": "挂载 {{name}}",
