@@ -14,6 +14,7 @@ import type { BoardCardSummary, BoardPriority } from '@/common/types/board';
 
 import { assigneeLabel } from '../utils/boardFormat';
 import { cardRef } from '../utils/boardModel';
+import { CardProgressBar } from './CardProgressBar';
 
 const PRIORITY_COLOR: Record<BoardPriority, string> = {
   low: 'gray',
@@ -144,6 +145,7 @@ export const BoardCardTile: React.FC<BoardCardTileProps> = ({
           {hiddenLabels > 0 && <span className='text-11px text-t-secondary'>+{hiddenLabels}</span>}
         </div>
       )}
+      <CardProgressBar card={card} />
       <div className='text-12px text-t-secondary truncate'>{assigneeLabel(card, t)}</div>
     </div>
   );

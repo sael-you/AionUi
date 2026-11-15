@@ -400,10 +400,10 @@
     "separate": "Conversation distincte"
   },
   "keeper": {
-    "talk": "Parler au tableau",
-    "tooltip": "Demandez au Gardien du tableau de créer, mettre à jour, trier ou résumer des cartes",
-    "badge": "Gardien du tableau",
-    "failed": "Impossible d'ouvrir le Gardien du tableau"
+    "talk": "Parler au Majordome",
+    "tooltip": "Demandez au Majordome du tableau de créer, mettre à jour, trier ou résumer des cartes",
+    "badge": "Majordome du tableau",
+    "failed": "Impossible d'ouvrir le Majordome du tableau"
   },
   "sidebar": {
     "openBoardOf": "Ouvrir le tableau de {{project}}"
@@ -460,5 +460,10 @@
     "nameRequired": "Chaque colonne doit avoir un nom",
     "saved": "Colonnes enregistrées",
     "saveFailed": "Impossible d'enregistrer les colonnes"
+  },
+  "progress": {
+    "label": "Progression",
+    "updated": "Mis à jour {{age}}",
+    "stale": "Aucune mise à jour depuis plus de 24 heures"
   }
 }

@@ -395,10 +395,10 @@
     "separate": "Ayrı sohbet"
   },
   "keeper": {
-    "talk": "Panoyla konuş",
-    "tooltip": "Pano Sorumlusu'ndan kart oluşturmasını, güncellemesini, ön değerlendirmesini veya özetlemesini isteyin",
-    "badge": "Pano Sorumlusu",
-    "failed": "Pano Sorumlusu açılamadı"
+    "talk": "Kâhya ile konuş",
+    "tooltip": "Pano Kâhyası'ndan kart oluşturmasını, güncellemesini, ön değerlendirmesini veya özetlemesini isteyin",
+    "badge": "Pano Kâhyası",
+    "failed": "Pano Kâhyası açılamadı"
   },
   "sidebar": {
     "openBoardOf": "{{project}} panosunu aç"
@@ -455,5 +455,10 @@
     "nameRequired": "Her sütunun bir adı olmalı",
     "saved": "Sütunlar kaydedildi",
     "saveFailed": "Sütunlar kaydedilemedi"
+  },
+  "progress": {
+    "label": "İlerleme",
+    "updated": "Güncellendi: {{age}}",
+    "stale": "24 saatten uzun süredir güncelleme yok"
   }
 }

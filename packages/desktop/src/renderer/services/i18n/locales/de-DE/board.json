@@ -395,10 +395,10 @@
     "separate": "Separater Chat"
   },
   "keeper": {
-    "talk": "Mit dem Board sprechen",
-    "tooltip": "Bitte den Board-Verwalter, Karten zu erstellen, zu aktualisieren, zu sichten oder zusammenzufassen",
-    "badge": "Board-Verwalter",
-    "failed": "Board-Verwalter konnte nicht geöffnet werden"
+    "talk": "Mit dem Butler sprechen",
+    "tooltip": "Bitte den Board-Butler, Karten zu erstellen, zu aktualisieren, zu sichten oder zusammenzufassen",
+    "badge": "Board-Butler",
+    "failed": "Board-Butler konnte nicht geöffnet werden"
   },
   "sidebar": {
     "openBoardOf": "Board von {{project}} öffnen"
@@ -455,5 +455,10 @@
     "nameRequired": "Jede Spalte braucht einen Namen",
     "saved": "Spalten gespeichert",
     "saveFailed": "Spalten konnten nicht gespeichert werden"
+  },
+  "progress": {
+    "label": "Fortschritt",
+    "updated": "Aktualisiert {{age}}",
+    "stale": "Seit über 24 Stunden keine Aktualisierung"
   }
 }

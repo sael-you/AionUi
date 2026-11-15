@@ -21,6 +21,7 @@ import { BoardErrorState } from '../BoardStates';
 import type { BoardController } from '../hooks/useBoard';
 import { useCardDetail, type CardDetailController } from '../hooks/useCardDetail';
 import { useBoardNarrow } from '../hooks/useMediaQuery';
+import { CardProgressBar } from '../card/CardProgressBar';
 import { focusCard } from '../card/MoveToMenu';
 import { cardRef } from '../utils/boardModel';
 import { AssignDialog } from './actions/AssignDialog';
@@ -99,6 +100,7 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
             <p className='m-0 text-13px text-t-secondary'>{t('board.drawer.archivedNotice')}</p>
           )}
         </div>
+        <CardProgressBar card={card} variant='drawer' />
         <GatePanel
           card={card}
           column={board.snapshot?.columns.find((column) => column.key === card.column_key)}

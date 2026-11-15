@@ -400,10 +400,10 @@
     "separate": "Conversación aparte"
   },
   "keeper": {
-    "talk": "Hablar con el tablero",
-    "tooltip": "Pide al Guardián del tablero que cree, actualice, clasifique o resuma tarjetas",
-    "badge": "Guardián del tablero",
-    "failed": "No se pudo abrir el Guardián del tablero"
+    "talk": "Hablar con el Mayordomo",
+    "tooltip": "Pide al Mayordomo del tablero que cree, actualice, clasifique o resuma tarjetas",
+    "badge": "Mayordomo del tablero",
+    "failed": "No se pudo abrir el Mayordomo del tablero"
   },
   "sidebar": {
     "openBoardOf": "Abrir el tablero de {{project}}"
@@ -460,5 +460,10 @@
     "nameRequired": "Cada columna necesita un nombre",
     "saved": "Columnas guardadas",
     "saveFailed": "No se pudieron guardar las columnas"
+  },
+  "progress": {
+    "label": "Progreso",
+    "updated": "Actualizado {{age}}",
+    "stale": "Sin actualizaciones desde hace más de 24 horas"
   }
 }
