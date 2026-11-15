@@ -67,7 +67,7 @@ const ChatLayout: React.FC<{
   /**
    * Workspace of the project this conversation / team belongs to (user-chosen
    * workspace). Sets the project colour tokens (`--project-*`) on the layout
-   * root and shows the project chip + accent strip; omit for no project.
+   * root and shows the project chip + header tint; omit for no project.
    */
   projectWorkspace?: string | null;
 }> = (props) => {
@@ -77,7 +77,7 @@ const ChatLayout: React.FC<{
   const isDesktop = !layout?.isMobile;
   const isMobile = Boolean(layout?.isMobile);
   // Project colour identity: tokens on the root reach the header, send box and
-  // the legacy workspace sider; the mobile titlebar shows its own label + strip.
+  // the legacy workspace sider; the mobile titlebar shows its own label + header tint.
   const project = useProjectTheme(props.projectWorkspace);
 
   // Preview panel state
@@ -208,8 +208,11 @@ const ChatLayout: React.FC<{
 
   const desktopHeader = (
     <ArcoLayout.Header
+      data-project-header={project ? 'tint' : undefined}
       className={classNames(
-        'min-h-44px flex items-center justify-between px-16px pt-8px pb-10px gap-16px !bg-1 chat-layout-header chat-layout-header--glass overflow-hidden'
+        'min-h-44px flex items-center justify-between px-16px pt-8px pb-10px gap-16px !bg-1 chat-layout-header chat-layout-header--glass overflow-hidden',
+        // The tint is an image layer: it shows over the header's own (glass) background colour.
+        project && projectSurfaceClasses.headerTint
       )}
     >
       <FlexFullContainer className='h-full min-w-0' containerClassName='flex items-center gap-4px'>
@@ -269,12 +272,7 @@ const ChatLayout: React.FC<{
             flexBasis: 0,
           }}
         >
-          <div
-            data-project-strip={project && isDesktop ? 'top' : undefined}
-            className={classNames('shrink-0 !bg-1', project && isDesktop && projectSurfaceClasses.stripTop)}
-          >
-            {headerBlock}
-          </div>
+          <div className='shrink-0 !bg-1'>{headerBlock}</div>
           <div className='flex flex-1 min-h-0 relative'>
             {/* Chat area - always mounted, never unmounted on preview toggle */}
             <div
@@ -343,10 +341,7 @@ const ChatLayout: React.FC<{
         </div>
         {workspaceEnabled && !layout?.isMobile && (
           <div
-            className={classNames(
-              '!bg-1 relative chat-layout-right-sider layout-sider',
-              project && !rightSiderCollapsed && projectSurfaceClasses.stripTop
-            )}
+            className='!bg-1 relative chat-layout-right-sider layout-sider'
             style={{
               flexGrow: 0,
               flexShrink: 0,

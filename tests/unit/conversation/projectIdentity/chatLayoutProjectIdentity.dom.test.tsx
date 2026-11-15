@@ -8,8 +8,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// ChatLayout carries the project colour tokens on its root (header chip, accent
-// strip, and the send box inside it read them). These tests pin which variables
+// ChatLayout carries the project colour tokens on its root (header chip, header
+// tint, and the send box inside it read them). These tests pin which variables
 // a given project + theme produces and that switching project / theme updates them.
 
 const env = vi.hoisted(() => ({ appearance: 'light' as 'light' | 'dark', isMobile: false }));
@@ -147,14 +147,14 @@ describe('ChatLayout project identity', () => {
     expect(root.style.getPropertyValue('--project-focus-shadow')).toBe(expected.focusShadow);
   });
 
-  it('shows the project chip (name + icon) and the accent strip in the header', () => {
+  it('shows the project chip (name + icon) and tints the header', () => {
     const { container } = renderLayout(`${WS}/`);
     const chip = container.querySelector('[data-project-chip]') as HTMLElement;
     expect(chip).toBeInTheDocument();
     expect(chip).toHaveTextContent('aionui');
     expect(chip.querySelector('svg')).toBeInTheDocument();
     expect(screen.getByText('conversation.projectIdentity.label:aionui')).toHaveClass('sr-only');
-    expect(container.querySelector('[data-project-strip="top"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-project-header="tint"]')).toBeInTheDocument();
   });
 
   it('routes the send box border, focus border and glow through the project variables', () => {
@@ -213,19 +213,19 @@ describe('ChatLayout project identity', () => {
     expect(surface(view.container)!.style.getPropertyValue('--project-accent')).toBe(tokensOf('orange', 'dark').accent);
   });
 
-  it('stays neutral without a project (no variables, chip or strip)', () => {
+  it('stays neutral without a project (no variables, chip or header tint)', () => {
     const { container } = renderLayout(null);
     expect(surface(container)).toBeNull();
     expect(container.querySelector('[data-project-chip]')).toBeNull();
-    expect(container.querySelector('[data-project-strip]')).toBeNull();
+    expect(container.querySelector('[data-project-header]')).toBeNull();
     // The send box falls back to its neutral colours.
     expect(screen.getByTestId('sendbox').dataset.border).toBe('var(--project-border, #c9cacf)');
   });
 
-  it('leaves the strip to the mobile titlebar on mobile', () => {
+  it('leaves the header tint to the mobile titlebar on mobile', () => {
     env.isMobile = true;
     const { container } = renderLayout(WS);
     expect(surface(container)).not.toBeNull();
-    expect(container.querySelector('[data-project-strip]')).toBeNull();
+    expect(container.querySelector('[data-project-header]')).toBeNull();
   });
 });

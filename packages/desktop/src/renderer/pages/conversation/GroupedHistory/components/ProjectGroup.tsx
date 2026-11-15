@@ -88,9 +88,10 @@ export type ProjectGroupProps = {
 
 /**
  * A project in the sidebar: the hierarchy anchor. Chevron (remembered per
- * project), colour dot (C8 accent), name, then a running indicator, a "needs
+ * project), name, then a running indicator, a "needs
  * you" badge and the conversation count, and the actions slot. Its
- * conversations are indented under a thin guide line in the project accent;
+ * conversations are indented under a thin guide line in the project accent and
+ * drawn smaller than the project row (see ConversationRow.module.css);
  * more than eight show the most recent eight and a "Show N more" toggle.
  */
 const ProjectGroup: React.FC<ProjectGroupProps> = ({
@@ -182,7 +183,6 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
                 className={classNames(styles.chevronIcon, { [styles.chevronExpanded]: expanded })}
               />
             </span>
-            <span className={styles.dot} aria-hidden='true' />
             <span className={styles.projectName} title={name}>
               {name}
             </span>
@@ -220,6 +220,7 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
           role={siderCollapsed ? undefined : 'group'}
           className={classNames(siderCollapsed ? 'min-w-0' : styles.children)}
           data-testid={`project-children-${workspace}`}
+          data-project-children={siderCollapsed ? undefined : ''}
         >
           {visibleRows}
           {!siderCollapsed && rows.length === 0 && (

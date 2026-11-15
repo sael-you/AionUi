@@ -169,7 +169,7 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
   const showSearchButton = !layout?.isMobile;
   const searchTooltip = t('conversation.historySearch.tooltip', { defaultValue: 'Search conversations' });
   // Mobile has no conversation header: the titlebar carries the project identity
-  // (label under the title + accent strip). Desktop shows it in the chat header.
+  // (label under the title + header tint). Desktop shows it in the chat header.
   const projectIdentity = useCurrentProjectIdentity();
   const mobileProject = useProjectTheme(layout?.isMobile && workspaceAvailable ? projectIdentity?.workspace : null);
 
@@ -319,7 +319,7 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
       data-project-surface={mobileProject ? 'titlebar' : undefined}
       {...mobileProject?.dataAttributes}
       className={classNames('flex items-center gap-8px app-titlebar bg-2 border-b border-[var(--border-base)]', {
-        [projectSurfaceClasses.stripBottom]: Boolean(mobileProject),
+        [projectSurfaceClasses.headerTint]: Boolean(mobileProject),
         'app-titlebar--mobile': layout?.isMobile,
         'app-titlebar--mobile-conversation': layout?.isMobile && workspaceAvailable,
         'app-titlebar--desktop': isDesktopRuntime,
