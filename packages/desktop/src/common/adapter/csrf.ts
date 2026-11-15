@@ -17,8 +17,12 @@
  * - read the cookie per request: over HTTPS only the `__Host-` name (a plain
  *   name there could be planted by a sibling subdomain); over HTTP the `__Host-`
  *   name first (an AionCore started with `AIONUI_HTTPS=true` behind a plain-HTTP
- *   loopback, e.g. webui staging, sets only that one), then the legacy one;
- *   anything but AionCore's 64 lowercase hex digits counts as none;
+ *   loopback, e.g. webui staging, sets only that one), then the legacy one —
+ *   unless the page learned which name its backend uses: the name a priming
+ *   request set, or the other name after a rejection the re-prime did not fix
+ *   (cookies ignore ports, so a stale `__Host-` cookie from another port on the
+ *   same host must not win forever); anything but AionCore's 64 lowercase hex
+ *   digits counts as none;
  * - when it is missing, wait for ONE `GET /api/auth/user` per page load — the
  *   AuthProvider's own check, registered while it renders
  *   ({@link expectAuthUserRequest}) so child effects that write first wait for
@@ -79,20 +83,58 @@ function readTokenCookie(cookies: string, name: string): string {
   return '';
 }
 
+type CsrfCookieName = (typeof CSRF_COOKIE_NAMES)[number];
+
+/** Over HTTP: the cookie name this page's backend was seen to use, once known. */
+let httpPreferredName: CsrfCookieName | null = null;
+
+/** Over HTTPS only `__Host-`; over HTTP the learned name first, by default `__Host-` first. */
+const cookieNamesFor = (protocol: string): readonly CsrfCookieName[] => {
+  if (protocol === 'https:') return CSRF_COOKIE_NAMES.slice(0, 1);
+  return httpPreferredName === CSRF_COOKIE_NAMES[1] ? [CSRF_COOKIE_NAMES[1], CSRF_COOKIE_NAMES[0]] : CSRF_COOKIE_NAMES;
+};
+
+const documentCookies = (): string => (typeof document === 'undefined' ? '' : document.cookie);
+
 /**
  * The CSRF cookie value, or `''`: over HTTPS only the `__Host-` cookie; over HTTP
- * the `__Host-` cookie first, then the legacy one. Only a well-formed token counts.
+ * the name the page learned its backend uses first (default `__Host-`), then the
+ * other. Only a well-formed token counts.
  */
-export function readCsrfCookie(
-  cookies: string = typeof document === 'undefined' ? '' : document.cookie,
-  protocol: string = currentProtocol()
-): string {
-  const names = protocol === 'https:' ? CSRF_COOKIE_NAMES.slice(0, 1) : CSRF_COOKIE_NAMES;
-  for (const name of names) {
+export function readCsrfCookie(cookies: string = documentCookies(), protocol: string = currentProtocol()): string {
+  for (const name of cookieNamesFor(protocol)) {
     const value = readTokenCookie(cookies, name);
     if (value) return value;
   }
   return '';
+}
+
+/** Both names' current tokens, for {@link learnRefreshedName}. */
+const snapshotCsrfCookies = (): string[] => CSRF_COOKIE_NAMES.map((name) => readTokenCookie(documentCookies(), name));
+
+/**
+ * After a priming request: over HTTP, when exactly one name received a new
+ * token, that is the name the backend reads — prefer it from now on.
+ */
+function learnRefreshedName(before: string[]): void {
+  if (currentProtocol() === 'https:') return;
+  const after = snapshotCsrfCookies();
+  const refreshed = CSRF_COOKIE_NAMES.filter((_, index) => after[index] && after[index] !== before[index]);
+  if (refreshed.length === 1) httpPreferredName = refreshed[0];
+}
+
+/**
+ * Over HTTP, after a rejection the re-prime did not fix (the cookie read is still
+ * the rejected token): switch to the other name when it holds a different token,
+ * so the retry — and every later write — does not hit `CSRF_INVALID` again.
+ */
+function fallBackFromRejectedName(rejected: string): void {
+  if (!rejected || currentProtocol() === 'https:') return;
+  const [first, other] = cookieNamesFor(currentProtocol());
+  const cookies = documentCookies();
+  if (readTokenCookie(cookies, first) !== rejected) return;
+  const alternative = readTokenCookie(cookies, other);
+  if (alternative && alternative !== rejected) httpPreferredName = other;
 }
 
 /** `cancelled`: the auth check was aborted before it answered — it primed nothing. */
@@ -129,7 +171,9 @@ export function noteAuthUserRequest(request: Promise<unknown>): void {
   const slot = expected;
   if (!slot) return;
   slot.latest = request;
+  const before = snapshotCsrfCookies();
   const finish = (outcome: PrimeOutcome): void => {
+    if (outcome === 'done') learnRefreshedName(before);
     if (expected !== slot || slot.latest !== request) return;
     expected = null;
     if (outcome === 'cancelled') primed = null;
@@ -141,8 +185,15 @@ export function noteAuthUserRequest(request: Promise<unknown>): void {
   );
 }
 
-const getAuthUser = (): Promise<PrimeOutcome> =>
-  fetch(AUTH_USER_ENDPOINT, { method: 'GET', credentials: 'include' }).then(settled, settled);
+const getAuthUser = (): Promise<PrimeOutcome> => {
+  const before = snapshotCsrfCookies();
+  return fetch(AUTH_USER_ENDPOINT, { method: 'GET', credentials: 'include' })
+    .then(settled, settled)
+    .then((outcome) => {
+      learnRefreshedName(before);
+      return outcome;
+    });
+};
 
 const withTimeout = (promise: Promise<PrimeOutcome>): Promise<PrimeOutcome> =>
   Promise.race([promise, new Promise<PrimeOutcome>((resolve) => setTimeout(() => resolve('done'), PRIME_TIMEOUT_MS))]);
@@ -187,6 +238,7 @@ export async function resolveCsrfToken(options: { rejected?: string } = {}): Pro
   if (!isCookieSession()) return '';
   if (options.rejected !== undefined) {
     await reprimeAfterRejection(options.rejected);
+    if (readCsrfCookie() === options.rejected) fallBackFromRejectedName(options.rejected);
     return readCsrfCookie();
   }
   const current = readCsrfCookie();
@@ -268,4 +320,5 @@ export function resetCsrfForTest(): void {
   expected = null;
   reprime = null;
   lastReprime = null;
+  httpPreferredName = null;
 }
