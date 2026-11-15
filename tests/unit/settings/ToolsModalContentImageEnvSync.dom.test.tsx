@@ -14,7 +14,8 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { mcpEnvMatchesStored, MCP_SECRET_MASK } from '@/common/config/imageGenerationMcpEnv';
+import { mcpEnvMatchesStored } from '@/common/config/imageGenerationMcpEnv';
+import { MCP_SECRET_MASK } from '@/common/config/storage';
 
 const MASK = '•••';
 const REAL_KEY = 'FAKE-IMAGE-KEY-0001';

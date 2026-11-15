@@ -5,7 +5,7 @@
  */
 
 import type { ImageGenerationModelSetting } from './clientSettings';
-import type { IProvider } from './storage';
+import { MCP_SECRET_MASK, type IProvider } from './storage';
 
 export const IMAGE_GEN_ENV_KEYS = {
   providerId: 'AIONUI_IMG_PROVIDER_ID',
@@ -159,13 +159,6 @@ export function removeImageGenerationEnvKeys(env: Record<string, string>): Recor
   });
   return next;
 }
-
-/**
- * Placeholder AionCore returns instead of a secret MCP value (C15
- * `aionui-mcp` secret masking). An update carrying exactly this value keeps
- * the stored secret.
- */
-export const MCP_SECRET_MASK = '•••';
 
 /**
  * Whether the stored MCP env already matches `next`. A stored value that came

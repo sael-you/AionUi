@@ -12,6 +12,7 @@
  */
 
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
+import { MCP_SECRET_MASK } from '@/common/config/storage';
 import type {
   IMcpServer,
   McpMarketAssignment,
@@ -29,7 +30,8 @@ export const MCP_MARKET_ENVIRONMENTS: readonly string[] = ['production', 'stagin
 /** R1 #14: name length limit. */
 export const MCP_INSTANCE_NAME_MAX = 24;
 /** The response mask of hidden values; never a real value. */
-export const MCP_MASK = '•••';
+/** The mask AionCore shows instead of a secret value (one definition, common/config/storage.ts). */
+export const MCP_MASK = MCP_SECRET_MASK;
 
 const NAME_PATTERN = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const RESERVED_NAMES = new Set(['aionui-team', 'aionui']);
