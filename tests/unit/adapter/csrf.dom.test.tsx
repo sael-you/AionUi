@@ -32,6 +32,7 @@ import {
   resolveCsrfToken,
 } from '@/common/adapter/csrf';
 import { httpRequest } from '@/common/adapter/httpBridge';
+import { mcpService } from '@/common/adapter/ipcBridge';
 import { refreshSession } from '@/common/adapter/sessionRefresh';
 import { configService } from '@/common/config/configService';
 import { createApiClient } from '@/renderer/api/client';
@@ -305,6 +306,29 @@ describe('WebUI identity: every write path sends the header', () => {
     const always = mockFetch(() => csrfRejection(), tok('4'));
     await expect(httpRequest('POST', '/api/y', {})).rejects.toMatchObject({ status: 403, code: 'CSRF_INVALID' });
     expect(writes(always)).toHaveLength(2);
+  });
+
+  it('MCP market writes (C15): header, one CSRF retry, and the secret body never logged', async () => {
+    setCookie(tok('5'));
+    let calls = 0;
+    const fn = mockFetch(() => {
+      calls += 1;
+      return calls === 1 ? csrfRejection() : json(200, { success: true, data: { key: 'API_KEY', set: true } });
+    }, tok('6'));
+    const debug = vi.mocked(console.debug);
+    await expect(
+      mcpService.market.setSecret.invoke({ id: 'i1', key: 'API_KEY', value: 'FAKE-SENTINEL-5678' })
+    ).resolves.toMatchObject({ set: true });
+    expect(writes(fn).map(([, init]) => sentToken(init))).toEqual([tok('5'), tok('6')]);
+    expect(writes(fn).map(([, init]) => init?.body)).toEqual([
+      '{"value":"FAKE-SENTINEL-5678"}',
+      '{"value":"FAKE-SENTINEL-5678"}',
+    ]);
+    expect(JSON.stringify(debug.mock.calls)).not.toContain('FAKE-SENTINEL-5678');
+
+    const created = mockFetch(() => json(200, { success: true, data: { id: 'i2' } }));
+    await mcpService.market.createInstance.invoke({ name: 'n', template_id: 't' } as never);
+    expect(sentToken(writes(created)[0][1])).toBe(tok('6'));
   });
 
   it('sessionRefresh (POST /api/auth/refresh)', async () => {
