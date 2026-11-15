@@ -1,3 +1,4 @@
+import { fetchWithCsrf } from '../adapter/csrf';
 import type { ConfigKey, ConfigKeyMap } from './configKeys';
 
 type Subscriber = (value: unknown) => void;
@@ -24,7 +25,8 @@ async function fetchJson<T>(method: string, path: string, body?: unknown): Promi
   if (body !== undefined) {
     headers['Content-Type'] = 'application/json';
   }
-  const response = await fetch(url, {
+  // Writes carry the CSRF double-submit header in WebUI identity (card C11).
+  const response = await fetchWithCsrf(url, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,

@@ -6,6 +6,8 @@
  *   const data = await api.get<Foo>('/api/foo')
  */
 
+import { fetchWithCsrf } from '@/common/adapter/csrf';
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
@@ -32,7 +34,8 @@ async function request<T>(
   const headers: Record<string, string> = { ...options?.headers };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
 
-  const response = await fetch(url, {
+  // Unsafe methods carry the CSRF double-submit header in WebUI identity (card C11).
+  const response = await fetchWithCsrf(url, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,

@@ -2,11 +2,14 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { PREVIEW_SCOPE_KEY_PREFIX } from '@/renderer/pages/conversation/Preview/context/previewScope';
 import { refreshSession } from '@/common/adapter/sessionRefresh';
 import { STORAGE_KEYS } from '@/common/config/storageKeys';
-// M6: CSRF removed with legacy webserver — stub functions for compatibility, re-implement in M7
-const withCsrfToken = <T extends Record<string, unknown>>(data: T): T => data;
-const hasValidCsrfToken = (): boolean => true;
-const clearCookie = (_name: string, _path?: string): void => {};
-const CSRF_COOKIE_NAME = 'csrf-token';
+import { CSRF_COOKIE_NAMES, fetchWithCsrf, noteAuthUserRequest } from '@/common/adapter/csrf';
+
+/** Expire a cookie readable from JavaScript (the CSRF cookie; `__Host-` names need `Secure`). */
+const clearCookie = (name: string): void => {
+  if (typeof document === 'undefined') return;
+  const secure = name.startsWith('__Host-') ? '; Secure' : '';
+  document.cookie = `${name}=; Path=/; Max-Age=0${secure}`;
+};
 
 type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated';
 
@@ -58,9 +61,8 @@ function clearAuthCache(): void {
   if (typeof window === 'undefined') return;
 
   try {
-    // Clear CSRF cookie
-    clearCookie(CSRF_COOKIE_NAME);
-    clearCookie(CSRF_COOKIE_NAME, '/');
+    // Clear the CSRF cookie (both names); the backend sets a fresh one on the next response.
+    CSRF_COOKIE_NAMES.forEach(clearCookie);
 
     // Clear localStorage auth-related items, plus per-user UI state that must not
     // leak across accounts. Preview scopes are keyed by project id and hold file
@@ -103,11 +105,15 @@ if (typeof window !== 'undefined') {
 
 async function fetchCurrentUser(signal?: AbortSignal): Promise<AuthUser | null> {
   try {
-    let response = await fetch(AUTH_USER_ENDPOINT, {
+    const firstCheck = fetch(AUTH_USER_ENDPOINT, {
       method: 'GET',
       credentials: 'include',
       signal,
     });
+    // This check also gets the CSRF cookie set in WebUI identity, so the first
+    // write of the page waits for it instead of making its own request (C11).
+    noteAuthUserRequest(firstCheck);
+    let response = await firstCheck;
 
     // The access cookie may have expired — attempt one silent session refresh
     // and re-check before concluding the user is unauthenticated. Without this
@@ -189,24 +195,15 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         return { success: true };
       }
 
-      // Check CSRF token availability before login
-      // If token is missing, clear cache and inform user
-      const csrfTokenValid = hasValidCsrfToken();
-      if (!csrfTokenValid) {
-        console.warn('CSRF token missing or invalid, clearing cache');
-        clearAuthCache();
-        // Allow login to proceed anyway - server will set new token
-      }
-
-      // P1 安全修复：登录请求需要 CSRF Token / P1 Security fix: Login needs CSRF token
-      // Backend route is /login; web-host's static-server explicitly proxies it.
+      // /login is exempt from the CSRF check (the backend sets the CSRF cookie with
+      // the session). Backend route is /login; web-host's static-server proxies it.
       const response = await fetch('/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(withCsrfToken({ username, password, remember })),
+        body: JSON.stringify({ username, password, remember }),
       });
 
       const data = (await response.json()) as {
@@ -231,11 +228,6 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
           code = 'tooManyAttempts';
         } else if (response.status >= 500) {
           code = 'serverError';
-        } else if (!csrfTokenValid) {
-          // If we knew CSRF was invalid and login failed, suggest cache clear
-          code = 'csrfError';
-          message = 'Login failed due to cached data. Please clear your browser cache and try again.';
-          shouldClearCache = true;
         }
 
         // Clear cache on CSRF-related errors
@@ -294,14 +286,15 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
 
     try {
-      await fetch('/logout', {
+      // Logout is an unsafe request: it carries the CSRF header in WebUI identity,
+      // otherwise the backend refuses it and the session cookie survives (C11).
+      await fetchWithCsrf('/logout', {
         method: 'POST',
-        // Logout also needs CSRF token / 登出同样需要 CSRF Token
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(withCsrfToken({})),
+        body: JSON.stringify({}),
       });
     } catch (error) {
       console.error('Logout request failed:', error);

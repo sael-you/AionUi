@@ -32,7 +32,7 @@
  * `browser.ts` can share it without bootstrapping each other's WebSocket.
  */
 
-import { resolveCoreCsrfToken } from './httpBridge';
+import { fetchWithCsrf } from './csrf';
 
 /** WebSocket close code the backend uses for auth policy violations (RFC 6455 §7.4.1). */
 export const WS_CLOSE_POLICY_VIOLATION = 1008;
@@ -79,23 +79,15 @@ export function refreshSession(): Promise<boolean> {
 
 async function performRefresh(): Promise<boolean> {
   try {
-    // Attach the CSRF double-submit header when a token is available. The
-    // open-source WebUI has no CSRF layer yet (M6 removed it, M7 restores it), so
-    // resolveCoreCsrfToken() returns '' and no header is sent; the aionpro superset
-    // resolves a real token here and its backend enforces the check. The matching
-    // cookie, when one exists, rides `credentials: 'include'`.
-    const headers: Record<string, string> = {};
-    const csrfToken = resolveCoreCsrfToken();
-    if (csrfToken) {
-      headers['x-csrf-token'] = csrfToken;
-    }
-    const response = await fetch(REFRESH_ENDPOINT, {
+    // The refresh POST carries the CSRF double-submit header in WebUI identity
+    // (fetchWithCsrf reads the cookie, primes it once if missing and retries once
+    // on 403 CSRF_INVALID); in local identity no cookie exists and no header is sent.
+    const response = await fetchWithCsrf(REFRESH_ENDPOINT, {
       method: 'POST',
       // Same-origin request: the browser attaches the HttpOnly refresh cookie
       // (scoped to Path=/api/auth/refresh). No body is needed — the backend reads
       // the cookie and only falls back to a body token for legacy native clients.
       credentials: 'include',
-      headers,
     });
     return response.ok;
   } catch {

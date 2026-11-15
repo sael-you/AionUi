@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { csrfHeaders, isXhrCsrfRejection } from '@/common/adapter/csrf';
 import { getBaseUrl } from '@/common/adapter/httpBridge';
 import type { SpeechToTextResult } from '@/common/types/provider/speech';
 
@@ -91,33 +92,43 @@ export async function transcribeAudioBlob(blob: Blob, languageHint?: string): Pr
     formData.append('languageHint', languageHint);
   }
 
-  return new Promise<SpeechToTextResult>((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${getBaseUrl()}/api/stt`);
-    // No withCredentials: the desktop backend allows origin `*`, which the
-    // browser rejects for credentialed requests; WebUI is same-origin anyway.
+  // One attempt; a 403 CSRF_INVALID re-primes the CSRF cookie and retries once (card C11).
+  const attempt = async (retry: boolean): Promise<SpeechToTextResult> => {
+    const csrf = await csrfHeaders('POST', { force: retry });
+    return new Promise<SpeechToTextResult>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${getBaseUrl()}/api/stt`);
+      Object.entries(csrf).forEach(([name, value]) => xhr.setRequestHeader(name, value));
+      // No withCredentials: the desktop backend allows origin `*`, which the
+      // browser rejects for credentialed requests; WebUI is same-origin anyway.
 
-    xhr.addEventListener('load', () => {
-      if (xhr.status < 200 || xhr.status >= 300) {
-        reject(parseErrorResponse(xhr));
-        return;
-      }
+      xhr.addEventListener('load', () => {
+        if (!retry && isXhrCsrfRejection(xhr)) {
+          attempt(true).then(resolve, reject);
+          return;
+        }
+        if (xhr.status < 200 || xhr.status >= 300) {
+          reject(parseErrorResponse(xhr));
+          return;
+        }
 
-      try {
-        resolve(parseSuccessResponse(xhr));
-      } catch (error) {
-        reject(error instanceof Error ? error : new Error(String(error)));
-      }
+        try {
+          resolve(parseSuccessResponse(xhr));
+        } catch (error) {
+          reject(error instanceof Error ? error : new Error(String(error)));
+        }
+      });
+
+      xhr.addEventListener('error', () => {
+        reject(new Error('STT_NETWORK_ERROR'));
+      });
+
+      xhr.addEventListener('abort', () => {
+        reject(new Error('STT_ABORTED'));
+      });
+
+      xhr.send(formData);
     });
-
-    xhr.addEventListener('error', () => {
-      reject(new Error('STT_NETWORK_ERROR'));
-    });
-
-    xhr.addEventListener('abort', () => {
-      reject(new Error('STT_ABORTED'));
-    });
-
-    xhr.send(formData);
-  });
+  };
+  return attempt(false);
 }

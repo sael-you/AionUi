@@ -5,6 +5,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { noteAuthUserRequest, resetCsrfForTest } from '@/common/adapter/csrf';
 import { httpRequest } from '@/common/adapter/httpBridge';
 
 type WindowWithPort = { __backendPort?: number };
@@ -34,6 +35,10 @@ describe('httpRequest 401 → refresh → replay (WebUI #4124 fix)', () => {
     // Browser mode so getBaseUrl() === '' and refresh is active.
     delete (window as WindowWithPort).__backendPort;
     vi.restoreAllMocks();
+    // The page's own GET /api/auth/user (AuthProvider) already ran: writes need no
+    // CSRF priming request of their own (card C11), so fetch counts stay exact.
+    resetCsrfForTest();
+    noteAuthUserRequest(Promise.resolve());
   });
 
   afterEach(() => {

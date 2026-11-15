@@ -6,6 +6,14 @@
  * so existing renderer code works without changes.
  */
 
+import {
+  CSRF_HEADER_NAME,
+  csrfHeaders,
+  isCookieSession,
+  isCsrfRejection,
+  isUnsafeMethod,
+  readCsrfCookie,
+} from './csrf';
 import { refreshSession, WS_CLOSE_POLICY_VIOLATION } from './sessionRefresh';
 
 // ---------------------------------------------------------------------------
@@ -191,22 +199,13 @@ function isAuthEndpoint(path: string): boolean {
 }
 
 /**
- * Resolve the Core CSRF double-submit token for the current context.
- *
- * The open-source WebUI removed its CSRF layer with the legacy webserver (M6);
- * a double-submit scheme is slated to return in M7. Until then this is a stub
- * that reports "no token available", so the shared session-refresh primitive
- * (`sessionRefresh.ts`) attaches no `x-csrf-token` header and the backend —
- * which enforces no CSRF check here — accepts the request unchanged.
- *
- * It exists as the single seam every state-changing request would call for its
- * token, so restoring CSRF in M7 (and the aionpro superset, whose backend does
- * enforce the double-submit check) only swaps this body — no caller changes.
- *
- * Returns '' — always, for now.
+ * The Core CSRF double-submit token available right now: the CSRF cookie in a
+ * WebUI cookie session (`__Host-` name first), else `''`. Synchronous seam kept
+ * for callers that cannot wait; write paths use `csrfHeaders` / `fetchWithCsrf`
+ * from `./csrf`, which also prime the cookie once per page load (card C11).
  */
 export function resolveCoreCsrfToken(): string {
-  return '';
+  return isCookieSession() ? readCsrfCookie() : '';
 }
 
 function sendHttpRequest(
@@ -239,6 +238,9 @@ export async function httpRequest<T>(
     Object.assign(headers, options.headers);
   }
 
+  // CSRF double-submit for unsafe methods (WebUI identity; nothing in local mode).
+  Object.assign(headers, await csrfHeaders(method));
+
   console.debug(
     `[httpBridge] ${method} ${path}`,
     body !== undefined ? JSON.stringify(redactForLog(body)).slice(0, 500) : '(no body)'
@@ -257,6 +259,14 @@ export async function httpRequest<T>(
       console.debug(`[httpBridge] session refreshed, replaying ${method} ${path}`);
       response = await sendHttpRequest(method, path, headers, body);
     }
+  }
+
+  // 403 CSRF_INVALID: re-prime the CSRF cookie and retry once.
+  if (response.status === 403 && isUnsafeMethod(method) && (await isCsrfRejection(response))) {
+    const { [CSRF_HEADER_NAME]: _stale, ...rest } = headers;
+    const retryHeaders = { ...rest, ...(await csrfHeaders(method, { force: true })) };
+    console.debug(`[httpBridge] ${method} ${path} → 403 CSRF_INVALID, retrying once`);
+    response = await sendHttpRequest(method, path, retryHeaders, body);
   }
 
   if (!response.ok) {

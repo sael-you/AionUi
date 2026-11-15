@@ -5,6 +5,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { noteAuthUserRequest, resetCsrfForTest } from '@/common/adapter/csrf';
 import { refreshSession } from '@/common/adapter/sessionRefresh';
 
 type WindowWithPort = { __backendPort?: number };
@@ -14,6 +15,10 @@ describe('refreshSession (WebUI session refresh)', () => {
     // Browser mode: real DOM (jsdom) with no Electron preload port.
     delete (window as WindowWithPort).__backendPort;
     vi.restoreAllMocks();
+    // The page's own GET /api/auth/user (AuthProvider) already ran: writes need no
+    // CSRF priming request of their own (card C11), so fetch counts stay exact.
+    resetCsrfForTest();
+    noteAuthUserRequest(Promise.resolve());
   });
 
   afterEach(() => {
@@ -35,10 +40,10 @@ describe('refreshSession (WebUI session refresh)', () => {
     expect(init.body).toBeUndefined();
   });
 
-  it('sends no x-csrf-token header (open-source WebUI has no CSRF layer — M6 removed, M7 restores)', async () => {
-    // resolveCoreCsrfToken() is a stub returning '' here, so the shared refresh
-    // primitive attaches no CSRF header. The aionpro superset resolves a real
-    // token and asserts the header is present instead.
+  it('sends no x-csrf-token header when the backend set no CSRF cookie (local identity)', async () => {
+    // Local identity never sets the CSRF cookie, so the refresh POST goes out
+    // without the header exactly as before (card C11; WebUI identity is covered
+    // in csrf.dom.test.tsx).
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -68,7 +73,9 @@ describe('refreshSession (WebUI session refresh)', () => {
 
     const first = refreshSession();
     const second = refreshSession();
-    // Both callers share the same in-flight request.
+    // Both callers share the same in-flight request (issued after the CSRF lookup).
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await Promise.resolve();
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     resolveFetch({ ok: true });

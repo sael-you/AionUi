@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { csrfHeaders, isXhrCsrfRejection } from '@/common/adapter/csrf';
 import { getBaseUrl } from '@/common/adapter/httpBridge';
 import { trackUpload, type UploadSource } from '@/renderer/hooks/file/useUploadState';
 
@@ -45,80 +46,90 @@ export async function uploadFileViaHttp(
     formData.append('conversation_id', conversation_id);
   }
 
-  return new Promise<string>((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${getBaseUrl()}/api/fs/upload`);
+  // One attempt; a 403 CSRF_INVALID re-primes the CSRF cookie and retries once (card C11).
+  const attempt = async (retry: boolean): Promise<string> => {
+    const csrf = await csrfHeaders('POST', { force: retry });
+    return new Promise<string>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${getBaseUrl()}/api/fs/upload`);
+      Object.entries(csrf).forEach(([name, value]) => xhr.setRequestHeader(name, value));
 
-    // Wire AbortSignal → xhr.abort. Closing the XHR tears down the underlying
-    // socket; the backend (axum/multer) treats the truncated multipart body as
-    // a client disconnect and stops reading. No explicit cancel IPC needed.
-    const signal = options?.signal;
-    let onSignalAbort: (() => void) | null = null;
-    if (signal) {
-      if (signal.aborted) {
-        // Caller asked to abort before send — bail out without opening a socket.
-        reject(new Error(UPLOAD_ABORTED_ERROR));
-        return;
+      // Wire AbortSignal → xhr.abort. Closing the XHR tears down the underlying
+      // socket; the backend (axum/multer) treats the truncated multipart body as
+      // a client disconnect and stops reading. No explicit cancel IPC needed.
+      const signal = options?.signal;
+      let onSignalAbort: (() => void) | null = null;
+      if (signal) {
+        if (signal.aborted) {
+          // Caller asked to abort before send — bail out without opening a socket.
+          reject(new Error(UPLOAD_ABORTED_ERROR));
+          return;
+        }
+        onSignalAbort = () => {
+          try {
+            xhr.abort();
+          } catch {
+            /* ignore */
+          }
+        };
+        signal.addEventListener('abort', onSignalAbort);
       }
-      onSignalAbort = () => {
-        try {
-          xhr.abort();
-        } catch {
-          /* ignore */
+
+      const detachSignal = (): void => {
+        if (signal && onSignalAbort) {
+          signal.removeEventListener('abort', onSignalAbort);
+          onSignalAbort = null;
         }
       };
-      signal.addEventListener('abort', onSignalAbort);
-    }
 
-    const detachSignal = (): void => {
-      if (signal && onSignalAbort) {
-        signal.removeEventListener('abort', onSignalAbort);
-        onSignalAbort = null;
+      if (onProgress) {
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            onProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        });
       }
-    };
 
-    if (onProgress) {
-      xhr.upload.addEventListener('progress', (e) => {
-        if (e.lengthComputable) {
-          onProgress(Math.round((e.loaded / e.total) * 100));
+      xhr.addEventListener('load', () => {
+        detachSignal();
+        if (!retry && isXhrCsrfRejection(xhr)) {
+          attempt(true).then(resolve, reject);
+          return;
+        }
+        if (xhr.status === 413) {
+          reject(new Error('FILE_TOO_LARGE'));
+          return;
+        }
+        if (xhr.status < 200 || xhr.status >= 300) {
+          reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
+          return;
+        }
+        try {
+          const result = JSON.parse(xhr.responseText) as { success: boolean; data?: string };
+          if (!result.success || typeof result.data !== 'string' || !result.data) {
+            reject(new Error('Upload failed: server returned unsuccessful response'));
+          } else {
+            resolve(result.data);
+          }
+        } catch {
+          reject(new Error('Upload failed: invalid server response'));
         }
       });
-    }
 
-    xhr.addEventListener('load', () => {
-      detachSignal();
-      if (xhr.status === 413) {
-        reject(new Error('FILE_TOO_LARGE'));
-        return;
-      }
-      if (xhr.status < 200 || xhr.status >= 300) {
-        reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
-        return;
-      }
-      try {
-        const result = JSON.parse(xhr.responseText) as { success: boolean; data?: string };
-        if (!result.success || typeof result.data !== 'string' || !result.data) {
-          reject(new Error('Upload failed: server returned unsuccessful response'));
-        } else {
-          resolve(result.data);
-        }
-      } catch {
-        reject(new Error('Upload failed: invalid server response'));
-      }
+      xhr.addEventListener('error', () => {
+        detachSignal();
+        reject(new Error('Upload failed: network error'));
+      });
+
+      xhr.addEventListener('abort', () => {
+        detachSignal();
+        reject(new Error(UPLOAD_ABORTED_ERROR));
+      });
+
+      xhr.send(formData);
     });
-
-    xhr.addEventListener('error', () => {
-      detachSignal();
-      reject(new Error('Upload failed: network error'));
-    });
-
-    xhr.addEventListener('abort', () => {
-      detachSignal();
-      reject(new Error(UPLOAD_ABORTED_ERROR));
-    });
-
-    xhr.send(formData);
-  });
+  };
+  return attempt(false);
 }
 
 // ===== 文件类型支持配置 =====
