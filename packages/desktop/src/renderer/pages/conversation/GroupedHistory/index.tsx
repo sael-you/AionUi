@@ -391,10 +391,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   // Row props for a node of the hierarchy (depth, rollup, expand toggle, connectors).
   const getTreeRowProps = (
     node: ConversationTreeNode,
-    position: { continues: boolean[]; hasNextSibling: boolean; posinset?: number; setsize?: number } = {
-      continues: [],
-      hasNextSibling: false,
-    }
+    position: { posinset?: number; setsize?: number } = {}
   ): ConversationRowProps => {
     const base = {
       ...getConversationRowProps(node.conversation),
@@ -410,11 +407,6 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
       ...base,
       depth: node.depth,
       descendantCount,
-      guides: {
-        continues: position.continues,
-        hasNextSibling: position.hasNextSibling,
-        showsChildren: node.children.length > 0 && expanded && !collapsed,
-      },
       treeInfo:
         node.children.length > 0
           ? {
@@ -570,14 +562,16 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   const projectStatusOf = (projectConversations: readonly TChatConversation[]) => {
     let running = false;
     let needsYou = 0;
+    let failed = 0;
     for (const root of projectConversations) {
       for (const conversation of [root, ...(descendantsByRoot.get(root.id) ?? [])]) {
         const state = runStateOf(conversation);
         if (state === 'waiting') needsYou += 1;
+        else if (state === 'failed') failed += 1;
         else if (state === 'running') running = true;
       }
     }
-    return { running, needsYou };
+    return { running, needsYou, failed };
   };
 
   /** Lead conversations (e.g. the Board Keeper) first, then newest first as grouped. */
@@ -998,6 +992,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       count={group.source.conversations.length}
                       running={status.running}
                       needsYou={status.needsYou}
+                      failed={status.failed}
                       actions={actions}
                       actionsVisible={isMobile || menuOpen}
                       onStartConversation={startConversation}

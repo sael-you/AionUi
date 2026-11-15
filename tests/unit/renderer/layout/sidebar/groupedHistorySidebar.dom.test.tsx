@@ -144,8 +144,8 @@ describe('sidebar list', () => {
     state.generating.add('a1');
     state.waiting.add('a2');
     renderSidebar();
-    expect(screen.getByTestId('project-running-/p/alpha')).toBeInTheDocument();
-    expect(screen.getByTestId('project-needs-you-/p/alpha').textContent).toBe('1');
+    // C24: one dot, the most urgent state (needs you over running).
+    expect(screen.getByTestId('project-needs-you-/p/alpha').getAttribute('data-count')).toBe('1');
     expect(screen.getByTestId('conversation-running-a1')).toBeInTheDocument();
     expect(screen.getByTestId('conversation-waiting-confirmation-a2')).toBeInTheDocument();
   });
@@ -229,7 +229,7 @@ describe('sidebar list', () => {
     state.waiting.add('a1');
     renderSidebar({ filterQuery: 'release' });
     expect(screen.queryByText('Fix the login bug')).toBeNull();
-    expect(screen.getByTestId('project-needs-you-/p/alpha').textContent).toBe('1');
+    expect(screen.getByTestId('project-needs-you-/p/alpha').getAttribute('data-count')).toBe('1');
   });
 
   it('lists what waits across projects in the Needs-you box, only while something waits (C21)', () => {

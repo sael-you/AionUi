@@ -73,37 +73,27 @@ describe('ConversationRow hierarchy', () => {
     expect(screen.queryByTestId('conversation-rollup-conv-1')).toBeNull();
   });
 
-  it('shows the children chip (worst glyph + descendant count) when collapsed, and toggles without selecting', () => {
+  it('shows a chevron after the title and the worst child state as the dot when collapsed (C24)', () => {
     const onToggle = vi.fn();
     const onConversationClick = vi.fn();
     const { container } = renderRow({
       onConversationClick,
       treeInfo: { expanded: false, childCount: 2, rollup, onToggle },
     });
-    expect(container.querySelector('[role="treeitem"]')?.getAttribute('aria-expanded')).toBe('false');
-    expect(screen.getByTestId('conversation-rollup-conv-1').textContent).toContain('3');
-    // Needs you outranks running: one glyph, the most urgent.
-    expect(screen.getByTestId('conversation-rollup-waiting-conv-1')).toBeInTheDocument();
-    expect(screen.queryByTestId('conversation-rollup-running-conv-1')).toBeNull();
+    const row = container.querySelector('[role="treeitem"]') as HTMLElement;
+    expect(row.getAttribute('aria-expanded')).toBe('false');
+    // Needs you outranks running: one amber dot, announced with the count.
+    expect(row.querySelector('[data-row-dot]')?.getAttribute('data-row-dot')).toBe('waiting');
+    expect(row.getAttribute('aria-label')).toContain('conversation.orchestration.subConversations');
     expect(container.querySelector('.arco-spin')).toBeNull();
     fireEvent.click(screen.getByTestId('conversation-rollup-conv-1'));
     expect(onToggle).toHaveBeenCalledTimes(1);
     expect(onConversationClick).not.toHaveBeenCalled();
   });
 
-  it('drops the worst glyph when expanded (the children are visible)', () => {
-    renderRow({ treeInfo: { expanded: true, childCount: 2, rollup, onToggle: vi.fn() } });
-    expect(screen.queryByTestId('conversation-rollup-waiting-conv-1')).toBeNull();
-  });
-
-  it('draws connectors only for nested rows and parents with shown children', () => {
-    const { container, rerender } = renderRow({
-      depth: 1,
-      guides: { continues: [], hasNextSibling: true, showsChildren: false },
-    });
-    expect(container.querySelectorAll('[aria-hidden="true"] > span').length).toBe(2); // elbow + next sibling
-    rerender(<ConversationRow {...baseProps} />);
-    expect(container.querySelector('[aria-hidden="true"] > span')).toBeNull();
+  it('shows no rolled-up dot when expanded (the children are visible)', () => {
+    const { container } = renderRow({ treeInfo: { expanded: true, childCount: 2, rollup, onToggle: vi.fn() } });
+    expect(container.querySelector('[data-row-dot]')).toBeNull();
   });
 
   it('marks nested rows with aria-level and indents them', () => {

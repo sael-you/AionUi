@@ -6,7 +6,6 @@
 
 import { projectSurfaceClasses, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import { treeArrowIntent } from '@/renderer/hooks/ui/useRovingTree';
-import StatusGlyph from '@/renderer/pages/conversation/components/orchestration/StatusGlyph';
 import { Right } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useState } from 'react';
@@ -66,6 +65,8 @@ export type ProjectGroupProps = {
   running?: boolean;
   /** Conversations waiting for the user (pending approvals). */
   needsYou?: number;
+  /** Conversations whose last turn failed and that were not opened since. */
+  failed?: number;
   /**
    * Actions slot, shown on hover / focus (always on touch): the Board button
    * (Kanban) and the project menu. Mark the menu trigger `data-project-menu-trigger`
@@ -105,6 +106,7 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
   count,
   running = false,
   needsYou = 0,
+  failed = 0,
   actions,
   actionsVisible = false,
   onStartConversation,
@@ -145,10 +147,12 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
     }
   };
 
+  const projectDot = needsYou > 0 ? 'waiting' : failed > 0 ? 'failed' : running ? 'running' : null;
   const statusLabel = [
     t('conversation.sidebar.project.count', { count }),
     running ? t('conversation.sidebar.status.running') : null,
     needsYou > 0 ? t('conversation.sidebar.project.needsYou', { count: needsYou }) : null,
+    failed > 0 ? t('conversation.orchestration.state.failed') : null,
   ]
     .filter(Boolean)
     .join(', ');
@@ -181,6 +185,11 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
             onClick={onToggle}
             onKeyDown={handleKeyDown}
           >
+            {/* C24: a quiet label, the chevron AFTER the name, no count; one dot for
+                the most urgent state inside (needs you › failed › running). */}
+            <span className={styles.projectName} title={name}>
+              {name}
+            </span>
             <span className={styles.chevron} aria-hidden='true'>
               <Right
                 theme='outline'
@@ -188,26 +197,16 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
                 className={classNames(styles.chevronIcon, { [styles.chevronExpanded]: expanded })}
               />
             </span>
-            <span className={styles.projectName} title={name}>
-              {name}
-            </span>
-            {/* C21: needs-you pill, running glyph, and the root count only while collapsed (never "0"). */}
-            {(needsYou > 0 || running || (!expanded && count > 0)) && (
-              <span className={styles.meta} aria-hidden='true'>
-                {needsYou > 0 && (
-                  <span className={styles.needsYouBadge} data-testid={`project-needs-you-${workspace}`}>
-                    {needsYou > 99 ? '99+' : needsYou}
-                  </span>
-                )}
-                {running && (
-                  <StatusGlyph state='running' size={12} label={null} data-testid={`project-running-${workspace}`} />
-                )}
-                {!expanded && count > 0 && (
-                  <span className={styles.count} data-testid={`project-count-${workspace}`}>
-                    {count}
-                  </span>
-                )}
-              </span>
+            <span className={styles.projectSpacer} />
+            {projectDot && (
+              <span
+                className={classNames(styles.projectDot, styles[`projectDot_${projectDot}`])}
+                data-testid={
+                  projectDot === 'waiting' ? `project-needs-you-${workspace}` : `project-${projectDot}-${workspace}`
+                }
+                data-count={projectDot === 'waiting' ? needsYou : undefined}
+                aria-hidden='true'
+              />
             )}
             {actions && (
               <span
@@ -230,7 +229,13 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
           data-testid={`project-children-${workspace}`}
           data-project-children={siderCollapsed ? undefined : ''}
         >
-          {visibleRows}
+          {visibleRows.slice(0, PROJECT_VISIBLE_LIMIT)}
+          {visibleRows.length > PROJECT_VISIBLE_LIMIT && (
+            // Past the 8 most recent: long idle, slightly muted (C24).
+            <div className='min-w-0' data-older-rows=''>
+              {visibleRows.slice(PROJECT_VISIBLE_LIMIT)}
+            </div>
+          )}
           {!siderCollapsed && rows.length === 0 && (
             <ActionTreeItem
               className={styles.emptyHint}
