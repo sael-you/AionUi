@@ -21,6 +21,7 @@ import {
   isValidApprovalRef,
   needsApprovalRef,
   summarizeAttachments,
+  templateRefreshOffer,
   templateUpdateAvailable,
   withoutMarketRows,
   allowedClis,
@@ -191,6 +192,13 @@ describe('rules explained client-side', () => {
     expect(templateUpdateAvailable({ template_version: '1.1.0' }, { version: '1.1.0' })).toBe(false);
     expect(templateUpdateAvailable({}, { version: '1.1.0' })).toBe(false);
     expect(templateUpdateAvailable({ template_version: '1.0.0' }, undefined)).toBe(false);
+  });
+
+  it('offers a check when the instance does not report its template version', () => {
+    expect(templateRefreshOffer({ template_version: '1.0.0' }, { version: '1.1.0' })).toBe('update');
+    expect(templateRefreshOffer({}, { version: '1.1.0' })).toBe('check');
+    expect(templateRefreshOffer({ template_version: '1.1.0' }, { version: '1.1.0' })).toBeNull();
+    expect(templateRefreshOffer({}, {})).toBeNull();
   });
 });
 

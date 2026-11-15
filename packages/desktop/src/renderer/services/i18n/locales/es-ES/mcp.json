@@ -135,6 +135,7 @@
       "delete": "Eliminar",
       "test": "Probar conexión",
       "refreshTemplate": "Actualizar plantilla",
+      "checkTemplate": "Buscar actualización de plantilla",
       "save": "Guardar",
       "cancel": "Cancelar",
       "retry": "Reintentar"

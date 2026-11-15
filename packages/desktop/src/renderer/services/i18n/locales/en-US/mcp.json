@@ -135,6 +135,7 @@
       "delete": "Delete",
       "test": "Test connection",
       "refreshTemplate": "Update template",
+      "checkTemplate": "Check for template update",
       "save": "Save",
       "cancel": "Cancel",
       "retry": "Retry"

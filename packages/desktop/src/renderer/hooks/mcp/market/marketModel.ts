@@ -97,6 +97,21 @@ export const templateUpdateAvailable = (
   template: Pick<McpMarketTemplate, 'version'> | undefined
 ): boolean => Boolean(template?.version && instance.template_version && template.version !== instance.template_version);
 
+/**
+ * Which template-refresh action to offer: `update` when the catalogue reports a
+ * newer version than the instance runs; `check` when the catalogue has a
+ * version but the instance does not report its own (the server compares and
+ * answers `changed: false` when nothing changed); `null` otherwise.
+ */
+export const templateRefreshOffer = (
+  instance: Pick<McpMarketInstance, 'template_version'>,
+  template: Pick<McpMarketTemplate, 'version'> | undefined
+): 'update' | 'check' | null => {
+  if (templateUpdateAvailable(instance, template)) return 'update';
+  if (template?.version && !instance.template_version) return 'check';
+  return null;
+};
+
 /** Plain env keys of a template, sorted. */
 export const plainKeys = (template: Pick<McpMarketTemplate, 'env'>): string[] =>
   Object.keys(template.env)

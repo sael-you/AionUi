@@ -135,6 +135,7 @@
       "delete": "刪除",
       "test": "測試連線",
       "refreshTemplate": "更新範本",
+      "checkTemplate": "檢查範本更新",
       "save": "儲存",
       "cancel": "取消",
       "retry": "重試"

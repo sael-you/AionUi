@@ -135,6 +135,7 @@
       "delete": "Sil",
       "test": "Bağlantıyı test et",
       "refreshTemplate": "Şablonu güncelle",
+      "checkTemplate": "Şablon güncellemesini denetle",
       "save": "Kaydet",
       "cancel": "Vazgeç",
       "retry": "Yeniden dene"

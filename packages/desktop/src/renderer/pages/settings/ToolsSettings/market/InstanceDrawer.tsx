@@ -28,7 +28,7 @@ import {
   forcedPlainEnv,
   plainKeys,
   summarizeAttachments,
-  templateUpdateAvailable,
+  templateRefreshOffer,
   type MarketProject,
 } from '@/renderer/hooks/mcp/market/marketModel';
 import type { McpMarketController } from '@/renderer/hooks/mcp/market/useMcpMarket';
@@ -113,7 +113,8 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
   const envDirty = envKeys.some((key) => (plainEnv[key] ?? '') !== (instance.plain_env[key] ?? ''));
   const toolsDirty = !sameList(tools, storedTools);
   const attachments = summarizeAttachments(instance.id, assignments);
-  const updateAvailable = templateUpdateAvailable(instance, template);
+  const refreshOffer = templateRefreshOffer(instance, template);
+  const updateAvailable = refreshOffer === 'update';
 
   const run = async (
     key: string,
@@ -228,9 +229,9 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
       <Button onClick={() => onDuplicate(instance)} className={touch}>
         {t('mcp.market.actions.duplicate')}
       </Button>
-      {updateAvailable && (
+      {refreshOffer && (
         <Button onClick={() => setConfirm('refresh')} className={touch}>
-          {t('mcp.market.actions.refreshTemplate')}
+          {refreshOffer === 'update' ? t('mcp.market.actions.refreshTemplate') : t('mcp.market.actions.checkTemplate')}
         </Button>
       )}
       <Button status='danger' onClick={() => setConfirm('delete')} className={touch}>

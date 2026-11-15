@@ -135,6 +135,7 @@
       "delete": "削除",
       "test": "接続テスト",
       "refreshTemplate": "テンプレートを更新",
+      "checkTemplate": "テンプレートの更新を確認",
       "save": "保存",
       "cancel": "キャンセル",
       "retry": "再試行"

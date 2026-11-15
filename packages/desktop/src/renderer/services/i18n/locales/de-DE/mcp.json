@@ -135,6 +135,7 @@
       "delete": "Löschen",
       "test": "Verbindung testen",
       "refreshTemplate": "Vorlage aktualisieren",
+      "checkTemplate": "Auf Vorlagen-Update prüfen",
       "save": "Speichern",
       "cancel": "Abbrechen",
       "retry": "Erneut versuchen"

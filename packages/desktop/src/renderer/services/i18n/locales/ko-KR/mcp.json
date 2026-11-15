@@ -135,6 +135,7 @@
       "delete": "삭제",
       "test": "연결 테스트",
       "refreshTemplate": "템플릿 업데이트",
+      "checkTemplate": "템플릿 업데이트 확인",
       "save": "저장",
       "cancel": "취소",
       "retry": "다시 시도"

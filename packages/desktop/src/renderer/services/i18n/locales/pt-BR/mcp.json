@@ -135,6 +135,7 @@
       "delete": "Excluir",
       "test": "Testar conexão",
       "refreshTemplate": "Atualizar modelo",
+      "checkTemplate": "Verificar atualização do modelo",
       "save": "Salvar",
       "cancel": "Cancelar",
       "retry": "Tentar novamente"

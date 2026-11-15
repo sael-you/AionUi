@@ -1596,6 +1596,7 @@ export type I18nKey =
   | 'mcp.market.actions.add'
   | 'mcp.market.actions.attach'
   | 'mcp.market.actions.cancel'
+  | 'mcp.market.actions.checkTemplate'
   | 'mcp.market.actions.create'
   | 'mcp.market.actions.delete'
   | 'mcp.market.actions.detach'
