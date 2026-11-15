@@ -138,7 +138,7 @@ const McpMarketView: React.FC<McpMarketViewProps> = ({ legacyServers, extensionS
           aria-label={t('mcp.market.filter.label')}
         >
           {STATUS_FILTERS.map((f) => (
-            <Radio key={f} value={f}>
+            <Radio key={f} value={f} className={isMobile ? 'min-h-44px !inline-flex items-center' : undefined}>
               {t(`mcp.market.filter.${f}`)}
             </Radio>
           ))}
