@@ -600,6 +600,15 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
     return ids;
   }, [processedList]);
 
+  // Only the newest activity line can belong to the turn that is processing.
+  const lastActivityId = useMemo(() => {
+    for (let index = processedList.length - 1; index >= 0; index -= 1) {
+      const item = processedList[index];
+      if ('type' in item && item.type === 'turn_activity') return item.id;
+    }
+    return undefined;
+  }, [processedList]);
+
   // --- Delegated work (C21): one card per turn that launched something ---
   const history = useConversationHistoryContextSafe();
   const conversationId = conversationContext?.conversation_id;
@@ -624,7 +633,14 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
               )
             : []
         );
-        return { kind: 'activity', created_at: item.created_at, taskCalls };
+        const lastAt = item.entries.reduce(
+          (latest, entry) =>
+            entry.kind === 'tools'
+              ? entry.messages.reduce((at, message) => Math.max(at, message.created_at ?? 0), latest)
+              : Math.max(latest, entry.message.created_at ?? 0),
+          item.created_at
+        );
+        return { kind: 'activity', created_at: item.created_at, last_at: lastAt, taskCalls };
       }
       const message = item as TMessage;
       const other: PlacementItem = {
@@ -634,9 +650,6 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
       };
       return other;
     });
-    // After a restart a card can still say "running" with nothing alive.
-    const live = isProcessing || (history?.hasBackgroundActive(conversationId) ?? false);
-    const lastEnd = list.reduce((latest, message) => Math.max(latest, message.created_at ?? 0), 0);
     const cards = placeDelegatedWork(placement, {
       conversationId,
       conversations: history?.conversations ?? [],
@@ -647,8 +660,19 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
           (history?.isConversationGenerating(id) ?? false) || (history?.hasBackgroundActive(id) ?? false),
       },
     });
-    return cards.map((card) => ({ ...card, rows: settleStaleTaskRows(card.rows, { live, lastEnd }) }));
-  }, [conversationId, history, isProcessing, list, processedList, taskLabels]);
+    // After a restart a card can still say "running" with nothing alive: a row
+    // is live only while its own turn is the one processing, or its call
+    // reported itself alive in this session.
+    return cards.map((card) => ({
+      ...card,
+      rows: settleStaleTaskRows(card.rows, {
+        turnEnd: card.turnEnd,
+        isLive: (row) =>
+          (card.isLastTurn && isProcessing) ||
+          (row.callId !== undefined && (history?.isBackgroundCallLive(conversationId, row.callId) ?? false)),
+      }),
+    }));
+  }, [conversationId, history, isProcessing, processedList, taskLabels]);
   const cardsAfter = useMemo(() => {
     const map = new Map<number, typeof delegatedCards>();
     for (const card of delegatedCards) map.set(card.afterIndex, [...(map.get(card.afterIndex) ?? []), card]);
@@ -866,7 +890,12 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
           className={`${rowWidthClass} min-w-0 message-item px-8px m-t-6px turn_activity`}
           style={highlighted ? highlightStyle : undefined}
         >
-          <TurnActivity entries={item.entries} endAt={item.endAt} taskLabels={taskLabels} live={isProcessing} />
+          <TurnActivity
+            entries={item.entries}
+            endAt={item.endAt}
+            taskLabels={taskLabels}
+            live={isProcessing && item.id === lastActivityId}
+          />
         </div>
       );
     }

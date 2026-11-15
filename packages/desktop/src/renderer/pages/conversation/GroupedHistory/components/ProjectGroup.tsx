@@ -82,6 +82,8 @@ export type ProjectGroupProps = {
   stickyTop?: number;
   /** Tree level of the project row. */
   level?: number;
+  /** Position among the projects (aria-posinset / aria-setsize). */
+  treePosition?: { posinset: number; setsize: number };
   /** The project's conversation rows, newest first. */
   children?: React.ReactNode;
 };
@@ -109,6 +111,7 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
   siderCollapsed = false,
   stickyTop,
   level = 2,
+  treePosition,
   children,
 }) => {
   const { t } = useTranslation();
@@ -165,6 +168,8 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
             role='treeitem'
             tabIndex={-1}
             aria-level={level}
+            aria-posinset={treePosition?.posinset}
+            aria-setsize={treePosition?.setsize}
             aria-expanded={expanded}
             aria-owns={expanded ? childrenId : undefined}
             aria-label={`${name}, ${statusLabel}`}

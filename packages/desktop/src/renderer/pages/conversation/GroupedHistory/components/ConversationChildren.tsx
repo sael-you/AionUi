@@ -14,6 +14,9 @@ export type ConversationChildPosition = {
   continues: boolean[];
   /** A later sibling follows at the same depth. */
   hasNextSibling: boolean;
+  /** 1-based position among the siblings. */
+  posinset: number;
+  setsize: number;
 };
 
 type ConversationChildrenProps = {
@@ -36,7 +39,7 @@ const ConversationChildren: React.FC<ConversationChildrenProps> = ({
       const hasNextSibling = index < nodes.length - 1;
       return (
         <React.Fragment key={node.conversation.id}>
-          {renderRow(node, { continues, hasNextSibling })}
+          {renderRow(node, { continues, hasNextSibling, posinset: index + 1, setsize: nodes.length })}
           {node.children.length > 0 && isExpanded(node.conversation.id) && (
             <ConversationChildren
               nodes={node.children}

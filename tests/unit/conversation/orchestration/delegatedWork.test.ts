@@ -207,14 +207,42 @@ describe('stale running rows after a restart (FIXES 4)', () => {
     },
   ];
 
-  it('shows running task rows as stopped at the last recorded time when nothing is alive', () => {
-    const settled = settleStaleTaskRows(rows, { live: false, lastEnd: 9000 });
+  it('shows running task rows as stopped at their own turn’s end unless that row is live', () => {
+    const settled = settleStaleTaskRows(rows, { isLive: () => false, turnEnd: 9000 });
     expect(settled.map((r) => [r.key, r.state, r.endedAt])).toEqual([
       ['task:a', 'stopped', 9000],
       ['task:b', 'done', 2000],
       ['conversation:c', 'running', undefined],
     ]);
-    expect(settleStaleTaskRows(rows, { live: true, lastEnd: 9000 })).toBe(rows);
+    const live = settleStaleTaskRows(rows, { isLive: (row) => row.key === 'task:a', turnEnd: 9000 });
+    expect(live[0].state).toBe('running');
+  });
+
+  it('TASK-82: a new turn running does not revive an older turn’s cut-off rows; durations end at that turn', () => {
+    const task = (id: string, started: number) =>
+      call(id, 'running', { task: { kind: 'background', id, label: id, started_at: started } }, started);
+    const items = [
+      { kind: 'user' as const, created_at: 100, taskCalls: [] },
+      { kind: 'activity' as const, created_at: 110, last_at: 400, taskCalls: [task('old', 120)] },
+      { kind: 'user' as const, created_at: 5000, taskCalls: [] },
+      { kind: 'activity' as const, created_at: 5010, last_at: 5020, taskCalls: [task('new', 5015)] },
+    ];
+    const cards = placeDelegatedWork(items, {
+      conversationId: 'p',
+      conversations: [],
+      live: idle,
+      labels: new Map(),
+    });
+    expect(cards.map((c) => [c.isLastTurn, c.turnEnd])).toEqual([
+      [false, 400],
+      [true, 5020],
+    ]);
+    const processing = true;
+    const settled = cards.map((card) =>
+      settleStaleTaskRows(card.rows, { turnEnd: card.turnEnd, isLive: () => card.isLastTurn && processing })
+    );
+    expect(settled[0][0]).toMatchObject({ state: 'stopped', endedAt: 400 });
+    expect(settled[1][0]).toMatchObject({ state: 'running' });
   });
 
   it('does not keep a cut-off turn "working" forever', () => {

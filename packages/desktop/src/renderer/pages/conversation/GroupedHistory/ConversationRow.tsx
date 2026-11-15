@@ -65,6 +65,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
     depth = 0,
     treeInfo,
     guides,
+    treePosition,
     onCreateChild,
     onDetach,
     onMoveUnder,
@@ -245,6 +246,8 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
         role='treeitem'
         aria-label={accessibleName}
         aria-level={(treeLevel ?? 1) + depth}
+        aria-posinset={collapsed ? undefined : treePosition?.posinset}
+        aria-setsize={collapsed ? undefined : treePosition?.setsize}
         aria-expanded={treeInfo ? treeInfo.expanded : undefined}
         aria-selected={selected}
         aria-current={selected ? 'page' : undefined}

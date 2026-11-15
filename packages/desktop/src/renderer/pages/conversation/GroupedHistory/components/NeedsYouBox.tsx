@@ -29,35 +29,36 @@ type NeedsYouBoxProps = {
   onShowRunning?: () => void;
 };
 
-/** One activatable tree row (Enter / Space / click), in the sidebar's roving tree. */
+/**
+ * One row of the box: a list item holding a link-like control (Enter / Space /
+ * click opens it). The box is its own labelled region, outside the sidebar's
+ * tree, so it is never a stray group inside role=tree.
+ */
 const BoxItem: React.FC<{
-  treeKey: string;
   label: string;
   className: string;
   onActivate: () => void;
   testId: string;
   children: React.ReactNode;
-}> = ({ treeKey, label, className, onActivate, testId, children }) => (
-  <div
-    className={className}
-    role='treeitem'
-    tabIndex={-1}
-    aria-level={2}
-    aria-label={label}
-    data-tree-item=''
-    data-tree-level={2}
-    data-tree-key={treeKey}
-    data-testid={testId}
-    onClick={onActivate}
-    onKeyDown={(event) => {
-      if (event.target !== event.currentTarget) return;
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        onActivate();
-      }
-    }}
-  >
-    {children}
+}> = ({ label, className, onActivate, testId, children }) => (
+  <div role='listitem'>
+    <div
+      className={className}
+      role='link'
+      tabIndex={0}
+      aria-label={label}
+      data-testid={testId}
+      onClick={onActivate}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onActivate();
+        }
+      }}
+    >
+      {children}
+    </div>
   </div>
 );
 
@@ -71,53 +72,54 @@ const NeedsYouBox: React.FC<NeedsYouBoxProps> = ({ items, runningCount, onOpen, 
   const { t } = useTranslation();
   if (items.length === 0) return null;
   const heading = t('conversation.orchestration.needsYou.title');
+  const headingId = 'sidebar-needs-you-heading';
   return (
-    <div className={styles.box} role='group' aria-label={heading} data-testid='sidebar-needs-you'>
-      <div className={styles.head} aria-hidden='true'>
+    <section className={styles.box} aria-labelledby={headingId} data-testid='sidebar-needs-you'>
+      <h2 className={styles.head} id={headingId}>
         <StatusGlyph state='waiting' size={12} label={null} />
         <span>{heading}</span>
         <span className={styles.count}>{items.length}</span>
-      </div>
-      {items.map(({ conversation, state, where }) => {
-        const name = conversation.name || t('conversation.welcome.newConversation');
-        const label = [name, t(runStateLabelKey(state)), where].filter(Boolean).join(', ');
-        return (
-          <BoxItem
-            key={conversation.id}
-            treeKey={`needs-you:${conversation.id}`}
-            label={label}
-            className={styles.row}
-            testId={`sidebar-needs-you-${conversation.id}`}
-            onActivate={() => onOpen(conversation)}
-          >
-            <StatusGlyph state={state} size={14} label={null} />
-            <span className={styles.name} title={name}>
-              {name}
-            </span>
-            {where && (
-              <span className={styles.where} title={where}>
-                {where}
+      </h2>
+      <div role='list'>
+        {items.map(({ conversation, state, where }) => {
+          const name = conversation.name || t('conversation.welcome.newConversation');
+          const label = [name, t(runStateLabelKey(state)), where].filter(Boolean).join(', ');
+          return (
+            <BoxItem
+              key={conversation.id}
+              label={label}
+              className={styles.row}
+              testId={`sidebar-needs-you-${conversation.id}`}
+              onActivate={() => onOpen(conversation)}
+            >
+              <StatusGlyph state={state} size={14} label={null} />
+              <span className={styles.name} title={name}>
+                {name}
               </span>
-            )}
+              {where && (
+                <span className={styles.where} title={where}>
+                  {where}
+                </span>
+              )}
+            </BoxItem>
+          );
+        })}
+        {runningCount > 0 && (
+          <BoxItem
+            label={t('conversation.orchestration.needsYou.running', { count: runningCount })}
+            className={styles.summary}
+            testId='sidebar-needs-you-running'
+            onActivate={() => onShowRunning?.()}
+          >
+            <StatusGlyph state='running' size={14} label={null} />
+            <span className={styles.summaryText}>
+              {t('conversation.orchestration.needsYou.running', { count: runningCount })}
+            </span>
+            <Right theme='outline' size='12' className={styles.chevron} />
           </BoxItem>
-        );
-      })}
-      {runningCount > 0 && (
-        <BoxItem
-          treeKey='needs-you:running'
-          label={t('conversation.orchestration.needsYou.running', { count: runningCount })}
-          className={styles.summary}
-          testId='sidebar-needs-you-running'
-          onActivate={() => onShowRunning?.()}
-        >
-          <StatusGlyph state='running' size={14} label={null} />
-          <span className={styles.summaryText}>
-            {t('conversation.orchestration.needsYou.running', { count: runningCount })}
-          </span>
-          <Right theme='outline' size='12' className={styles.chevron} />
-        </BoxItem>
-      )}
-    </div>
+        )}
+      </div>
+    </section>
   );
 };
 
