@@ -168,6 +168,11 @@ export type HttpRequestOptions = {
    * different account than the one the payload belongs to. Default `false`.
    */
   noSessionReplay?: boolean;
+  /**
+   * The body carries a secret (e.g. an MCP market secret value): it is never
+   * written to the debug log, not even redacted by key. Default `false`.
+   */
+  sensitiveBody?: boolean;
 };
 
 const SENSITIVE_LOG_KEY_PATTERN = /api[_-]?key|authorization|auth[_-]?token|access[_-]?token|refresh[_-]?token|secret/i;
@@ -243,7 +248,11 @@ export async function httpRequest<T>(
 
   console.debug(
     `[httpBridge] ${method} ${path}`,
-    body !== undefined ? JSON.stringify(redactForLog(body)).slice(0, 500) : '(no body)'
+    body === undefined
+      ? '(no body)'
+      : options?.sensitiveBody
+        ? '(body withheld)'
+        : JSON.stringify(redactForLog(body)).slice(0, 500)
   );
 
   let response = await sendHttpRequest(method, path, headers, body);

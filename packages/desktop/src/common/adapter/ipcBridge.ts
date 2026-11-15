@@ -22,6 +22,15 @@ import type {
   IMcpServer,
   IProvider,
   ISessionMcpServer,
+  McpMarketAssignment,
+  McpMarketCreateAssignmentRequest,
+  McpMarketCreateInstanceRequest,
+  McpMarketInstance,
+  McpMarketSecretStatus,
+  McpMarketStatusResponse,
+  McpMarketTemplate,
+  McpMarketTemplateRefreshResult,
+  McpMarketUpdateInstanceRequest,
   TChatConversation,
   TConversationRuntimeSummary,
   TProviderWithModel,
@@ -1407,6 +1416,63 @@ export const mcpService = {
   loginMcpOAuth: httpPost<{ success: boolean; error?: string }, { server_url: string }>('/api/mcp/oauth/login'),
   logoutMcpOAuth: httpPost<void, { server_url: string }>('/api/mcp/oauth/logout'),
   getAuthenticatedServers: httpGet<string[], void>('/api/mcp/oauth/authenticated'),
+  /**
+   * MCP market (card C15), `/api/mcp/market/*`. Reads return refs and `set`
+   * flags only. Every write needs the owner's browser session (403
+   * `MCP_MARKET_SESSION_REQUIRED` otherwise) and goes through `httpRequest`,
+   * the shared session/CSRF path. Secret values are sent to `setSecret` and
+   * never come back.
+   */
+  market: {
+    listTemplates: httpGet<McpMarketTemplate[], void>('/api/mcp/market/templates'),
+    listInstances: httpGet<McpMarketInstance[], void>('/api/mcp/market/instances'),
+    getInstance: httpGet<McpMarketInstance, { id: string }>(
+      (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}`
+    ),
+    listAssignments: httpGet<McpMarketAssignment[], void>('/api/mcp/market/assignments'),
+    getStatus: httpGet<McpMarketStatusResponse, void>('/api/mcp/market/status'),
+    createInstance: httpPost<McpMarketInstance, McpMarketCreateInstanceRequest>('/api/mcp/market/instances'),
+    updateInstance: httpPut<McpMarketInstance, { id: string; data: McpMarketUpdateInstanceRequest }>(
+      (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}`,
+      (p) => p.data
+    ),
+    deleteInstance: httpDelete<void, { id: string }>((p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}`),
+    duplicateInstance: httpPost<McpMarketInstance, { id: string; name: string }>(
+      (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}/duplicate`,
+      (p) => ({ name: p.name })
+    ),
+    revokeInstance: httpPost<McpMarketInstance, { id: string }>(
+      (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}/revoke`,
+      () => ({})
+    ),
+    refreshTemplate: httpPost<McpMarketTemplateRefreshResult, { id: string }>(
+      (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}/refresh-template`,
+      () => ({})
+    ),
+    setApproval: httpPut<McpMarketInstance, { id: string; approval_ref: string | null }>(
+      (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}/approval`,
+      (p) => ({ approval_ref: p.approval_ref })
+    ),
+    /** Write-only; the body (the secret value) is withheld from the request log. */
+    setSecret: {
+      invoke: (p: { id: string; key: string; value: string }): Promise<McpMarketSecretStatus> =>
+        httpRequest<McpMarketSecretStatus>(
+          'PUT',
+          `/api/mcp/market/instances/${encodeURIComponent(p.id)}/secrets/${encodeURIComponent(p.key)}`,
+          { value: p.value },
+          { sensitiveBody: true }
+        ),
+    },
+    clearSecret: httpDelete<McpMarketSecretStatus, { id: string; key: string }>(
+      (p) => `/api/mcp/market/instances/${encodeURIComponent(p.id)}/secrets/${encodeURIComponent(p.key)}`
+    ),
+    createAssignments: httpPost<McpMarketAssignment[], McpMarketCreateAssignmentRequest>(
+      '/api/mcp/market/assignments'
+    ),
+    deleteAssignment: httpDelete<void, { id: string }>(
+      (p) => `/api/mcp/market/assignments/${encodeURIComponent(p.id)}`
+    ),
+  },
 };
 
 export const openclawConversation = {

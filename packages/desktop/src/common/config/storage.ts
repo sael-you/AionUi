@@ -669,6 +669,147 @@ export interface IMcpTool {
   _meta?: Record<string, unknown>;
 }
 
+// ---------------------------------------------------------------------------
+// MCP market (card C15) — wire types of `/api/mcp/market/*` (AionCore
+// `aionui-api-types/src/mcp_market.rs`). Secrets only ever travel inward: no
+// response type carries a secret value (names, `set` and `updated_at` only).
+// ---------------------------------------------------------------------------
+
+export type McpMarketCli = 'claude' | 'codex' | 'gemini';
+export type McpMarketStatus = 'active' | 'dormant' | 'revoked';
+export type McpMarketTier = 'read' | 'write';
+
+/** One env key a template declares. */
+export type McpMarketEnvField = {
+  kind: 'secret' | 'plain';
+  required?: boolean;
+  /** Allowed values of a plain key (absent = free text). */
+  enum?: string[];
+  default?: string;
+  description?: string;
+};
+
+/** A catalogue template (`contributes.mcpServers[].market` of `studio-mcp-catalog`). */
+export type McpMarketTemplate = {
+  id: string;
+  name: string;
+  /** Catalogue version (e.g. the pinned package version). */
+  version?: string;
+  description?: string;
+  transport: string;
+  command?: { command: string; args?: string[] };
+  url?: string;
+  headers?: Record<string, string>;
+  env: Record<string, McpMarketEnvField>;
+  tiers: string[];
+  tier_env?: Record<string, Record<string, string>>;
+  enforcement: string;
+  clis: string[];
+  tool_classes?: Record<string, string>;
+};
+
+/** Status of one secret slot. Never carries the value. */
+export type McpMarketSecretStatus = {
+  key: string;
+  name: string;
+  instance_id: string;
+  instance_name: string;
+  required: boolean;
+  set: boolean;
+  updated_at?: number;
+};
+
+/** A market instance as the API shows it (refs only). */
+export type McpMarketInstance = {
+  id: string;
+  name: string;
+  description?: string;
+  template_id: string;
+  /** Version of the template snapshot the instance runs, when the backend reports it. */
+  template_version?: string;
+  transport: string;
+  environment: string;
+  tier: string;
+  enforcement: string;
+  status: string;
+  clis: string[];
+  plain_env: Record<string, string>;
+  secrets: McpMarketSecretStatus[];
+  missing: string[];
+  tools_allow?: string[];
+  tools_block: string[];
+  tools_seen: string[];
+  approval_ref?: string;
+  last_test_status: string;
+  created_at: number;
+  updated_at: number;
+};
+
+export type McpMarketCreateInstanceRequest = {
+  name: string;
+  template_id: string;
+  description?: string;
+  environment: string;
+  tier: string;
+  status?: string;
+  clis: string[];
+  plain_env?: Record<string, string>;
+  tools_allow?: string[];
+  tools_block?: string[];
+};
+
+export type McpMarketUpdateInstanceRequest = Partial<
+  Pick<
+    McpMarketCreateInstanceRequest,
+    'description' | 'environment' | 'tier' | 'status' | 'clis' | 'plain_env' | 'tools_allow' | 'tools_block'
+  >
+>;
+
+export type McpMarketTemplateRefreshResult = {
+  instance: McpMarketInstance;
+  from_version?: string;
+  to_version?: string;
+  added_keys: string[];
+  removed_keys: string[];
+  changed: boolean;
+};
+
+/** One assignment row: (instance, global | project | project+assistant, cli). */
+export type McpMarketAssignment = {
+  id: string;
+  instance_id: string;
+  instance_name: string;
+  /** Absent = global. */
+  project_id?: string;
+  /** Absent = whole project (native files); present = AionUi assistant binding. */
+  assistant_id?: string;
+  cli: string;
+  created_at: number;
+};
+
+export type McpMarketCreateAssignmentRequest = {
+  instance_id: string;
+  project_id?: string;
+  assistant_id?: string;
+  clis: string[];
+};
+
+export type McpMarketInstanceHealth = {
+  id: string;
+  name: string;
+  status: string;
+  deliverable: boolean;
+  /** Rule problems, by key/name only (never a value). */
+  problems: string[];
+  assignments: number;
+};
+
+export type McpMarketStatusResponse = {
+  instances: McpMarketInstanceHealth[];
+  drift: unknown;
+  drift_available: boolean;
+};
+
 /**
  * CSS 主题配置接口 / CSS Theme configuration interface
  * 用于存储用户自定义的 CSS 皮肤 / Used to store user-defined CSS skins
