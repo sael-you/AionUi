@@ -8,13 +8,20 @@
  * Train-2 review U1 #1: AionCore (C15) masks secret MCP env values, so the
  * built-in image-generation server's AIONUI_IMG_API_KEY comes back as "•••".
  * The env sync must not treat that as a difference, or every render PUTs the
- * server again (write loop while Settings → Tools is open).
+ * server again (write loop while Settings → Tools is open). It compares the
+ * masked key through the SHA-256 fingerprint of the key it last sent
+ * (localStorage, per server id), so a rotated key still reaches the server.
  */
 
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { mcpEnvMatchesStored } from '@/common/config/imageGenerationMcpEnv';
+import { maskedSecretEntries, mcpEnvMatchesStored } from '@/common/config/imageGenerationMcpEnv';
+import {
+  fingerprintSecrets,
+  readSecretFingerprint,
+  writeSecretFingerprint,
+} from '@/renderer/utils/mcpSecretFingerprint';
 import { MCP_SECRET_MASK } from '@/common/config/storage';
 
 const MASK = '•••';
@@ -134,8 +141,12 @@ const settle = async () => {
   for (let i = 0; i < 10; i += 1) await new Promise((resolve) => setTimeout(resolve, 5));
 };
 
+const SERVER_ID = 'builtin-image-gen';
+const keyFingerprint = async (key: string) => (await fingerprintSecrets([['AIONUI_IMG_API_KEY', key]])) as string;
+
 describe('built-in image MCP env sync with masked secrets', () => {
   beforeEach(() => {
+    window.localStorage.clear();
     hooks.updateServer.mockReset();
     // AionCore answers the PUT like a GET: the secret masked again.
     hooks.updateServer.mockImplementation(async ({ data }: { data: { transport: Server['transport'] } }) =>
@@ -168,21 +179,67 @@ describe('built-in image MCP env sync with masked secrets', () => {
     expect(hooks.updateServer.mock.calls[0][0].data.transport.env.AIONUI_IMG_API_KEY).toBe(REAL_KEY);
   });
 
-  it('masked GET that is otherwise up to date → no PUT at all', async () => {
+  it('nothing changes (fingerprint of the current key stored) → no PUT', async () => {
+    writeSecretFingerprint(SERVER_ID, await keyFingerprint(REAL_KEY));
     hooks.initialServers = [builtin(resolvedEnv(MASK))];
     render(<ToolsModalContent />);
     await settle();
     expect(hooks.updateServer).not.toHaveBeenCalled();
   });
+
+  it('only the key changes (rotated) → exactly one PUT with the new key, then none', async () => {
+    writeSecretFingerprint(SERVER_ID, await keyFingerprint('FAKE-OLD-KEY-0000'));
+    hooks.initialServers = [builtin(resolvedEnv(MASK))];
+    render(<ToolsModalContent />);
+    await waitFor(() => expect(hooks.updateServer).toHaveBeenCalledTimes(1));
+    await settle();
+    expect(hooks.updateServer).toHaveBeenCalledTimes(1);
+    expect(hooks.updateServer.mock.calls[0][0].data.transport.env.AIONUI_IMG_API_KEY).toBe(REAL_KEY);
+    expect(readSecretFingerprint(SERVER_ID)).toBe(await keyFingerprint(REAL_KEY));
+  });
+
+  it('no fingerprint yet (first run) → exactly one PUT, then none; only the fingerprint is stored', async () => {
+    hooks.initialServers = [builtin(resolvedEnv(MASK))];
+    render(<ToolsModalContent />);
+    await waitFor(() => expect(hooks.updateServer).toHaveBeenCalledTimes(1));
+    await settle();
+    expect(hooks.updateServer).toHaveBeenCalledTimes(1);
+    expect(readSecretFingerprint(SERVER_ID)).toBe(await keyFingerprint(REAL_KEY));
+    const stored = Object.keys(window.localStorage).map((k) => window.localStorage.getItem(k));
+    expect(JSON.stringify(stored)).not.toContain(REAL_KEY);
+  });
 });
 
 describe('mcpEnvMatchesStored', () => {
-  it('treats a masked stored value as unchanged, everything else exactly', () => {
+  it("compares a masked stored value through the caller's fingerprint verdict, everything else exactly", () => {
     expect(MCP_SECRET_MASK).toBe(MASK);
-    expect(mcpEnvMatchesStored({ K: MASK, M: 'a' }, { K: 'real', M: 'a' })).toBe(true);
-    expect(mcpEnvMatchesStored({ K: MASK, M: 'a' }, { K: 'real', M: 'b' })).toBe(false);
-    expect(mcpEnvMatchesStored({ K: MASK }, { K: '' })).toBe(false);
+    expect(mcpEnvMatchesStored({ K: MASK, M: 'a' }, { K: 'real', M: 'a' }, true)).toBe(true);
+    expect(mcpEnvMatchesStored({ K: MASK, M: 'a' }, { K: 'real', M: 'a' }, false)).toBe(false);
+    expect(mcpEnvMatchesStored({ K: MASK, M: 'a' }, { K: 'real', M: 'a' })).toBe(false);
+    expect(mcpEnvMatchesStored({ K: MASK, M: 'a' }, { K: 'real', M: 'b' }, true)).toBe(false);
+    expect(mcpEnvMatchesStored({ K: MASK }, { K: '' }, true)).toBe(false);
     expect(mcpEnvMatchesStored({ K: 'x' }, { K: 'x', L: 'y' })).toBe(false);
     expect(mcpEnvMatchesStored({ K: 'x', L: 'y' }, { K: 'x', M: 'y' })).toBe(false);
+    expect(maskedSecretEntries({ K: MASK, M: 'a' }, { K: 'real', M: 'a' })).toEqual([['K', 'real']]);
+  });
+
+  it('fingerprints are order-independent and differ per value', async () => {
+    const a = await fingerprintSecrets([
+      ['A', '1'],
+      ['B', '2'],
+    ]);
+    expect(a).toMatch(/^[0-9a-f]{64}$/);
+    expect(
+      await fingerprintSecrets([
+        ['B', '2'],
+        ['A', '1'],
+      ])
+    ).toBe(a);
+    expect(
+      await fingerprintSecrets([
+        ['A', '1'],
+        ['B', '3'],
+      ])
+    ).not.toBe(a);
   });
 });

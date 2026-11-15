@@ -6,12 +6,23 @@
 
 import type { ImageGenerationModelSetting } from '@/common/config/clientSettings';
 import {
+  maskedSecretEntries,
   mcpEnvMatchesStored,
   removeImageGenerationEnvKeys,
   resolveImageGenerationMcpEnv,
 } from '@/common/config/imageGenerationMcpEnv';
 import { mcpService } from '@/common/adapter/ipcBridge';
-import { type IMcpServer, BUILTIN_IMAGE_GEN_ID, BUILTIN_IMAGE_GEN_NAME } from '@/common/config/storage';
+import {
+  type IMcpServer,
+  BUILTIN_IMAGE_GEN_ID,
+  BUILTIN_IMAGE_GEN_NAME,
+  MCP_SECRET_MASK,
+} from '@/common/config/storage';
+import {
+  fingerprintSecrets,
+  readSecretFingerprint,
+  writeSecretFingerprint,
+} from '@/renderer/utils/mcpSecretFingerprint';
 import { isImageGenSupported } from '@/common/utils/imageModelAllowlist';
 import { Divider, Form, Tooltip, Message, Modal, Switch } from '@arco-design/web-react';
 import { Help } from '@icon-park/react';
@@ -333,9 +344,17 @@ const ToolsModalContent: React.FC = () => {
         );
       }
 
-      // Masked secrets from AionCore never equal the real key: compare them as
-      // "unchanged", otherwise every sync re-PUTs the server (write loop).
-      if (mcpEnvMatchesStored(existingEnv, env)) {
+      // AionCore returns secrets masked: compare them through the fingerprint
+      // of the secrets this UI last sent. Same → unchanged (no write loop);
+      // different or missing (key rotated, first run) → one PUT. Without Web
+      // Crypto (insecure http) masked secrets count as unchanged: never loop.
+      const masked = maskedSecretEntries(existingEnv, env);
+      let maskedSecretsUnchanged = false;
+      if (masked.length > 0) {
+        const fingerprint = await fingerprintSecrets(masked);
+        maskedSecretsUnchanged = fingerprint === null || readSecretFingerprint(builtinServer.id) === fingerprint;
+      }
+      if (mcpEnvMatchesStored(existingEnv, env, maskedSecretsUnchanged)) {
         return;
       }
 
@@ -361,6 +380,11 @@ const ToolsModalContent: React.FC = () => {
           original_json,
         },
       });
+      // Remember what was sent for the values that come back masked, before
+      // the saved server re-renders and syncs again.
+      const returnedEnv = (updatedServer.transport as { env?: Record<string, string> } | undefined)?.env ?? {};
+      const sentSecrets = Object.entries(env).filter(([key]) => returnedEnv[key] === MCP_SECRET_MASK);
+      writeSecretFingerprint(builtinServer.id, sentSecrets.length > 0 ? await fingerprintSecrets(sentSecrets) : null);
       await saveMcpServers((prevServers) =>
         prevServers.map((server) => (server.id === updatedServer.id ? { ...server, ...updatedServer } : server))
       );
