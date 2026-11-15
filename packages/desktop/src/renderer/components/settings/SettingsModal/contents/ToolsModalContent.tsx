@@ -5,7 +5,11 @@
  */
 
 import type { ImageGenerationModelSetting } from '@/common/config/clientSettings';
-import { removeImageGenerationEnvKeys, resolveImageGenerationMcpEnv } from '@/common/config/imageGenerationMcpEnv';
+import {
+  mcpEnvMatchesStored,
+  removeImageGenerationEnvKeys,
+  resolveImageGenerationMcpEnv,
+} from '@/common/config/imageGenerationMcpEnv';
 import { mcpService } from '@/common/adapter/ipcBridge';
 import { type IMcpServer, BUILTIN_IMAGE_GEN_ID, BUILTIN_IMAGE_GEN_NAME } from '@/common/config/storage';
 import { isImageGenSupported } from '@/common/utils/imageModelAllowlist';
@@ -40,11 +44,6 @@ type MessageInstance = ReturnType<typeof Message.useMessage>[0];
 
 const isBuiltinImageGenServer = (server: IMcpServer) =>
   server.builtin === true && (server.id === BUILTIN_IMAGE_GEN_ID || server.name === BUILTIN_IMAGE_GEN_NAME);
-const areEnvRecordsEqual = (a: Record<string, string>, b: Record<string, string>) => {
-  const aKeys = Object.keys(a);
-  const bKeys = Object.keys(b);
-  return aKeys.length === bKeys.length && aKeys.every((key) => a[key] === b[key]);
-};
 const ModalMcpManagementSection: React.FC<{
   message: MessageInstance;
   mcpServers: IMcpServer[];
@@ -334,7 +333,9 @@ const ToolsModalContent: React.FC = () => {
         );
       }
 
-      if (areEnvRecordsEqual(existingEnv, env)) {
+      // Masked secrets from AionCore never equal the real key: compare them as
+      // "unchanged", otherwise every sync re-PUTs the server (write loop).
+      if (mcpEnvMatchesStored(existingEnv, env)) {
         return;
       }
 

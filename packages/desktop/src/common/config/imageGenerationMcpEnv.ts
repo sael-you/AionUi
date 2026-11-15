@@ -30,11 +30,7 @@ export type ImageGenerationMcpEnvResolveResult =
   | {
       ok: false;
       reason:
-        | 'missing-selection'
-        | 'provider-not-found'
-        | 'model-not-found'
-        | 'ambiguous-provider'
-        | 'no-provider-match';
+        'missing-selection' | 'provider-not-found' | 'model-not-found' | 'ambiguous-provider' | 'no-provider-match';
       message: string;
       candidates?: string[];
     };
@@ -162,4 +158,30 @@ export function removeImageGenerationEnvKeys(env: Record<string, string>): Recor
     delete next[key];
   });
   return next;
+}
+
+/**
+ * Placeholder AionCore returns instead of a secret MCP value (C15
+ * `aionui-mcp` secret masking). An update carrying exactly this value keeps
+ * the stored secret.
+ */
+export const MCP_SECRET_MASK = '•••';
+
+/**
+ * Whether the stored MCP env already matches `next`. A stored value that came
+ * back masked counts as equal to any non-empty value: the real secret is never
+ * sent to the browser, so comparing it would always differ and re-PUT the
+ * server on every render (train-2 review U1 #1).
+ */
+export function mcpEnvMatchesStored(stored: Record<string, string>, next: Record<string, string>): boolean {
+  const storedKeys = Object.keys(stored);
+  const nextKeys = Object.keys(next);
+  return (
+    storedKeys.length === nextKeys.length &&
+    storedKeys.every(
+      (key) =>
+        Object.prototype.hasOwnProperty.call(next, key) &&
+        (stored[key] === next[key] || (stored[key] === MCP_SECRET_MASK && next[key] !== ''))
+    )
+  );
 }
