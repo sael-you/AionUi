@@ -2,6 +2,7 @@
 // (index.html) for failed script requests, causing "module script MIME text/html"
 // errors when the server was down or served a different asset hash. The v2
 // activate handler deletes v1, flushing any poisoned cached entries.
+// Bump to flush caches and force open tabs to reload on activation.
 const CACHE_NAME = 'aionui-webui-v2';
 const NON_CACHEABLE_PATHS = new Set(['/qr-login']);
 const OFFLINE_PAGE_URL = new URL('./index.html', self.location.href).toString();
@@ -22,32 +23,33 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Whether activation replaced an older worker's caches (an upgrade, not a first install).
+function isUpgrade(cacheKeys) {
+  return cacheKeys.some((key) => key !== CACHE_NAME);
+}
+
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys.map((key) => {
-            if (key === CACHE_NAME) {
-              return Promise.resolve();
+    caches.keys().then((keys) => {
+      const upgrading = isUpgrade(keys);
+      return Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+        .then(() => self.clients.claim())
+        .then(() => {
+          // After an upgrade, reload open WebUI tabs. claim() above already moves
+          // them under this worker; the reload discards pages that may have loaded
+          // broken assets through the previous worker's (possibly poisoned) cache.
+          // Not on a first install: no tab ran under an older worker, and reloading
+          // the page that just registered this one would cancel its in-flight
+          // requests (the first visit's /api/auth/user failed with "Failed to
+          // fetch") and load the app twice.
+          if (!upgrading) return undefined;
+          return self.clients.matchAll({ type: 'window' }).then((clients) => {
+            for (const client of clients) {
+              client.navigate(client.url).catch(() => undefined);
             }
-            return caches.delete(key);
-          })
-        )
-      )
-      .then(() => self.clients.claim())
-      // After claim, tell any open WebUI tabs running under the previous SW
-      // to reload so they pick up the fixed fetch handler immediately.
-      // Without this, an already-open tab keeps serving from the old v1 SW
-      // until the user manually refreshes.
-      .then(() =>
-        self.clients.matchAll({ type: 'window' }).then((clients) => {
-          for (const client of clients) {
-            client.navigate(client.url).catch(() => undefined);
-          }
-        })
-      )
+          });
+        });
+    })
   );
 });
 

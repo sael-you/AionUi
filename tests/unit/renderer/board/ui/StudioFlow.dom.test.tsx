@@ -267,6 +267,16 @@ describe('board header', () => {
     expect(bridge.ensureKeeper).not.toHaveBeenCalled();
   });
 
+  it('spaces icon and label in the header buttons', async () => {
+    renderPage();
+    await screen.findByRole('button', { name: 'Column settings' });
+    for (const name of ['Talk to the board', 'Column settings']) {
+      const button = screen.getByRole('button', { name });
+      expect(button.className).toContain('gap-6px');
+      expect(button.className).toContain('!inline-flex');
+    }
+  });
+
   it('creates the keeper conversation when the board has none yet', async () => {
     bridge.ensureKeeper.mockResolvedValue({ conversation_id: 'keeper-2' });
     renderPage();

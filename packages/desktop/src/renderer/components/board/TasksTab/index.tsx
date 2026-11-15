@@ -24,6 +24,7 @@ import { BoardProvider } from '../hooks/boardContext';
 import { columnName } from '../utils/boardFormat';
 import { activeCardCount, groupCardsByColumn, groupColumnsByCategory, visibleColumns } from '../utils/boardModel';
 import { StackedColumn } from './StackedColumn';
+import { iconLabelButton } from '../utils/boardStyles';
 
 const focusColumnHeading = (columnKey: string): void => {
   requestAnimationFrame(() => {
@@ -133,6 +134,7 @@ export const TasksTab: React.FC<{ board: BoardController }> = ({ board }) => {
         <div className='flex items-center gap-8px ps-20px pe-8px py-6px flex-shrink-0'>
           <span className='text-12px text-t-secondary flex-1 truncate'>{t('board.sharedByProject')}</span>
           <Button
+            className={iconLabelButton('mini')}
             size='mini'
             type='text'
             icon={<ViewGridDetail theme='outline' size='14' fill='currentColor' />}

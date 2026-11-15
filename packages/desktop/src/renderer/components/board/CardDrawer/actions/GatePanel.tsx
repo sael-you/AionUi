@@ -24,6 +24,7 @@ import type { BoardController } from '../../hooks/useBoard';
 import { newIdempotencyKey, type CardDetailController } from '../../hooks/useCardDetail';
 import { columnName, columnNameByKey } from '../../utils/boardFormat';
 import { isManualMoveTarget, moveLock, visibleColumns } from '../../utils/boardModel';
+import { iconLabelButton } from '../../utils/boardStyles';
 
 const DEPLOYED = 'deployed';
 const LOCAL_TEST = 'local_test';
@@ -175,6 +176,7 @@ export const GatePanel: React.FC<{
       </label>
       <div className='flex flex-wrap gap-8px'>
         <Button
+          className={iconLabelButton('small')}
           type='primary'
           size='small'
           status='success'
@@ -188,6 +190,7 @@ export const GatePanel: React.FC<{
             : t('board.gate.approve')}
         </Button>
         <Button
+          className={iconLabelButton('small')}
           size='small'
           status='danger'
           loading={busy === 'reject'}

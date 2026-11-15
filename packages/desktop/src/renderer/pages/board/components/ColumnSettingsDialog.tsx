@@ -27,6 +27,7 @@ import { BoardSelect } from '@/renderer/components/board/BoardSelect';
 import type { BoardController } from '@/renderer/components/board/hooks/useBoard';
 import { columnName } from '@/renderer/components/board/utils/boardFormat';
 import { activeCardCount } from '@/renderer/components/board/utils/boardModel';
+import { iconLabelButton } from '@/renderer/components/board/utils/boardStyles';
 
 /** Column keys that have a translated default name (`board.columns.<key>`). */
 const DEFAULT_NAMED_KEYS: ReadonlySet<string> = new Set(STUDIO_COLUMN_KEYS);
@@ -243,6 +244,7 @@ const DialogBody: React.FC<{
           options={BOARD_CATEGORIES.map((category) => ({ value: category, label: t(`board.categories.${category}`) }))}
         />
         <Button
+          className={iconLabelButton('small')}
           size='small'
           icon={<Plus theme='outline' size='14' fill='currentColor' />}
           disabled={!newName.trim()}
@@ -263,6 +265,7 @@ const DialogBody: React.FC<{
                 <li key={column.key} className='flex items-center gap-8px'>
                   <span className='flex-1 text-13px text-t-primary truncate'>{label}</span>
                   <Button
+                    className={iconLabelButton('mini')}
                     size='mini'
                     icon={<Undo theme='outline' size='14' fill='currentColor' />}
                     onClick={() =>

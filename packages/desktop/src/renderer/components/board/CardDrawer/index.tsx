@@ -36,6 +36,7 @@ import { CardFields } from './CardFields';
 import { CardQuestions } from './sections/CardQuestions';
 import { CardReviews } from './sections/CardReviews';
 import { CardTitle } from './CardTitle';
+import { iconLabelButton } from '../utils/boardStyles';
 
 const TITLE_ID = 'board-card-drawer-title';
 
@@ -45,10 +46,6 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
   onClose,
 }) => {
   const { t } = useTranslation();
-  const [blockOpen, setBlockOpen] = useState(false);
-  const [assignOpen, setAssignOpen] = useState(false);
-  const [brainstormOpen, setBrainstormOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
   const detail = controller.detail;
 
   if (!detail) {
@@ -65,14 +62,6 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
   const ref = cardRef(card.number);
   const archived = Boolean(card.archived_at);
   const editable = !board.readOnly && !archived;
-  const run = async (action: () => Promise<boolean>) => {
-    setBusy(true);
-    try {
-      await action();
-    } finally {
-      setBusy(false);
-    }
-  };
 
   return (
     <div className='flex flex-col min-h-full'>
@@ -131,69 +120,109 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
         <CardComments editable={editable} controller={controller} />
         <CardActivity events={detail.events} columns={board.snapshot?.columns ?? []} />
       </div>
-      {!board.readOnly && (
-        <div className='sticky bottom-0 flex flex-wrap gap-8px p-12px border-t border-solid border-[color:var(--border-base)] bg-1'>
-          {!archived && (
-            <>
-              <Button
-                type='primary'
-                icon={<UserToUserTransmission theme='outline' size='14' fill='currentColor' />}
-                onClick={() => setAssignOpen(true)}
-              >
-                {t('board.assign.action')}
-              </Button>
-              <Button
-                icon={<Lightning theme='outline' size='14' fill='currentColor' />}
-                onClick={() => setBrainstormOpen(true)}
-              >
-                {t('board.brainstorm.action')}
-              </Button>
-            </>
-          )}
-          {!archived &&
-            (card.blocked ? (
-              <Button
-                loading={busy}
-                icon={<Unlock theme='outline' size='14' fill='currentColor' />}
-                onClick={() => void run(() => controller.setBlocked(false))}
-              >
-                {t('board.drawer.unblock')}
-              </Button>
-            ) : (
-              <Button icon={<Lock theme='outline' size='14' fill='currentColor' />} onClick={() => setBlockOpen(true)}>
-                {t('board.drawer.block')}
-              </Button>
-            ))}
-          {archived ? (
+    </div>
+  );
+};
+
+/**
+ * The card's action bar (Assign, Brainstorm, Block/Unblock, Archive/Restore) and
+ * its dialogs. Rendered as the Drawer's footer, which Arco lays out below the
+ * scrolling content, so the bar never covers the last section at any width.
+ */
+const DrawerActions: React.FC<{ board: BoardController; controller: CardDetailController }> = ({
+  board,
+  controller,
+}) => {
+  const { t } = useTranslation();
+  const [blockOpen, setBlockOpen] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [brainstormOpen, setBrainstormOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const card = controller.detail?.card;
+  if (!card || board.readOnly) return null;
+  const ref = cardRef(card.number);
+  const archived = Boolean(card.archived_at);
+  const run = async (action: () => Promise<boolean>) => {
+    setBusy(true);
+    try {
+      await action();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <div className='flex flex-wrap justify-start gap-8px' data-testid='board-drawer-actions'>
+        {!archived && (
+          <>
             <Button
+              className={iconLabelButton('default')}
               type='primary'
-              loading={busy}
-              icon={<Undo theme='outline' size='14' fill='currentColor' />}
-              onClick={() => void run(() => controller.setArchived(false))}
+              icon={<UserToUserTransmission theme='outline' size='14' fill='currentColor' />}
+              onClick={() => setAssignOpen(true)}
             >
-              {t('board.drawer.restore')}
+              {t('board.assign.action')}
+            </Button>
+            <Button
+              className={iconLabelButton('default')}
+              icon={<Lightning theme='outline' size='14' fill='currentColor' />}
+              onClick={() => setBrainstormOpen(true)}
+            >
+              {t('board.brainstorm.action')}
+            </Button>
+          </>
+        )}
+        {!archived &&
+          (card.blocked ? (
+            <Button
+              className={iconLabelButton('default')}
+              loading={busy}
+              icon={<Unlock theme='outline' size='14' fill='currentColor' />}
+              onClick={() => void run(() => controller.setBlocked(false))}
+            >
+              {t('board.drawer.unblock')}
             </Button>
           ) : (
             <Button
-              status='danger'
-              icon={<Inbox theme='outline' size='14' fill='currentColor' />}
-              onClick={() => {
-                Modal.confirm({
-                  title: t('board.drawer.archiveTitle', { ref }),
-                  content: t('board.drawer.archiveContent'),
-                  okText: t('board.drawer.archive'),
-                  cancelText: t('common.cancel'),
-                  onOk: async () => {
-                    await controller.setArchived(true);
-                  },
-                });
-              }}
+              className={iconLabelButton('default')}
+              icon={<Lock theme='outline' size='14' fill='currentColor' />}
+              onClick={() => setBlockOpen(true)}
             >
-              {t('board.drawer.archive')}
+              {t('board.drawer.block')}
             </Button>
-          )}
-        </div>
-      )}
+          ))}
+        {archived ? (
+          <Button
+            className={iconLabelButton('default')}
+            type='primary'
+            loading={busy}
+            icon={<Undo theme='outline' size='14' fill='currentColor' />}
+            onClick={() => void run(() => controller.setArchived(false))}
+          >
+            {t('board.drawer.restore')}
+          </Button>
+        ) : (
+          <Button
+            className={iconLabelButton('default')}
+            status='danger'
+            icon={<Inbox theme='outline' size='14' fill='currentColor' />}
+            onClick={() => {
+              Modal.confirm({
+                title: t('board.drawer.archiveTitle', { ref }),
+                content: t('board.drawer.archiveContent'),
+                okText: t('board.drawer.archive'),
+                cancelText: t('common.cancel'),
+                onOk: async () => {
+                  await controller.setArchived(true);
+                },
+              });
+            }}
+          >
+            {t('board.drawer.archive')}
+          </Button>
+        )}
+      </div>
       <BlockDialog refLabel={ref} visible={blockOpen} onClose={() => setBlockOpen(false)} controller={controller} />
       <AssignDialog card={card} visible={assignOpen} onClose={() => setAssignOpen(false)} controller={controller} />
       <BrainstormDialog
@@ -202,7 +231,7 @@ const DrawerBody: React.FC<{ board: BoardController; controller: CardDetailContr
         onClose={() => setBrainstormOpen(false)}
         controller={controller}
       />
-    </div>
+    </>
   );
 };
 
@@ -230,13 +259,24 @@ export const CardDrawer: React.FC<{ board: BoardController; cardId: string | nul
 
   const controller = useCardDetail(shownId, board.applyCard);
   const ref = controller.detail ? cardRef(controller.detail.card.number) : '';
+  // Arco passes unknown props to the drawer's wrapper element.
+  const dialogAttributes = {
+    role: 'dialog',
+    'aria-modal': 'true',
+    'aria-label': t('board.drawer.label', { ref }),
+    'aria-describedby': controller.detail ? TITLE_ID : undefined,
+  };
 
   return (
     <Drawer
       visible={Boolean(cardId)}
       width={narrow ? '100%' : 480}
       title={null}
-      footer={null}
+      // Arco lays its footer out below the scrolling content (never over it). `null`
+      // (not undefined) hides it: undefined would render Arco's default OK/Cancel.
+      footer={controller.detail && !board.readOnly ? <DrawerActions board={board} controller={controller} /> : null}
+      // The dialog semantics sit on the drawer wrapper so they cover the content and the action bar.
+      {...(dialogAttributes as React.AriaAttributes & { role: string })}
       closable={false}
       focusLock
       autoFocus
@@ -254,13 +294,7 @@ export const CardDrawer: React.FC<{ board: BoardController; cardId: string | nul
         else if (closedId) focusCard(closedId);
       }}
     >
-      <div
-        role='dialog'
-        aria-modal='true'
-        aria-label={t('board.drawer.label', { ref })}
-        aria-describedby={controller.detail ? TITLE_ID : undefined}
-        className='min-h-full'
-      >
+      <div className='min-h-full'>
         <DrawerBody board={board} controller={controller} onClose={onClose} />
       </div>
     </Drawer>

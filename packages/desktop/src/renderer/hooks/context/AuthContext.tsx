@@ -88,6 +88,19 @@ function clearAuthCache(): void {
   }
 }
 
+// A reload or navigation cancels in-flight requests; the browser reports those
+// fetches as `TypeError: Failed to fetch` (not AbortError). Once the page is being
+// unloaded such a failure is expected and not worth logging.
+let pageUnloading = false;
+if (typeof window !== 'undefined') {
+  window.addEventListener('pagehide', () => {
+    pageUnloading = true;
+  });
+  window.addEventListener('pageshow', () => {
+    pageUnloading = false;
+  });
+}
+
 async function fetchCurrentUser(signal?: AbortSignal): Promise<AuthUser | null> {
   try {
     let response = await fetch(AUTH_USER_ENDPOINT, {
@@ -123,7 +136,7 @@ async function fetchCurrentUser(signal?: AbortSignal): Promise<AuthUser | null> 
       return data.user;
     }
   } catch (error) {
-    if ((error as Error).name === 'AbortError') {
+    if ((error as Error).name === 'AbortError' || pageUnloading) {
       return null;
     }
     console.error('Failed to fetch current user:', error);
