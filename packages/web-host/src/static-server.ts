@@ -169,6 +169,13 @@ function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffe
   client.pause();
   const upstream = net.connect({ host: '127.0.0.1', port: backendPort });
   upstream.setNoDelay(true);
+  // Only the request head goes out before the backend answers. Bytes the
+  // client already sent after it (early WebSocket frames, or a pipelined
+  // request) wait for the 101 and are dropped otherwise, so nothing reaches
+  // the backend without the X-Forwarded-Host rewrite (TASK-76).
+  const headEnd = head.indexOf('\r\n\r\n') + 4;
+  const requestHead = head.subarray(0, headEnd);
+  const early = head.subarray(headEnd);
   let answer = Buffer.alloc(0);
   let spliced = false;
   const close = (): void => {
@@ -194,10 +201,11 @@ function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffe
     }
     spliced = true;
     client.write(answer);
+    if (early.length > 0) upstream.write(early);
     upstream.pipe(client);
     client.pipe(upstream);
   };
-  upstream.once('connect', () => upstream.write(head));
+  upstream.once('connect', () => upstream.write(requestHead));
   upstream.on('data', onAnswer);
   upstream.on('error', close);
   client.on('error', close);

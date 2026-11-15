@@ -90,12 +90,12 @@ describe('static server forwards the browser Host as X-Forwarded-Host', () => {
 
   async function start(
     onRequest: http.RequestListener,
-    onUpgrade?: (req: http.IncomingMessage, s: net.Socket) => void
+    onUpgrade?: (req: http.IncomingMessage, s: net.Socket, head: Buffer) => void
   ) {
     staticDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ws-fh-'));
     await fs.writeFile(path.join(staticDir, 'index.html'), '<!doctype html>');
     backend = http.createServer(onRequest);
-    if (onUpgrade) backend.on('upgrade', (req, socket) => onUpgrade(req, socket as net.Socket));
+    if (onUpgrade) backend.on('upgrade', (req, socket, head) => onUpgrade(req, socket as net.Socket, head));
     await new Promise<void>((r) => backend!.listen(0, '127.0.0.1', () => r()));
     const backendPort = (backend.address() as AddressInfo).port;
     handle = await startStaticServer({ staticDir, backendPort, port: 0 });
@@ -238,5 +238,48 @@ describe('static server forwards the browser Host as X-Forwarded-Host', () => {
     expect(received).toContain('HTTP/1.1 200');
     expect(seen).toHaveLength(1);
     expect(seen[0]['x-forwarded-host']).toBe('y.talkseeds.com');
+  });
+
+  const UPGRADE_HEAD =
+    'GET /ws HTTP/1.1\r\nHost: y.talkseeds.com\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n' +
+    'Sec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n';
+
+  it('TASK-76: a request pipelined behind the upgrade head never reaches the backend before the answer', async () => {
+    let backendSaw = '';
+    await start(
+      (_req, res) => res.end(),
+      (_req, socket, head) => {
+        backendSaw += head.toString('latin1');
+        socket.on('data', (d) => (backendSaw += d.toString('latin1')));
+        socket.on('end', () => socket.destroy());
+        socket.write('HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: keep-alive\r\n\r\n');
+      }
+    );
+    // Head and the forged request in ONE write: both are in the first chunk the web host reads.
+    const { received } = await rawExchange(UPGRADE_HEAD + SECOND);
+    expect(received).toMatch(/^HTTP\/1\.1 403 /);
+    await new Promise((r) => setTimeout(r, 100));
+    expect(backendSaw).toBe('');
+  });
+
+  it('TASK-76: bytes sent with the upgrade head reach the backend only after the 101', async () => {
+    let afterAnswer = '';
+    let withHead = '';
+    let backendSocket: net.Socket | null = null;
+    await start(
+      (_req, res) => res.end(),
+      (_req, socket, head) => {
+        backendSocket = socket;
+        withHead = head.toString('latin1');
+        socket.write('HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\r\n');
+        socket.on('data', (d) => (afterAnswer += d.toString('latin1')));
+      }
+    );
+    const exchange = rawExchange(UPGRADE_HEAD + 'EARLY-FRAME-BYTES');
+    await new Promise((r) => setTimeout(r, 300));
+    expect(withHead).toBe('');
+    expect(afterAnswer).toBe('EARLY-FRAME-BYTES');
+    (backendSocket as net.Socket | null)?.destroy();
+    await exchange;
   });
 });
