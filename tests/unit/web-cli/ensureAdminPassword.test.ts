@@ -7,6 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   ensureAdminPassword,
+  WEBUI_FIRST_PASSWORD_STEPS,
   WEBUI_PASSWORD_PROCEDURE,
   type EnsureAdminPasswordDeps,
 } from '../../../packages/web-cli/src/ensureAdminPassword.js';
@@ -53,18 +54,34 @@ function makeDeps(opts: { handlers: Array<(url: string, init?: RequestInit) => R
 }
 
 describe('ensureAdminPassword in WebUI identity (card C11)', () => {
-  it('never calls the local-only reset endpoint and prints the password procedure', async () => {
+  it('probes the status and, with no password yet, warns with the first-password steps', async () => {
     const { deps, calls, logs, warns } = makeDeps({
       handlers: [() => mockResponse(200, { needs_setup: true })],
     });
 
     await ensureAdminPassword({ backendPort: 25808, identity: 'webui' }, deps);
 
-    expect(calls).toEqual([]);
+    expect(calls.map((call) => call.url)).toEqual(['http://127.0.0.1:25808/api/auth/status']);
+    expect(warns).toEqual(WEBUI_FIRST_PASSWORD_STEPS.map((line) => `[aionui-web] ${line}`));
+    expect(warns.join('\n')).toContain('aioncore user set-password');
+    expect(warns.join('\n')).toContain('internal.json');
+    expect(warns.join('\n')).toContain('cli.js set-password');
+    expect(logs).toEqual([]);
+  });
+
+  it('with a password set, never calls the reset endpoint and prints the procedure', async () => {
+    const { deps, calls, logs, warns } = makeDeps({
+      handlers: [() => mockResponse(200, { needs_setup: false })],
+    });
+
+    await ensureAdminPassword({ backendPort: 25808, identity: 'webui' }, deps);
+
+    expect(calls).toHaveLength(1);
     expect(warns).toEqual([]);
     expect(logs).toEqual(WEBUI_PASSWORD_PROCEDURE.map((line) => `[aionui-web] ${line}`));
+    expect(logs.join('\n')).toContain('cli.js set-password');
     expect(logs.join('\n')).toContain('aioncore user disable');
-    expect(logs.join('\n')).toContain('Token Pool');
+    expect(logs.join('\n')).not.toContain('users.json');
   });
 
   it('local identity keeps the seeding flow unchanged', async () => {

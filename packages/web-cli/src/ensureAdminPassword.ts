@@ -17,22 +17,38 @@
  * "Generated initial admin password: <pw>". Do not change it without updating
  * that script.
  *
- * WebUI identity (card C11, `AIONUI_BACKEND_IDENTITY=webui`): the reset endpoint
- * is local-only there and accounts are managed outside aionui-web, so this step
- * is skipped and the documented procedure is printed instead.
+ * WebUI identity (card C11): the reset endpoint is local-only there and accounts
+ * are managed outside aionui-web. The status is still probed: with no password
+ * yet the first-password steps are printed as a warning, otherwise the procedure.
  */
 
 /**
  * How passwords and sessions are managed when AionCore runs in WebUI identity
- * (C11 plan, "Password procedure"). Printed by `resetpass` and at start-up.
+ * (card C11; the Token Pool's RUNBOOK.md is the reference). Printed by `resetpass`
+ * and at start-up.
  */
 export const WEBUI_PASSWORD_PROCEDURE: readonly string[] = [
-  'AionCore runs in WebUI identity: /api/webui/reset-password is not available.',
-  'Owner password: reset it through the Token Pool CLI (users.json).',
-  'Revoke all sessions: stop AionUi, run `aioncore user disable --username <user>` then',
-  '  `aioncore user enable --username <user>` (bumps the session generation), start AionUi.',
-  'Never run `aioncore user set-password` on its own: it must go together with an atomic',
-  '  rewrite of the gateway credentials (internal.json). See RUNBOOK.md.',
+  'AionCore runs in WebUI identity: /api/webui/reset-password and resetpass are not used.',
+  'Owner password: change it in the AionUi settings, or reset it in the container with',
+  '  node /opt/aionui-tp/current/token-pool/service/cli.js set-password <user> < <file-with-new-password>',
+  '  (first line of the file; delete the file afterwards).',
+  'Sign out every session: `aioncore --data-dir <data-dir> user disable --username <internal user>`, then',
+  '  `... user enable --username <internal user>`, then restart AionUi and the Token Pool together',
+  '  (`kill -HUP $(cat /run/aionui-tp.pid)`).',
+  'Never run `aioncore user set-password` on its own: the Token Pool internal.json would no longer match.',
+  'See the Token Pool RUNBOOK.md.',
+];
+
+/**
+ * First start in WebUI identity with no AionCore password yet (`needs_setup`):
+ * the internal account and the gateway credentials must be created together.
+ */
+export const WEBUI_FIRST_PASSWORD_STEPS: readonly string[] = [
+  'WARNING: AionCore runs in WebUI identity and has no password yet — nobody can sign in.',
+  'Set the internal account password with `aioncore user set-password` AND write the Token Pool',
+  '  internal.json with the same password atomically, in the same step (see the Token Pool RUNBOOK.md).',
+  'Then set the owner login with',
+  '  node /opt/aionui-tp/current/token-pool/service/cli.js set-password <user> < <file-with-new-password>',
 ];
 
 export type EnsureAdminPasswordDeps = {
@@ -123,11 +139,6 @@ export async function ensureAdminPassword(
   const resetCmd = opts.resetCommand ?? 'aionui-web resetpass';
   const base = `http://127.0.0.1:${opts.backendPort}`;
 
-  if (opts.identity === 'webui') {
-    WEBUI_PASSWORD_PROCEDURE.forEach((line) => deps.log(`[aionui-web] ${line}`));
-    return;
-  }
-
   let status: AuthStatus;
   try {
     status = await waitForStatus(deps, `${base}/api/auth/status`, timeoutMs, intervalMs);
@@ -137,6 +148,15 @@ export async function ensureAdminPassword(
   }
 
   const needsSetup = status.needs_setup ?? status.data?.needs_setup ?? false;
+
+  // WebUI identity: the reset endpoint is local-only; never call it. Without a
+  // password yet, say loudly how the first one must be set; otherwise point to
+  // the procedure.
+  if (opts.identity === 'webui') {
+    if (needsSetup) WEBUI_FIRST_PASSWORD_STEPS.forEach((line) => deps.warn(`[aionui-web] ${line}`));
+    else WEBUI_PASSWORD_PROCEDURE.forEach((line) => deps.log(`[aionui-web] ${line}`));
+    return;
+  }
 
   if (!needsSetup) {
     const username = await fetchAdminUsername(deps, opts.backendPort);
