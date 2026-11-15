@@ -1,0 +1,153 @@
+{
+  "orb": {
+    "tooltip": "Voice mode ({{shortcut}})",
+    "state": {
+      "off": "Voice mode off",
+      "arming": "Preparing…",
+      "armed": "Armed",
+      "connecting": "Connecting…",
+      "listening": "Listening",
+      "thinking": "Thinking",
+      "speaking": "Speaking",
+      "offline": "Offline — reconnecting",
+      "frozen": "Paused in the background"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "Close voice panel"
+  },
+  "actions": {
+    "arm": "Arm voice",
+    "disarm": "Stop voice",
+    "talk": "Talk",
+    "hangUp": "Hang up",
+    "mute": "Mute microphone",
+    "unmute": "Unmute microphone",
+    "settings": "Voice settings",
+    "back": "Back"
+  },
+  "status": {
+    "wakeWordLoading": "Loading the wake word…",
+    "wakeWordReady": "Say “Hey Jarvis” or tap Talk",
+    "wakeWordUnavailable": "Wake word unavailable — tap Talk",
+    "wakeWordOff": "Wake word off — tap Talk",
+    "screenMaySleep": "The screen may sleep and pause Jarvis",
+    "systemPaused": "Audio paused by the system",
+    "readback": "Reading the draft back…",
+    "muted": "Microphone muted"
+  },
+  "captions": {
+    "title": "Live captions",
+    "empty": "Captions appear here while you talk.",
+    "role": {
+      "user": "You",
+      "assistant": "Jarvis",
+      "agent": "Agent"
+    }
+  },
+  "draft": {
+    "title": "Draft",
+    "to": "To",
+    "noTarget": "Target not resolved yet",
+    "send": "Send",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "editHint": "Say “change it to …” and Jarvis reads the new version back.",
+    "holding": "Sending in {{seconds}} s — say “cancel” or tap Cancel",
+    "holdFrozen": "Paused while you speak — say “cancel” or tap Cancel",
+    "diffLabel": "Changes from what you said",
+    "transform": {
+      "filler": "filler removed",
+      "reference": "name resolved",
+      "reorder": "reordered"
+    },
+    "delivery": {
+      "new_turn": "Starts a new turn",
+      "steer": "Steers the running turn",
+      "queue_busy": "Queued until the running turn ends",
+      "queue_approval": "Waits for a pending approval",
+      "new_conversation": "Creates a new conversation"
+    },
+    "state": {
+      "drafted": "Say “send” or tap Send",
+      "ambiguous": "Which one? Say the name or tap Cancel",
+      "pending_transcript": "Checking what you said…",
+      "confirmed": "Confirmed",
+      "committing": "Holding before sending",
+      "sending": "Sending…",
+      "queued": "Queued",
+      "sent": "Sent",
+      "failed": "Not sent — it failed",
+      "saved_not_started": "Saved, not started — say “start it” or tap",
+      "cancelled": "Cancelled",
+      "expired": "Expired",
+      "interrupted": "Interrupted — please confirm again",
+      "superseded": "Replaced by a new version"
+    }
+  },
+  "followUps": {
+    "title": "Recent follow-ups",
+    "open": "Open conversation",
+    "status": {
+      "finished": "Finished",
+      "failed": "Failed",
+      "needs_approval": "Needs your approval",
+      "says": "Says",
+      "asks": "Asks"
+    }
+  },
+  "budget": {
+    "title": "Today's voice budget",
+    "usage": "${{used}} of ${{limit}}",
+    "warning": "Almost at today's limit"
+  },
+  "notice": {
+    "disabled": "Voice is turned off. Turn it on in Voice settings.",
+    "audioUnavailable": "Audio is not available in this browser.",
+    "micDenied": "Microphone access was denied.",
+    "micLost": "The microphone was disconnected.",
+    "armFailed": "Voice could not start.",
+    "offline": "No connection to the server. Try again in a moment.",
+    "busy": "Jarvis answered on your other device.",
+    "callFailed": "The call could not be started.",
+    "networkLost": "Network lost — Jarvis will resume when you are back online.",
+    "budget": "Today's voice budget is used up.",
+    "clipFailed": "The read-back could not be played. Read the draft on screen.",
+    "cannotConfirm": "This draft cannot be confirmed by tap yet.",
+    "server": "Voice error: {{message}}",
+    "unauthorized": "Your session expired. Please sign in again.",
+    "forbidden": "Voice is not allowed for this session.",
+    "unavailable": "Voice is temporarily unavailable.",
+    "network": "Network error. Try again."
+  },
+  "settings": {
+    "title": "Voice settings",
+    "enabled": "Voice mode",
+    "enabledHint": "Off by default. When off, no call can start and armed devices stop.",
+    "engine": "Engine",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "available later",
+    "wakeWord": "Wake word “Hey Jarvis”",
+    "wakeWordHint": "Runs on this device only. When off, tap Talk to start.",
+    "carMode": "Car mode",
+    "carModeHint": "Smaller model, far-field noise reduction, waits longer before answering.",
+    "budget": "Daily budget",
+    "shortcut": "Keyboard shortcut",
+    "shortcutRecord": "Press a key combination",
+    "shortcutReset": "Reset",
+    "loadFailed": "Voice settings could not be loaded.",
+    "saveFailed": "The setting could not be saved.",
+    "privacy": "Audio stays on this device until a call starts and is never stored."
+  },
+  "slash": {
+    "description": "Talk to Jarvis about this conversation"
+  },
+  "composer": {
+    "tooltip": "Voice mode for this conversation"
+  }
+}

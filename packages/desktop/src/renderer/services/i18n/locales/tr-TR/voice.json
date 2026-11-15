@@ -1,0 +1,153 @@
+{
+  "orb": {
+    "tooltip": "Ses modu ({{shortcut}})",
+    "state": {
+      "off": "Ses modu kapalı",
+      "arming": "Hazırlanıyor…",
+      "armed": "Hazır",
+      "connecting": "Bağlanıyor…",
+      "listening": "Dinliyor",
+      "thinking": "Düşünüyor",
+      "speaking": "Konuşuyor",
+      "offline": "Çevrimdışı — yeniden bağlanıyor",
+      "frozen": "Arka planda duraklatıldı"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "Ses panelini kapat"
+  },
+  "actions": {
+    "arm": "Sesi etkinleştir",
+    "disarm": "Sesi durdur",
+    "talk": "Konuş",
+    "hangUp": "Kapat",
+    "mute": "Mikrofonu sessize al",
+    "unmute": "Mikrofonun sesini aç",
+    "settings": "Ses ayarları",
+    "back": "Geri"
+  },
+  "status": {
+    "wakeWordLoading": "Uyandırma kelimesi yükleniyor…",
+    "wakeWordReady": "“Hey Jarvis” deyin veya Konuş'a dokunun",
+    "wakeWordUnavailable": "Uyandırma kelimesi kullanılamıyor — Konuş'a dokunun",
+    "wakeWordOff": "Uyandırma kelimesi kapalı — Konuş'a dokunun",
+    "screenMaySleep": "Ekran uyku moduna geçip Jarvis'i duraklatabilir",
+    "systemPaused": "Ses sistem tarafından duraklatıldı",
+    "readback": "Taslak okunuyor…",
+    "muted": "Mikrofon sessizde"
+  },
+  "captions": {
+    "title": "Canlı altyazı",
+    "empty": "Konuşurken altyazılar burada görünür.",
+    "role": {
+      "user": "Siz",
+      "assistant": "Jarvis",
+      "agent": "Ajan"
+    }
+  },
+  "draft": {
+    "title": "Taslak",
+    "to": "Alıcı",
+    "noTarget": "Hedef henüz belirlenmedi",
+    "send": "Gönder",
+    "edit": "Düzenle",
+    "cancel": "İptal",
+    "editHint": "“change it to …” deyin, Jarvis yeni sürümü size okusun.",
+    "holding": "{{seconds}} sn içinde gönderiliyor — “cancel” deyin veya İptal'e dokunun",
+    "holdFrozen": "Siz konuşurken duraklatıldı — “cancel” deyin veya İptal düğmesine dokunun",
+    "diffLabel": "Söylediklerinizden farklar",
+    "transform": {
+      "filler": "dolgu sözcükleri kaldırıldı",
+      "reference": "ad çözümlendi",
+      "reorder": "yeniden sıralandı"
+    },
+    "delivery": {
+      "new_turn": "Yeni bir tur başlatır",
+      "steer": "Devam eden turu yönlendirir",
+      "queue_busy": "Devam eden tur bitene kadar sırada bekler",
+      "queue_approval": "Bekleyen bir onayı bekler",
+      "new_conversation": "Yeni bir konuşma oluşturur"
+    },
+    "state": {
+      "drafted": "“send” deyin veya Gönder'e dokunun",
+      "ambiguous": "Hangisi? Adını söyleyin veya İptal'e dokunun",
+      "pending_transcript": "Söyledikleriniz kontrol ediliyor…",
+      "confirmed": "Onaylandı",
+      "committing": "Göndermeden önce bekleniyor",
+      "sending": "Gönderiliyor…",
+      "queued": "Sırada",
+      "sent": "Gönderildi",
+      "failed": "Gönderilemedi — başarısız oldu",
+      "saved_not_started": "Kaydedildi, başlatılmadı — “start it” deyin veya dokunun",
+      "cancelled": "İptal edildi",
+      "expired": "Süresi doldu",
+      "interrupted": "Kesintiye uğradı — lütfen tekrar onaylayın",
+      "superseded": "Yeni bir sürümle değiştirildi"
+    }
+  },
+  "followUps": {
+    "title": "Son takip mesajları",
+    "open": "Konuşmayı aç",
+    "status": {
+      "finished": "Tamamlandı",
+      "failed": "Başarısız",
+      "needs_approval": "Onayınız gerekiyor",
+      "says": "Diyor",
+      "asks": "Soruyor"
+    }
+  },
+  "budget": {
+    "title": "Bugünkü ses bütçesi",
+    "usage": "${{used}} / ${{limit}}",
+    "warning": "Bugünkü sınıra neredeyse ulaşıldı"
+  },
+  "notice": {
+    "disabled": "Ses kapalı. Ses ayarlarından açın.",
+    "audioUnavailable": "Bu tarayıcıda ses kullanılamıyor.",
+    "micDenied": "Mikrofon erişimi reddedildi.",
+    "micLost": "Mikrofon bağlantısı kesildi.",
+    "armFailed": "Ses başlatılamadı.",
+    "offline": "Sunucu bağlantısı yok. Birazdan tekrar deneyin.",
+    "busy": "Jarvis diğer cihazınızda yanıt verdi.",
+    "callFailed": "Arama başlatılamadı.",
+    "networkLost": "Ağ bağlantısı kesildi — tekrar çevrimiçi olduğunuzda Jarvis devam edecek.",
+    "budget": "Bugünkü ses bütçesi tükendi.",
+    "clipFailed": "Sesli okuma oynatılamadı. Taslağı ekrandan okuyun.",
+    "cannotConfirm": "Bu taslak henüz dokunarak onaylanamıyor.",
+    "server": "Ses hatası: {{message}}",
+    "unauthorized": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
+    "forbidden": "Bu oturumda sese izin verilmiyor.",
+    "unavailable": "Ses geçici olarak kullanılamıyor.",
+    "network": "Ağ hatası. Tekrar deneyin."
+  },
+  "settings": {
+    "title": "Ses ayarları",
+    "enabled": "Ses modu",
+    "enabledHint": "Varsayılan olarak kapalı. Kapalıyken arama başlatılamaz ve hazır bekleyen cihazlar durur.",
+    "engine": "Motor",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "yakında",
+    "wakeWord": "Uyandırma kelimesi “Hey Jarvis”",
+    "wakeWordHint": "Yalnızca bu cihazda çalışır. Kapalıyken başlatmak için Konuş'a dokunun.",
+    "carMode": "Araç modu",
+    "carModeHint": "Daha küçük model, uzak alan gürültü azaltma, yanıt vermeden önce daha uzun bekler.",
+    "budget": "Günlük bütçe",
+    "shortcut": "Klavye kısayolu",
+    "shortcutRecord": "Bir tuş kombinasyonuna basın",
+    "shortcutReset": "Sıfırla",
+    "loadFailed": "Ses ayarları yüklenemedi.",
+    "saveFailed": "Ayar kaydedilemedi.",
+    "privacy": "Ses, bir arama başlayana kadar bu cihazda kalır ve asla saklanmaz."
+  },
+  "slash": {
+    "description": "Bu konuşma hakkında Jarvis ile konuşun"
+  },
+  "composer": {
+    "tooltip": "Bu konuşma için ses modu"
+  }
+}

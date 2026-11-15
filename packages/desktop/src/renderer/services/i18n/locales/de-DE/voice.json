@@ -1,0 +1,153 @@
+{
+  "orb": {
+    "tooltip": "Sprachmodus ({{shortcut}})",
+    "state": {
+      "off": "Sprachmodus aus",
+      "arming": "Wird vorbereitet…",
+      "armed": "Bereit",
+      "connecting": "Verbinde…",
+      "listening": "Hört zu",
+      "thinking": "Denkt nach",
+      "speaking": "Spricht",
+      "offline": "Offline — verbinde neu",
+      "frozen": "Im Hintergrund pausiert"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "Sprachpanel schließen"
+  },
+  "actions": {
+    "arm": "Sprache aktivieren",
+    "disarm": "Sprache beenden",
+    "talk": "Sprechen",
+    "hangUp": "Auflegen",
+    "mute": "Mikrofon stummschalten",
+    "unmute": "Mikrofon einschalten",
+    "settings": "Spracheinstellungen",
+    "back": "Zurück"
+  },
+  "status": {
+    "wakeWordLoading": "Aktivierungswort wird geladen…",
+    "wakeWordReady": "Sag „Hey Jarvis“ oder tippe auf Sprechen",
+    "wakeWordUnavailable": "Aktivierungswort nicht verfügbar — tippe auf Sprechen",
+    "wakeWordOff": "Aktivierungswort aus — tippe auf Sprechen",
+    "screenMaySleep": "Der Bildschirm kann in den Ruhezustand gehen und Jarvis pausieren",
+    "systemPaused": "Audio vom System pausiert",
+    "readback": "Entwurf wird vorgelesen…",
+    "muted": "Mikrofon stummgeschaltet"
+  },
+  "captions": {
+    "title": "Live-Untertitel",
+    "empty": "Untertitel erscheinen hier, während du sprichst.",
+    "role": {
+      "user": "Du",
+      "assistant": "Jarvis",
+      "agent": "Agent"
+    }
+  },
+  "draft": {
+    "title": "Entwurf",
+    "to": "An",
+    "noTarget": "Ziel noch nicht ermittelt",
+    "send": "Senden",
+    "edit": "Bearbeiten",
+    "cancel": "Abbrechen",
+    "editHint": "Sag „change it to …“ und Jarvis liest die neue Fassung vor.",
+    "holding": "Wird in {{seconds}} s gesendet — sag „cancel“ oder tippe auf Abbrechen",
+    "holdFrozen": "Pausiert, während du sprichst – sag „cancel“ oder tippe auf Abbrechen",
+    "diffLabel": "Änderungen gegenüber dem Gesagten",
+    "transform": {
+      "filler": "Füllwörter entfernt",
+      "reference": "Name aufgelöst",
+      "reorder": "umgestellt"
+    },
+    "delivery": {
+      "new_turn": "Startet einen neuen Durchgang",
+      "steer": "Lenkt den laufenden Durchgang",
+      "queue_busy": "Wartet, bis der laufende Durchgang endet",
+      "queue_approval": "Wartet auf eine ausstehende Freigabe",
+      "new_conversation": "Erstellt ein neues Gespräch"
+    },
+    "state": {
+      "drafted": "Sag „send“ oder tippe auf Senden",
+      "ambiguous": "Welches genau? Nenne den Namen oder tippe auf Abbrechen",
+      "pending_transcript": "Prüfe, was du gesagt hast…",
+      "confirmed": "Bestätigt",
+      "committing": "Kurze Pause vor dem Senden",
+      "sending": "Wird gesendet…",
+      "queued": "In der Warteschlange",
+      "sent": "Gesendet",
+      "failed": "Nicht gesendet — fehlgeschlagen",
+      "saved_not_started": "Gespeichert, nicht gestartet — sag „start it“ oder tippe",
+      "cancelled": "Abgebrochen",
+      "expired": "Abgelaufen",
+      "interrupted": "Unterbrochen — bitte erneut bestätigen",
+      "superseded": "Durch eine neue Fassung ersetzt"
+    }
+  },
+  "followUps": {
+    "title": "Neueste Rückmeldungen",
+    "open": "Gespräch öffnen",
+    "status": {
+      "finished": "Fertig",
+      "failed": "Fehlgeschlagen",
+      "needs_approval": "Braucht deine Freigabe",
+      "says": "Sagt",
+      "asks": "Fragt"
+    }
+  },
+  "budget": {
+    "title": "Heutiges Sprachbudget",
+    "usage": "${{used}} von ${{limit}}",
+    "warning": "Heutiges Limit fast erreicht"
+  },
+  "notice": {
+    "disabled": "Sprache ist ausgeschaltet. Schalte sie in den Spracheinstellungen ein.",
+    "audioUnavailable": "Audio ist in diesem Browser nicht verfügbar.",
+    "micDenied": "Der Mikrofonzugriff wurde verweigert.",
+    "micLost": "Das Mikrofon wurde getrennt.",
+    "armFailed": "Sprache konnte nicht gestartet werden.",
+    "offline": "Keine Verbindung zum Server. Versuche es gleich noch einmal.",
+    "busy": "Jarvis hat auf deinem anderen Gerät geantwortet.",
+    "callFailed": "Der Anruf konnte nicht gestartet werden.",
+    "networkLost": "Netzwerk getrennt — Jarvis macht weiter, sobald du wieder online bist.",
+    "budget": "Das heutige Sprachbudget ist aufgebraucht.",
+    "clipFailed": "Das Vorlesen konnte nicht abgespielt werden. Lies den Entwurf auf dem Bildschirm.",
+    "cannotConfirm": "Dieser Entwurf kann noch nicht per Tippen bestätigt werden.",
+    "server": "Sprachfehler: {{message}}",
+    "unauthorized": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
+    "forbidden": "Sprache ist für diese Sitzung nicht erlaubt.",
+    "unavailable": "Sprache ist vorübergehend nicht verfügbar.",
+    "network": "Netzwerkfehler. Versuche es erneut."
+  },
+  "settings": {
+    "title": "Spracheinstellungen",
+    "enabled": "Sprachmodus",
+    "enabledHint": "Standardmäßig aus. Wenn aus, kann kein Anruf starten und bereite Geräte stoppen.",
+    "engine": "Engine",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "später verfügbar",
+    "wakeWord": "Aktivierungswort „Hey Jarvis“",
+    "wakeWordHint": "Läuft nur auf diesem Gerät. Wenn aus, tippe zum Starten auf Sprechen.",
+    "carMode": "Automodus",
+    "carModeHint": "Kleineres Modell, Fernfeld-Rauschunterdrückung, wartet länger vor der Antwort.",
+    "budget": "Tagesbudget",
+    "shortcut": "Tastenkürzel",
+    "shortcutRecord": "Drücke eine Tastenkombination",
+    "shortcutReset": "Zurücksetzen",
+    "loadFailed": "Spracheinstellungen konnten nicht geladen werden.",
+    "saveFailed": "Die Einstellung konnte nicht gespeichert werden.",
+    "privacy": "Audio bleibt auf diesem Gerät, bis ein Anruf startet, und wird nie gespeichert."
+  },
+  "slash": {
+    "description": "Mit Jarvis über dieses Gespräch sprechen"
+  },
+  "composer": {
+    "tooltip": "Sprachmodus für dieses Gespräch"
+  }
+}

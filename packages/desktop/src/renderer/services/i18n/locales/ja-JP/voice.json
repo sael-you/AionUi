@@ -1,0 +1,153 @@
+{
+  "orb": {
+    "tooltip": "音声モード（{{shortcut}}）",
+    "state": {
+      "off": "音声モードはオフです",
+      "arming": "準備中…",
+      "armed": "待機中",
+      "connecting": "接続中…",
+      "listening": "聞き取り中",
+      "thinking": "考え中",
+      "speaking": "話しています",
+      "offline": "オフライン — 再接続中",
+      "frozen": "バックグラウンドで一時停止中"
+    }
+  },
+  "overlay": {
+    "title": "Jarvis",
+    "close": "音声パネルを閉じる"
+  },
+  "actions": {
+    "arm": "音声を有効にする",
+    "disarm": "音声を停止",
+    "talk": "話す",
+    "hangUp": "通話を終了",
+    "mute": "マイクをミュート",
+    "unmute": "マイクのミュートを解除",
+    "settings": "音声設定",
+    "back": "戻る"
+  },
+  "status": {
+    "wakeWordLoading": "ウェイクワードを読み込み中…",
+    "wakeWordReady": "「Hey Jarvis」と言うか「話す」をタップ",
+    "wakeWordUnavailable": "ウェイクワードは使用できません — 「話す」をタップ",
+    "wakeWordOff": "ウェイクワードはオフです — 「話す」をタップ",
+    "screenMaySleep": "画面がスリープすると Jarvis が一時停止する場合があります",
+    "systemPaused": "システムにより音声が一時停止されました",
+    "readback": "下書きを読み上げ中…",
+    "muted": "マイクはミュート中です"
+  },
+  "captions": {
+    "title": "ライブ字幕",
+    "empty": "話している間、ここに字幕が表示されます。",
+    "role": {
+      "user": "あなた",
+      "assistant": "Jarvis",
+      "agent": "エージェント"
+    }
+  },
+  "draft": {
+    "title": "下書き",
+    "to": "宛先",
+    "noTarget": "宛先はまだ特定されていません",
+    "send": "送信",
+    "edit": "編集",
+    "cancel": "キャンセル",
+    "editHint": "「change it to …」と言うと、Jarvis が新しい内容を読み上げます。",
+    "holding": "{{seconds}} 秒後に送信 — 「cancel」と言うか「キャンセル」をタップ",
+    "holdFrozen": "話している間は一時停止中 —「cancel」と言うか「キャンセル」をタップ",
+    "diffLabel": "話した内容からの変更点",
+    "transform": {
+      "filler": "つなぎ言葉を削除",
+      "reference": "名前を特定",
+      "reorder": "順序を変更"
+    },
+    "delivery": {
+      "new_turn": "新しいターンを開始",
+      "steer": "実行中のターンを誘導",
+      "queue_busy": "実行中のターンが終わるまで待機",
+      "queue_approval": "保留中の承認を待機",
+      "new_conversation": "新しい会話を作成"
+    },
+    "state": {
+      "drafted": "「send」と言うか「送信」をタップ",
+      "ambiguous": "どれですか？名前を言うか「キャンセル」をタップ",
+      "pending_transcript": "話した内容を確認中…",
+      "confirmed": "確認済み",
+      "committing": "送信前に待機中",
+      "sending": "送信中…",
+      "queued": "キュー待ち",
+      "sent": "送信済み",
+      "failed": "送信できませんでした",
+      "saved_not_started": "保存済み・未開始 — 「start it」と言うかタップ",
+      "cancelled": "キャンセル済み",
+      "expired": "期限切れ",
+      "interrupted": "中断されました — もう一度確認してください",
+      "superseded": "新しいバージョンに置き換えられました"
+    }
+  },
+  "followUps": {
+    "title": "最近のフォローアップ",
+    "open": "会話を開く",
+    "status": {
+      "finished": "完了",
+      "failed": "失敗",
+      "needs_approval": "承認が必要です",
+      "says": "発言",
+      "asks": "質問"
+    }
+  },
+  "budget": {
+    "title": "本日の音声予算",
+    "usage": "${{used}} / ${{limit}}",
+    "warning": "本日の上限に近づいています"
+  },
+  "notice": {
+    "disabled": "音声はオフになっています。音声設定でオンにしてください。",
+    "audioUnavailable": "このブラウザでは音声を利用できません。",
+    "micDenied": "マイクへのアクセスが拒否されました。",
+    "micLost": "マイクの接続が切れました。",
+    "armFailed": "音声を開始できませんでした。",
+    "offline": "サーバーに接続できません。しばらくしてからもう一度お試しください。",
+    "busy": "Jarvis は別のデバイスで応答しました。",
+    "callFailed": "通話を開始できませんでした。",
+    "networkLost": "ネットワークが切断されました — オンラインに戻ると Jarvis が再開します。",
+    "budget": "本日の音声予算を使い切りました。",
+    "clipFailed": "読み上げを再生できませんでした。画面で下書きを確認してください。",
+    "cannotConfirm": "この下書きはまだタップで確認できません。",
+    "server": "音声エラー：{{message}}",
+    "unauthorized": "セッションの有効期限が切れました。もう一度サインインしてください。",
+    "forbidden": "このセッションでは音声を使用できません。",
+    "unavailable": "音声は一時的に利用できません。",
+    "network": "ネットワークエラーです。もう一度お試しください。"
+  },
+  "settings": {
+    "title": "音声設定",
+    "enabled": "音声モード",
+    "enabledHint": "デフォルトはオフです。オフの間は通話を開始できず、待機中のデバイスも停止します。",
+    "engine": "エンジン",
+    "engineName": {
+      "openaiRealtime": "OpenAI Realtime (WebRTC)",
+      "openaiRelay": "OpenAI relay",
+      "minimaxCascade": "MiniMax cascade"
+    },
+    "engineLater": "近日対応",
+    "wakeWord": "ウェイクワード「Hey Jarvis」",
+    "wakeWordHint": "このデバイス上でのみ動作します。オフの場合は「話す」をタップして開始します。",
+    "carMode": "車載モード",
+    "carModeHint": "小型モデルと遠距離ノイズ低減を使用し、応答前に長めに待ちます。",
+    "budget": "1 日の予算",
+    "shortcut": "キーボードショートカット",
+    "shortcutRecord": "キーの組み合わせを押してください",
+    "shortcutReset": "リセット",
+    "loadFailed": "音声設定を読み込めませんでした。",
+    "saveFailed": "設定を保存できませんでした。",
+    "privacy": "音声は通話が始まるまでこのデバイス上にとどまり、保存されることはありません。"
+  },
+  "slash": {
+    "description": "この会話について Jarvis と話す"
+  },
+  "composer": {
+    "tooltip": "この会話の音声モード"
+  }
+}
