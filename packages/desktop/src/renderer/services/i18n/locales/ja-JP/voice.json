@@ -35,7 +35,11 @@
     "screenMaySleep": "画面がスリープすると Jarvis が一時停止する場合があります",
     "systemPaused": "システムにより音声が一時停止されました",
     "readback": "下書きを読み上げ中…",
-    "muted": "マイクはミュート中です"
+    "muted": "マイクはミュート中です",
+    "awaitingConfirm": "確認を待っています",
+    "awaitingChoice": "送信先の選択を待っています",
+    "holding": "まもなく送信 — まだキャンセルできます",
+    "asking": "エージェントから質問があります — 今答えてください。回答後に Jarvis は通話を終了します"
   },
   "captions": {
     "title": "ライブ字幕",
@@ -79,12 +83,17 @@
       "queued": "キュー待ち",
       "sent": "送信済み",
       "failed": "送信できませんでした",
-      "saved_not_started": "保存済み・未開始 — 「start it」と言うかタップ",
+      "saved_not_started": "保存されましたが開始されていません — 会話を開いて開始してください",
       "cancelled": "キャンセル済み",
       "expired": "期限切れ",
       "interrupted": "中断されました — もう一度確認してください",
-      "superseded": "新しいバージョンに置き換えられました"
-    }
+      "superseded": "新しいバージョンに置き換えられました",
+      "draftedTapOnly": "確定するには「送信」をタップ"
+    },
+    "chooseTarget": "どれですか？",
+    "options": "候補の送信先",
+    "openTarget": "会話を開く",
+    "editNeedsCall": "修正は下書きを作成した通話中に話して行います"
   },
   "followUps": {
     "title": "最近のフォローアップ",
@@ -94,13 +103,20 @@
       "failed": "失敗",
       "needs_approval": "承認が必要です",
       "says": "発言",
-      "asks": "質問"
+      "asks": "質問",
+      "sent": "送信済み",
+      "queued": "待機中",
+      "saved_not_started": "未開始",
+      "expired": "期限切れ",
+      "interrupted": "中断",
+      "confirm_rejected": "未確認"
     }
   },
   "budget": {
     "title": "本日の音声予算",
     "usage": "${{used}} / ${{limit}}",
-    "warning": "本日の上限に近づいています"
+    "warning": "本日の上限に近づいています",
+    "reached": "本日の上限に達しました"
   },
   "notice": {
     "disabled": "音声はオフになっています。音声設定でオンにしてください。",
@@ -119,7 +135,10 @@
     "unauthorized": "セッションの有効期限が切れました。もう一度サインインしてください。",
     "forbidden": "このセッションでは音声を使用できません。",
     "unavailable": "音声は一時的に利用できません。",
-    "network": "ネットワークエラーです。もう一度お試しください。"
+    "network": "ネットワークエラーです。もう一度お試しください。",
+    "callIdle": "3 分間無音だったため通話を終了しました。Jarvis は待機中です。",
+    "callHardCap": "通話が 55 分の上限に達しました。新しい通話は「話す」をタップしてください。",
+    "callDropped": "通話が切断されました。「話す」をタップして再試行してください。"
   },
   "settings": {
     "title": "音声設定",

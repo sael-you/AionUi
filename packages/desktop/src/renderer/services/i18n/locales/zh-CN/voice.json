@@ -35,7 +35,11 @@
     "screenMaySleep": "屏幕可能会休眠并暂停 Jarvis",
     "systemPaused": "音频已被系统暂停",
     "readback": "正在朗读草稿…",
-    "muted": "麦克风已静音"
+    "muted": "麦克风已静音",
+    "awaitingConfirm": "等待你的确认",
+    "awaitingChoice": "等待你选择目标",
+    "holding": "即将发送 — 仍可取消",
+    "asking": "有智能体向你提问 — 请现在回答；回答后 Jarvis 会挂断"
   },
   "captions": {
     "title": "实时字幕",
@@ -79,12 +83,17 @@
       "queued": "已排队",
       "sent": "已发送",
       "failed": "未发送 — 发送失败",
-      "saved_not_started": "已保存，未启动 — 说“start it”或点按",
+      "saved_not_started": "已保存但未启动 — 打开会话以启动",
       "cancelled": "已取消",
       "expired": "已过期",
       "interrupted": "已中断 — 请重新确认",
-      "superseded": "已被新版本替换"
-    }
+      "superseded": "已被新版本替换",
+      "draftedTapOnly": "点按“发送”确认"
+    },
+    "chooseTarget": "哪一个？",
+    "options": "可能的目标",
+    "openTarget": "打开会话",
+    "editNeedsCall": "修改需在创建草稿的通话中口述"
   },
   "followUps": {
     "title": "最近的跟进",
@@ -94,13 +103,20 @@
       "failed": "失败",
       "needs_approval": "需要你的审批",
       "says": "说",
-      "asks": "询问"
+      "asks": "询问",
+      "sent": "已发送",
+      "queued": "已排队",
+      "saved_not_started": "未启动",
+      "expired": "已过期",
+      "interrupted": "已中断",
+      "confirm_rejected": "未确认"
     }
   },
   "budget": {
     "title": "今日语音预算",
     "usage": "${{used}} / ${{limit}}",
-    "warning": "即将达到今日上限"
+    "warning": "即将达到今日上限",
+    "reached": "已达到今日上限"
   },
   "notice": {
     "disabled": "语音已关闭。请在语音设置中开启。",
@@ -119,7 +135,10 @@
     "unauthorized": "登录已过期，请重新登录。",
     "forbidden": "此会话不允许使用语音。",
     "unavailable": "语音暂时不可用。",
-    "network": "网络错误，请重试。"
+    "network": "网络错误，请重试。",
+    "callIdle": "静默 3 分钟后通话已结束。Jarvis 仍处于待命状态。",
+    "callHardCap": "通话已达 55 分钟上限。点按“说话”开始新的通话。",
+    "callDropped": "通话已中断。点按“说话”重试。"
   },
   "settings": {
     "title": "语音设置",

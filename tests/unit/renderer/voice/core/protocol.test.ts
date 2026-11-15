@@ -100,6 +100,82 @@ describe('voice protocol — call end and hold', () => {
   });
 });
 
+describe('voice protocol — S1b frames as the backend serialises them (aionui-api-types voice.rs)', () => {
+  it('decodes a draft with ambiguous options and spokenConfirm', () => {
+    const frame = decodeFrame(
+      env('voice.draftUpdated', {
+        voiceSessionId: 'vs_1',
+        draftId: 'd1',
+        version: 2,
+        hash: 'h',
+        state: 'ambiguous',
+        target: null,
+        options: [
+          { id: 'c1', name: 'Kanban build', kind: 'conversation' },
+          { id: 'p1', name: 'Kanban', kind: 'project' },
+          { name: 'no id' },
+        ],
+        text: 'Goal: rerun',
+        diff: [{ op: 'delete', text: 'um', transform: 'filler' }],
+        delivery: 'new_turn',
+        spokenConfirm: false,
+      })
+    );
+    expect(frame).toMatchObject({
+      state: 'ambiguous',
+      target: null,
+      spokenConfirm: false,
+      options: [
+        { id: 'c1', name: 'Kanban build', kind: 'conversation' },
+        { id: 'p1', name: 'Kanban', kind: 'project' },
+      ],
+    });
+  });
+
+  it('a draft without options or spokenConfirm (serde skips empty options) is tap-only with no choices', () => {
+    const frame = decodeFrame(env('voice.draftUpdated', { draftId: 'd', version: 1, state: 'drafted', hash: 'h' }));
+    expect(frame).toMatchObject({ options: [], spokenConfirm: false });
+  });
+
+  it.each(['sent', 'queued', 'saved_not_started', 'expired', 'interrupted', 'confirm_rejected', 'says', 'asks'])(
+    'decodes a voice.followUp with status %s',
+    (status) => {
+      expect(
+        decodeFrame(env('voice.followUp', { voiceSessionId: null, conversationId: 'c1', status, line: 'x' }))
+      ).toMatchObject({ name: 'voice.followUp', status, clipId: null });
+    }
+  );
+
+  it('decodes the budget warning level and drops unknown levels', () => {
+    expect(decodeFrame(env('voice.budget', { usedUsd: 4, limitUsd: 5, warning: '80' }))).toMatchObject({
+      warning: '80',
+    });
+    expect(decodeFrame(env('voice.budget', { usedUsd: 5, limitUsd: 5, warning: '100' }))).toMatchObject({
+      warning: '100',
+    });
+    expect(decodeFrame(env('voice.budget', { usedUsd: 1, limitUsd: 5 }))).toMatchObject({ warning: null });
+    expect(decodeFrame(env('voice.budget', { usedUsd: 1, limitUsd: 5, warning: 'loud' }))).toMatchObject({
+      warning: null,
+    });
+  });
+
+  it('decodes voice.wake with its reason and clip id', () => {
+    expect(decodeFrame(env('voice.wake', { voiceSessionId: null, reason: 'asks', itemId: 'clip1' }))).toEqual({
+      name: 'voice.wake',
+      voiceSessionId: null,
+      reason: 'asks',
+      itemId: 'clip1',
+    });
+  });
+
+  it('encodes a tap with draft id, integer version and hash', () => {
+    expect(JSON.parse(encodeFrame({ name: 'voice.cancelTap', draftId: 'd1', version: 3, hash: 'h' }, 'vs_1'))).toEqual({
+      name: 'voice.cancelTap',
+      data: { draftId: 'd1', version: 3, hash: 'h', voiceSessionId: 'vs_1' },
+    });
+  });
+});
+
 describe('voice protocol — encodeFrame', () => {
   it('wraps fields in { name, data } and adds the bound voiceSessionId', () => {
     expect(JSON.parse(encodeFrame({ name: 'voice.speechOnset', t: 1.5 }, 'vs'))).toEqual({

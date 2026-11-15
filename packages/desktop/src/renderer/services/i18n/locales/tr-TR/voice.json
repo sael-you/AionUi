@@ -35,7 +35,11 @@
     "screenMaySleep": "Ekran uyku moduna geçip Jarvis'i duraklatabilir",
     "systemPaused": "Ses sistem tarafından duraklatıldı",
     "readback": "Taslak okunuyor…",
-    "muted": "Mikrofon sessizde"
+    "muted": "Mikrofon sessizde",
+    "awaitingConfirm": "Onayınız bekleniyor",
+    "awaitingChoice": "Hedef seçmeniz bekleniyor",
+    "holding": "Birazdan gönderilecek — hâlâ iptal edebilirsiniz",
+    "asking": "Bir ajan size bir şey sordu — şimdi yanıtlayın; Jarvis yanıtınızdan sonra kapatır"
   },
   "captions": {
     "title": "Canlı altyazı",
@@ -79,12 +83,17 @@
       "queued": "Sırada",
       "sent": "Gönderildi",
       "failed": "Gönderilemedi — başarısız oldu",
-      "saved_not_started": "Kaydedildi, başlatılmadı — “start it” deyin veya dokunun",
+      "saved_not_started": "Kaydedildi ama başlamadı — başlatmak için sohbeti açın",
       "cancelled": "İptal edildi",
       "expired": "Süresi doldu",
       "interrupted": "Kesintiye uğradı — lütfen tekrar onaylayın",
-      "superseded": "Yeni bir sürümle değiştirildi"
-    }
+      "superseded": "Yeni bir sürümle değiştirildi",
+      "draftedTapOnly": "Onaylamak için Gönder’e dokunun"
+    },
+    "chooseTarget": "Hangisi?",
+    "options": "Olası hedefler",
+    "openTarget": "Sohbeti aç",
+    "editNeedsCall": "Düzenlemeler taslağı oluşturan görüşme sırasında sesle yapılır"
   },
   "followUps": {
     "title": "Son takip mesajları",
@@ -94,13 +103,20 @@
       "failed": "Başarısız",
       "needs_approval": "Onayınız gerekiyor",
       "says": "Diyor",
-      "asks": "Soruyor"
+      "asks": "Soruyor",
+      "sent": "Gönderildi",
+      "queued": "Sırada",
+      "saved_not_started": "Başlamadı",
+      "expired": "Süresi doldu",
+      "interrupted": "Kesintiye uğradı",
+      "confirm_rejected": "Onaylanmadı"
     }
   },
   "budget": {
     "title": "Bugünkü ses bütçesi",
     "usage": "${{used}} / ${{limit}}",
-    "warning": "Bugünkü sınıra neredeyse ulaşıldı"
+    "warning": "Bugünkü sınıra neredeyse ulaşıldı",
+    "reached": "Bugünkü sınıra ulaşıldı"
   },
   "notice": {
     "disabled": "Ses kapalı. Ses ayarlarından açın.",
@@ -119,7 +135,10 @@
     "unauthorized": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
     "forbidden": "Bu oturumda sese izin verilmiyor.",
     "unavailable": "Ses geçici olarak kullanılamıyor.",
-    "network": "Ağ hatası. Tekrar deneyin."
+    "network": "Ağ hatası. Tekrar deneyin.",
+    "callIdle": "Arama 3 dakikalık sessizlikten sonra sona erdi. Jarvis hâlâ hazır.",
+    "callHardCap": "Arama 55 dakika sınırına ulaştı. Yenisi için Konuş’a dokunun.",
+    "callDropped": "Arama düştü. Tekrar denemek için Konuş’a dokunun."
   },
   "settings": {
     "title": "Ses ayarları",

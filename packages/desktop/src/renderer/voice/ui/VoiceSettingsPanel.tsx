@@ -69,7 +69,7 @@ const VoiceSettingsPanel: React.FC<{ controller: VoiceController }> = ({ control
     ? {
         usedUsd: view.budget?.usedUsd ?? settings.used_today_usd ?? 0,
         limitUsd: view.budget?.limitUsd ?? settings.daily_budget_usd,
-        warning: Boolean(view.budget?.warning),
+        warning: view.budget?.warning ?? null,
       }
     : null;
 

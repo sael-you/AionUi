@@ -16,6 +16,12 @@ const STATUS_COLOR: Record<FollowUpStatus, string> = {
   needs_approval: 'orange',
   says: 'arcoblue',
   asks: 'purple',
+  sent: 'green',
+  queued: 'cyan',
+  saved_not_started: 'orange',
+  expired: 'gray',
+  interrupted: 'orange',
+  confirm_rejected: 'gray',
 };
 
 /** Recent follow-ups (plan §3.4); approvals are opened on screen, never given by voice. */

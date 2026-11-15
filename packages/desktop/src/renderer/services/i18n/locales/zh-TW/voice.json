@@ -35,7 +35,11 @@
     "screenMaySleep": "螢幕可能會進入休眠並暫停 Jarvis",
     "systemPaused": "音訊已被系統暫停",
     "readback": "正在朗讀草稿…",
-    "muted": "麥克風已靜音"
+    "muted": "麥克風已靜音",
+    "awaitingConfirm": "等待你的確認",
+    "awaitingChoice": "等待你選擇目標",
+    "holding": "即將傳送 — 仍可取消",
+    "asking": "有代理向你提問 — 請現在回答；回答後 Jarvis 會掛斷"
   },
   "captions": {
     "title": "即時字幕",
@@ -79,12 +83,17 @@
       "queued": "已排入佇列",
       "sent": "已發送",
       "failed": "未發送 — 發送失敗",
-      "saved_not_started": "已儲存，尚未啟動 — 說「start it」或點一下",
+      "saved_not_started": "已儲存但未啟動 — 開啟對話以啟動",
       "cancelled": "已取消",
       "expired": "已過期",
       "interrupted": "已中斷 — 請重新確認",
-      "superseded": "已被新版本取代"
-    }
+      "superseded": "已被新版本取代",
+      "draftedTapOnly": "點按「發送」確認"
+    },
+    "chooseTarget": "哪一個？",
+    "options": "可能的目標",
+    "openTarget": "開啟對話",
+    "editNeedsCall": "修改需在建立草稿的通話中口述"
   },
   "followUps": {
     "title": "最近的後續訊息",
@@ -94,13 +103,20 @@
       "failed": "失敗",
       "needs_approval": "需要你的核准",
       "says": "表示",
-      "asks": "詢問"
+      "asks": "詢問",
+      "sent": "已傳送",
+      "queued": "已排隊",
+      "saved_not_started": "未啟動",
+      "expired": "已過期",
+      "interrupted": "已中斷",
+      "confirm_rejected": "未確認"
     }
   },
   "budget": {
     "title": "今日語音預算",
     "usage": "${{used}} / ${{limit}}",
-    "warning": "即將達到今日上限"
+    "warning": "即將達到今日上限",
+    "reached": "已達到今日上限"
   },
   "notice": {
     "disabled": "語音已關閉。請在語音設定中開啟。",
@@ -119,7 +135,10 @@
     "unauthorized": "登入階段已過期，請重新登入。",
     "forbidden": "此工作階段不允許使用語音。",
     "unavailable": "語音暫時無法使用。",
-    "network": "網路錯誤，請再試一次。"
+    "network": "網路錯誤，請再試一次。",
+    "callIdle": "靜默 3 分鐘後通話已結束。Jarvis 仍處於待命狀態。",
+    "callHardCap": "通話已達 55 分鐘上限。點按「說話」開始新的通話。",
+    "callDropped": "通話已中斷。點按「說話」重試。"
   },
   "settings": {
     "title": "語音設定",

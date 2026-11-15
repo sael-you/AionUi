@@ -202,7 +202,9 @@ export class VoiceSocket {
   private sendHello(): void {
     const hello: ClientFrame = {
       name: 'voice.hello',
-      device: this.options.device,
+      // The backend takes the device as a plain string (`VoiceHello.device`); an object is refused
+      // as INVALID_FRAME and the socket is then closed for a missing hello.
+      device: this.options.device.id,
       capabilities: this.options.capabilities,
       ...(this.voiceSessionId ? { voiceSessionId: this.voiceSessionId } : {}),
     };

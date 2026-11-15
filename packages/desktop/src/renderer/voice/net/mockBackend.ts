@@ -91,6 +91,8 @@ export function withMockBackend(fx: Effects): Effects {
         ],
         delivery: 'new_turn',
         hash: 'mock-hash-1',
+        options: [],
+        spokenConfirm: true,
       };
       emit({ name: 'voice.draftUpdated', voiceSessionId, ...draft });
       emit({ name: 'voice.state', voiceSessionId, state: 'speaking', reason: 'readback' });
@@ -107,7 +109,7 @@ export function withMockBackend(fx: Effects): Effects {
         voiceSessionId,
         usedUsd: 0.47,
         limitUsd: settings.daily_budget_usd,
-        warning: false,
+        warning: null,
       });
     });
   };
@@ -120,7 +122,17 @@ export function withMockBackend(fx: Effects): Effects {
       later(4000, () => {
         if (draft?.state !== 'committing') return;
         setDraft({ state: 'sending' });
-        later(400, () => setDraft({ state: 'sent' }));
+        later(400, () => {
+          setDraft({ state: 'sent' });
+          emit({
+            name: 'voice.followUp',
+            voiceSessionId: sid(),
+            conversationId: 'mock-conv',
+            status: 'sent',
+            line: 'Kanban build has it.',
+            clipId: null,
+          });
+        });
         later(3500, () =>
           emit({
             name: 'voice.followUp',

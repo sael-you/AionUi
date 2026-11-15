@@ -98,6 +98,10 @@ export type VoiceDraft = {
   holdRemainingMs?: number;
   /** While `committing`: the hold deadline is frozen by a new utterance (§3.3.5). */
   holdFrozen?: boolean;
+  /** Choices Jarvis asks about while the draft is `ambiguous` ("A or B?"). */
+  options: DraftTarget[];
+  /** Spoken "send" is accepted (the read-back passed the name check); otherwise only a tap confirms. */
+  spokenConfirm: boolean;
 };
 
 export type CaptionRole = 'user' | 'assistant' | 'agent';
@@ -109,7 +113,23 @@ export type VoiceCaption = {
   final: boolean;
 };
 
-export type FollowUpStatus = 'finished' | 'failed' | 'needs_approval' | 'says' | 'asks';
+/**
+ * `voice.followUp` statuses: conversation follow-ups (`finished`, `failed`, `needs_approval`),
+ * agent lines (`says`, `asks`), draft outcomes (`sent`, `queued`, `failed`, `saved_not_started`,
+ * `expired`, `interrupted`) and a refused spoken confirmation (`confirm_rejected`).
+ */
+export type FollowUpStatus =
+  | 'finished'
+  | 'failed'
+  | 'needs_approval'
+  | 'says'
+  | 'asks'
+  | 'sent'
+  | 'queued'
+  | 'saved_not_started'
+  | 'expired'
+  | 'interrupted'
+  | 'confirm_rejected';
 
 export type VoiceFollowUp = {
   id: number;
@@ -123,7 +143,8 @@ export type VoiceFollowUp = {
 export type VoiceBudget = {
   usedUsd: number;
   limitUsd: number;
-  warning: boolean;
+  /** `80` at the 80 % warning, `100` once the daily cap is reached. */
+  warning: '80' | '100' | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -145,6 +166,7 @@ export type ServerFrame =
     }
   | { name: 'voice.assistantAudioFinished'; voiceSessionId: string | null; responseId: string }
   | { name: 'voice.callEnded'; voiceSessionId: string | null; reason: string }
+  /** No live call: `reason` = `follow_up` | `says` | `asks`; `itemId` = the clip id to play. */
   | { name: 'voice.wake'; voiceSessionId: string | null; reason: string; itemId: string | null }
   | {
       name: 'voice.followUp';
@@ -173,7 +195,8 @@ export type ClientCapabilities = {
 };
 
 export type ClientFrame =
-  | { name: 'voice.hello'; voiceSessionId?: string; device: DeviceInfo; capabilities: ClientCapabilities }
+  /** `device` is the device id string (the backend logs it; REST `device_id` carries the same id). */
+  | { name: 'voice.hello'; voiceSessionId?: string; device: string; capabilities: ClientCapabilities }
   | { name: 'voice.heartbeat'; t: number }
   | { name: 'voice.frozen' }
   | { name: 'voice.resumed' }
@@ -208,6 +231,11 @@ export type VoiceSettings = {
   car_mode: boolean;
   daily_budget_usd: number;
   used_today_usd?: number;
+  /** Server-owned call profile; read back and kept, not edited here. */
+  model?: string;
+  voice?: string;
+  eagerness?: string;
+  provider_id?: string;
 };
 
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {

@@ -64,7 +64,8 @@ describe('VoiceSocket', () => {
     const { vs, sockets, listener } = setup();
     vs.start();
     sockets[0].open();
-    expect(sockets[0].frames()[0]).toMatchObject({ name: 'voice.hello', data: { device: { id: 'web-1' } } });
+    // The backend's `VoiceHello.device` is a plain string: an object would be refused as INVALID_FRAME.
+    expect(sockets[0].frames()[0]).toMatchObject({ name: 'voice.hello', data: { device: 'web-1' } });
     expect(listener.onOpen).toHaveBeenCalled();
   });
 

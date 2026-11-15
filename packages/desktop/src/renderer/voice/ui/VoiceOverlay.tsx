@@ -24,16 +24,26 @@ import VoiceOrbGlyph from './VoiceOrbGlyph';
 import VoiceSettingsPanel from './VoiceSettingsPanel';
 import styles from './voice.module.css';
 
+/** Notices that report a normal event rather than a problem. */
+const INFO_NOTICES: ReadonlySet<string> = new Set(['busy', 'networkLost', 'callIdle', 'callHardCap']);
+
 export type VoiceOverlayProps = {
   controller: VoiceController;
   isMobile: boolean;
   onOpenConversation: (conversationId: string) => void;
 };
 
+/** Second line under the orb state: what Jarvis waits for right now. */
 function statusLine(view: VoiceView, t: (key: string) => string): string | null {
   if (view.orb === 'frozen') return t('voice.orb.state.frozen');
   if (view.systemPaused) return t('voice.status.systemPaused');
   if (view.machine.call && view.machine.userMuted) return t('voice.status.muted');
+  if (view.readbackPlaying) return t('voice.status.readback');
+  const draftState = view.draft?.state;
+  if (draftState === 'drafted' || draftState === 'pending_transcript') return t('voice.status.awaitingConfirm');
+  if (draftState === 'ambiguous') return t('voice.status.awaitingChoice');
+  if (draftState === 'committing') return t('voice.status.holding');
+  if (view.asking) return t('voice.status.asking');
   if (view.orb !== 'armed') return null;
   switch (view.wakeWord) {
     case 'loading':
@@ -124,7 +134,7 @@ const VoiceOverlay: React.FC<VoiceOverlayProps> = ({ controller, isMobile, onOpe
 
           {view.notice && (
             <Alert
-              type={view.notice.code === 'busy' || view.notice.code === 'networkLost' ? 'info' : 'warning'}
+              type={INFO_NOTICES.has(view.notice.code) ? 'info' : 'warning'}
               closable
               onClose={() => controller.dismissNotice()}
               content={t(`voice.notice.${view.notice.code}`, { message: view.notice.message ?? '' })}
@@ -191,8 +201,12 @@ const VoiceOverlay: React.FC<VoiceOverlayProps> = ({ controller, isMobile, onOpe
               draft={view.draft}
               holdUntil={view.holdUntil}
               readbackPlaying={view.readbackPlaying}
+              inCall={view.machine.call?.phase === 'ready'}
+              tap={view.draftTap}
+              hint={view.draftHint}
               onSend={() => controller.confirmDraft()}
               onCancel={() => controller.cancelDraft()}
+              onOpenTarget={onOpenConversation}
             />
           )}
 

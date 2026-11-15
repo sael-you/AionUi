@@ -20,7 +20,9 @@
  * - ICE `disconnected` > 3 s / `failed` → hang up and resume with `resume_of`;
  * - page `freeze` → `voice.frozen`, call dropped; `resume` → silent re-arm;
  * - confirmation is only ever a tap carrying the draft hash, or the backend's
- *   own evidence from `voice.playbackFinished` + `voice.speechOnset`.
+ *   own evidence from `voice.playbackFinished` + `voice.speechOnset`;
+ * - an agent `ask` with no live call opens a short call only to capture the
+ *   answer (question → answer → close, at most 2 min, PLAN §3.4).
  */
 
 import type { Effects } from './effects';
@@ -37,10 +39,12 @@ import {
   CONFIRMABLE_DRAFT_STATES,
   TERMINAL_DRAFT_STATES,
   type CaptionRole,
+  type FollowUpStatus,
   type ServerFrame,
   type ServerVoiceState,
   type VoiceSettings,
 } from './types';
+import { callEndPolicy } from './endReasons';
 import { MAX_CAPTIONS, MAX_FOLLOW_UPS, VoiceStore } from './voiceStore';
 import { outputLatencyOf } from '../audio/clipPlayer';
 import type { EarconName } from '../audio/earcons';
@@ -55,8 +59,42 @@ export const HOLD_MS = 4_000;
 const RESUME_RETRY_MS = 1_500;
 const MAX_RESUME_ATTEMPTS = 3;
 const SETTINGS_RETRY_MS = 5 * 60_000;
+/** An answer-only call for an agent `ask` closes after this long at the latest (PLAN §3.4). */
+export const ASK_CALL_MAX_MS = 120_000;
+/** Grace after the answer's final transcript before the answer-only call hangs up. */
+export const ASK_HANGUP_DELAY_MS = 1_500;
+const MAX_SEEN_CLIPS = 32;
 /** `voice.state armed` reasons an older backend used to signal a hang-up. */
 const LEGACY_END_REASONS: ReadonlySet<string> = new Set(['idle', 'budget', 'rotation', 'kill', 'ended']);
+/**
+ * Frames about the bound call; frames of another session are stale. Drafts, clips, follow-ups,
+ * wakes, budget and errors are per user and may name an earlier session (e.g. a draft sent by
+ * the backend worker after a resume).
+ */
+const CALL_SCOPED_FRAMES: ReadonlySet<ServerFrame['name']> = new Set([
+  'voice.ready',
+  'voice.state',
+  'voice.caption',
+  'voice.assistantAudioFinished',
+]);
+/** Lines Jarvis says about the current draft: never held back by a pending confirmation. */
+const DRAFT_LINE_STATUSES: ReadonlySet<FollowUpStatus> = new Set([
+  'sent',
+  'queued',
+  'saved_not_started',
+  'expired',
+  'interrupted',
+  'confirm_rejected',
+]);
+const NEEDS_YOU_STATUSES: ReadonlySet<FollowUpStatus> = new Set([
+  'failed',
+  'needs_approval',
+  'saved_not_started',
+  'expired',
+  'interrupted',
+]);
+
+type QueuedClip = { clipId: string; urlOrId: string; tone: EarconName | null; draftLine: boolean };
 
 export type ArmOptions = { focusConversationId?: string | null };
 
@@ -73,7 +111,13 @@ export class VoiceController {
   private readbackPending = 0;
   private playingKind: 'readback' | 'followUp' | null = null;
   private followUpBusy = false;
-  private followUpQueue: Array<{ clipId: string; urlOrId: string; tone: EarconName | null }> = [];
+  private followUpQueue: QueuedClip[] = [];
+  /** Clip ids already queued or played (a `voice.wake` repeats the follow-up's clip id). */
+  private seenClips: string[] = [];
+  /** Clip of an agent question that arrived without a live call: its end opens the answer call. */
+  private askClipId: string | null = null;
+  private askTimer: unknown = null;
+  private askHangupTimer: unknown = null;
   private pendingPreroll: number | null = null;
   private everReady = false;
   private wakeEnabled = true;
@@ -150,6 +194,8 @@ export class VoiceController {
     this.clips?.stop();
     this.followUpQueue = [];
     this.followUpBusy = false;
+    this.seenClips = [];
+    this.askClipId = null;
     this.capture?.stop();
     this.capture = null;
     this.fx.wakeWord.detach();
@@ -171,6 +217,8 @@ export class VoiceController {
       draft: null,
       holdUntil: null,
       readbackPlaying: false,
+      draftTap: null,
+      draftHint: null,
       wakeWord: 'off',
       screenMaySleep: false,
       systemPaused: false,
@@ -199,9 +247,13 @@ export class VoiceController {
     this.dispatch({ type: 'userMute', muted: !this.machine.userMuted });
   }
 
+  /**
+   * Send tap: one `voice.confirmTap` per draft version and state (a second tap before the
+   * backend answers is dropped; the backend's CAS would refuse it anyway).
+   */
   confirmDraft(): void {
-    const draft = this.store.getSnapshot().draft;
-    if (!draft || !CONFIRMABLE_DRAFT_STATES.has(draft.state)) return;
+    const { draft, draftTap } = this.store.getSnapshot();
+    if (!draft || !CONFIRMABLE_DRAFT_STATES.has(draft.state) || draftTap) return;
     if (!draft.hash) {
       this.store.update({ notice: { code: 'cannotConfirm' } });
       return;
@@ -212,12 +264,13 @@ export class VoiceController {
       version: draft.version,
       hash: draft.hash,
     });
-    if (!sent) this.store.update({ notice: { code: 'offline' } });
+    this.store.update(sent ? { draftTap: 'confirm' } : { notice: { code: 'offline' } });
   }
 
+  /** Cancel tap: wins over a pending Send tap; sent once per draft version and state. */
   cancelDraft(): void {
-    const draft = this.store.getSnapshot().draft;
-    if (!draft || !CANCELLABLE_DRAFT_STATES.has(draft.state)) return;
+    const { draft, draftTap } = this.store.getSnapshot();
+    if (!draft || !CANCELLABLE_DRAFT_STATES.has(draft.state) || draftTap === 'cancel') return;
     if (this.playingKind === 'readback') this.clips?.stop();
     const sent = this.socket?.send({
       name: 'voice.cancelTap',
@@ -225,7 +278,7 @@ export class VoiceController {
       version: draft.version,
       hash: draft.hash ?? '',
     });
-    if (!sent) this.store.update({ notice: { code: 'offline' } });
+    this.store.update(sent ? { draftTap: 'cancel' } : { notice: { code: 'offline' } });
   }
 
   setOverlayOpen(open: boolean): void {
@@ -450,6 +503,9 @@ export class VoiceController {
     this.call = null;
     this.clearTimer('readyTimer');
     this.clearTimer('deadManTimer');
+    this.clearTimer('askTimer');
+    this.clearTimer('askHangupTimer');
+    if (this.store.getSnapshot().asking) this.store.update({ asking: false });
     this.unregisterMedia?.();
     this.unregisterMedia = null;
     this.capture?.mute();
@@ -528,7 +584,8 @@ export class VoiceController {
 
   private onFrame(frame: ServerFrame): void {
     const boundId = this.machine.call?.voiceSessionId ?? null;
-    if (frame.voiceSessionId && boundId && frame.voiceSessionId !== boundId && frame.name !== 'voice.followUp') return;
+    if (frame.voiceSessionId && boundId && frame.voiceSessionId !== boundId && CALL_SCOPED_FRAMES.has(frame.name))
+      return;
     switch (frame.name) {
       case 'voice.ready':
         return this.onReady(frame.voiceSessionId);
@@ -548,18 +605,23 @@ export class VoiceController {
         return;
       }
       case 'voice.wake':
-        if (this.ctx) void this.ctx.resume().catch((): undefined => undefined);
-        this.store.update({ overlayOpen: true });
-        return;
+        return this.onWake(frame.reason, frame.itemId);
       case 'voice.followUp':
         return this.onFollowUp(frame);
       case 'voice.budget':
-        this.store.update({ budget: { usedUsd: frame.usedUsd, limitUsd: frame.limitUsd, warning: frame.warning } });
+        this.store.update({
+          budget: { usedUsd: frame.usedUsd, limitUsd: frame.limitUsd, warning: frame.warning },
+          ...(frame.warning === '100' ? { notice: { code: 'budget' } } : {}),
+        });
         return;
       case 'voice.error':
         if (/disabled|kill/i.test(frame.code)) {
           this.disarm('error');
           this.store.update({ notice: { code: 'disabled' }, overlayOpen: true });
+          return;
+        }
+        if (frame.code === 'AUTH_EXPIRED') {
+          this.store.update({ notice: { code: 'unauthorized' }, overlayOpen: true });
           return;
         }
         this.store.update({ notice: { code: 'server', message: frame.message } });
@@ -584,16 +646,23 @@ export class VoiceController {
     this.earcon(first ? 'listening' : 'back');
   }
 
-  /** The only frame that ends a call from the backend side (idle, budget, rotation, kill, sleep). */
+  /**
+   * The only frame that ends a call from the backend side. Sleep and the kill switch disarm;
+   * rotation re-dials at once with `resume_of`; the other reasons stay armed with a notice.
+   */
   private onCallEnded(voiceSessionId: string | null, reason: string): void {
-    if (reason === 'sleep') {
-      this.disarm('sleep');
+    const policy = callEndPolicy(reason);
+    if (policy.disarm) {
+      this.disarm(reason === 'sleep' ? 'sleep' : 'error');
+      if (policy.notice) this.store.update({ notice: { code: policy.notice }, overlayOpen: true });
       return;
     }
     const call = this.machine.call;
     if (!call || (voiceSessionId && call.voiceSessionId && voiceSessionId !== call.voiceSessionId)) return;
-    this.endCall(reason || 'server', false);
-    if (reason === 'budget') this.store.update({ notice: { code: 'budget' } });
+    const resumeOf = policy.redial ? call.voiceSessionId : null;
+    this.endCall(reason || 'server', false, resumeOf);
+    if (policy.notice) this.store.update({ notice: { code: policy.notice } });
+    if (resumeOf) this.scheduleResume(0);
   }
 
   private onServerState(state: ServerVoiceState, reason: string | null): void {
@@ -627,6 +696,13 @@ export class VoiceController {
   // -------------------------------------------------------------------------
 
   private addCaption(role: CaptionRole, text: string, final: boolean): void {
+    // The answer to an agent's question is the first final user transcript of the answer call.
+    if (role === 'user' && final && text.trim() && this.store.getSnapshot().asking && !this.askHangupTimer) {
+      this.askHangupTimer = this.fx.timers.setTimeout(() => {
+        this.askHangupTimer = null;
+        if (this.store.getSnapshot().asking) this.hangUp();
+      }, ASK_HANGUP_DELAY_MS);
+    }
     this.store.update((view) => {
       const captions = view.captions.slice();
       const last = captions[captions.length - 1];
@@ -643,12 +719,15 @@ export class VoiceController {
     const changedVersion = !current || current.draftId !== draft.draftId || current.version !== draft.version;
     if (changedVersion && this.playingKind === 'readback') this.clips?.stop();
     const prevState = current && !changedVersion ? current.state : null;
+    const changed = prevState !== draft.state;
     this.store.update({
       draft,
-      ...(changedVersion ? { overlayOpen: true } : {}),
+      ...(changedVersion ? { overlayOpen: true, draftHint: null } : {}),
+      // A new version or state answers the pending tap.
+      ...(changed ? { draftTap: null } : {}),
       holdUntil: this.holdDeadline(draft, prevState),
     });
-    if (prevState === draft.state) return;
+    if (!changed) return;
     this.clearTimer('draftTimer');
     this.flushFollowUps();
     if (draft.state === 'sent') {
@@ -664,7 +743,7 @@ export class VoiceController {
         this.draftTimer = null;
         const d = this.store.getSnapshot().draft;
         if (d && d.draftId === draft.draftId && d.version === draft.version)
-          this.store.update({ draft: null, holdUntil: null });
+          this.store.update({ draft: null, holdUntil: null, draftTap: null, draftHint: null });
         this.flushFollowUps();
       }, DRAFT_LINGER_MS);
     }
@@ -703,18 +782,22 @@ export class VoiceController {
     kind: 'readback' | 'followUp',
     urlOrId: string,
     clipId: string,
-    stillWanted: () => boolean = () => true
+    stillWanted: () => boolean = () => true,
+    draftLine = false
   ): Promise<void> {
     const clips = this.clips;
     const ctx = this.ctx;
     if (!clips || !ctx) return;
     if (kind === 'readback') this.readbackPending++;
     let started = false;
+    let requeued = false;
     try {
       const data = await this.fx.api.fetchClip(urlOrId);
       if (this.clips !== clips || !stillWanted()) return;
-      if (kind === 'followUp' && this.followUpBlocked()) {
-        this.followUpQueue.unshift({ clipId, urlOrId, tone: null });
+      if (kind === 'followUp' && this.followUpBlocked(draftLine)) {
+        // Clips are single use: keep the fetched audio's slot and retry later (no tone again).
+        this.followUpQueue.unshift({ clipId, urlOrId, tone: null, draftLine });
+        requeued = true;
         return;
       }
       this.playingKind = kind;
@@ -741,50 +824,113 @@ export class VoiceController {
       }
       if (this.playingKind === kind) this.playingKind = null;
       if (kind === 'followUp') this.followUpBusy = false;
+      if (kind === 'followUp' && !requeued && clipId === this.askClipId) {
+        this.askClipId = null;
+        this.startAskCall();
+      }
       this.flushFollowUps();
     }
   }
 
-  /** Follow-up audio waits while a read-back plays or a draft awaits your confirmation. */
-  private followUpBlocked(): boolean {
+  /**
+   * Follow-up audio waits while a read-back plays. Agent lines also wait while a draft awaits
+   * your answer; Jarvis's own lines about the draft ("say it again, or tap the card") do not.
+   */
+  private followUpBlocked(draftLine = false): boolean {
     if (this.readbackPending > 0 || this.playingKind === 'readback') return true;
+    if (draftLine) return false;
     const draft = this.store.getSnapshot().draft;
-    return Boolean(draft && CONFIRMABLE_DRAFT_STATES.has(draft.state));
+    return Boolean(draft && (CONFIRMABLE_DRAFT_STATES.has(draft.state) || draft.state === 'ambiguous'));
   }
 
-  private canPlayFollowUp(): boolean {
-    return !this.followUpBusy && !this.followUpBlocked();
+  private canPlayFollowUp(draftLine = false): boolean {
+    return !this.followUpBusy && !this.followUpBlocked(draftLine);
   }
 
   private flushFollowUps(): void {
-    if (!this.followUpQueue.length || !this.canPlayFollowUp() || !this.ctx) return;
+    if (!this.followUpQueue.length || this.followUpBusy || !this.ctx) return;
+    // The first clip that may play now (draft lines can pass agent lines held by a draft).
+    const index = this.followUpQueue.findIndex((c) => !this.followUpBlocked(c.draftLine));
+    if (index < 0) return;
     this.followUpBusy = true;
-    const next = this.followUpQueue.shift() as { clipId: string; urlOrId: string; tone: EarconName | null };
+    const [next] = this.followUpQueue.splice(index, 1);
     const endsAt = next.tone ? this.earcon(next.tone) : null;
     const delayMs = endsAt !== null && this.ctx ? Math.max(0, (endsAt - this.ctx.currentTime) * 1000) : 0;
-    this.fx.timers.setTimeout(() => void this.playClip('followUp', next.urlOrId, next.clipId), delayMs);
+    this.fx.timers.setTimeout(
+      () => void this.playClip('followUp', next.urlOrId, next.clipId, undefined, next.draftLine),
+      delayMs
+    );
+  }
+
+  /** Queue a clip once: `voice.followUp` and the `voice.wake` after it name the same single-use clip. */
+  private enqueueClip(clip: QueuedClip): boolean {
+    if (this.seenClips.includes(clip.clipId)) return false;
+    this.seenClips = [...this.seenClips, clip.clipId].slice(-MAX_SEEN_CLIPS);
+    if (this.followUpQueue.length >= MAX_FOLLOW_UPS) this.followUpQueue.shift();
+    this.followUpQueue.push(clip);
+    this.flushFollowUps();
+    return true;
   }
 
   private onFollowUp(frame: ServerFrame & { name: 'voice.followUp' }): void {
-    const entry = {
-      id: ++this.followUpSeq,
-      conversationId: frame.conversationId,
-      status: frame.status,
-      line: frame.line,
-      clipId: frame.clipId,
-      at: this.fx.timers.now(),
-    };
-    this.store.update((view) => ({ followUps: [entry, ...view.followUps].slice(0, MAX_FOLLOW_UPS) }));
-    const tone: EarconName = frame.status === 'needs_approval' || frame.status === 'failed' ? 'needsYou' : 'agent';
+    const draftLine = DRAFT_LINE_STATUSES.has(frame.status);
+    if (frame.status === 'confirm_rejected') {
+      // About the card on screen, not a conversation event: shown on the card, not in the list.
+      this.store.update({ draftHint: frame.line });
+    } else {
+      const entry = {
+        id: ++this.followUpSeq,
+        conversationId: frame.conversationId,
+        status: frame.status,
+        line: frame.line,
+        clipId: frame.clipId,
+        at: this.fx.timers.now(),
+      };
+      this.store.update((view) => ({ followUps: [entry, ...view.followUps].slice(0, MAX_FOLLOW_UPS) }));
+    }
+    // Draft outcomes already sound through the card's earcons; agent lines get the agent tone.
+    const tone: EarconName | null = NEEDS_YOU_STATUSES.has(frame.status) ? 'needsYou' : draftLine ? null : 'agent';
     if (frame.status === 'needs_approval') this.fx.vibrate([60, 60, 60]);
+    // An agent question without a live call opens a short answer call once it was heard.
+    const askWithoutCall = frame.status === 'asks' && !this.machine.call && this.machine.mode === 'armed';
+    if (askWithoutCall) this.store.update({ overlayOpen: true });
     if (!frame.clipId) {
-      // Text-only follow-up: the tone still marks it (unless it would talk over a read-back).
-      if (this.canPlayFollowUp()) this.earcon(tone);
+      // Text-only line: the tone still marks it (unless it would talk over a read-back).
+      if (tone && this.canPlayFollowUp(draftLine)) this.earcon(tone);
+      if (askWithoutCall) this.startAskCall();
       return;
     }
-    if (this.followUpQueue.length >= MAX_FOLLOW_UPS) this.followUpQueue.shift();
-    this.followUpQueue.push({ clipId: frame.clipId, urlOrId: frame.clipId, tone });
-    this.flushFollowUps();
+    if (askWithoutCall) this.askClipId = frame.clipId;
+    this.enqueueClip({ clipId: frame.clipId, urlOrId: frame.clipId, tone, draftLine });
+  }
+
+  /**
+   * `voice.wake`: a follow-up, `say` or `ask` arrived while no call is live. Play its clip
+   * without opening a provider call (only an `ask` opens one, after the question was heard).
+   */
+  private onWake(reason: string, itemId: string | null): void {
+    if (this.ctx) void this.ctx.resume().catch((): undefined => undefined);
+    this.store.update({ overlayOpen: true });
+    if (!itemId) return;
+    const queued = this.enqueueClip({
+      clipId: itemId,
+      urlOrId: itemId,
+      tone: reason === 'follow_up' ? null : 'agent',
+      draftLine: false,
+    });
+    if (queued && reason === 'asks' && !this.machine.call) this.askClipId = itemId;
+  }
+
+  /** Open the answer-only call for an agent `ask` (closes after the answer or 2 min). */
+  private startAskCall(): void {
+    if (this.machine.mode !== 'armed' || this.machine.call || this.machine.socket !== 'open') return;
+    this.wake(this.ctx?.currentTime ?? 0);
+    if (!this.machine.call) return;
+    this.store.update({ asking: true });
+    this.askTimer = this.fx.timers.setTimeout(() => {
+      this.askTimer = null;
+      if (this.store.getSnapshot().asking) this.hangUp();
+    }, ASK_CALL_MAX_MS);
   }
 
   private onVad(speech: boolean, t: number): void {
@@ -847,7 +993,9 @@ export class VoiceController {
     return endsAt;
   }
 
-  private clearTimer(key: 'deadManTimer' | 'readyTimer' | 'draftTimer' | 'resumeTimer'): void {
+  private clearTimer(
+    key: 'deadManTimer' | 'readyTimer' | 'draftTimer' | 'resumeTimer' | 'askTimer' | 'askHangupTimer'
+  ): void {
     const handle = this[key];
     if (handle) this.fx.timers.clearTimeout(handle);
     this[key] = null;

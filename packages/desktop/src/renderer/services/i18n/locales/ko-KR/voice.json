@@ -35,7 +35,11 @@
     "screenMaySleep": "화면이 꺼지면 Jarvis가 일시 중지될 수 있습니다",
     "systemPaused": "시스템에서 오디오를 일시 중지했습니다",
     "readback": "초안을 읽어 주는 중…",
-    "muted": "마이크 음소거됨"
+    "muted": "마이크 음소거됨",
+    "awaitingConfirm": "확인을 기다리는 중",
+    "awaitingChoice": "대상 선택을 기다리는 중",
+    "holding": "곧 전송됩니다 — 아직 취소할 수 있습니다",
+    "asking": "에이전트가 질문했습니다 — 지금 답하세요. 답변 후 Jarvis가 통화를 끊습니다"
   },
   "captions": {
     "title": "실시간 자막",
@@ -79,12 +83,17 @@
       "queued": "대기열에 추가됨",
       "sent": "전송됨",
       "failed": "전송 실패",
-      "saved_not_started": "저장됨, 시작 안 됨 — “start it”이라고 말하거나 탭하세요",
+      "saved_not_started": "저장되었지만 시작되지 않았습니다 — 대화를 열어 시작하세요",
       "cancelled": "취소됨",
       "expired": "만료됨",
       "interrupted": "중단됨 — 다시 확인해 주세요",
-      "superseded": "새 버전으로 대체됨"
-    }
+      "superseded": "새 버전으로 대체됨",
+      "draftedTapOnly": "확인하려면 전송을 탭하세요"
+    },
+    "chooseTarget": "어느 것인가요?",
+    "options": "가능한 대상",
+    "openTarget": "대화 열기",
+    "editNeedsCall": "수정은 초안을 만든 통화 중에 말로 합니다"
   },
   "followUps": {
     "title": "최근 후속 메시지",
@@ -94,13 +103,20 @@
       "failed": "실패",
       "needs_approval": "승인 필요",
       "says": "말함",
-      "asks": "질문함"
+      "asks": "질문함",
+      "sent": "전송됨",
+      "queued": "대기 중",
+      "saved_not_started": "시작 안 됨",
+      "expired": "만료됨",
+      "interrupted": "중단됨",
+      "confirm_rejected": "확인되지 않음"
     }
   },
   "budget": {
     "title": "오늘의 음성 예산",
     "usage": "${{limit}} 중 ${{used}}",
-    "warning": "오늘 한도에 거의 도달했습니다"
+    "warning": "오늘 한도에 거의 도달했습니다",
+    "reached": "오늘 한도에 도달했습니다"
   },
   "notice": {
     "disabled": "음성이 꺼져 있습니다. 음성 설정에서 켜세요.",
@@ -119,7 +135,10 @@
     "unauthorized": "세션이 만료되었습니다. 다시 로그인하세요.",
     "forbidden": "이 세션에서는 음성을 사용할 수 없습니다.",
     "unavailable": "음성을 일시적으로 사용할 수 없습니다.",
-    "network": "네트워크 오류입니다. 다시 시도하세요."
+    "network": "네트워크 오류입니다. 다시 시도하세요.",
+    "callIdle": "3분간 조용해서 통화가 끝났습니다. Jarvis는 계속 대기 중입니다.",
+    "callHardCap": "통화가 55분 한도에 도달했습니다. 새 통화는 말하기를 탭하세요.",
+    "callDropped": "통화가 끊겼습니다. 다시 시도하려면 말하기를 탭하세요."
   },
   "settings": {
     "title": "음성 설정",

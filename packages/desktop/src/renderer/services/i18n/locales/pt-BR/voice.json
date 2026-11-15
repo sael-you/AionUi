@@ -35,7 +35,11 @@
     "screenMaySleep": "A tela pode entrar em repouso e pausar o Jarvis",
     "systemPaused": "Áudio pausado pelo sistema",
     "readback": "Lendo o rascunho em voz alta…",
-    "muted": "Microfone silenciado"
+    "muted": "Microfone silenciado",
+    "awaitingConfirm": "Aguardando sua confirmação",
+    "awaitingChoice": "Aguardando você escolher o destino",
+    "holding": "Enviando em breve — você ainda pode cancelar",
+    "asking": "Um agente fez uma pergunta — responda agora; o Jarvis desliga após sua resposta"
   },
   "captions": {
     "title": "Legendas ao vivo",
@@ -79,12 +83,17 @@
       "queued": "Na fila",
       "sent": "Enviado",
       "failed": "Não enviado — falhou",
-      "saved_not_started": "Salvo, não iniciado — diga “start it” ou toque",
+      "saved_not_started": "Salvo, mas não iniciado — abra a conversa para iniciá-lo",
       "cancelled": "Cancelado",
       "expired": "Expirado",
       "interrupted": "Interrompido — confirme novamente",
-      "superseded": "Substituído por uma nova versão"
-    }
+      "superseded": "Substituído por uma nova versão",
+      "draftedTapOnly": "Toque em Enviar para confirmar"
+    },
+    "chooseTarget": "Qual?",
+    "options": "Destinos possíveis",
+    "openTarget": "Abrir conversa",
+    "editNeedsCall": "As alterações são ditas durante a chamada que criou o rascunho"
   },
   "followUps": {
     "title": "Retornos recentes",
@@ -94,13 +103,20 @@
       "failed": "Falhou",
       "needs_approval": "Precisa da sua aprovação",
       "says": "Diz",
-      "asks": "Pergunta"
+      "asks": "Pergunta",
+      "sent": "Enviado",
+      "queued": "Na fila",
+      "saved_not_started": "Não iniciado",
+      "expired": "Expirado",
+      "interrupted": "Interrompido",
+      "confirm_rejected": "Não confirmado"
     }
   },
   "budget": {
     "title": "Orçamento de voz de hoje",
     "usage": "${{used}} de ${{limit}}",
-    "warning": "Quase no limite de hoje"
+    "warning": "Quase no limite de hoje",
+    "reached": "O limite de hoje foi atingido"
   },
   "notice": {
     "disabled": "A voz está desativada. Ative-a nas Configurações de voz.",
@@ -119,7 +135,10 @@
     "unauthorized": "Sua sessão expirou. Faça login novamente.",
     "forbidden": "A voz não é permitida nesta sessão.",
     "unavailable": "A voz está temporariamente indisponível.",
-    "network": "Erro de rede. Tente novamente."
+    "network": "Erro de rede. Tente novamente.",
+    "callIdle": "A chamada terminou após 3 minutos de silêncio. O Jarvis continua ativo.",
+    "callHardCap": "A chamada atingiu o limite de 55 minutos. Toque em Falar para iniciar outra.",
+    "callDropped": "A chamada caiu. Toque em Falar para tentar de novo."
   },
   "settings": {
     "title": "Configurações de voz",

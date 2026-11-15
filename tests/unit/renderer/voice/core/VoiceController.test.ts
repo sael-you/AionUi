@@ -13,6 +13,8 @@ const draft = (patch: Partial<VoiceDraft> = {}): VoiceDraft => ({
   diff: [],
   delivery: 'new_turn',
   hash: 'h1',
+  options: [],
+  spokenConfirm: true,
   ...patch,
 });
 
@@ -536,8 +538,9 @@ describe('VoiceController — follow-ups, budget, errors', () => {
 
   it('stores the budget frame', async () => {
     const { f, c } = await armed();
-    f.frame({ name: 'voice.budget', voiceSessionId: null, usedUsd: 4.1, limitUsd: 5, warning: true });
-    expect(c.store.getSnapshot().budget).toEqual({ usedUsd: 4.1, limitUsd: 5, warning: true });
+    f.frame({ name: 'voice.budget', voiceSessionId: null, usedUsd: 4.1, limitUsd: 5, warning: '80' });
+    expect(c.store.getSnapshot().budget).toEqual({ usedUsd: 4.1, limitUsd: 5, warning: '80' });
+    expect(c.store.getSnapshot().notice).toBeNull();
   });
 
   it('a kill-switch error disarms', async () => {
@@ -616,5 +619,202 @@ describe('VoiceController — hold display, pre-roll metric, settings cache', ()
     vi.advanceTimersByTime(5 * 60_000 + 1);
     await c.ensureSettings();
     expect(f.fx.api.getSettings).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('VoiceController — S1b: call end reasons', () => {
+  it('rotation re-dials at once with resume_of and no notice', async () => {
+    const { f, c } = await inCall();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'rotation' });
+    expect(f.fx.api.endSession).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(f.fx.startCall).toHaveBeenCalledTimes(2);
+    expect(f.state.callOptions?.resumeOf).toBe('vs-1');
+    expect(c.store.getSnapshot().notice).toBeNull();
+  });
+
+  it('the kill switch (reason disabled) disarms and says voice is off', async () => {
+    const { f, c } = await inCall();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'disabled' });
+    expect(c.state.mode).toBe('off');
+    expect(c.store.getSnapshot().notice?.code).toBe('disabled');
+  });
+
+  it('idle and dropped calls stay armed with a notice', async () => {
+    const { f, c } = await inCall();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'idle' });
+    expect(c.state.mode).toBe('armed');
+    expect(c.store.getSnapshot().notice?.code).toBe('callIdle');
+    c.talk();
+    await flush();
+    f.frame({ name: 'voice.ready', voiceSessionId: 'vs-1', engine: 'openai-realtime', model: 'm' });
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'control_lost' });
+    expect(c.state.call).toBeNull();
+    expect(c.store.getSnapshot().notice?.code).toBe('callDropped');
+  });
+
+  it('a revoked session says so; a 100 % budget frame shows the budget notice', async () => {
+    const { f, c } = await inCall();
+    f.frame({ name: 'voice.error', voiceSessionId: null, code: 'AUTH_EXPIRED', message: 'Your session ended.' });
+    expect(c.store.getSnapshot().notice?.code).toBe('unauthorized');
+    f.frame({ name: 'voice.budget', voiceSessionId: 'vs-1', usedUsd: 5, limitUsd: 5, warning: '100' });
+    expect(c.store.getSnapshot().notice?.code).toBe('budget');
+  });
+});
+
+describe('VoiceController — S1b: drafts', () => {
+  it('sends one confirm tap per draft version; a new state allows the next tap', async () => {
+    const { f, c } = await inCall();
+    f.state.socketOpen = true;
+    f.frame({ name: 'voice.draftUpdated', voiceSessionId: 'vs-1', ...draft() });
+    c.confirmDraft();
+    c.confirmDraft();
+    expect(f.sent('voice.confirmTap')).toHaveLength(1);
+    expect(c.store.getSnapshot().draftTap).toBe('confirm');
+    // Cancel still wins over a pending Send.
+    c.cancelDraft();
+    c.cancelDraft();
+    expect(f.sent('voice.cancelTap')).toHaveLength(1);
+    f.frame({ name: 'voice.draftUpdated', voiceSessionId: 'vs-1', ...draft({ version: 2 }) });
+    expect(c.store.getSnapshot().draftTap).toBeNull();
+    c.confirmDraft();
+    expect(f.sent('voice.confirmTap')).toHaveLength(2);
+    expect(f.sent('voice.confirmTap')[1]).toMatchObject({ version: 2 });
+  });
+
+  it('keeps draft frames of an earlier session (outcome after a resume)', async () => {
+    const { f, c } = await inCall();
+    f.frame({ name: 'voice.draftUpdated', voiceSessionId: 'vs-old', ...draft({ state: 'queued' }) });
+    expect(c.store.getSnapshot().draft?.state).toBe('queued');
+  });
+
+  it('still drops captions of another session', async () => {
+    const { f, c } = await inCall();
+    f.frame({ name: 'voice.caption', voiceSessionId: 'vs-old', role: 'user', text: 'old', final: true });
+    expect(c.store.getSnapshot().captions).toHaveLength(0);
+  });
+
+  it('a refused spoken "send" is played at once although the draft awaits confirmation', async () => {
+    const { f, c } = await inCall();
+    f.frame({ name: 'voice.draftUpdated', voiceSessionId: 'vs-1', ...draft() });
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: 'vs-1',
+      conversationId: 'c1',
+      status: 'confirm_rejected',
+      line: 'Say it again, or tap the card.',
+      clipId: 'clipR',
+    });
+    await vi.advanceTimersByTimeAsync(100);
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('clipR');
+    expect(c.store.getSnapshot().draftHint).toBe('Say it again, or tap the card.');
+    expect(c.store.getSnapshot().followUps).toHaveLength(0);
+  });
+
+  it('an agent line still waits while an ambiguous draft asks "A or B?"', async () => {
+    const { f } = await inCall();
+    f.frame({ name: 'voice.draftUpdated', voiceSessionId: 'vs-1', ...draft({ state: 'ambiguous', target: null }) });
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c9',
+      status: 'says',
+      line: 'x',
+      clipId: 'clipS',
+    });
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(f.fx.api.fetchClip).not.toHaveBeenCalledWith('clipS');
+  });
+});
+
+describe('VoiceController — S1b: server wake and agent ask', () => {
+  it('a follow-up and the wake after it play their single-use clip once', async () => {
+    const { f } = await armed();
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c9',
+      status: 'finished',
+      line: 'Kanban build finished.',
+      clipId: 'clipF',
+    });
+    f.frame({ name: 'voice.wake', voiceSessionId: null, reason: 'follow_up', itemId: 'clipF' });
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(f.fx.api.fetchClip.mock.calls.filter((call) => call[0] === 'clipF')).toHaveLength(1);
+    expect(f.fx.startCall).not.toHaveBeenCalled();
+  });
+
+  it('a wake whose follow-up was missed still plays the clip, without opening a call', async () => {
+    const { f, c } = await armed();
+    f.frame({ name: 'voice.wake', voiceSessionId: null, reason: 'says', itemId: 'clipW' });
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('clipW');
+    expect(f.fx.startCall).not.toHaveBeenCalled();
+    expect(c.store.getSnapshot().overlayOpen).toBe(true);
+  });
+
+  it('an ask without a call plays the question, then opens a call that hangs up after the answer', async () => {
+    const { f, c } = await armed();
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c9',
+      status: 'asks',
+      line: 'Kanban build asks: which branch?',
+      clipId: 'clipA',
+    });
+    f.frame({ name: 'voice.wake', voiceSessionId: null, reason: 'asks', itemId: 'clipA' });
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('clipA');
+    expect(f.fx.startCall).toHaveBeenCalledTimes(1);
+    expect(c.store.getSnapshot().asking).toBe(true);
+    await flush();
+    f.frame({ name: 'voice.ready', voiceSessionId: 'vs-1', engine: 'openai-realtime', model: 'm' });
+    f.frame({ name: 'voice.caption', voiceSessionId: 'vs-1', role: 'user', text: 'main', final: false });
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(c.state.call).not.toBeNull();
+    f.frame({ name: 'voice.caption', voiceSessionId: 'vs-1', role: 'user', text: 'main', final: true });
+    await vi.advanceTimersByTimeAsync(1600);
+    expect(c.state.call).toBeNull();
+    expect(f.fx.api.endSession).toHaveBeenCalledWith('vs-1', 'user');
+    expect(c.store.getSnapshot().asking).toBe(false);
+    expect(c.state.mode).toBe('armed');
+  });
+
+  it('an unanswered ask call closes after 2 minutes', async () => {
+    const { f, c } = await armed();
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c9',
+      status: 'asks',
+      line: 'q',
+      clipId: null,
+    });
+    await flush();
+    expect(f.fx.startCall).toHaveBeenCalledTimes(1);
+    f.frame({ name: 'voice.ready', voiceSessionId: 'vs-1', engine: 'openai-realtime', model: 'm' });
+    await vi.advanceTimersByTimeAsync(119_000);
+    expect(c.state.call).not.toBeNull();
+    await vi.advanceTimersByTimeAsync(1_500);
+    expect(c.state.call).toBeNull();
+  });
+
+  it('an ask during a live call is answered in that call (no extra call, no auto hang-up)', async () => {
+    const { f, c } = await inCall();
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c9',
+      status: 'asks',
+      line: 'q',
+      clipId: 'clipQ',
+    });
+    await vi.advanceTimersByTimeAsync(1000);
+    f.frame({ name: 'voice.caption', voiceSessionId: 'vs-1', role: 'user', text: 'yes', final: true });
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(f.fx.startCall).toHaveBeenCalledTimes(1);
+    expect(c.state.call?.phase).toBe('ready');
+    expect(c.store.getSnapshot().asking).toBe(false);
   });
 });

@@ -35,7 +35,11 @@
     "screenMaySleep": "The screen may sleep and pause Jarvis",
     "systemPaused": "Audio paused by the system",
     "readback": "Reading the draft back…",
-    "muted": "Microphone muted"
+    "muted": "Microphone muted",
+    "awaitingConfirm": "Waiting for your confirmation",
+    "awaitingChoice": "Waiting for you to choose the target",
+    "holding": "Sending soon — you can still cancel",
+    "asking": "An agent asked you something — answer now; Jarvis hangs up after your answer"
   },
   "captions": {
     "title": "Live captions",
@@ -79,12 +83,17 @@
       "queued": "Queued",
       "sent": "Sent",
       "failed": "Not sent — it failed",
-      "saved_not_started": "Saved, not started — say “start it” or tap",
+      "saved_not_started": "Saved, but it did not start — open the conversation to start it",
       "cancelled": "Cancelled",
       "expired": "Expired",
       "interrupted": "Interrupted — please confirm again",
-      "superseded": "Replaced by a new version"
-    }
+      "superseded": "Replaced by a new version",
+      "draftedTapOnly": "Tap Send to confirm"
+    },
+    "chooseTarget": "Which one?",
+    "options": "Possible targets",
+    "openTarget": "Open conversation",
+    "editNeedsCall": "Edits are spoken during the call that made the draft"
   },
   "followUps": {
     "title": "Recent follow-ups",
@@ -94,13 +103,20 @@
       "failed": "Failed",
       "needs_approval": "Needs your approval",
       "says": "Says",
-      "asks": "Asks"
+      "asks": "Asks",
+      "sent": "Sent",
+      "queued": "Queued",
+      "saved_not_started": "Not started",
+      "expired": "Expired",
+      "interrupted": "Interrupted",
+      "confirm_rejected": "Not confirmed"
     }
   },
   "budget": {
     "title": "Today's voice budget",
     "usage": "${{used}} of ${{limit}}",
-    "warning": "Almost at today's limit"
+    "warning": "Almost at today's limit",
+    "reached": "Today's limit is reached"
   },
   "notice": {
     "disabled": "Voice is turned off. Turn it on in Voice settings.",
@@ -119,7 +135,10 @@
     "unauthorized": "Your session expired. Please sign in again.",
     "forbidden": "Voice is not allowed for this session.",
     "unavailable": "Voice is temporarily unavailable.",
-    "network": "Network error. Try again."
+    "network": "Network error. Try again.",
+    "callIdle": "The call ended after 3 minutes of silence. Jarvis is still armed.",
+    "callHardCap": "The call reached its 55-minute limit. Tap Talk to start a new one.",
+    "callDropped": "The call dropped. Tap Talk to try again."
   },
   "settings": {
     "title": "Voice settings",

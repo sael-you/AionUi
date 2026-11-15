@@ -59,10 +59,47 @@ describe('VoiceOverlay', () => {
         diff: [],
         delivery: 'new_turn',
         hash: 'h',
+        options: [],
+        spokenConfirm: true,
       })
     );
+    expect(screen.getByText('voice.status.awaitingConfirm')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'voice.draft.send' }));
+    // A second tap before the backend answers is not sent again.
     fireEvent.click(screen.getByRole('button', { name: 'voice.draft.send' }));
     expect(f.sent('voice.confirmTap')).toHaveLength(1);
+  });
+
+  it('a refused spoken "send" shows Jarvis\'s line on the card, not in the follow-ups', async () => {
+    const { f } = await mount();
+    act(() =>
+      f.frame({
+        name: 'voice.draftUpdated',
+        voiceSessionId: null,
+        draftId: 'd1',
+        version: 1,
+        state: 'drafted',
+        target: { id: 'c1', name: 'Kanban build' },
+        text: 'Run tests',
+        diff: [],
+        delivery: 'new_turn',
+        hash: 'h',
+        options: [],
+        spokenConfirm: true,
+      })
+    );
+    act(() =>
+      f.frame({
+        name: 'voice.followUp',
+        voiceSessionId: null,
+        conversationId: 'c1',
+        status: 'confirm_rejected',
+        line: 'Say it again, or tap the card.',
+        clipId: null,
+      })
+    );
+    expect(screen.getByTestId('voice-draft-hint')).toHaveTextContent('Say it again, or tap the card.');
+    expect(screen.queryByText('voice.followUps.title')).toBeNull();
   });
 
   it('lists follow-ups and opens their conversation', async () => {

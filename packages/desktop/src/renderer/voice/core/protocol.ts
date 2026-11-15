@@ -63,7 +63,20 @@ const DELIVERIES: ReadonlySet<string> = new Set([
   'queue_approval',
   'new_conversation',
 ]);
-const FOLLOW_UP_STATUSES: ReadonlySet<string> = new Set(['finished', 'failed', 'needs_approval', 'says', 'asks']);
+const FOLLOW_UP_STATUSES: ReadonlySet<string> = new Set([
+  'finished',
+  'failed',
+  'needs_approval',
+  'says',
+  'asks',
+  'sent',
+  'queued',
+  'saved_not_started',
+  'expired',
+  'interrupted',
+  'confirm_rejected',
+]);
+const BUDGET_WARNINGS: ReadonlySet<string> = new Set(['80', '100']);
 const DIFF_OPS: Record<string, DraftDiffSegment['op']> = {
   equal: 'equal',
   keep: 'equal',
@@ -87,6 +100,9 @@ const parseTarget = (v: unknown): DraftTarget | null => {
     ...(kind === 'conversation' || kind === 'project' || kind === 'card' ? { kind } : {}),
   };
 };
+
+const parseTargets = (v: unknown): DraftTarget[] =>
+  Array.isArray(v) ? v.map(parseTarget).filter((t): t is DraftTarget => t !== null) : [];
 
 const parseDiff = (v: unknown): DraftDiffSegment[] => {
   if (!Array.isArray(v)) return [];
@@ -164,6 +180,8 @@ export function decodeFrame(text: unknown): ServerFrame | null {
         hash: str(d.hash),
         ...(num(d.holdRemainingMs) !== null ? { holdRemainingMs: Math.max(0, num(d.holdRemainingMs) as number) } : {}),
         ...(typeof d.holdFrozen === 'boolean' ? { holdFrozen: d.holdFrozen } : {}),
+        options: parseTargets(d.options),
+        spokenConfirm: d.spokenConfirm === true,
       };
     }
     case 'voice.readbackReady': {
@@ -199,7 +217,14 @@ export function decodeFrame(text: unknown): ServerFrame | null {
       const usedUsd = num(d.usedUsd);
       const limitUsd = num(d.limitUsd);
       if (usedUsd === null || limitUsd === null) return null;
-      return { name: env.name, voiceSessionId, usedUsd, limitUsd, warning: Boolean(d.warning) };
+      const warning = str(d.warning) ?? (typeof d.warning === 'number' ? String(d.warning) : null);
+      return {
+        name: env.name,
+        voiceSessionId,
+        usedUsd,
+        limitUsd,
+        warning: warning && BUDGET_WARNINGS.has(warning) ? (warning as '80' | '100') : null,
+      };
     }
     case 'voice.error': {
       return { name: env.name, voiceSessionId, code: str(d.code) ?? 'unknown', message: str(d.message) ?? '' };

@@ -32,6 +32,12 @@ export type VoiceView = {
   /** Wall-clock end of the 4 s hold while a draft is `committing` (display only). */
   holdUntil: number | null;
   readbackPlaying: boolean;
+  /** A Send / Cancel tap for the current draft version is on its way (blocks duplicate taps). */
+  draftTap: 'confirm' | 'cancel' | null;
+  /** Last line Jarvis said about the current draft (e.g. a refused spoken "send"). */
+  draftHint: string | null;
+  /** The current call only captures the answer to an agent's question (closes after it). */
+  asking: boolean;
   followUps: VoiceFollowUp[];
   budget: VoiceBudget | null;
   notice: VoiceNotice;
@@ -52,6 +58,9 @@ export const INITIAL_VIEW: VoiceView = {
   draft: null,
   holdUntil: null,
   readbackPlaying: false,
+  draftTap: null,
+  draftHint: null,
+  asking: false,
   followUps: [],
   budget: null,
   notice: null,

@@ -35,7 +35,11 @@
     "screenMaySleep": "L'écran peut se mettre en veille et mettre Jarvis en pause",
     "systemPaused": "Audio mis en pause par le système",
     "readback": "Relecture du brouillon…",
-    "muted": "Micro coupé"
+    "muted": "Micro coupé",
+    "awaitingConfirm": "En attente de votre confirmation",
+    "awaitingChoice": "En attente du choix de la cible",
+    "holding": "Envoi imminent — vous pouvez encore annuler",
+    "asking": "Un agent vous a posé une question — répondez maintenant ; Jarvis raccroche après votre réponse"
   },
   "captions": {
     "title": "Sous-titres en direct",
@@ -79,12 +83,17 @@
       "queued": "En file d'attente",
       "sent": "Envoyé",
       "failed": "Non envoyé — échec",
-      "saved_not_started": "Enregistré, non démarré — dites « start it » ou touchez",
+      "saved_not_started": "Enregistré, mais pas démarré — ouvrez la conversation pour le lancer",
       "cancelled": "Annulé",
       "expired": "Expiré",
       "interrupted": "Interrompu — veuillez confirmer à nouveau",
-      "superseded": "Remplacé par une nouvelle version"
-    }
+      "superseded": "Remplacé par une nouvelle version",
+      "draftedTapOnly": "Touchez Envoyer pour confirmer"
+    },
+    "chooseTarget": "Lequel ?",
+    "options": "Cibles possibles",
+    "openTarget": "Ouvrir la conversation",
+    "editNeedsCall": "Les modifications se dictent pendant l’appel qui a créé le brouillon"
   },
   "followUps": {
     "title": "Suivis récents",
@@ -94,13 +103,20 @@
       "failed": "Échec",
       "needs_approval": "Votre approbation est requise",
       "says": "Dit",
-      "asks": "Demande"
+      "asks": "Demande",
+      "sent": "Envoyé",
+      "queued": "En file d’attente",
+      "saved_not_started": "Pas démarré",
+      "expired": "Expiré",
+      "interrupted": "Interrompu",
+      "confirm_rejected": "Non confirmé"
     }
   },
   "budget": {
     "title": "Budget vocal du jour",
     "usage": "${{used}} sur ${{limit}}",
-    "warning": "Limite du jour presque atteinte"
+    "warning": "Limite du jour presque atteinte",
+    "reached": "La limite du jour est atteinte"
   },
   "notice": {
     "disabled": "La voix est désactivée. Activez-la dans les paramètres vocaux.",
@@ -119,7 +135,10 @@
     "unauthorized": "Votre session a expiré. Veuillez vous reconnecter.",
     "forbidden": "La voix n'est pas autorisée pour cette session.",
     "unavailable": "La voix est temporairement indisponible.",
-    "network": "Erreur réseau. Réessayez."
+    "network": "Erreur réseau. Réessayez.",
+    "callIdle": "L’appel s’est terminé après 3 minutes de silence. Jarvis reste armé.",
+    "callHardCap": "L’appel a atteint sa limite de 55 minutes. Touchez Parler pour en lancer un nouveau.",
+    "callDropped": "L’appel a été coupé. Touchez Parler pour réessayer."
   },
   "settings": {
     "title": "Paramètres vocaux",
