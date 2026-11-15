@@ -28,8 +28,9 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { resolveBackendIdentity, startBackend, stopBackend } from '@aionui/web-host';
+import { startBackend, stopBackend } from '@aionui/web-host';
 import { WEBUI_PASSWORD_PROCEDURE } from '../packages/web-cli/src/ensureAdminPassword.js';
+import { passwordToolsIdentity } from '../packages/web-cli/src/passwordGuard.js';
 
 const BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
 
@@ -165,15 +166,15 @@ function resolveUsername(): string {
 }
 
 async function main(): Promise<void> {
-  // WebUI identity (card C11): the reset endpoint is local-only and accounts are
-  // managed outside this helper — print the procedure instead.
-  if (resolveBackendIdentity() === 'webui') {
+  const username = resolveUsername();
+  const workDir = resolveWorkDir();
+  // WebUI identity (card C11) — from this shell or recorded in the data dir: the
+  // reset endpoint is local-only and accounts are managed outside this helper.
+  if (passwordToolsIdentity(workDir) === 'webui') {
     WEBUI_PASSWORD_PROCEDURE.forEach((line) => console.error(`[resetpass] ${line}`));
     process.exitCode = 1;
     return;
   }
-  const username = resolveUsername();
-  const workDir = resolveWorkDir();
   const webuiPort = resolveWebUIProbePort();
 
   log.info(`Target user: ${username} (advisory — operates on system_default_user)`);
@@ -216,6 +217,7 @@ async function main(): Promise<void> {
       userDataPath: workDir,
     },
     resolveBackend: () => backendBin,
+    identity: 'local',
     dataDir: workDir,
     logDir,
     dirs: {

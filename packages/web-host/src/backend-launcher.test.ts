@@ -15,8 +15,12 @@ vi.mock('node:child_process', () => ({
 }));
 
 vi.mock('node:fs', () => ({
+  chmodSync: vi.fn(),
   mkdirSync: vi.fn(),
+  readFileSync: vi.fn(),
+  renameSync: vi.fn(),
   statSync: vi.fn(),
+  writeFileSync: vi.fn(),
 }));
 
 vi.mock('node:net', () => ({
@@ -29,7 +33,7 @@ vi.mock('./agent-process-registry.js', () => ({
 }));
 
 import { spawn } from 'node:child_process';
-import { mkdirSync, statSync } from 'node:fs';
+import { chmodSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { connect, createServer } from 'node:net';
 import { cleanupRegisteredAgentProcesses } from './agent-process-registry.js';
 import {
@@ -37,6 +41,7 @@ import {
   buildSpawnArgs,
   buildSpawnEnv,
   findAvailablePort,
+  readIdentityMarker,
   resolveBackendIdentity,
   BackendLifecycleManager,
   BackendStartupError,
@@ -496,7 +501,7 @@ describe('backend identity (card C11)', () => {
     expect(args).not.toContain('--local');
   });
 
-  const spawnWith = async (env: Record<string, string | undefined>) => {
+  const spawnWith = async (env: Record<string, string | undefined>, identity?: 'local' | 'webui') => {
     const saved = Object.fromEntries(Object.keys(env).map((key) => [key, process.env[key]]));
     Object.entries(env).forEach(([key, value]) => {
       if (value === undefined) delete process.env[key];
@@ -509,10 +514,11 @@ describe('backend identity (card C11)', () => {
       .mockResolvedValue(new Response('ok', { status: 200 }) as unknown as Response);
     const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
     try {
-      const mgr = new BackendLifecycleManager(
-        APP_META_PACKAGED,
-        vi.fn(() => '/abs/aioncore')
-      );
+      const resolve = vi.fn(() => '/abs/aioncore');
+      const mgr =
+        identity === undefined
+          ? new BackendLifecycleManager(APP_META_PACKAGED, resolve)
+          : new BackendLifecycleManager(APP_META_PACKAGED, resolve, identity);
       const started = mgr.start('/db', '/log', { cacheDir: '/c', workDir: '/w', logDir: '/l' });
       await Promise.resolve();
       emitListening(child, 55555);
@@ -529,24 +535,77 @@ describe('backend identity (card C11)', () => {
     }
   };
 
-  it('keeps --local when the identity is not set (production today: zero change)', async () => {
+  it('keeps --local when no identity is given (production today: zero change)', async () => {
     const { args } = await spawnWith({ AIONUI_BACKEND_IDENTITY: undefined });
     expect(args).toContain('--local');
     expect(args).not.toContain('--identity-mode');
   });
 
-  it('starts WebUI identity and passes the public origin, allowed origins and HTTPS through', async () => {
-    const { args, env } = await spawnWith({
-      AIONUI_BACKEND_IDENTITY: 'webui',
-      AIONUI_PUBLIC_ORIGIN: 'https://y.talkseeds.com',
-      AIONUI_ALLOWED_ORIGINS: 'https://y.talkseeds.com',
-      AIONUI_HTTPS: 'true',
-    });
+  it('never reads AIONUI_BACKEND_IDENTITY itself: only the caller option switches', async () => {
+    const { args, env } = await spawnWith({ AIONUI_BACKEND_IDENTITY: 'webui' });
+    expect(args).toContain('--local');
+    expect(args).not.toContain('--identity-mode');
+    expect(env.AIONUI_BACKEND_IDENTITY).toBeUndefined();
+  });
+
+  it('starts WebUI identity from the option and passes the public origin, allowed origins and HTTPS through', async () => {
+    const { args, env } = await spawnWith(
+      {
+        AIONUI_BACKEND_IDENTITY: 'webui',
+        AIONUI_PUBLIC_ORIGIN: 'https://y.talkseeds.com',
+        AIONUI_ALLOWED_ORIGINS: 'https://y.talkseeds.com',
+        AIONUI_HTTPS: 'true',
+      },
+      'webui'
+    );
     expect(args).toEqual(expect.arrayContaining(['--identity-mode', 'webui']));
     expect(args).not.toContain('--local');
     for (const key of BACKEND_IDENTITY_ENV_KEYS) expect(env[key]).toBeDefined();
     expect(env.AIONUI_PUBLIC_ORIGIN).toBe('https://y.talkseeds.com');
     expect(env.AIONUI_HTTPS).toBe('true');
+    // The web CLI's input is not forwarded to AionCore.
+    expect(env.AIONUI_BACKEND_IDENTITY).toBeUndefined();
+  });
+
+  it('writes the identity marker (0600, atomically) in the data dir at every start', async () => {
+    vi.mocked(writeFileSync).mockClear();
+    vi.mocked(renameSync).mockClear();
+    vi.mocked(chmodSync).mockClear();
+    await spawnWith({}, 'webui');
+    const [temp, content, options] = vi.mocked(writeFileSync).mock.calls[0];
+    expect(String(temp)).toMatch(/^\/db\/identity-mode\.\d+\.tmp$/);
+    expect(content).toBe('webui\n');
+    expect(options).toEqual({ mode: 0o600 });
+    expect(vi.mocked(chmodSync)).toHaveBeenCalledWith(temp, 0o600);
+    expect(vi.mocked(renameSync)).toHaveBeenCalledWith(temp, '/db/identity-mode');
+  });
+
+  it('still starts when the marker cannot be written', async () => {
+    vi.mocked(writeFileSync).mockImplementationOnce(() => {
+      throw new Error('EROFS');
+    });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const { args } = await spawnWith({}, 'local');
+      expect(args).toContain('--local');
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('identity marker'));
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it('reads the marker back, and treats a missing or unknown marker as none', () => {
+    vi.mocked(readFileSync).mockReturnValueOnce('webui\n');
+    expect(readIdentityMarker('/db')).toBe('webui');
+    vi.mocked(readFileSync).mockReturnValueOnce('local');
+    expect(readIdentityMarker('/db')).toBe('local');
+    vi.mocked(readFileSync).mockReturnValueOnce('aionpro');
+    expect(readIdentityMarker('/db')).toBeNull();
+    vi.mocked(readFileSync).mockImplementationOnce(() => {
+      throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+    });
+    expect(readIdentityMarker('/db')).toBeNull();
+    expect(vi.mocked(readFileSync)).toHaveBeenCalledWith('/db/identity-mode', 'utf8');
   });
 });
 

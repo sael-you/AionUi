@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openBrowserUrl, shouldAutoOpenBrowser } from './browser.js';
 import { ensureAdminPassword, WEBUI_PASSWORD_PROCEDURE } from './ensureAdminPassword.js';
+import { passwordToolsIdentity } from './passwordGuard.js';
 
 // tarball layout:
 //   aionui-web/
@@ -196,6 +197,9 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
     console.log('');
     console.log('Press Ctrl+C to stop.');
   } else {
+    // Read before the start rewrites the marker: a data dir last served in WebUI
+    // identity is never seeded, whatever this shell's environment says (card C11).
+    const seedingIdentity = passwordToolsIdentity(dataDir);
     const handle = await startWebHost({
       app: {
         version,
@@ -206,6 +210,8 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
       staticDir,
       port,
       allowRemote,
+      // The only place the identity comes from the environment (card C11).
+      identity: resolveBackendIdentity(),
       dataDir,
       logDir,
       dirs: {
@@ -230,7 +236,7 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
     // backend and print plaintext credentials. Failure must not abort startup —
     // the user can always fall back to running resetpass manually.
     await ensureAdminPassword(
-      { backendPort: handle.backendPort, resetCommand: RESET_COMMAND, identity: resolveBackendIdentity() },
+      { backendPort: handle.backendPort, resetCommand: RESET_COMMAND, identity: seedingIdentity },
       {
         fetch: (...args) => fetch(...args),
         log: (msg) => console.log(msg),
@@ -276,9 +282,10 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
  * DB the user normally runs against.
  */
 async function runResetPassword(flags: Map<string, string | true>): Promise<void> {
-  // WebUI identity (card C11): the reset endpoint is local-only and accounts are
-  // managed outside aionui-web — print the procedure instead of starting a backend.
-  if (resolveBackendIdentity() === 'webui') {
+  // WebUI identity (card C11) — from this shell or recorded in the data dir: the
+  // reset endpoint is local-only and accounts are managed outside aionui-web, so
+  // print the procedure instead of starting a backend.
+  if (passwordToolsIdentity(resolveDataDir(flags)) === 'webui') {
     WEBUI_PASSWORD_PROCEDURE.forEach((line) => console.error(`[aionui-web] ${line}`));
     process.exit(1);
   }
@@ -314,6 +321,7 @@ async function runResetPassword(flags: Map<string, string | true>): Promise<void
     logDir,
     dirs: { cacheDir: dataDir, workDir: dataDir, logDir },
     backend: { kind: 'ownBackend', resolveBackend: () => backendBin },
+    identity: 'local',
   });
   currentHandle = handle;
 

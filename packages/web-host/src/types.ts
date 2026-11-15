@@ -39,6 +39,8 @@ export type WebHostOptions = {
   logDir?: string;
   dirs?: BackendSystemDirs;
   backend: { kind: 'ownBackend'; resolveBackend: BackendBinaryResolver } | { kind: 'useExistingBackend'; port: number };
+  /** AionCore identity for an own backend (card C11). Default `local`. */
+  identity?: 'local' | 'webui';
 };
 
 /**

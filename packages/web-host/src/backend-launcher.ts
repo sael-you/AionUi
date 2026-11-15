@@ -9,7 +9,8 @@
  */
 
 import { type ChildProcess, spawn } from 'node:child_process';
-import { mkdirSync, statSync } from 'node:fs';
+import { chmodSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { connect, createServer, type Socket } from 'node:net';
 import { cleanupRegisteredAgentProcesses } from './agent-process-registry.js';
 import type { AppMetadata, BackendBinaryResolver } from './types.js';
@@ -97,6 +98,8 @@ export type BackendLaunchOptions = {
    * process.env and will likely report wrong/empty dirs.
    */
   dirs?: BackendDirConfig;
+  /** Caller identity choice (card C11); the launcher never reads it from the env. Default `local`. */
+  identity?: BackendIdentity;
 };
 
 export type BackendHandle = {
@@ -196,15 +199,41 @@ export class BackendStartupCancelledError extends Error {
 }
 
 /**
- * How AionCore identifies callers (card C11). `AIONUI_BACKEND_IDENTITY=webui`
- * runs it in WebUI mode (it checks sessions, CSRF and origins itself); any other
- * value — or none — keeps the `--local` mode used so far. Exact match only, so a
- * typo can never switch the mode.
+ * How AionCore identifies callers (card C11): `local` (`--local`, used so far) or
+ * `webui` (`--identity-mode webui`: AionCore checks sessions, CSRF and origins
+ * itself). The launcher takes it as an explicit option — Electron passes `local`,
+ * the web CLI derives it from the environment with {@link resolveBackendIdentity}.
  */
 export type BackendIdentity = 'local' | 'webui';
 
+/** Identity from `AIONUI_BACKEND_IDENTITY`: exactly `webui` (trimmed), else `local` — a typo never switches. */
 export function resolveBackendIdentity(env: NodeJS.ProcessEnv = process.env): BackendIdentity {
   return env.AIONUI_BACKEND_IDENTITY?.trim() === 'webui' ? 'webui' : 'local';
+}
+
+/**
+ * Marker the launcher writes in the data dir at every start, so tools that act
+ * on the same data dir later (password reset, first-start seeding) know how the
+ * backend last ran — whatever their own environment says.
+ */
+export const IDENTITY_MARKER_FILE = 'identity-mode';
+
+export function writeIdentityMarker(dataDir: string, identity: BackendIdentity): void {
+  const target = join(dataDir, IDENTITY_MARKER_FILE);
+  const temp = `${target}.${process.pid}.tmp`;
+  writeFileSync(temp, `${identity}\n`, { mode: 0o600 });
+  chmodSync(temp, 0o600);
+  renameSync(temp, target);
+}
+
+/** The identity recorded in the data dir, or `null` when there is no (valid) marker. */
+export function readIdentityMarker(dataDir: string): BackendIdentity | null {
+  try {
+    const value = readFileSync(join(dataDir, IDENTITY_MARKER_FILE), 'utf8').trim();
+    return value === 'webui' || value === 'local' ? value : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -250,7 +279,9 @@ export function buildSpawnEnv(dirs?: BackendDirConfig): NodeJS.ProcessEnv {
   // CLIs spawned under aioncore (e.g. cursor-agent) ship natives under
   // build/Release only, and node-gyp-build skips that directory for any
   // non-empty value, aborting the agent before the ACP handshake (#4070).
-  const { PREBUILDS_ONLY: _prebuildsOnly, ...parentEnv } = process.env;
+  // AIONUI_BACKEND_IDENTITY is the web CLI's input, not AionCore's: the identity
+  // reaches aioncore as a CLI flag only.
+  const { PREBUILDS_ONLY: _prebuildsOnly, AIONUI_BACKEND_IDENTITY: _identity, ...parentEnv } = process.env;
   if (!dirs) return parentEnv;
   return {
     ...parentEnv,
@@ -550,7 +581,9 @@ export class BackendLifecycleManager {
 
   constructor(
     private readonly appMeta: AppMetadata,
-    private readonly resolveBackend: BackendBinaryResolver
+    private readonly resolveBackend: BackendBinaryResolver,
+    /** Caller identity choice (card C11). Electron passes `local`; never read from the env here. */
+    private readonly identity: BackendIdentity = 'local'
   ) {}
 
   get port(): number {
@@ -685,7 +718,7 @@ export class BackendLifecycleManager {
       );
     };
 
-    const identity = resolveBackendIdentity();
+    const identity = this.identity;
     const args = buildSpawnArgs({
       port: this._port,
       dbPath,
@@ -709,6 +742,14 @@ export class BackendLifecycleManager {
     } catch (error) {
       this._status = 'error';
       throw makeStartupError('spawn', 'aioncore startup directory preparation failed', error);
+    }
+
+    // Record how this data dir is run, for later tools on it (card C11). Never
+    // fatal: a read-only marker must not keep the app from starting.
+    try {
+      writeIdentityMarker(dbPath, identity);
+    } catch (error) {
+      console.warn(`[aioncore] could not record the identity marker in ${dbPath}: ${getErrorMessage(error)}`);
     }
 
     try {
@@ -1101,7 +1142,7 @@ export class BackendLifecycleManager {
  * directly to preserve current stop/port getter semantics).
  */
 export async function startBackend(opts: BackendLaunchOptions): Promise<BackendHandle> {
-  const manager = new BackendLifecycleManager(opts.app, opts.resolveBackend);
+  const manager = new BackendLifecycleManager(opts.app, opts.resolveBackend, opts.identity ?? 'local');
   const dataDir = opts.dataDir ?? '';
   if (!dataDir) {
     throw new Error('startBackend: dataDir is required');

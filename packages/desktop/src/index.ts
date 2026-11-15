@@ -217,7 +217,9 @@ const backendManager = new BackendLifecycleManager(
     resourcesPath: process.resourcesPath,
     userDataPath: app.getPath('userData'),
   },
-  resolveBinaryPath
+  resolveBinaryPath,
+  // The desktop app always runs AionCore in local identity (card C11).
+  'local'
 );
 let disposeCronResumeListener: (() => void) | null = null;
 

@@ -26,6 +26,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { resolveBackendIdentity, startWebHost } from '@aionui/web-host';
 import { openBrowserUrl, shouldAutoOpenBrowser } from '../packages/web-cli/src/browser.js';
+import { passwordToolsIdentity } from '../packages/web-cli/src/passwordGuard.js';
 
 // Aligned with packages/desktop/src/common/config/constants.ts WEBUI_DEFAULT_PORT.
 const DEFAULT_PORT = (() => {
@@ -223,6 +224,9 @@ async function main(): Promise<void> {
   console.log('[webui] backend bin:', backendBin);
   console.log(`[webui] launching  : port=${port} allowRemote=${allowRemote}`);
 
+  // Read before the start rewrites the marker: a data dir last served in WebUI
+  // identity is never seeded, whatever this shell's environment says (card C11).
+  const seedingIdentity = passwordToolsIdentity(workDir);
   const handle = await startWebHost({
     app: {
       version: '0.0.0',
@@ -233,6 +237,8 @@ async function main(): Promise<void> {
     staticDir,
     port,
     allowRemote,
+    // Same as aionui-web: the identity comes from the environment (card C11).
+    identity: resolveBackendIdentity(),
     dataDir: workDir,
     logDir,
     // Surface the same work dir on /api/system/info so the browser UI shows
@@ -263,7 +269,7 @@ async function main(): Promise<void> {
   // Settings. Always read it from the backend rather than assuming a value.
   // WebUI identity (card C11): accounts are managed outside this helper and the
   // reset endpoint is local-only, so there is nothing to seed here.
-  if (resolveBackendIdentity() !== 'webui') {
+  if (seedingIdentity !== 'webui') {
     try {
       const statusRes = await fetch(`http://127.0.0.1:${handle.backendPort}/api/auth/status`);
       if (statusRes.ok) {
