@@ -137,14 +137,25 @@ describe('voice protocol — S1b frames as the backend serialises them (aionui-a
     expect(frame).toMatchObject({ options: [], spokenConfirm: false });
   });
 
-  it.each(['sent', 'queued', 'saved_not_started', 'expired', 'interrupted', 'confirm_rejected', 'says', 'asks'])(
-    'decodes a voice.followUp with status %s',
-    (status) => {
-      expect(
-        decodeFrame(env('voice.followUp', { voiceSessionId: null, conversationId: 'c1', status, line: 'x' }))
-      ).toMatchObject({ name: 'voice.followUp', status, clipId: null });
-    }
-  );
+  it.each([
+    'sent',
+    'queued',
+    'saved_not_started',
+    'expired',
+    'interrupted',
+    'confirm_rejected',
+    'says',
+    'asks',
+    // Conversation voice mode (C26, core PROTOCOL.md "Conversation voice mode").
+    'added',
+    'failed',
+    'stopped',
+    'silenced',
+  ])('decodes a voice.followUp with status %s', (status) => {
+    expect(
+      decodeFrame(env('voice.followUp', { voiceSessionId: null, conversationId: 'c1', status, line: 'x' }))
+    ).toMatchObject({ name: 'voice.followUp', status, clipId: null });
+  });
 
   it('decodes the budget warning level and drops unknown levels', () => {
     expect(decodeFrame(env('voice.budget', { usedUsd: 4, limitUsd: 5, warning: '80' }))).toMatchObject({
@@ -177,6 +188,13 @@ describe('voice protocol — S1b frames as the backend serialises them (aionui-a
 });
 
 describe('voice protocol — encodeFrame', () => {
+  it('voice.commit ("Done", C26) carries the bound session id as the core expects', () => {
+    expect(JSON.parse(encodeFrame({ name: 'voice.commit' }, 'vs_1'))).toEqual({
+      name: 'voice.commit',
+      data: { voiceSessionId: 'vs_1' },
+    });
+  });
+
   it('wraps fields in { name, data } and adds the bound voiceSessionId', () => {
     expect(JSON.parse(encodeFrame({ name: 'voice.speechOnset', t: 1.5 }, 'vs'))).toEqual({
       name: 'voice.speechOnset',

@@ -127,6 +127,20 @@ describe('VoiceComposerButton and /voice', () => {
     await act(flush);
     fireEvent.click(screen.getByTestId('voice-composer-button'));
     expect(controller.store.getSnapshot().focusConversationId).toBe('c42');
+    // C26: the composer mic is conversation voice mode for THIS conversation, not Jarvis.
+    expect(controller.store.getSnapshot().voiceMode).toBe('conversation');
+    expect(controller.store.getSnapshot().overlayOpen).toBe(false);
+    expect(screen.getByTestId('voice-composer-button')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('the composer mic is not pressed while Jarvis is on', async () => {
+    const f = createFakeEffects();
+    const controller = new VoiceController(f.fx);
+    render(<VoiceComposerButton conversationId='c42' controller={controller} />);
+    await act(flush);
+    act(() => controller.toggle());
+    expect(controller.store.getSnapshot().voiceMode).toBe('jarvis');
+    expect(screen.getByTestId('voice-composer-button')).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('the composer mic is hidden while voice is off', async () => {
@@ -145,5 +159,16 @@ describe('VoiceComposerButton and /voice', () => {
     expect(runVoiceSlashCommand('voice', 'c1', controller)).toBe(true);
     expect(f.fx.createAudioContext).toHaveBeenCalledTimes(1);
     expect(controller.store.getSnapshot().focusConversationId).toBe('c1');
+    expect(controller.store.getSnapshot().voiceMode).toBe('conversation');
+    // `/voice` again ends it.
+    expect(runVoiceSlashCommand('voice', 'c1', controller)).toBe(true);
+    expect(controller.state.mode).toBe('off');
+  });
+
+  it('/voice outside a conversation falls back to Jarvis', () => {
+    const f = createFakeEffects();
+    const controller = new VoiceController(f.fx);
+    runVoiceSlashCommand('voice', null, controller);
+    expect(controller.store.getSnapshot().voiceMode).toBe('jarvis');
   });
 });

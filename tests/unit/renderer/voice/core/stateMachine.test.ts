@@ -33,6 +33,16 @@ describe('voice state machine', () => {
     expect(reduceVoice(s, { type: 'wake' })).toBe(s);
   });
 
+  it('conversation mode: a held mic sends silence; a new wake or call end clears the hold', () => {
+    const held = run(...live, { type: 'hold', held: true });
+    expect(isOutgoingLive(held)).toBe(false);
+    expect(isOutgoingLive(reduceVoice(held, { type: 'hold', held: false }))).toBe(true);
+    expect(reduceVoice(held, { type: 'callEnded' }).held).toBe(false);
+    // No call: a hold is ignored.
+    const armed = run({ type: 'arm' }, { type: 'armed' }, { type: 'socketOpen' });
+    expect(reduceVoice(armed, { type: 'hold', held: true })).toBe(armed);
+  });
+
   it('outgoing audio is live only when ready + socket open + not muted', () => {
     expect(isOutgoingLive(run(...live))).toBe(true);
     expect(isOutgoingLive(run(...live.slice(0, 5)))).toBe(false);
