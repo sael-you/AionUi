@@ -58,15 +58,22 @@ const baseProps: ConversationRowProps = {
 
 const renderRow = (props: Partial<ConversationRowProps>) => render(<ConversationRow {...baseProps} {...props} />);
 
-describe('ConversationRow status mark (agent icon + status dot)', () => {
+describe('ConversationRow status node (status glyph, agent mark at rest)', () => {
   it('shows the needs-you dot (not the running dot) when waiting takes precedence over generating', () => {
     const { container } = renderRow({ isWaitingConfirmation: true, isGenerating: true });
     expect(screen.getByTestId('conversation-waiting-confirmation-conv-1')).toBeInTheDocument();
     expect(screen.queryByTestId('conversation-running-conv-1')).toBeNull();
     expect(container.querySelector('.arco-spin')).toBeNull();
     expect(container.querySelector('[data-conversation-status]')?.getAttribute('data-conversation-status')).toBe(
-      'needsYou'
+      'waiting'
     );
+  });
+
+  it('shows the failed and done glyphs from the row run state (C21)', () => {
+    const { rerender } = renderRow({ runState: 'failed' });
+    expect(screen.getByTestId('conversation-failed-conv-1')).toBeInTheDocument();
+    rerender(<ConversationRow {...baseProps} runState='done' />);
+    expect(screen.getByTestId('conversation-done-conv-1')).toBeInTheDocument();
   });
 
   it('shows the running dot on the agent icon when generating but not waiting (no spinner swap)', () => {

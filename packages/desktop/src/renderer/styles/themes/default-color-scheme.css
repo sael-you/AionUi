@@ -144,3 +144,43 @@
   --fill-white-to-black: #000000; /* 白到黑填充色（暗色模式下为黑色） */
   --border-special: #60677e; /* 特殊边框色 */
 }
+
+/*
+ * Run status (C21): one colour per state for the status glyph, the sidebar
+ * tree and the delegated-work card. Declared on `body` because Arco's palette
+ * (--warning-7 …) lives there. Light mode uses Arco's darker steps so glyphs
+ * reach 3:1 and text 4.5:1 on the sidebar (Arco's --warning #ff7d00 is 2.3:1
+ * and --success #00b42a 2.5:1 on bg-2); meta text uses text-2 for the same
+ * reason (text-3 is 2.9:1).
+ */
+body {
+  --status-run: var(--primary);
+  --status-run-text: var(--primary);
+  --status-wait: rgb(var(--warning-7));
+  --status-wait-text: rgb(var(--warning-8));
+  --status-done: rgb(var(--success-7));
+  --status-done-text: rgb(var(--success-8));
+  --status-fail: var(--danger);
+  --status-fail-text: rgb(var(--danger-7));
+  --status-idle: var(--color-text-2);
+  --status-on: var(--bg-base);
+  --status-meta: var(--color-text-2);
+  --status-hover: rgba(0, 0, 0, 0.04);
+  --status-selected: rgba(0, 0, 0, 0.075);
+  /* Focus ring: --primary is 4.68:1 here (--primary-6 is the grey button colour). */
+  --status-focus: var(--primary);
+}
+
+[data-theme='dark'] body {
+  --status-wait: var(--warning);
+  --status-wait-text: var(--warning);
+  --status-done: var(--success);
+  --status-done-text: var(--success);
+  --status-fail: var(--danger);
+  --status-fail-text: var(--danger);
+  --status-idle: var(--color-text-3);
+  --status-on: var(--bg-1);
+  --status-meta: var(--color-text-3);
+  --status-hover: rgba(255, 255, 255, 0.06);
+  --status-selected: rgba(255, 255, 255, 0.12);
+}

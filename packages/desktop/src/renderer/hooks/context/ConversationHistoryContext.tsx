@@ -46,3 +46,7 @@ export const useConversationHistoryContext = (): ConversationHistoryContextValue
 
   return context;
 };
+
+/** Like `useConversationHistoryContext`, but `null` outside the provider (isolated renders, tests). */
+export const useConversationHistoryContextSafe = (): ConversationHistoryContextValue | null =>
+  useContext(ConversationHistoryContext);

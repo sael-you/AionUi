@@ -20,7 +20,7 @@
   padding-inline: 8px 4px;
   border-radius: 6px;
   background: var(--bg-2);
-  color: var(--color-text-3);
+  color: var(--status-meta);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -36,7 +36,7 @@
 }
 
 .sectionHeader:focus-visible {
-  box-shadow: inset 0 0 0 2px rgb(var(--primary-6));
+  box-shadow: inset 0 0 0 2px var(--status-focus);
 }
 
 .sectionTitle {
@@ -82,7 +82,7 @@
   gap: 6px;
   height: 32px;
   margin-top: 1px;
-  padding-inline: 4px 4px;
+  padding-inline: 8px 6px;
   border-radius: 6px;
   color: var(--color-text-1);
   cursor: pointer;
@@ -90,11 +90,11 @@
 }
 
 .projectRow:hover {
-  background: var(--color-fill-3);
+  background: var(--status-hover);
 }
 
 .projectRow:focus-visible {
-  box-shadow: inset 0 0 0 2px rgb(var(--primary-6));
+  box-shadow: inset 0 0 0 2px var(--status-focus);
 }
 
 .chevron {
@@ -142,7 +142,7 @@
   flex-shrink: 0;
   align-items: center;
   gap: 6px;
-  color: var(--color-text-3);
+  color: var(--status-meta);
   font-size: 11px;
   line-height: 16px;
   font-variant-numeric: tabular-nums;
@@ -153,7 +153,7 @@
   text-align: end;
 }
 
-/* "Needs you" pill: accent fill, surface-coloured text (>= 4.5:1 by construction). */
+/* "Needs you" pill (C21): the needs-you status colour, surface-coloured text. */
 .needsYouBadge {
   display: inline-flex;
   align-items: center;
@@ -162,8 +162,8 @@
   height: 16px;
   padding-inline: 4px;
   border-radius: 8px;
-  background: var(--project-accent-contrast);
-  color: var(--bg-1);
+  background: var(--status-wait);
+  color: var(--status-on);
   font-size: 10px;
   font-weight: 700;
   line-height: 16px;
@@ -201,22 +201,13 @@
   color: var(--color-text-1) !important;
 }
 
-/* Conversations of the group: 20px indent and a 1px guide in the project accent. */
+/*
+ * Conversations of the group. No project-colour guide line (C21): nesting is
+ * shown by real connectors only; the rows indent themselves (root node x 30).
+ */
 .children {
   position: relative;
   min-width: 0;
-  padding-inline-start: 20px;
-  --project-guide: color-mix(in srgb, var(--project-accent) 45%, transparent);
-}
-
-.children::before {
-  content: '';
-  position: absolute;
-  inset-block: 2px;
-  inset-inline-start: 11px;
-  width: 1px;
-  background: var(--project-guide);
-  pointer-events: none;
 }
 
 .emptyHint,
@@ -225,8 +216,8 @@
   align-items: center;
   gap: 4px;
   min-height: 28px;
-  padding-inline: 8px;
-  color: var(--color-text-3);
+  padding-inline: 30px 8px;
+  color: var(--status-meta);
   font-size: 12px;
   line-height: 16px;
 }
@@ -241,13 +232,19 @@
   cursor: pointer;
 }
 
+/* "Show N more" lines up with the root titles (x 54). */
+.showMore {
+  min-height: 24px;
+  padding-inline-start: 54px;
+}
+
 .actionItem:hover {
-  background: var(--color-fill-3);
+  background: var(--status-hover);
 }
 
 .emptyHint:focus-visible,
 .showMore:focus-visible {
-  box-shadow: inset 0 0 0 2px rgb(var(--primary-6));
+  box-shadow: inset 0 0 0 2px var(--status-focus);
 }
 
 /* Link-styled text inside an action row (the row itself is the control). */
@@ -258,64 +255,13 @@
   text-underline-offset: 2px;
 }
 
-/* ---- Conversation status mark ------------------------------------------ */
-
-.statusMark {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  line-height: 0;
-}
-
-/* Inside a project group the leading slot is 16px (ConversationRow.module.css): keep the dot on the icon. */
-.children .statusMark {
-  width: 16px;
-  height: 16px;
-}
-
-.statusDot {
-  position: absolute;
-  inset-inline-end: -1px;
-  bottom: -1px;
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  box-shadow: 0 0 0 2px var(--bg-2);
-}
-
-.statusRunning {
-  background: rgb(var(--primary-6));
-}
-
-.statusNeedsYou {
-  background: var(--project-accent-contrast, rgb(var(--warning-6)));
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .statusRunning {
-    animation: statusPulse 1.4s ease-in-out infinite;
-  }
-
   .chevronIcon {
     transition: transform 0.15s ease;
   }
 
   .projectRow {
     transition: background-color 0.12s ease;
-  }
-}
-
-@keyframes statusPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.35;
   }
 }
 
@@ -353,8 +299,6 @@
 
 /* Windows high-contrast: keep the guide and dots visible. */
 @media (forced-colors: active) {
-  .children::before,
-  .statusDot,
   .needsYouBadge {
     forced-color-adjust: none;
   }

@@ -35,6 +35,7 @@ vi.mock('@/renderer/hooks/context/ConversationHistoryContext', () => ({
     isConversationGenerating: () => false,
     isConversationWaitingConfirmation: () => false,
     hasCompletionUnread: () => false,
+    hasBackgroundActive: () => false,
     clearCompletionUnread: () => {},
     isManualUnread: () => false,
     markManualUnread: () => {},

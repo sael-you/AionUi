@@ -219,6 +219,7 @@ type ConversationListSyncSnapshot = {
   waitingConfirmationConversationIds: Set<string>;
   completionUnreadConversationIds: Set<string>;
   manualUnreadConversationIds: Set<string>;
+  backgroundActiveConversationIds: Set<string>;
 };
 
 /**
@@ -263,6 +264,11 @@ let waitingConfirmationConversationIdsState = new Set<string>();
 let completionUnreadConversationIdsState = new Set<string>();
 let manualUnreadConversationIdsState = readStoredManualUnread();
 let completedConversationIdsState = new Set<string>();
+// Background work (subagents, background tasks, workflows) still alive per
+// conversation, keyed by the launching call id (C21). A conversation with a
+// non-empty set stays "running" after its turn ended.
+let backgroundCallIdsByConversationState = new Map<string, Set<string>>();
+let backgroundActiveConversationIdsState = new Set<string>();
 let conversation_idsState = new Set<string>();
 // Full id → owning project_id map over ALL loaded conversations (incl. the team
 // member rows filtered out of `conversationsState`). Every row from
@@ -282,6 +288,7 @@ let snapshotState: ConversationListSyncSnapshot = {
   waitingConfirmationConversationIds: waitingConfirmationConversationIdsState,
   completionUnreadConversationIds: completionUnreadConversationIdsState,
   manualUnreadConversationIds: manualUnreadConversationIdsState,
+  backgroundActiveConversationIds: backgroundActiveConversationIdsState,
 };
 
 const emitStoreChange = () => {
@@ -291,6 +298,7 @@ const emitStoreChange = () => {
     waitingConfirmationConversationIds: waitingConfirmationConversationIdsState,
     completionUnreadConversationIds: completionUnreadConversationIdsState,
     manualUnreadConversationIds: manualUnreadConversationIdsState,
+    backgroundActiveConversationIds: backgroundActiveConversationIdsState,
   };
   listeners.forEach((listener) => listener());
 };
@@ -519,6 +527,76 @@ export const reconcileWaitingConfirmationFromRuntime = (
   }
 };
 
+/** Sentinel for runtime-reported background work whose call ids are unknown. */
+const RUNTIME_BACKGROUND_ID = '__runtime_background__';
+
+type BackgroundTransition = { kind: 'mark'; callId: string } | { kind: 'unmark'; callId: string } | { kind: 'clear' };
+
+/** Pure: the next set of live background call ids. Never mutates the input. */
+export const applyBackgroundTransition = (
+  current: ReadonlySet<string> | undefined,
+  transition: BackgroundTransition
+): Set<string> => {
+  const next = new Set(current ?? []);
+  if (transition.kind === 'clear') return new Set();
+  if (transition.kind === 'mark') {
+    next.delete(RUNTIME_BACKGROUND_ID);
+    next.add(transition.callId);
+  } else {
+    next.delete(transition.callId);
+    next.delete(RUNTIME_BACKGROUND_ID);
+  }
+  return next;
+};
+
+const applyBackground = (conversation_id: string, transition: BackgroundTransition) => {
+  const current = backgroundCallIdsByConversationState.get(conversation_id);
+  const next = applyBackgroundTransition(current, transition);
+  const wasActive = (current?.size ?? 0) > 0;
+  const isActive = next.size > 0;
+  const nextMap = new Map(backgroundCallIdsByConversationState);
+  if (isActive) nextMap.set(conversation_id, next);
+  else nextMap.delete(conversation_id);
+  backgroundCallIdsByConversationState = nextMap;
+  if (wasActive === isActive) return;
+  const ids = new Set(backgroundActiveConversationIdsState);
+  if (isActive) ids.add(conversation_id);
+  else ids.delete(conversation_id);
+  backgroundActiveConversationIdsState = ids;
+  emitStoreChange();
+};
+
+/**
+ * Whether a `tool_call` stream frame opens or settles delegated work: progress
+ * cards carry `task` (AionCore C21). `null` = not a task frame.
+ */
+export const backgroundTransitionOf = (message: {
+  type: string;
+  data?: unknown;
+}): { callId: string; alive: boolean } | null => {
+  if (message.type !== 'tool_call') return null;
+  const data = message.data as { call_id?: unknown; status?: unknown; task?: { ended_at?: unknown } } | undefined;
+  if (!data?.task || typeof data.call_id !== 'string' || !data.call_id) return null;
+  const alive = data.status === 'running' && data.task.ended_at == null;
+  return { callId: data.call_id, alive };
+};
+
+/**
+ * Reconciles background work with an authoritative runtime summary
+ * (`background_active`, AionCore C21): 0 clears the conversation, a positive
+ * count with nothing tracked marks it with a sentinel.
+ */
+export const reconcileBackgroundFromRuntime = (conversation_id: string, backgroundActive: number | undefined): void => {
+  if (backgroundActive === undefined) return;
+  if (backgroundActive <= 0) {
+    applyBackground(conversation_id, { kind: 'clear' });
+    return;
+  }
+  if (!backgroundCallIdsByConversationState.has(conversation_id)) {
+    applyBackground(conversation_id, { kind: 'mark', callId: RUNTIME_BACKGROUND_ID });
+  }
+};
+
 const markCompletionUnread = (conversation_id: string) => {
   if (completionUnreadConversationIdsState.has(conversation_id)) {
     return;
@@ -615,6 +693,7 @@ const initializeConversationListSyncStore = () => {
       clearCompletionUnreadState(event.conversation_id);
       clearManualUnreadState(event.conversation_id);
       clearCompleted(event.conversation_id);
+      applyBackground(event.conversation_id, { kind: 'clear' });
     }
     refreshConversations();
   });
@@ -632,6 +711,14 @@ const initializeConversationListSyncStore = () => {
 
     if (!conversation_idsState.has(conversation_id)) {
       refreshConversations();
+    }
+
+    const background = backgroundTransitionOf(message);
+    if (background) {
+      applyBackground(
+        conversation_id,
+        background.alive ? { kind: 'mark', callId: background.callId } : { kind: 'unmark', callId: background.callId }
+      );
     }
 
     if (isTerminalStreamMessage(message)) {
@@ -678,6 +765,7 @@ const initializeConversationListSyncStore = () => {
     }
     markCompleted(event.session_id, event.turn_id);
     clearGenerating(event.session_id, 'turnCompleted');
+    reconcileBackgroundFromRuntime(event.session_id, event.runtime?.background_active);
     refreshConversations();
   });
 };
@@ -693,6 +781,7 @@ export const useConversationListSync = () => {
     waitingConfirmationConversationIds,
     completionUnreadConversationIds,
     manualUnreadConversationIds,
+    backgroundActiveConversationIds,
   } = useSyncExternalStore(
     subscribeConversationListSync,
     getConversationListSyncSnapshot,
@@ -743,6 +832,11 @@ export const useConversationListSync = () => {
     [manualUnreadConversationIds]
   );
 
+  const hasBackgroundActive = useCallback(
+    (conversation_id: string) => backgroundActiveConversationIds.has(conversation_id),
+    [backgroundActiveConversationIds]
+  );
+
   return {
     conversations,
     isConversationGenerating,
@@ -750,6 +844,7 @@ export const useConversationListSync = () => {
     hasCompletionUnread,
     clearCompletionUnread,
     isManualUnread,
+    hasBackgroundActive,
     markManualUnread,
     clearManualUnread,
     setActiveConversation,
