@@ -1,4 +1,5 @@
 import { AgentLogoIcon } from '@/renderer/components/agent/AgentBadge';
+import { ProjectChip, projectSurfaceClasses, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import type { PresetAssistantInfo } from '@/renderer/hooks/agent/usePresetAssistantInfo';
 import FlexFullContainer from '@/renderer/components/layout/FlexFullContainer';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
@@ -63,12 +64,21 @@ const ChatLayout: React.FC<{
   onRenameTitle?: (new_name: string) => Promise<boolean>;
   /** Optional override for the leading icon shown before the title (e.g. team Peoples icon) */
   headerLeading?: React.ReactNode;
+  /**
+   * Workspace of the project this conversation / team belongs to (user-chosen
+   * workspace). Sets the project colour tokens (`--project-*`) on the layout
+   * root and shows the project chip + accent strip; omit for no project.
+   */
+  projectWorkspace?: string | null;
 }> = (props) => {
   const { conversation_id, workspacePath, isTemporaryWorkspace } = props;
   const { backend, presetAssistant, agent_name, workspaceEnabled = true, workspacePreferenceKey } = props;
   const layout = useLayoutContext();
   const isDesktop = !layout?.isMobile;
   const isMobile = Boolean(layout?.isMobile);
+  // Project colour identity: tokens on the root reach the header, send box and
+  // the legacy workspace sider; the mobile titlebar shows its own label + strip.
+  const project = useProjectTheme(props.projectWorkspace);
 
   // Preview panel state
   const { isOpen: isPreviewOpenRaw, isMaximized } = usePreviewContext();
@@ -202,7 +212,8 @@ const ChatLayout: React.FC<{
         'min-h-44px flex items-center justify-between px-16px pt-8px pb-10px gap-16px !bg-1 chat-layout-header chat-layout-header--glass overflow-hidden'
       )}
     >
-      <FlexFullContainer className='h-full min-w-0' containerClassName='flex items-center'>
+      <FlexFullContainer className='h-full min-w-0' containerClassName='flex items-center gap-4px'>
+        {project && <ProjectChip project={project} />}
         <ChatTitleEditor
           editingTitle={editingTitle}
           titleDraft={titleDraft}
@@ -244,9 +255,9 @@ const ChatLayout: React.FC<{
   return (
     <ArcoLayout
       className='size-full color-black '
-      style={{
-        // fontFamily: `cursive,"anthropicSans","anthropicSans Fallback",system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif`,
-      }}
+      data-project-surface={project ? 'chat' : undefined}
+      {...project?.dataAttributes}
+      style={project?.style}
     >
       <div ref={containerRef} className='flex flex-1 relative w-full overflow-hidden'>
         {/* Unified layout: single DOM structure prevents children unmount/remount on preview toggle */}
@@ -258,7 +269,12 @@ const ChatLayout: React.FC<{
             flexBasis: 0,
           }}
         >
-          <div className='shrink-0 !bg-1'>{headerBlock}</div>
+          <div
+            data-project-strip={project && isDesktop ? 'top' : undefined}
+            className={classNames('shrink-0 !bg-1', project && isDesktop && projectSurfaceClasses.stripTop)}
+          >
+            {headerBlock}
+          </div>
           <div className='flex flex-1 min-h-0 relative'>
             {/* Chat area - always mounted, never unmounted on preview toggle */}
             <div
@@ -327,7 +343,10 @@ const ChatLayout: React.FC<{
         </div>
         {workspaceEnabled && !layout?.isMobile && (
           <div
-            className={classNames('!bg-1 relative chat-layout-right-sider layout-sider')}
+            className={classNames(
+              '!bg-1 relative chat-layout-right-sider layout-sider',
+              project && !rightSiderCollapsed && projectSurfaceClasses.stripTop
+            )}
             style={{
               flexGrow: 0,
               flexShrink: 0,

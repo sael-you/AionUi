@@ -116,6 +116,9 @@ const readContent = vi.fn();
 const getContentMetadata = vi.fn();
 vi.mock('@/common', () => ({
   ipcBridge: {
+    // The Tasks tab's board read: never answers here (tab stays hidden).
+    board: { get: { invoke: () => new Promise(() => {}) }, changed: { on: () => () => {} } },
+    realtime: { reconnected: { on: () => () => {} } },
     project: {
       get: { invoke: (p: { project_id: string }) => projectGet(p) },
       attachFolder: { invoke: (p: unknown) => attachFolder(p) },

@@ -829,5 +829,37 @@
       "moveFailed": "移動對話失敗。",
       "unsupportedParent": "此類型的對話不支援建立子對話。"
     }
+  },
+  "projectIdentity": {
+    "label": "專案：{{name}}"
+  },
+  "sidebar": {
+    "navLabel": "主導覽",
+    "treeLabel": "專案和對話",
+    "conversationActions": "{{name}} 的操作",
+    "status": {
+      "running": "執行中",
+      "needsYou": "需要你處理",
+      "unread": "未讀"
+    },
+    "project": {
+      "count": "對話：{{count}}",
+      "needsYou": "等待你處理：{{count}}",
+      "empty": "還沒有對話。",
+      "startOne": "開始一個",
+      "showMore": "再顯示 {{count}} 個",
+      "showLess": "收合",
+      "add": "新增專案資料夾",
+      "actions": "{{name}} 的專案操作"
+    },
+    "filter": {
+      "placeholder": "篩選專案和對話",
+      "label": "依名稱篩選專案和對話",
+      "noResults": "沒有符合的專案或對話"
+    },
+    "footer": {
+      "localUser": "你",
+      "menu": "帳戶選單"
+    }
   }
 }

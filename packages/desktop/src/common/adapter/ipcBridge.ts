@@ -97,6 +97,28 @@ import type {
 import type { AgentMetadata } from '@/renderer/utils/model/agentTypes';
 import type { Theme } from '@/common/theme/types';
 import type { AttachFolderRequest, ProjectDetailDto, ProjectEntryDto } from '@/common/types/project';
+import type {
+  BoardAssignRequest,
+  BoardAssignResponse,
+  BoardBrainstormRequest,
+  BoardCard,
+  BoardCardDetail,
+  BoardCardPage,
+  BoardChangedEvent,
+  BoardColumnsResponse,
+  BoardEvent,
+  BoardEventPage,
+  BoardGateRequest,
+  BoardKeeperResponse,
+  BoardSettings,
+  BoardSnapshot,
+  CreateBoardCardRequest,
+  CreateBoardCommentRequest,
+  MoveBoardCardRequest,
+  UpdateBoardCardRequest,
+  UpdateBoardColumnsRequest,
+  UpdateBoardSettingsRequest,
+} from '@/common/types/board';
 import type { ChatFileRef, ContentEncoding } from '@/common/types/chatFile';
 import type { ProtocolDetectionRequest, ProtocolDetectionResponse } from '../utils/protocolDetector';
 import {
@@ -588,6 +610,112 @@ export const project = {
   removeFolder: httpDelete<void, { project_id: string; pe_id: string }>(
     (p) => `/api/projects/${encodeURIComponent(p.project_id)}/folders/${encodeURIComponent(p.pe_id)}`
   ),
+};
+
+// ---------------------------------------------------------------------------
+// Project board (SPEC C4 §5, user router). Every mutation sends a JSON body —
+// `{}` when there is nothing else to say — because the board routes reject
+// body-less writes. Errors carry the `board_*` codes in BackendHttpError.code.
+// ---------------------------------------------------------------------------
+
+const boardProjectPath = (projectId: string): string => `/api/projects/${encodeURIComponent(projectId)}/board`;
+const boardCardPath = (cardId: string): string => `/api/board/cards/${encodeURIComponent(cardId)}`;
+const afterSeqQuery = (afterSeq?: number): string => (afterSeq !== undefined ? `?after_seq=${afterSeq}` : '');
+
+export const board = {
+  /** GET /api/projects/{pid}/board → settings, columns, card summaries, last event seq. */
+  get: httpGet<BoardSnapshot, { project_id: string; include_archived?: boolean }>(
+    (p) => `${boardProjectPath(p.project_id)}${p.include_archived ? '?include_archived=true' : ''}`,
+    // A temp project has no board (409 board_no_project) — an expected answer, not an error to log.
+    { silentStatuses: [404, 409] }
+  ),
+  /** GET /api/projects/{pid}/board/cards?cursor= → the next page of card summaries (large boards). */
+  listCards: httpGet<BoardCardPage, { project_id: string; cursor: string; include_archived?: boolean }>((p) => {
+    const params = new URLSearchParams({ cursor: p.cursor });
+    if (p.include_archived) params.set('include_archived', 'true');
+    return `${boardProjectPath(p.project_id)}/cards?${params.toString()}`;
+  }),
+  /** PUT /api/projects/{pid}/board/settings → enable/disable, template, defaults (guarded by `version`). */
+  updateSettings: httpPut<BoardSettings, { project_id: string } & UpdateBoardSettingsRequest>(
+    (p) => `${boardProjectPath(p.project_id)}/settings`,
+    ({ project_id: _projectId, ...body }) => body
+  ),
+  /** PUT /api/projects/{pid}/board/columns → replaces the full column list (guarded by `version`). */
+  updateColumns: httpPut<BoardColumnsResponse, { project_id: string } & UpdateBoardColumnsRequest>(
+    (p) => `${boardProjectPath(p.project_id)}/columns`,
+    ({ project_id: _projectId, ...body }) => body
+  ),
+  /** POST /api/projects/{pid}/board/cards → the created card (creator = user). */
+  createCard: httpPost<BoardCard, { project_id: string } & CreateBoardCardRequest>(
+    (p) => `${boardProjectPath(p.project_id)}/cards`,
+    ({ project_id: _projectId, ...body }) => body
+  ),
+  /** GET /api/board/cards/{id} → card + reviews + questions + links + last 50 events. */
+  getCard: httpGet<BoardCardDetail, { card_id: string }>((p) => boardCardPath(p.card_id)),
+  /** PATCH /api/board/cards/{id} → changed fields + `version` (409 board_version_conflict when stale). */
+  updateCard: httpPatch<BoardCard, { card_id: string } & UpdateBoardCardRequest>(
+    (p) => boardCardPath(p.card_id),
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/board/cards/{id}/move → new placement (409 board_wip_limit unless `force`). */
+  moveCard: httpPost<BoardCard, { card_id: string } & MoveBoardCardRequest>(
+    (p) => `${boardCardPath(p.card_id)}/move`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/board/cards/{id}/gate → owner decision on a gate card (idempotent by key). */
+  decideGate: httpPost<BoardCard, { card_id: string } & BoardGateRequest>(
+    (p) => `${boardCardPath(p.card_id)}/gate`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/board/cards/{id}/assign → department conversation (or team) + packet (SPEC §6). */
+  assign: httpPost<BoardAssignResponse, { card_id: string } & BoardAssignRequest>(
+    (p) => `${boardCardPath(p.card_id)}/assign`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/board/cards/{id}/brainstorm → assign with role `brainstorm`. */
+  brainstorm: httpPost<BoardAssignResponse, { card_id: string } & BoardBrainstormRequest>(
+    (p) => `${boardCardPath(p.card_id)}/brainstorm`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** POST /api/projects/{pid}/board/keeper → the project's Board Keeper conversation, created when missing (D40). */
+  ensureKeeper: httpPost<BoardKeeperResponse, { project_id: string }>(
+    (p) => `${boardProjectPath(p.project_id)}/keeper`,
+    () => ({})
+  ),
+  /** POST /api/board/cards/{id}/archive (soft delete). */
+  archiveCard: httpPost<BoardCard, { card_id: string }>(
+    (p) => `${boardCardPath(p.card_id)}/archive`,
+    () => ({})
+  ),
+  /** POST /api/board/cards/{id}/restore. */
+  restoreCard: httpPost<BoardCard, { card_id: string }>(
+    (p) => `${boardCardPath(p.card_id)}/restore`,
+    () => ({})
+  ),
+  /** GET /api/board/cards/{id}/comments?after_seq= → `commented` events, oldest first, paged. */
+  listComments: httpGet<BoardEventPage, { card_id: string; after_seq?: number }>(
+    (p) => `${boardCardPath(p.card_id)}/comments${afterSeqQuery(p.after_seq)}`
+  ),
+  /** POST /api/board/cards/{id}/comments → the `commented` event. */
+  addComment: httpPost<BoardEvent, { card_id: string } & CreateBoardCommentRequest>(
+    (p) => `${boardCardPath(p.card_id)}/comments`,
+    ({ card_id: _cardId, ...body }) => body
+  ),
+  /** GET /api/board/cards/{id}/events?after_seq= → the card's events, oldest first, paged. */
+  listCardEvents: httpGet<BoardEventPage, { card_id: string; after_seq?: number }>(
+    (p) => `${boardCardPath(p.card_id)}/events${afterSeqQuery(p.after_seq)}`
+  ),
+  /** PUT /api/board/cards/{id}/deps/{other} → `card_id` depends on `depends_on` (422 board_dependency_cycle). */
+  addDependency: httpPut<void, { card_id: string; depends_on: string }>(
+    (p) => `${boardCardPath(p.card_id)}/deps/${encodeURIComponent(p.depends_on)}`,
+    () => ({})
+  ),
+  /** DELETE /api/board/cards/{id}/deps/{other}. */
+  removeDependency: httpDelete<void, { card_id: string; depends_on: string }>(
+    (p) => `${boardCardPath(p.card_id)}/deps/${encodeURIComponent(p.depends_on)}`
+  ),
+  /** WS `board.changed` — one per board-state write, after commit (R8). */
+  changed: wsEmitter<BoardChangedEvent>('board.changed'),
 };
 
 // ---------------------------------------------------------------------------

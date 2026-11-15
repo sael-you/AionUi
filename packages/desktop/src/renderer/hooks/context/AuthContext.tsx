@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { PREVIEW_SCOPE_KEY_PREFIX } from '@/renderer/pages/conversation/Preview/context/previewScope';
 import { refreshSession } from '@/common/adapter/sessionRefresh';
+import { STORAGE_KEYS } from '@/common/config/storageKeys';
 // M6: CSRF removed with legacy webserver — stub functions for compatibility, re-implement in M7
 const withCsrfToken = <T extends Record<string, unknown>>(data: T): T => data;
 const hasValidCsrfToken = (): boolean => true;
@@ -64,7 +65,9 @@ function clearAuthCache(): void {
     // Clear localStorage auth-related items, plus per-user UI state that must not
     // leak across accounts. Preview scopes are keyed by project id and hold file
     // content, so leaving them behind would show the next user the previous one's
-    // open tabs — and nothing else ever cleaned them up.
+    // open tabs — and nothing else ever cleaned them up. Project colours (local
+    // copies and unsaved edits, scoped per account) go too: they name the
+    // previous user's workspaces, and the backend keeps the saved colours.
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -73,7 +76,8 @@ function clearAuthCache(): void {
         (key.includes('auth') ||
           key.includes('csrf') ||
           key.includes('token') ||
-          key.startsWith(PREVIEW_SCOPE_KEY_PREFIX))
+          key.startsWith(PREVIEW_SCOPE_KEY_PREFIX) ||
+          key.startsWith(STORAGE_KEYS.PROJECT_COLORS))
       ) {
         keysToRemove.push(key);
       }
@@ -311,6 +315,11 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+/** The auth context, or `undefined` outside an AuthProvider (for leaf state that must not crash alone). */
+export function useOptionalAuth(): AuthContextValue | undefined {
+  return useContext(AuthContext);
+}
 
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);

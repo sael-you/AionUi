@@ -829,5 +829,37 @@
       "moveFailed": "会話を移動できませんでした。",
       "unsupportedParent": "この種類の会話はサブ会話を持てません。"
     }
+  },
+  "projectIdentity": {
+    "label": "プロジェクト: {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "メインナビゲーション",
+    "treeLabel": "プロジェクトと会話",
+    "conversationActions": "{{name}} の操作",
+    "status": {
+      "running": "実行中",
+      "needsYou": "あなたの対応が必要",
+      "unread": "未読"
+    },
+    "project": {
+      "count": "会話: {{count}}",
+      "needsYou": "対応待ち: {{count}}",
+      "empty": "まだ会話がありません。",
+      "startOne": "始める",
+      "showMore": "さらに {{count}} 件表示",
+      "showLess": "表示を減らす",
+      "add": "プロジェクトフォルダーを追加",
+      "actions": "{{name}} のプロジェクト操作"
+    },
+    "filter": {
+      "placeholder": "プロジェクトと会話を絞り込む",
+      "label": "名前でプロジェクトと会話を絞り込む",
+      "noResults": "一致するプロジェクトや会話はありません"
+    },
+    "footer": {
+      "localUser": "あなた",
+      "menu": "アカウントメニュー"
+    }
   }
 }

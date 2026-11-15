@@ -18,6 +18,12 @@ import { resolveFeedbackModule } from '@/renderer/services/feedback/resolveFeedb
 import { isElectronDesktop, isMacOS } from '@/renderer/utils/platform';
 import { IS_DISCONTINUED_BUILD } from '@/renderer/utils/discontinuedBuild';
 import MigrationInviteCapsule from './MigrationInviteCapsule';
+import {
+  ProjectLabel,
+  projectSurfaceClasses,
+  useCurrentProjectIdentity,
+  useProjectTheme,
+} from '@renderer/components/workspace/ProjectIdentity';
 import './titlebar.css';
 
 interface TitlebarProps {
@@ -162,6 +168,10 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
   // mobile keeps search inside the sidebar.
   const showSearchButton = !layout?.isMobile;
   const searchTooltip = t('conversation.historySearch.tooltip', { defaultValue: 'Search conversations' });
+  // Mobile has no conversation header: the titlebar carries the project identity
+  // (label under the title + accent strip). Desktop shows it in the chat header.
+  const projectIdentity = useCurrentProjectIdentity();
+  const mobileProject = useProjectTheme(layout?.isMobile && workspaceAvailable ? projectIdentity?.workspace : null);
 
   const handleSiderToggle = () => {
     if (!showSiderToggle || !layout?.setSiderCollapsed) return;
@@ -288,6 +298,7 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
   const mobileCenterStyle = layout?.isMobile
     ? ({
         '--app-titlebar-mobile-center-offset': `${workspaceAvailable ? mobileCenterOffset : 0}px`,
+        ...mobileProject?.style,
       } as React.CSSProperties)
     : undefined;
 
@@ -305,7 +316,10 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
     <div
       ref={containerRef}
       style={mobileCenterStyle}
+      data-project-surface={mobileProject ? 'titlebar' : undefined}
+      {...mobileProject?.dataAttributes}
       className={classNames('flex items-center gap-8px app-titlebar bg-2 border-b border-[var(--border-base)]', {
+        [projectSurfaceClasses.stripBottom]: Boolean(mobileProject),
         'app-titlebar--mobile': layout?.isMobile,
         'app-titlebar--mobile-conversation': layout?.isMobile && workspaceAvailable,
         'app-titlebar--desktop': isDesktopRuntime,
@@ -387,25 +401,29 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
         aria-label={layout?.isMobile ? mobileCenterTitle : appTitle}
         title={layout?.isMobile ? mobileCenterTitle : appTitle}
       >
-        {layout?.isMobile &&
-          (() => {
-            const conversationMatch = location.pathname.match(/^\/conversation\/([^/]+)/);
-            const conversation_id = conversationMatch?.[1];
-            if (conversation_id) {
-              return <MobileConversationBrand conversation_id={conversation_id} fallbackTitle={mobileCenterTitle} />;
-            }
-            const isTeamRoute = TEAM_MODE_ENABLED && /^\/team\/[^/]+/.test(location.pathname);
-            return (
-              <span className='app-titlebar__brand-mobile'>
-                {isTeamRoute && (
-                  <span className='app-titlebar__brand-icon' aria-hidden='true'>
-                    <Peoples theme='outline' size='16' fill='currentColor' />
-                  </span>
-                )}
-                <span className='app-titlebar__brand-text'>{mobileCenterTitle}</span>
-              </span>
-            );
-          })()}
+        {layout?.isMobile && (
+          <span className='app-titlebar__brand-stack'>
+            {(() => {
+              const conversationMatch = location.pathname.match(/^\/conversation\/([^/]+)/);
+              const conversation_id = conversationMatch?.[1];
+              if (conversation_id) {
+                return <MobileConversationBrand conversation_id={conversation_id} fallbackTitle={mobileCenterTitle} />;
+              }
+              const isTeamRoute = TEAM_MODE_ENABLED && /^\/team\/[^/]+/.test(location.pathname);
+              return (
+                <span className='app-titlebar__brand-mobile'>
+                  {isTeamRoute && (
+                    <span className='app-titlebar__brand-icon' aria-hidden='true'>
+                      <Peoples theme='outline' size='16' fill='currentColor' />
+                    </span>
+                  )}
+                  <span className='app-titlebar__brand-text'>{mobileCenterTitle}</span>
+                </span>
+              );
+            })()}
+            {mobileProject && <ProjectLabel project={mobileProject} />}
+          </span>
+        )}
       </div>
       <div ref={toolbarRef} className='app-titlebar__toolbar'>
         {layout?.isMobile && <div id='app-titlebar-actions-slot' className='app-titlebar__actions-slot' />}

@@ -231,11 +231,14 @@ const HTMLPreview: React.FC<HTMLPreviewProps> = ({ content, file_path, hideToolb
    */
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === 'element-selected') {
+      // Only our own preview frame may talk to this viewer: other frames on the page (e.g. the web browser panel's
+      // untrusted iframe) can also post messages to this window.
+      if (event.source !== iframeRef.current?.contentWindow) return;
+      if (event.data?.type === 'element-selected') {
         const elementInfo: SelectedElement = event.data.data;
         setSelectedElement(elementInfo);
         messageApi.info(t('preview.html.elementSelected', { path: elementInfo.path }));
-      } else if (event.data.type === 'element-contextmenu') {
+      } else if (event.data?.type === 'element-contextmenu') {
         const { element, x, y } = event.data.data;
 
         // 计算上下文菜单位置（相对于父窗口）

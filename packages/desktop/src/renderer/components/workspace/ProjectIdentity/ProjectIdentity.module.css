@@ -1,0 +1,132 @@
+/*
+ * Project identity surfaces. Every rule reads the `--project-*` custom
+ * properties set on the surface root by `useProjectTheme` (see projectTheme.ts
+ * for what each one guarantees). Without them these classes are never applied.
+ */
+
+/* Project chip: folder icon + project name, in the conversation / team header. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  max-width: 220px;
+  height: 24px;
+  padding-inline: 8px 10px;
+  border: 1px solid var(--project-border);
+  border-radius: 999px;
+  background: var(--project-tint);
+  color: var(--project-accent-contrast);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.chipIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.chipName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Compact label under the conversation title in the mobile titlebar. */
+.mobileLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  min-width: 0;
+  color: var(--project-accent-contrast);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+/*
+ * 2px accent strip along the top (chat column, file panel) or bottom (mobile
+ * titlebar) edge. Drawn by a pseudo-element above the surface's children, so
+ * opaque headers inside the surface do not cover it.
+ */
+.stripTop,
+.stripBottom {
+  position: relative;
+}
+
+.stripTop::before,
+.stripBottom::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--project-accent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.stripTop::before {
+  top: 0;
+}
+
+.stripBottom::after {
+  bottom: 0;
+}
+
+/* Active tab of a project panel: accent underline, the label colour stays neutral. */
+.activeTab {
+  box-shadow: inset 0 -2px 0 0 var(--project-accent);
+}
+
+/* Sidebar: the group of the project shown in the main area. */
+.activeGroup {
+  position: relative;
+  background: var(--project-tint);
+}
+
+.activeGroup::before {
+  content: '';
+  position: absolute;
+  inset-block: 7px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--project-accent);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chip,
+  .mobileLabel,
+  .stripTop::before,
+  .stripBottom::after,
+  .activeTab,
+  .activeGroup,
+  .activeGroup::before {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      color 0.2s ease;
+  }
+}
+
+/* Windows high-contrast themes drop backgrounds and shadows: keep a visible marker. */
+@media (forced-colors: active) {
+  .activeGroup {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  .activeGroup::before,
+  .stripTop::before,
+  .stripBottom::after {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}

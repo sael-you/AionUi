@@ -8,7 +8,8 @@ import type { TChatConversation } from '@/common/config/storage';
 import { getActivityTime } from '@/renderer/utils/chat/timeline';
 import { getWorkspaceDisplayName } from '@/renderer/utils/workspace/workspace';
 import { getWorkspaceUpdateTime } from '@/renderer/utils/workspace/workspaceHistory';
-import { normalizeWorkspace, type StandardProject } from './standardProjects';
+import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
+import type { StandardProject } from './standardProjects';
 
 import type { GroupedHistoryResult, TimelineItem, TimelineSection } from '../types';
 import { partitionConversationHierarchy } from './conversationTreeIndex';
@@ -50,6 +51,9 @@ export const groupConversationsByWorkspace = (
   });
 
   const items: TimelineItem[] = [];
+  const projectIdByWorkspace = new Map(
+    standardProjects.map((project) => [normalizeWorkspace(project.workspace), project.project_id])
+  );
 
   allWorkspaceGroups.forEach((convList, workspace) => {
     const sortedConvs = [...convList].toSorted((a, b) => getActivityTime(b) - getActivityTime(a));
@@ -67,6 +71,7 @@ export const groupConversationsByWorkspace = (
         // without consulting `extra.is_temporary_workspace` per-row.
         display_name: getWorkspaceDisplayName(workspace, false, t),
         conversations: sortedConvs,
+        project_id: projectIdByWorkspace.get(normalizeWorkspace(workspace)),
       },
     });
   });

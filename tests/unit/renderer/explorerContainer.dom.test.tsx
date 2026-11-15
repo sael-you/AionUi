@@ -6,9 +6,11 @@
 
 import React from 'react';
 import { render, screen, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { BoardSnapshot } from '@/common/types/board';
 import type { ProjectDetailDto, ProjectEntryDto } from '@/common/types/project';
 
 vi.mock('react-i18next', () => ({
@@ -24,8 +26,14 @@ vi.mock('@/renderer/pages/conversation/explorer/monitorTransport', () => ({
 
 // Mock the HTTP control-plane fetch.
 const projectGet = vi.fn<(p: { project_id: string }) => Promise<ProjectDetailDto>>();
+// The Tasks tab reads the project board; by default it never answers (tab hidden).
+const boardGet = vi.fn<(p: { project_id: string }) => Promise<unknown>>(() => new Promise(() => {}));
 vi.mock('@/common', () => ({
-  ipcBridge: { project: { get: { invoke: (p: { project_id: string }) => projectGet(p) } } },
+  ipcBridge: {
+    project: { get: { invoke: (p: { project_id: string }) => projectGet(p) } },
+    board: { get: { invoke: (p: { project_id: string }) => boardGet(p) }, changed: { on: () => () => {} } },
+    realtime: { reconnected: { on: () => () => {} } },
+  },
 }));
 
 import { ExplorerContainer } from '@/renderer/pages/conversation/explorer/ExplorerContainer';
@@ -53,15 +61,19 @@ const detail = (entries: ProjectEntryDto[], projectId = 'p1'): ProjectDetailDto 
 // Fresh SWR cache per render so tests don't share fetch results.
 const renderContainer = (projectId: string) =>
   render(
-    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
-      <ExplorerContainer projectId={projectId} />
-    </SWRConfig>
+    <MemoryRouter>
+      <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+        <ExplorerContainer projectId={projectId} />
+      </SWRConfig>
+    </MemoryRouter>
   );
 
 beforeEach(() => {
   resetExplorerStoreForTest();
   initExplorerRuntime.mockClear();
   projectGet.mockReset();
+  boardGet.mockReset();
+  boardGet.mockImplementation(() => new Promise(() => {}));
   try {
     localStorage.clear();
   } catch {
@@ -193,5 +205,61 @@ describe('ExplorerContainer data integration', () => {
     // The fetched detail belongs to 'other-project', not 'p1' → dropped, no roots.
     await new Promise((r) => setTimeout(r, 30));
     expect(screen.queryByText('Ghost Root')).not.toBeInTheDocument();
+  });
+});
+
+describe('ExplorerContainer Tasks tab (project board)', () => {
+  const boardSnapshot: BoardSnapshot = {
+    settings: {
+      project_id: 'p1',
+      enabled: false,
+      template: 'simple',
+      next_number: 1,
+      version: 0,
+      settings: {},
+      archived_at: null,
+      created_at: 0,
+      updated_at: 0,
+    },
+    columns: [],
+    cards: [],
+    last_seq: 0,
+  };
+
+  it('shows the Tasks tab once the project board answers and opens it', async () => {
+    projectGet.mockResolvedValue(detail([entry({ pe_id: 'peA', display_name: 'Root Alpha' })]));
+    boardGet.mockResolvedValue(boardSnapshot);
+    renderContainer('p1');
+
+    const tab = await screen.findByRole('button', { name: 'board.tasksTab' });
+    fireEvent.click(tab);
+    expect(await screen.findByText('board.sharedByProject')).toBeInTheDocument();
+    expect(boardGet).toHaveBeenCalledWith(expect.objectContaining({ project_id: 'p1' }));
+  });
+
+  it('hides the Tasks tab for a project without a board (temp project → board_no_project)', async () => {
+    const { BackendHttpError } = await import('@/common/adapter/httpBridge');
+    projectGet.mockResolvedValue(detail([entry({ pe_id: 'peA', display_name: 'Root Alpha' })]));
+    boardGet.mockRejectedValue(
+      new BackendHttpError({
+        method: 'GET',
+        path: '/api/projects/p1/board',
+        status: 409,
+        body: { success: false, error: 'no project', code: 'board_no_project' },
+      })
+    );
+    renderContainer('p1');
+
+    await screen.findByText('Root Alpha');
+    await waitFor(() => expect(boardGet).toHaveBeenCalled());
+    expect(screen.queryByRole('button', { name: 'board.tasksTab' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the Tasks tab hidden while the board is still loading (no flash)', async () => {
+    projectGet.mockResolvedValue(detail([entry({ pe_id: 'peA', display_name: 'Root Alpha' })]));
+    renderContainer('p1');
+
+    await screen.findByText('Root Alpha');
+    expect(screen.queryByRole('button', { name: 'board.tasksTab' })).not.toBeInTheDocument();
   });
 });

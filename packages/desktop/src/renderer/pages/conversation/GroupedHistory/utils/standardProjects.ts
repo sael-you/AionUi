@@ -5,21 +5,10 @@
  */
 
 import type { SidebarResponse } from '@/common/types/sidebar';
+import { normalizeWorkspace } from '@/renderer/utils/workspace/workspace';
 
 /** A standard (user-chosen folder) project known to the backend, even with no visible conversation. */
 export type StandardProject = { workspace: string; name: string; project_id?: string };
-
-/**
- * Normalise a workspace for comparison and as a colour key: forward slashes
- * (Windows `C:\x` and `C:/x` match) and no trailing slash, except for a root
- * (`/` or `C:/`).
- */
-export const normalizeWorkspace = (workspace: string): string => {
-  const slashed = workspace.replace(/\\/g, '/');
-  const trimmed = slashed.replace(/\/+$/, '');
-  if (trimmed === '') return slashed ? '/' : '';
-  return /^[A-Za-z]:$/.test(trimmed) ? `${trimmed}/` : trimmed;
-};
 
 /** `file:///root/projects/x` → `/root/projects/x`; plain paths pass through; anything else → null. */
 export const workspaceFromUri = (uri: string | null | undefined): string | null => {

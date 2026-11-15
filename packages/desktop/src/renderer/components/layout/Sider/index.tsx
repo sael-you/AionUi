@@ -1,16 +1,34 @@
 import classNames from 'classnames';
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+import type { RefInputType } from '@arco-design/web-react/es/Input/interface';
+import { Peoples } from '@icon-park/react';
 import { usePreviewContext } from '@renderer/pages/conversation/Preview/context/PreviewContext';
 import { cleanupSiderTooltips, getSiderTooltipProps } from '@renderer/utils/ui/siderTooltip';
 import { useAuth } from '@renderer/hooks/context/AuthContext';
 import { useLayoutContext } from '@renderer/hooks/context/LayoutContext';
 import { blurActiveElement } from '@renderer/utils/ui/focus';
 import { useThemeContext } from '@renderer/hooks/context/ThemeContext';
-import { SiderToolbar, SiderSearchEntry, SiderScheduledEntry, SiderAssistantEntry } from './SiderNav';
+import { isPrimaryApplicationShortcut } from '@renderer/utils/ui/keyboardShortcuts';
+import { useTeamList } from '@renderer/pages/team/hooks/useTeamList';
+import {
+  SiderToolbar,
+  SiderSearchEntry,
+  SiderScheduledEntry,
+  SiderAssistantEntry,
+  SiderFilterInput,
+  SiderNavItem,
+} from './SiderNav';
 import SiderFooter from './SiderFooter';
 import TeamSiderSection from './TeamSiderSection';
 import siderStyles from './Sider.module.css';
+import type { TChatConversation } from '@/common/config/storage';
+import { BoardKeeperBadge, isBoardKeeperConversation } from '@renderer/components/board/BoardKeeperBadge';
+import { SidebarBoardButton } from '@renderer/components/board/SidebarBoardButton';
+import type { WorkspaceGroupedHistoryProps } from '@renderer/pages/conversation/GroupedHistory/types';
+
+type SidebarProjectSlot = Parameters<NonNullable<WorkspaceGroupedHistoryProps['projectActions']>>[0];
 
 const WorkspaceGroupedHistory = React.lazy(() => import('@renderer/pages/conversation/GroupedHistory'));
 const SettingsSider = React.lazy(() => import('@renderer/pages/settings/components/SettingsSider'));
@@ -20,7 +38,11 @@ interface SiderProps {
   collapsed?: boolean;
 }
 
+/** Session key of the list's scroll position (restored after a reload). */
+export const SIDER_SCROLL_STORAGE_KEY = 'aionui_sider_scroll_top';
+
 const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
+  const { t } = useTranslation();
   const layout = useLayoutContext();
   const isMobile = layout?.isMobile ?? false;
   const location = useLocation();
@@ -28,7 +50,12 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
 
   const navigate = useNavigate();
   const { closePreview, clearPreviewForScope } = usePreviewContext();
-  const { logout, status } = useAuth();
+  const { logout, status, user } = useAuth();
+  const { teams } = useTeamList();
+  const [createTeamVisible, setCreateTeamVisible] = useState(false);
+  const [filterQuery, setFilterQuery] = useState('');
+  const filterInputRef = useRef<RefInputType | null>(null);
+  const treeRef = useRef<HTMLDivElement | null>(null);
   const { theme, setTheme } = useThemeContext();
   const [isBatchMode, setIsBatchMode] = useState(false);
   const isSettings = pathname.startsWith('/settings');
@@ -160,6 +187,60 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
     };
   }, [handleLogout, showLogout]);
 
+  // Ctrl/Cmd+K focuses the filter (opening the sidebar first when it is collapsed).
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isPrimaryApplicationShortcut(event, { key: 'k', targetGuard: 'embedded-editor' })) return;
+      event.preventDefault();
+      const wasCollapsed = Boolean(layout?.siderCollapsed);
+      if (wasCollapsed) layout?.setSiderCollapsed?.(false);
+      // An opening sidebar mounts the field on its next render.
+      requestAnimationFrame(() => {
+        if (filterInputRef.current) filterInputRef.current.focus();
+        else window.setTimeout(() => filterInputRef.current?.focus(), 60);
+      });
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [layout]);
+
+  // Keep the list's scroll position across reloads.
+  useEffect(() => {
+    const element = treeRef.current;
+    if (!element) return;
+    let frame = 0;
+    const restore = () => {
+      const stored = Number(sessionStorage.getItem(SIDER_SCROLL_STORAGE_KEY) ?? '');
+      if (Number.isFinite(stored) && stored > 0) element.scrollTop = stored;
+    };
+    // The list loads lazily: restore once now and once its content has rendered.
+    restore();
+    frame = requestAnimationFrame(restore);
+    let pending = false;
+    const onScroll = () => {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        pending = false;
+        try {
+          sessionStorage.setItem(SIDER_SCROLL_STORAGE_KEY, String(Math.round(element.scrollTop)));
+        } catch {
+          // Storage unavailable: the position is simply not kept.
+        }
+      });
+    };
+    element.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      element.removeEventListener('scroll', onScroll);
+    };
+  }, [isSettings]);
+
+  const focusFirstTreeItem = () => {
+    const first = treeRef.current?.querySelector<HTMLElement>('[data-tree-item][tabindex="0"], [data-tree-item]');
+    first?.focus();
+  };
+
   const tooltipEnabled = collapsed && !isMobile;
   const siderTooltipProps = getSiderTooltipProps(tooltipEnabled);
 
@@ -169,6 +250,20 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
     onSessionClick,
     batchMode: isBatchMode,
     onBatchModeChange: setIsBatchMode,
+    filterQuery,
+    // Row slots for project-level features (Kanban, D40): the Board button on the
+    // project row, the Board Keeper badge on its conversation, which is listed first.
+    projectActions: ({ projectId, name, buttonClassName }: SidebarProjectSlot) =>
+      projectId ? (
+        <SidebarBoardButton
+          projectId={projectId}
+          projectName={name}
+          className={buttonClassName}
+          onNavigate={onSessionClick}
+        />
+      ) : null,
+    conversationBadge: (conversation: TChatConversation) => <BoardKeeperBadge conversation={conversation} compact />,
+    isProjectLeadConversation: isBoardKeeperConversation,
   };
 
   return (
@@ -180,63 +275,82 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
             <SettingsSider collapsed={collapsed} tooltipEnabled={tooltipEnabled} />
           </Suspense>
         ) : (
-          <div className='size-full flex flex-col gap-2px'>
-            <SiderToolbar
-              isMobile={isMobile}
-              isBatchMode={isBatchMode}
-              collapsed={collapsed}
-              siderTooltipProps={siderTooltipProps}
-              onNewChat={handleNewChat}
-              onToggleBatchMode={() => setIsBatchMode((prev) => !prev)}
-            />
-            {/* Search entry — desktop moves this into the titlebar toolbar;
-                mobile keeps it here in the sidebar. */}
-            {isMobile && (
-              <SiderSearchEntry
+          <div className='size-full flex flex-col'>
+            {/* Compact top block: New chat, the top list, the filter. */}
+            <div className={siderStyles.topBlock}>
+              <SiderToolbar
                 isMobile={isMobile}
+                isBatchMode={isBatchMode}
                 collapsed={collapsed}
                 siderTooltipProps={siderTooltipProps}
-                onConversationSelect={handleConversationSelect}
-                onSessionClick={onSessionClick}
+                onNewChat={handleNewChat}
+                onToggleBatchMode={() => setIsBatchMode((prev) => !prev)}
               />
-            )}
-            {/* Assistant nav entry - fixed above Scheduled */}
-            <SiderAssistantEntry
-              isMobile={isMobile}
-              isActive={pathname.startsWith('/assistants')}
-              collapsed={collapsed}
-              siderTooltipProps={siderTooltipProps}
-              onClick={handleAssistantClick}
-            />
-            {/* Scheduled tasks nav entry - fixed above scroll */}
-            <SiderScheduledEntry
-              isMobile={isMobile}
-              isActive={pathname === '/scheduled'}
-              collapsed={collapsed}
-              siderTooltipProps={siderTooltipProps}
-              onClick={handleScheduledClick}
-            />
-            {/* Divider between fixed top nav and scrollable content area */}
-            <div
-              className={classNames(
-                'shrink-0 mt-6px mb-2px h-1px bg-[var(--color-border-2)]',
-                collapsed ? 'mx-6px' : 'mx-10px'
+              <nav aria-label={t('conversation.sidebar.navLabel')} className='flex flex-col gap-1px'>
+                {/* Search entry — desktop moves this into the titlebar toolbar;
+                    mobile keeps it here in the sidebar. */}
+                {isMobile && (
+                  <SiderSearchEntry
+                    isMobile={isMobile}
+                    collapsed={collapsed}
+                    siderTooltipProps={siderTooltipProps}
+                    onConversationSelect={handleConversationSelect}
+                    onSessionClick={onSessionClick}
+                  />
+                )}
+                <SiderAssistantEntry
+                  isActive={pathname.startsWith('/assistants')}
+                  collapsed={collapsed}
+                  siderTooltipProps={siderTooltipProps}
+                  onClick={handleAssistantClick}
+                />
+                <SiderScheduledEntry
+                  isActive={pathname === '/scheduled'}
+                  collapsed={collapsed}
+                  siderTooltipProps={siderTooltipProps}
+                  onClick={handleScheduledClick}
+                />
+                {/* No teams yet: a subtle entry instead of an empty Teams section. */}
+                {teams.length === 0 && (
+                  <SiderNavItem
+                    icon={<Peoples theme='outline' size='16' fill='currentColor' />}
+                    label={t('team.sider.createTeam')}
+                    collapsed={collapsed}
+                    siderTooltipProps={siderTooltipProps}
+                    onClick={() => setCreateTeamVisible(true)}
+                    testId='team-create-btn'
+                  />
+                )}
+              </nav>
+              {!collapsed && (
+                <SiderFilterInput
+                  value={filterQuery}
+                  onChange={setFilterQuery}
+                  inputRef={filterInputRef}
+                  onFocusList={focusFirstTreeItem}
+                />
               )}
-            />
-            {/* Scrollable content: pinned → team (slot) → projects → conversations */}
-            <div className={classNames('flex-1 min-h-0 overflow-y-auto', siderStyles.scrollArea)}>
-              <Suspense fallback={<div className='min-h-200px' />}>
+            </div>
+            {/* The tree: pinned → teams → projects → conversations. Fills the
+                remaining height; the footer stays pinned below it. */}
+            <div
+              ref={treeRef}
+              data-testid='sider-scroll'
+              className={classNames('flex-1 min-h-0 overflow-y-auto mt-4px', siderStyles.scrollArea)}
+            >
+              <Suspense fallback={null}>
                 <WorkspaceGroupedHistory
                   {...workspaceHistoryProps}
                   afterPinnedContent={
-                    <>
-                      <TeamSiderSection
-                        collapsed={collapsed}
-                        pathname={pathname}
-                        siderTooltipProps={siderTooltipProps}
-                        onSessionClick={onSessionClick}
-                      />
-                    </>
+                    <TeamSiderSection
+                      collapsed={collapsed}
+                      pathname={pathname}
+                      siderTooltipProps={siderTooltipProps}
+                      onSessionClick={onSessionClick}
+                      filterQuery={filterQuery}
+                      createVisible={createTeamVisible}
+                      onCreateVisibleChange={setCreateTeamVisible}
+                    />
                   }
                 />
               </Suspense>
@@ -251,6 +365,7 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
         collapsed={collapsed}
         theme={theme}
         siderTooltipProps={siderTooltipProps}
+        userName={user?.username}
         onSettingsClick={handleSettingsClick}
         onThemeToggle={handleQuickThemeToggle}
         showLogout={showLogout}

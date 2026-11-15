@@ -11,7 +11,7 @@ import {
   isProjectColorId,
   projectAccent,
   resolveProjectColor,
-} from '@/renderer/pages/conversation/GroupedHistory/utils/projectColors';
+} from '@/renderer/components/workspace/ProjectIdentity/projectColors';
 
 describe('project colour palette', () => {
   it('has 12 distinct hues with distinct light and dark accents', () => {

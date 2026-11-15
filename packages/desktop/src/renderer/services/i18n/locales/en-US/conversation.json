@@ -829,5 +829,37 @@
       "moveFailed": "Failed to move the conversation.",
       "unsupportedParent": "This conversation type cannot have sub-conversations."
     }
+  },
+  "projectIdentity": {
+    "label": "Project: {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "Main navigation",
+    "treeLabel": "Projects and conversations",
+    "conversationActions": "Actions for {{name}}",
+    "status": {
+      "running": "Running",
+      "needsYou": "Needs your input",
+      "unread": "Unread"
+    },
+    "project": {
+      "count": "Conversations: {{count}}",
+      "needsYou": "Waiting for you: {{count}}",
+      "empty": "No conversations yet.",
+      "startOne": "Start one",
+      "showMore": "Show {{count}} more",
+      "showLess": "Show less",
+      "add": "Add a project folder",
+      "actions": "Project actions for {{name}}"
+    },
+    "filter": {
+      "placeholder": "Filter projects and chats",
+      "label": "Filter projects and conversations by name",
+      "noResults": "No matching projects or conversations"
+    },
+    "footer": {
+      "localUser": "You",
+      "menu": "Account menu"
+    }
   }
 }

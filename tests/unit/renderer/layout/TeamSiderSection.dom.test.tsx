@@ -89,6 +89,8 @@ vi.mock('@arco-design/web-react', async () => {
   Modal.confirm = vi.fn();
 
   return {
+    Button: ({ icon, onClick, ...rest }: { icon?: React.ReactNode; onClick?: () => void }) =>
+      ReactModule.createElement('button', { ...rest, onClick }, icon),
     Input: () => null,
     Message: { success: vi.fn(), error: vi.fn() },
     Modal,
@@ -175,5 +177,18 @@ describe('TeamSiderSection running state', () => {
 
     expect(screen.getByTestId('collapsed-team-icon-idle-team')).toHaveAttribute('data-mock-icon', 'Peoples');
     expect(screen.queryByTestId('collapsed-team-spinner-idle-team')).not.toBeInTheDocument();
+  });
+
+  it('filters teams by name and opens the section while filtering', () => {
+    localStorage.setItem('team-section-expanded', 'false');
+    render(<TeamSiderSection collapsed={false} pathname='/guid' siderTooltipProps={{}} filterQuery='  IDLE ' />);
+    expect(screen.getByTestId('sider-item-Idle team')).toBeInTheDocument();
+    expect(screen.queryByTestId('sider-item-Running team')).not.toBeInTheDocument();
+    expect(screen.getByTestId('team-section-toggle').getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('shows no Teams section when no team matches (no empty band)', () => {
+    render(<TeamSiderSection collapsed={false} pathname='/guid' siderTooltipProps={{}} filterQuery='nothing' />);
+    expect(screen.queryByTestId('team-section-toggle')).not.toBeInTheDocument();
   });
 });

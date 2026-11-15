@@ -1,6 +1,6 @@
 import { Button, Dropdown, Menu, Message, Modal, Spin, Tooltip } from '@arco-design/web-react';
 import { FullScreen, Left, MoreOne, OffScreen, Peoples, Right } from '@icon-park/react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR, { useSWRConfig } from 'swr';
 import { useAuth } from '@renderer/hooks/context/AuthContext';
@@ -42,6 +42,7 @@ import { resolveTeamWorkspaceView } from './utils/teamWorkspaceView';
 import { usePreviewContext } from '@/renderer/pages/conversation/Preview';
 import { previewScopeKey } from '@/renderer/pages/conversation/Preview/context/previewScope';
 import { setCurrentProject } from '@/renderer/pages/conversation/explorer/currentProjectStore';
+import { projectIdentityOf, setCurrentProjectIdentity } from '@/renderer/components/workspace/ProjectIdentity';
 import { setCurrentConversation } from '@/renderer/pages/conversation/explorer/currentConversationStore';
 import { getSnapshotConversationProjectId } from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
@@ -636,6 +637,19 @@ const TeamPageContent: React.FC<TeamPageContentProps> = ({
   // creation. Falling back to a leader assistant's auto-temp workspace counts as
   // temporary, mirroring single-chat behavior.
   const isTeamWorkspaceTemporary = teamWorkspaceView.isTemporaryWorkspace;
+  // Project colour identity: only a user-picked team workspace is a project.
+  const teamProjectIdentity = useMemo(
+    () => (isTeamWorkspaceTemporary ? null : projectIdentityOf(effectiveWorkspace, teamProjectId)),
+    [isTeamWorkspaceTemporary, effectiveWorkspace, teamProjectId]
+  );
+  // Published before paint (mirrors the conversation route), so the sidebar and
+  // mobile titlebar never show the previous team's project for a frame; cleared
+  // when this team unmounts (team switch / leaving the route) so a next team
+  // still loading shows none rather than this one.
+  useLayoutEffect(() => {
+    setCurrentProjectIdentity(teamProjectIdentity);
+  }, [teamProjectIdentity]);
+  useLayoutEffect(() => () => setCurrentProjectIdentity(null), []);
 
   // Mirror conversation/index.tsx: close preview only when the isolation scope
   // changes, keep it open when switching between teams that share the same scope.
@@ -811,6 +825,7 @@ const TeamPageContent: React.FC<TeamPageContentProps> = ({
           agent_name={undefined}
           workspacePath={effectiveWorkspace}
           isTemporaryWorkspace={isTeamWorkspaceTemporary}
+          projectWorkspace={teamProjectIdentity?.workspace}
           workspacePreferenceKey={team.id}
           onRenameTitle={onRenameTeam}
           headerExtra={assistants.length > 1 ? <TeamViewToggle value={viewMode} onChange={setViewMode} /> : undefined}

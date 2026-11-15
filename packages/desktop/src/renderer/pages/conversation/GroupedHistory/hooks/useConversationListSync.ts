@@ -272,6 +272,9 @@ let conversation_idsState = new Set<string>();
 // tree). `null` = known conversation with no project (or project_id not yet
 // backfilled); a missing key = not loaded yet (caller placeholders).
 let projectIdByIdState = new Map<string, string | null>();
+// Every row (unfiltered) by id, for synchronous lookups of other fields on a
+// route switch (e.g. the project workspace for the project colour identity).
+let conversationByIdState = new Map<string, TChatConversation>();
 let activeConversationIdState: string | null = null;
 let snapshotState: ConversationListSyncSnapshot = {
   conversations: conversationsState,
@@ -314,6 +317,19 @@ export const getSnapshotConversationProjectId = (conversation_id: string): strin
   return projectIdByIdState.get(conversation_id) ?? null;
 };
 
+/**
+ * Synchronous lookup of a conversation row from the in-memory list snapshot
+ * (all rows, including team members). `undefined` when not loaded yet.
+ */
+export const getSnapshotConversation = (conversation_id: string): TChatConversation | undefined =>
+  conversationByIdState.get(conversation_id);
+
+/** Test hook: seed the list snapshot rows (id → row, and id → project_id). */
+export const setConversationSnapshotForTest = (conversations: TChatConversation[]): void => {
+  conversationByIdState = new Map(conversations.map((conversation) => [conversation.id, conversation]));
+  projectIdByIdState = new Map(conversations.map((conversation) => [conversation.id, conversation.project_id ?? null]));
+};
+
 /** Test hook: seed the id → project_id map so the sync lookup can be exercised. */
 export const setConversationProjectMapForTest = (entries: Array<[string, string | null]>): void => {
   projectIdByIdState = new Map(entries);
@@ -352,6 +368,7 @@ const refreshConversations = () => {
         // Map ALL rows (unfiltered) so a team member conversation's project_id is
         // resolvable too — the team route looks up its leader conversation here.
         projectIdByIdState = new Map(items.map((conversation) => [conversation.id, conversation.project_id ?? null]));
+        conversationByIdState = new Map(items.map((conversation) => [conversation.id, conversation]));
         emitStoreChange();
         return;
       }
@@ -359,6 +376,7 @@ const refreshConversations = () => {
       conversationsState = [];
       conversation_idsState = new Set();
       projectIdByIdState = new Map();
+      conversationByIdState = new Map();
       emitStoreChange();
     })
     .catch((error) => {
@@ -366,6 +384,7 @@ const refreshConversations = () => {
       conversationsState = [];
       conversation_idsState = new Set();
       projectIdByIdState = new Map();
+      conversationByIdState = new Map();
       emitStoreChange();
     });
 };

@@ -829,5 +829,37 @@
       "moveFailed": "انتقال گفتگو ناموفق بود.",
       "unsupportedParent": "این نوع گفتگو نمی‌تواند زیرمجموعه داشته باشد."
     }
+  },
+  "projectIdentity": {
+    "label": "پروژه: {{name}}"
+  },
+  "sidebar": {
+    "navLabel": "ناوبری اصلی",
+    "treeLabel": "پروژه‌ها و گفت‌وگوها",
+    "conversationActions": "کارهای {{name}}",
+    "status": {
+      "running": "در حال اجرا",
+      "needsYou": "به پاسخ شما نیاز دارد",
+      "unread": "خوانده‌نشده"
+    },
+    "project": {
+      "count": "گفت‌وگوها: {{count}}",
+      "needsYou": "منتظر شما: {{count}}",
+      "empty": "هنوز گفت‌وگویی نیست.",
+      "startOne": "شروع یکی",
+      "showMore": "نمایش {{count}} مورد دیگر",
+      "showLess": "نمایش کمتر",
+      "add": "افزودن پوشهٔ پروژه",
+      "actions": "کارهای پروژهٔ {{name}}"
+    },
+    "filter": {
+      "placeholder": "فیلتر پروژه‌ها و گفت‌وگوها",
+      "label": "فیلتر پروژه‌ها و گفت‌وگوها بر اساس نام",
+      "noResults": "پروژه یا گفت‌وگوی منطبقی نیست"
+    },
+    "footer": {
+      "localUser": "شما",
+      "menu": "منوی حساب"
+    }
   }
 }
