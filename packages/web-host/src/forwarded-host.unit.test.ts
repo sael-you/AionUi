@@ -11,7 +11,7 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import type { AddressInfo } from 'node:net';
-import { rewriteUpgradeHead, stripForwardedHost, withForwardedHost } from './forwarded-host.js';
+import { isWebSocketUpgradeHead, rewriteUpgradeHead, stripForwardedHost, withForwardedHost } from './forwarded-host.js';
 import { startStaticServer, type StaticServerHandle } from './static-server.js';
 
 describe('forwarded host rewrite', () => {
@@ -61,6 +61,17 @@ describe('forwarded host rewrite', () => {
   });
 });
 
+describe('isWebSocketUpgradeHead', () => {
+  it('needs an Upgrade header naming websocket', () => {
+    const head = (lines: string) => Buffer.from(`GET /ws HTTP/1.1\r\nHost: a\r\n${lines}\r\n`, 'latin1');
+    expect(isWebSocketUpgradeHead(head('Upgrade: WebSocket\r\n'))).toBe(true);
+    expect(isWebSocketUpgradeHead(head('upgrade: h2c, websocket\r\n'))).toBe(true);
+    expect(isWebSocketUpgradeHead(head(''))).toBe(false);
+    expect(isWebSocketUpgradeHead(head('Upgrade: h2c\r\n'))).toBe(false);
+    expect(isWebSocketUpgradeHead(head('X-Upgrade: websocket\r\n'))).toBe(false);
+  });
+});
+
 describe('static server forwards the browser Host as X-Forwarded-Host', () => {
   let handle: StaticServerHandle | null = null;
   let backend: http.Server | null = null;
@@ -69,7 +80,10 @@ describe('static server forwards the browser Host as X-Forwarded-Host', () => {
   afterEach(async () => {
     if (handle) await handle.stop();
     handle = null;
-    if (backend) await new Promise<void>((r) => backend!.close(() => r()));
+    if (backend) {
+      backend.closeAllConnections();
+      await new Promise<void>((r) => backend!.close(() => r()));
+    }
     backend = null;
     if (staticDir) await fs.rm(staticDir, { recursive: true, force: true });
   });
@@ -155,5 +169,74 @@ describe('static server forwards the browser Host as X-Forwarded-Host', () => {
     expect(status).toMatch(/101/);
     expect(seen.host).toBe('y.talkseeds.com');
     expect(seen['x-forwarded-host']).toBe('y.talkseeds.com');
+  });
+
+  /** Raw client: write `payload`, collect everything until the socket closes (or 2 s). */
+  const rawExchange = (payload: string, then?: string, thenAfterMs = 100) =>
+    new Promise<{ received: string; closed: boolean }>((resolve, reject) => {
+      const sock = net.connect({ host: '127.0.0.1', port: handle!.port }, () => {
+        sock.write(payload);
+        if (then) setTimeout(() => !sock.destroyed && sock.write(then), thenAfterMs);
+      });
+      let received = '';
+      sock.on('data', (d) => (received += d.toString('latin1')));
+      sock.on('close', () => resolve({ received, closed: true }));
+      sock.on('error', () => resolve({ received, closed: true }));
+      setTimeout(() => {
+        sock.destroy();
+        resolve({ received, closed: false });
+      }, 2000).unref();
+      void reject;
+    });
+
+  const SECOND =
+    'POST /api/x HTTP/1.1\r\nHost: y.talkseeds.com\r\nOrigin: https://evil.example\r\n' +
+    'X-Forwarded-Host: evil.example\r\nContent-Length: 2\r\n\r\n{}';
+
+  it('a non-101 answer to an upgrade is relayed once and both sockets close (no keep-alive bypass)', async () => {
+    let backendSaw = '';
+    await start(
+      (_req, res) => res.end(),
+      (_req, socket) => {
+        socket.on('data', (d) => (backendSaw += d.toString('latin1')));
+        socket.on('end', () => socket.destroy());
+        // Refuse, but keep the connection open as a keep-alive server would.
+        socket.write('HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: keep-alive\r\n\r\n');
+      }
+    );
+    const { received, closed } = await rawExchange(
+      'GET /ws HTTP/1.1\r\nHost: y.talkseeds.com\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n' +
+        'Sec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n',
+      SECOND
+    );
+    expect(received).toMatch(/^HTTP\/1\.1 403 /);
+    expect(closed).toBe(true);
+    // The second request never reached the backend.
+    await new Promise((r) => setTimeout(r, 100));
+    expect(backendSaw).not.toContain('POST /api/x');
+  });
+
+  it('an upgrade path without Upgrade: websocket goes to the web host, so later requests are rewritten', async () => {
+    const seen: http.IncomingHttpHeaders[] = [];
+    let upgrades = 0;
+    await start(
+      (req, res) => {
+        seen.push(req.headers);
+        res.writeHead(200, { 'content-type': 'application/json' }).end('{}');
+      },
+      (_req, socket) => {
+        upgrades += 1;
+        socket.destroy();
+      }
+    );
+    const { received } = await rawExchange(
+      'GET /ws HTTP/1.1\r\nHost: y.talkseeds.com\r\nConnection: keep-alive\r\n\r\n',
+      SECOND
+    );
+    expect(upgrades).toBe(0);
+    // The /ws GET was answered by the web host; the kept-alive POST was proxied with the real Host.
+    expect(received).toContain('HTTP/1.1 200');
+    expect(seen).toHaveLength(1);
+    expect(seen[0]['x-forwarded-host']).toBe('y.talkseeds.com');
   });
 });

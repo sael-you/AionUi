@@ -95,3 +95,20 @@ export function rewriteUpgradeHead(buf: Buffer): Buffer | 'invalid' | null {
     buf.subarray(end + 4),
   ]);
 }
+
+/** Whether a complete request head asks for a WebSocket upgrade (`Upgrade: websocket`). */
+export function isWebSocketUpgradeHead(head: Buffer): boolean {
+  const end = head.indexOf('\r\n\r\n');
+  const text = head.subarray(0, end < 0 ? head.length : end).toString('latin1');
+  return text
+    .split('\r\n')
+    .slice(1)
+    .some((line) => {
+      const colon = line.indexOf(':');
+      if (colon < 0 || line.slice(0, colon).trim().toLowerCase() !== 'upgrade') return false;
+      return line
+        .slice(colon + 1)
+        .split(',')
+        .some((token) => token.trim().toLowerCase() === 'websocket');
+    });
+}

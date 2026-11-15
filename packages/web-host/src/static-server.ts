@@ -17,7 +17,12 @@ import http, { type IncomingMessage, type Server, type ServerResponse } from 'no
 import { networkInterfaces } from 'node:os';
 import net, { type Socket } from 'node:net';
 import serveHandler from 'serve-handler';
-import { MAX_UPGRADE_HEAD_BYTES, rewriteUpgradeHead, withForwardedHost } from './forwarded-host.js';
+import {
+  isWebSocketUpgradeHead,
+  MAX_UPGRADE_HEAD_BYTES,
+  rewriteUpgradeHead,
+  withForwardedHost,
+} from './forwarded-host.js';
 
 export type StaticServerOptions = {
   staticDir: string;
@@ -146,6 +151,60 @@ function spliceToTcpEndpoint(client: Socket, targetPort: number, initialBytes: B
   client.on('close', tearDown);
 }
 
+/** How long the backend may take to answer an upgrade head. */
+const UPGRADE_ANSWER_TIMEOUT_MS = 10_000;
+
+/**
+ * Splice a WebSocket upgrade to the backend, but only once the backend
+ * answered `101`: until then nothing more from the client is forwarded. Any
+ * other answer is relayed once and both sockets are closed, so a kept-alive
+ * connection can never carry further requests to the backend past the
+ * X-Forwarded-Host rewrite (train-2 review U1 #2; same rule as the Token Pool
+ * gateway's pipeUpgrade).
+ */
+function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffer): void {
+  client.setNoDelay(true);
+  client.setKeepAlive(true);
+  client.setTimeout(0);
+  client.pause();
+  const upstream = net.connect({ host: '127.0.0.1', port: backendPort });
+  upstream.setNoDelay(true);
+  let answer = Buffer.alloc(0);
+  let spliced = false;
+  const close = (): void => {
+    clearTimeout(timer);
+    client.destroy();
+    upstream.destroy();
+  };
+  const timer = setTimeout(close, UPGRADE_ANSWER_TIMEOUT_MS);
+  const onAnswer = (chunk: Buffer): void => {
+    answer = Buffer.concat([answer, chunk]);
+    const end = answer.indexOf('\r\n\r\n');
+    if (end < 0) {
+      if (answer.length > MAX_UPGRADE_HEAD_BYTES) close();
+      return;
+    }
+    clearTimeout(timer);
+    upstream.removeListener('data', onAnswer);
+    const statusLine = answer.subarray(0, answer.indexOf('\r\n')).toString('latin1');
+    if (!/^HTTP\/1\.[01] 101 /.test(statusLine)) {
+      upstream.destroy();
+      client.end(answer, () => client.destroy());
+      return;
+    }
+    spliced = true;
+    client.write(answer);
+    upstream.pipe(client);
+    client.pipe(upstream);
+  };
+  upstream.once('connect', () => upstream.write(head));
+  upstream.on('data', onAnswer);
+  upstream.on('error', close);
+  client.on('error', close);
+  upstream.on('close', () => (spliced ? close() : client.destroy()));
+  client.on('close', close);
+}
+
 /**
  * Decide routing from the first chunk of an incoming HTTP connection:
  *  - `true`  → `GET /ws[...]`, `GET /api/stt/stream[...]` or `GET /api/voice/ws[...]` (HTTP/1.x WebSocket/stream
@@ -254,7 +313,14 @@ export async function startStaticServer(opts: StaticServerOptions): Promise<Stat
         client.destroy();
         return;
       }
-      spliceToTcpEndpoint(client, opts.backendPort, head);
+      if (!isWebSocketUpgradeHead(head)) {
+        // A plain request on an upgrade path: the internal HTTP server answers
+        // it, and every later request on the connection is proxied with the
+        // forwarded host rewritten.
+        spliceToTcpEndpoint(client, internalPort, peeked);
+        return;
+      }
+      spliceUpgradeToBackend(client, opts.backendPort, head);
     };
     const onEarlyError = (): void => {
       cleanup();
