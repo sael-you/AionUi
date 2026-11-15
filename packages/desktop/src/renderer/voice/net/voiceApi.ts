@@ -8,37 +8,16 @@
  * REST client for the voice user routes (plan §3.5).
  *
  * Built on the shared `httpRequest` (same-origin cookie, 401 → one silent
- * session refresh, `{ success, data }` unwrapping, `BackendHttpError`). Voice
- * adds two rules on top:
- * - the cookie is the only credential: no `Authorization` / runtime-token
- *   headers are ever attached (the backend rejects them with 400);
- * - every unsafe method carries `x-csrf-token` read from the
- *   `aionui-csrf-token` cookie (double submit). If the cookie is not set yet, a
- *   safe GET on the voice router primes it first.
+ * session refresh, `{ success, data }` unwrapping, `BackendHttpError`, and the
+ * shared C11 CSRF handling from `csrf.ts`: `x-csrf-token` on writes when the
+ * session has a token, one retry on a CSRF rejection). Voice adds one rule:
+ * the cookie is the only credential, so no `Authorization` / runtime-token
+ * headers are ever attached (the backend rejects them with 400).
  */
 
 import { BackendHttpError, getBaseUrl, httpRequest, isBackendHttpError } from '@/common/adapter/httpBridge';
 import type { CreateVoiceSessionRequest, CreateVoiceSessionResponse, VoiceSettings } from '../core/types';
 import { DEFAULT_VOICE_SETTINGS } from '../core/types';
-
-export const CSRF_COOKIE_NAME = 'aionui-csrf-token';
-export const CSRF_HEADER_NAME = 'x-csrf-token';
-
-/** Read the CSRF double-submit cookie; '' when absent. */
-export function readCsrfCookie(cookieString: string = typeof document === 'undefined' ? '' : document.cookie): string {
-  for (const part of cookieString.split(';')) {
-    const eq = part.indexOf('=');
-    if (eq < 0) continue;
-    if (part.slice(0, eq).trim() === CSRF_COOKIE_NAME) {
-      try {
-        return decodeURIComponent(part.slice(eq + 1).trim());
-      } catch {
-        return part.slice(eq + 1).trim();
-      }
-    }
-  }
-  return '';
-}
 
 /** Error raised for a 409 "busy": another device already admitted the wake (§3.6 step 1). */
 export class VoiceBusyError extends Error {
@@ -92,21 +71,8 @@ export type VoiceApi = {
 
 const SETTINGS_PATH = '/api/voice/settings';
 
-async function csrfHeaders(): Promise<Record<string, string>> {
-  let token = readCsrfCookie();
-  if (!token) {
-    // The voice router's CSRF layer sets the cookie on any response.
-    await httpRequest<unknown>('GET', SETTINGS_PATH, undefined, { silentStatuses: [401, 403, 404] }).catch(
-      (): undefined => undefined
-    );
-    token = readCsrfCookie();
-  }
-  return token ? { [CSRF_HEADER_NAME]: token } : {};
-}
-
-async function unsafe<T>(method: 'POST' | 'PUT', path: string, body: unknown): Promise<T> {
-  const headers = await csrfHeaders();
-  return httpRequest<T>(method, path, body, { headers, silentStatuses: [409] });
+function unsafe<T>(method: 'POST' | 'PUT', path: string, body: unknown): Promise<T> {
+  return httpRequest<T>(method, path, body, { silentStatuses: [409] });
 }
 
 const withDefaults = (raw: Partial<VoiceSettings> | undefined): VoiceSettings => ({

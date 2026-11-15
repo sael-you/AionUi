@@ -1,13 +1,25 @@
+import type { Mock } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { CSRF_HEADER_NAME } from '@/common/adapter/csrf';
 import { BackendHttpError } from '@/common/adapter/httpBridge';
-import {
-  CSRF_HEADER_NAME,
-  readCsrfCookie,
-  resolveClipPath,
-  VoiceBusyError,
-  voiceApi,
-  voiceErrorCode,
-} from '@/renderer/voice/net/voiceApi';
+import * as voiceApiModule from '@/renderer/voice/net/voiceApi';
+import { resolveClipPath, VoiceBusyError, voiceApi, voiceErrorCode } from '@/renderer/voice/net/voiceApi';
+
+// Spy on the shared `httpRequest` while still running the real one, so the
+// tests prove voice writes take the shared C11 path (csrf.ts) and nothing else.
+const shared = vi.hoisted(() => ({
+  spy: undefined as unknown as Mock<(...args: unknown[]) => Promise<unknown>>,
+  real: undefined as unknown as (...args: unknown[]) => Promise<unknown>,
+}));
+vi.mock('@/common/adapter/httpBridge', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/common/adapter/httpBridge')>();
+  const { vi: hoistedVi } = await import('vitest');
+  shared.real = actual.httpRequest as (...args: unknown[]) => Promise<unknown>;
+  shared.spy = hoistedVi.fn((...args: unknown[]) => shared.real(...args));
+  return { ...actual, httpRequest: shared.spy };
+});
+
+const TOKEN = 'ab'.repeat(32);
 
 type Call = { url: string; init: RequestInit };
 
@@ -32,6 +44,8 @@ const clearCookie = () => {
 
 beforeEach(() => {
   clearCookie();
+  shared.spy.mockClear();
+  shared.spy.mockImplementation((...args: unknown[]) => shared.real(...args));
   vi.spyOn(console, 'debug').mockImplementation(() => undefined);
   vi.spyOn(console, 'error').mockImplementation(() => undefined);
 });
@@ -41,41 +55,46 @@ afterEach(() => {
   clearCookie();
 });
 
-describe('readCsrfCookie', () => {
-  it('reads the aionui-csrf-token cookie among others', () => {
-    expect(readCsrfCookie('a=1; aionui-csrf-token=abc%20d; b=2')).toBe('abc d');
-    expect(readCsrfCookie('csrf-token=nope')).toBe('');
-  });
-});
-
 describe('voiceApi', () => {
-  it('sends x-csrf-token from the cookie on POST and never an Authorization header', async () => {
-    document.cookie = 'aionui-csrf-token=tok123; path=/';
+  it('has no CSRF code of its own', () => {
+    const exported = Object.keys(voiceApiModule);
+    expect(exported.some((name) => /csrf/i.test(name))).toBe(false);
+  });
+
+  it('sends every write through the shared httpRequest with no headers of its own', async () => {
+    shared.spy.mockResolvedValue({ voice_session_id: 'vs', sdp_answer: 'a' });
+    await voiceApi.createSession({ engine: 'openai-realtime', sdp_offer: 'o', device_id: 'd' });
+    await voiceApi.putSettings({ enabled: true });
+    await voiceApi.endSession('vs 1', 'user');
+    expect(shared.spy.mock.calls).toEqual([
+      [
+        'POST',
+        '/api/voice/sessions',
+        { engine: 'openai-realtime', sdp_offer: 'o', device_id: 'd' },
+        { silentStatuses: [409] },
+      ],
+      ['PUT', '/api/voice/settings', { enabled: true }, { silentStatuses: [409] }],
+      ['POST', '/api/voice/sessions/vs%201/end', { reason: 'user' }, { silentStatuses: [409] }],
+    ]);
+  });
+
+  it('gets x-csrf-token from the shared C11 cookie handling and never an Authorization header', async () => {
+    document.cookie = `aionui-csrf-token=${TOKEN}; path=/`;
     const calls = mockFetch([
       { status: 200, body: { success: true, data: { voice_session_id: 'vs', sdp_answer: 'a' } } },
     ]);
     const res = await voiceApi.createSession({ engine: 'openai-realtime', sdp_offer: 'o', device_id: 'd' });
     expect(res.voice_session_id).toBe('vs');
+    expect(calls).toHaveLength(1);
     const headers = calls[0].init.headers as Record<string, string>;
-    expect(headers[CSRF_HEADER_NAME]).toBe('tok123');
+    expect(headers[CSRF_HEADER_NAME]).toBe(TOKEN);
     expect(Object.keys(headers).map((h) => h.toLowerCase())).not.toContain('authorization');
     expect(Object.keys(headers).some((h) => h.toLowerCase().startsWith('x-aionui-'))).toBe(false);
     expect(calls[0].url).toMatch(/\/api\/voice\/sessions$/);
   });
 
-  it('primes the CSRF cookie with a safe GET when it is missing', async () => {
-    const calls = mockFetch([
-      { status: 200, body: { enabled: false }, setCookie: 'aionui-csrf-token=fresh; path=/' },
-      { status: 200, body: { enabled: true } },
-    ]);
-    await voiceApi.putSettings({ enabled: true });
-    expect(calls[0].init.method).toBe('GET');
-    expect(calls[1].init.method).toBe('PUT');
-    expect((calls[1].init.headers as Record<string, string>)[CSRF_HEADER_NAME]).toBe('fresh');
-  });
-
   it('maps 409 on session creation to VoiceBusyError', async () => {
-    document.cookie = 'aionui-csrf-token=t; path=/';
+    document.cookie = `aionui-csrf-token=${TOKEN}; path=/`;
     mockFetch([{ status: 409, body: { code: 'VOICE_BUSY' } }]);
     await expect(
       voiceApi.createSession({ engine: 'openai-realtime', sdp_offer: 'o', device_id: 'd' })
