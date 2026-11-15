@@ -275,7 +275,7 @@ describe('board header', () => {
     expect(await screen.findByText('conversation page')).toBeInTheDocument();
   });
 
-  it('shows the project chip and accent strip from the project’s workspace', async () => {
+  it('shows the project chip and header tint from the project’s workspace', async () => {
     bridge.projectGet.mockResolvedValue({
       project_id: 'p1',
       name: 'Alpha',

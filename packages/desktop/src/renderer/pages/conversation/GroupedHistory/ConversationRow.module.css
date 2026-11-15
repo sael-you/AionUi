@@ -201,8 +201,9 @@
 
 /*
  * Rows inside a project group (ProjectGroup sets `data-project-children`) are
- * its children: smaller, lighter text and a smaller icon than the project row
- * (13px / 600), so the hierarchy reads at a glance.
+ * its children: smaller text and icon than the project row (13px / 600), so the
+ * hierarchy reads at a glance. Sub-conversations keep their own `.childName`
+ * colour, one step quieter again.
  */
 :global([data-project-children]) .row {
   height: 28px;
@@ -212,7 +213,6 @@
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
-  color: var(--color-text-2);
 }
 
 :global([data-project-children]) .rowSelected .name {
@@ -226,7 +226,9 @@
   font-size: 14px;
 }
 
-:global([data-project-children]) .leading :is(svg, img) {
+/* Every icon kind: <img> / mask <span> logos, icon-park wrappers and their <svg>. */
+:global([data-project-children]) .leadingIcon,
+:global([data-project-children]) .leadingIcon svg {
   width: 14px;
   height: 14px;
 }

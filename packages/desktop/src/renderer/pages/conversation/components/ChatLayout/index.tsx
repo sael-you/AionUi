@@ -208,8 +208,11 @@ const ChatLayout: React.FC<{
 
   const desktopHeader = (
     <ArcoLayout.Header
+      data-project-header={project ? 'tint' : undefined}
       className={classNames(
-        'min-h-44px flex items-center justify-between px-16px pt-8px pb-10px gap-16px !bg-1 chat-layout-header chat-layout-header--glass overflow-hidden'
+        'min-h-44px flex items-center justify-between px-16px pt-8px pb-10px gap-16px !bg-1 chat-layout-header chat-layout-header--glass overflow-hidden',
+        // The tint is an image layer: it shows over the header's own (glass) background colour.
+        project && projectSurfaceClasses.headerTint
       )}
     >
       <FlexFullContainer className='h-full min-w-0' containerClassName='flex items-center gap-4px'>
@@ -269,12 +272,7 @@ const ChatLayout: React.FC<{
             flexBasis: 0,
           }}
         >
-          <div
-            data-project-header={project && isDesktop ? 'tint' : undefined}
-            className={classNames('shrink-0 !bg-1', project && isDesktop && projectSurfaceClasses.headerTint)}
-          >
-            {headerBlock}
-          </div>
+          <div className='shrink-0 !bg-1'>{headerBlock}</div>
           <div className='flex flex-1 min-h-0 relative'>
             {/* Chat area - always mounted, never unmounted on preview toggle */}
             <div

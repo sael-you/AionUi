@@ -107,7 +107,9 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
 
   const renderLeadingIcon = () => {
     if (cronStatus !== 'none') {
-      return <CronJobIndicator status={cronStatus} size={16} className='flex-shrink-0' />;
+      return (
+        <CronJobIndicator status={cronStatus} size={16} className={classNames('flex-shrink-0', styles.leadingIcon)} />
+      );
     }
 
     // When the row is pinned, hovering reveals an overlay on the leading icon —
@@ -125,7 +127,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
         <ThemedLogo
           src={leadingMark.value}
           alt={leadingMark.label}
-          className={classNames('w-16px h-16px rounded-50% flex-shrink-0', composedClass)}
+          className={classNames('w-16px h-16px rounded-50% flex-shrink-0', styles.leadingIcon, composedClass)}
         />
       );
     }
@@ -134,7 +136,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
         <Robot
           theme='outline'
           size='16'
-          className={classNames('line-height-0 flex-shrink-0 text-t-secondary', composedClass)}
+          className={classNames('line-height-0 flex-shrink-0 text-t-secondary', styles.leadingIcon, composedClass)}
         />
       );
     }
@@ -143,7 +145,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
       <MessageOne
         theme='outline'
         size='16'
-        className={classNames('line-height-0 flex-shrink-0 text-t-secondary', composedClass)}
+        className={classNames('line-height-0 flex-shrink-0 text-t-secondary', styles.leadingIcon, composedClass)}
       />
     );
   };

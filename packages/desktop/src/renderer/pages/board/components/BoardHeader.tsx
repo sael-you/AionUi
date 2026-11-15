@@ -23,7 +23,7 @@ export type BoardHeaderProps = {
   projectName: string | null;
   /**
    * The project's colour identity (ProjectIdentity): the header shows the project
-   * chip and the accent strip; the board itself stays on semantic tokens.
+   * chip on the project tint; the board itself stays on semantic tokens.
    */
   project: ProjectThemeView | null;
   onOpenSettings: () => void;

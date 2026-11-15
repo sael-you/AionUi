@@ -270,6 +270,12 @@
   line-height: 0;
 }
 
+/* Inside a project group the leading slot is 16px (ConversationRow.module.css): keep the dot on the icon. */
+.children .statusMark {
+  width: 16px;
+  height: 16px;
+}
+
 .statusDot {
   position: absolute;
   inset-inline-end: -1px;

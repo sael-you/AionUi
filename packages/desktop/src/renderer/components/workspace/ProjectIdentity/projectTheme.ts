@@ -24,7 +24,8 @@
  * (`--bg-base`, `--bg-1`, `--bg-2`, read from the theme root by
  * `themeSurfaces.ts`, so user themes are covered; the built-in values of
  * `styles/themes/default-color-scheme.css` are the fallback) with the tint
- * composited on top, and the worst case must pass. When the
+ * composited on top once (tinted headers) and twice (the chip on a tinted
+ * header), and the worst case must pass. When the
  * palette accent falls short, it is mixed towards black (light surfaces) or
  * white (dark surfaces) in 5 % steps until it passes, so the hue stays
  * recognisable.
@@ -154,7 +155,13 @@ export const buildProjectTheme = (
 ): ProjectThemeTokens => {
   const accent = projectAccent(color, appearance);
   const surfaces = activeSurfaces && activeSurfaces.length > 0 ? activeSurfaces : PROJECT_SURFACES[appearance];
-  const tintedSurfaces = highContrast ? surfaces : surfaces.map((bg) => composite(accent, PROJECT_TINT_ALPHA, bg));
+  // Single tint (headers, active group) and double tint (the chip on a tinted header).
+  const tintedSurfaces = highContrast
+    ? surfaces
+    : surfaces.flatMap((bg) => {
+        const once = composite(accent, PROJECT_TINT_ALPHA, bg);
+        return [once, composite(accent, PROJECT_TINT_ALPHA, once)];
+      });
   const textMin = highContrast ? HIGH_CONTRAST_TEXT_MIN : TEXT_CONTRAST_MIN;
   const accentContrast = ensureContrast(accent, tintedSurfaces, textMin);
   const focus = ensureContrast(accent, surfaces, FOCUS_CONTRAST_MIN);
