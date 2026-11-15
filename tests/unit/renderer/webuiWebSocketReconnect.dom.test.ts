@@ -245,3 +245,37 @@ describe('WebUI browser bridge socket', () => {
     expect(FakeWebSocket.instances).toHaveLength(beforeLogin + 1);
   });
 });
+
+describe('WebUI bridge: Electron-only providers stay off the socket (TASK-89)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it('answers renderer-log and theme requests locally and never sends them', async () => {
+    const { bridge } = await loadBrowserAdapter();
+    latestSocket().acceptUpgrade();
+
+    const logs = Array.from({ length: 20 }, () =>
+      bridge.invoke('app.write-renderer-log', { level: 'info', tag: 't', message: 'm' })
+    );
+    await expect(Promise.all(logs)).resolves.toEqual(Array.from({ length: 20 }, () => undefined));
+    await expect(bridge.invoke('theme:request-current')).resolves.toBeNull();
+
+    expect(latestSocket().sent).toEqual([]);
+  });
+
+  it('still sends every other provider request and realtime frame', async () => {
+    const { bridge } = await loadBrowserAdapter();
+    latestSocket().acceptUpgrade();
+
+    void bridge.invoke('show-open', { properties: ['openFile'] });
+    bridge.emit('fs', { jsonrpc: '2.0', id: 1, method: 'fs/subscribe' });
+
+    expect(latestSocket().sent.map((frame) => JSON.parse(frame).name)).toEqual(['subscribe-show-open', 'fs']);
+  });
+});

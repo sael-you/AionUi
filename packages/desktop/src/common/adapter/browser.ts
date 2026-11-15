@@ -272,8 +272,42 @@ if (win.electronAPI) {
     }
   };
 
+  /**
+   * Providers only the Electron main process serves (TASK-89), with the answer
+   * the WebUI gives instead. Over this socket nothing serves them: AionCore
+   * routes only its own realtime names and answered every such request with
+   * `realtime.error REALTIME_UNSUPPORTED_MESSAGE`, while the invoke never
+   * resolved (one leaked listener per call). The sidebar logs every generating
+   * transition and every Markdown view asks for the custom theme CSS, so an
+   * open conversation flooded /ws. They are answered here and never sent.
+   */
+  const ELECTRON_MAIN_ONLY_PROVIDERS = new Map<string, unknown>([
+    ['app.write-renderer-log', undefined],
+    ['theme:request-current', null],
+  ]);
+  const PROVIDER_REQUEST_PREFIX = 'subscribe-';
+
+  /** Answers an Electron-only provider request locally; `true` when `name` is one. */
+  const answerLocally = (name: string, data: unknown): boolean => {
+    if (!name.startsWith(PROVIDER_REQUEST_PREFIX)) {
+      return false;
+    }
+    const key = name.slice(PROVIDER_REQUEST_PREFIX.length);
+    if (!ELECTRON_MAIN_ONLY_PROVIDERS.has(key)) {
+      return false;
+    }
+    if (isRecord(data) && typeof data.id === 'string') {
+      emitterRef?.emit(`subscribe.callback-${key}${data.id}`, ELECTRON_MAIN_ONLY_PROVIDERS.get(key));
+    }
+    return true;
+  };
+
   bridge.adapter({
     emit(name, data) {
+      if (answerLocally(name, data)) {
+        return;
+      }
+
       const message: QueuedMessage = { name, data };
 
       ensureSocket();
