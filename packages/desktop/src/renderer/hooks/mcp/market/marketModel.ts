@@ -17,6 +17,7 @@ import type {
   IMcpServer,
   McpMarketAssignment,
   McpMarketCli,
+  McpMarketEnvField,
   McpMarketInstance,
   McpMarketTemplate,
 } from '@/common/config/storage';
@@ -338,7 +339,84 @@ export const instanceMatches = (
 
 export const templateMatches = (template: McpMarketTemplate, query: string): boolean => {
   const q = query.trim().toLowerCase();
-  return !q || includesQuery(q, template.id, template.name, template.description);
+  return (
+    !q ||
+    includesQuery(
+      q,
+      template.id,
+      template.name,
+      template.description,
+      template.summary,
+      template.vendor,
+      template.category
+    )
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Library browse (D49/D50): categories, keys, read-only enforcement, mode
+// ---------------------------------------------------------------------------
+
+/** Category slugs in display order; anything else is shown under `other`. */
+export const MCP_TEMPLATE_CATEGORIES = [
+  'developer',
+  'payments',
+  'analytics',
+  'seo',
+  'ads',
+  'email',
+  'data',
+  'research',
+  'media',
+  'other',
+] as const;
+export type McpTemplateCategory = (typeof MCP_TEMPLATE_CATEGORIES)[number];
+
+export const templateCategory = (template: Pick<McpMarketTemplate, 'category'>): McpTemplateCategory =>
+  (MCP_TEMPLATE_CATEGORIES as readonly string[]).includes(template.category ?? '')
+    ? (template.category as McpTemplateCategory)
+    : 'other';
+
+export type TemplateCategoryGroup = { category: McpTemplateCategory; templates: McpMarketTemplate[] };
+
+/** Templates grouped by category (display order), core picks before optional ones, then by name. */
+export const groupTemplatesByCategory = (templates: readonly McpMarketTemplate[]): TemplateCategoryGroup[] =>
+  MCP_TEMPLATE_CATEGORIES.map((category) => ({
+    category,
+    templates: templates
+      .filter((tpl) => templateCategory(tpl) === category)
+      .toSorted((a, b) => Number(a.optional === true) - Number(b.optional === true) || a.name.localeCompare(b.name)),
+  })).filter((g) => g.templates.length > 0);
+
+/** Secret keys the template requires (the "needs a key" line). */
+export const requiredSecretKeys = (template: Pick<McpMarketTemplate, 'env'>): string[] =>
+  secretKeys(template).filter((key) => template.env[key].required === true);
+
+/** How a read instance of this template is kept read-only. */
+export type ReadEnforcement = 'server' | 'credential' | 'proxy' | 'none';
+
+export const templateReadEnforcement = (template: Pick<McpMarketTemplate, 'enforcement'>): ReadEnforcement =>
+  template.enforcement === 'server' || template.enforcement === 'credential' || template.enforcement === 'proxy'
+    ? template.enforcement
+    : 'none';
+
+/** D50: an instance installs with its full tools (write) when the template has a write tier. */
+export const defaultTemplateTier = (template: Pick<McpMarketTemplate, 'tiers'>): string =>
+  template.tiers.includes('write') ? 'write' : (template.tiers[0] ?? '');
+
+/** Initial allowlist of a new read instance: the pinned one (G3), else none (fail closed, R6). */
+export const initialReadAllowlist = (template: Pick<McpMarketTemplate, 'read_tools'>): string[] => [
+  ...(template.read_tools ?? []),
+];
+
+/** Whether a plain value fits its launch-parameter pattern (G1); the server checks again. */
+export const plainValueMatchesPattern = (field: McpMarketEnvField, value: string): boolean => {
+  if (!field.pattern || value === '') return true;
+  try {
+    return new RegExp(field.pattern).test(value);
+  } catch {
+    return true;
+  }
 };
 
 /** Legacy (non-market) servers have no market status: only `all` shows them. */

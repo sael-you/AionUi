@@ -189,7 +189,9 @@
       "forcedByTier": "由{{tier}}级别设定。",
       "dormantUntilComplete": "在填写以下各项之前保持休眠：{{keys}}",
       "startsDormant": "新 MCP 以休眠状态启动。设置好值并通过连接测试后即可启用。",
-      "secretsNotSaved": "{{name}} 已创建，但以下密钥未保存：{{keys}}。请在实例面板中设置。"
+      "secretsNotSaved": "{{name}} 已创建，但以下密钥未保存：{{keys}}。请在实例面板中设置。",
+      "fullToolsNote": "全部工具（读 + 写）为默认设置。智能体可执行的操作由技能和规则决定；对生产数据、支付、广告或邮件的写入仍需所有者对该变更的书面同意。",
+      "patternProblem": "{{key}} 的格式不正确。"
     },
     "attach": {
       "title": "挂载 {{name}}",
@@ -290,6 +292,43 @@
       "rateLimited": "请求过多，请稍后再试。",
       "internal": "服务器内部错误。请重试；如仍出现，请查看 AionUi 日志。",
       "upstream": "服务器后方的服务未及时响应，请重试。"
+    },
+    "library": {
+      "official": "官方",
+      "community": "社区",
+      "optional": "可选",
+      "metered": "按调用计费",
+      "addNamed": "添加 {{name}}",
+      "keysLabel": "密钥：",
+      "needsKey": "需要 {{keys}}",
+      "noKey": "无需密钥",
+      "readOnlyLabel": "只读：",
+      "enforcement": {
+        "server": "由服务器强制",
+        "credential": "由凭据权限强制",
+        "proxy": "由代理的固定工具白名单强制",
+        "none": "不强制（工具白名单仅限非生产环境）"
+      },
+      "modeLabel": "模式：",
+      "modeFull": "以全部工具安装（读 + 写）；可随时将实例切换为只读",
+      "modeReadOnly": "只读服务器",
+      "categoryFilter": "类别",
+      "allCategories": "全部类别",
+      "noMatch": "库中没有匹配的 MCP。",
+      "category": {
+        "developer": "开发平台",
+        "payments": "支付",
+        "analytics": "分析",
+        "seo": "SEO",
+        "ads": "广告",
+        "email": "邮件",
+        "data": "文档与数据",
+        "research": "研究与网络",
+        "media": "设计与媒体",
+        "other": "其他"
+      },
+      "count_one": "{{count}} 个 MCP",
+      "count_other": "{{count}} 个 MCP"
     }
   }
 }

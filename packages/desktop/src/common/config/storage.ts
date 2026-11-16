@@ -708,6 +708,8 @@ export type McpMarketEnvField = {
   enum?: string[];
   default?: string;
   description?: string;
+  /** Launch parameter (G1): an anchored regex every value must fully match. */
+  pattern?: string;
 };
 
 /** A catalogue template (`contributes.mcpServers[].market` of `studio-mcp-catalog`). */
@@ -729,6 +731,18 @@ export type McpMarketTemplate = {
   enforcement: string;
   clis: string[];
   tool_classes?: Record<string, string>;
+  /** Pinned read allowlist (G3, enforcement `proxy`). */
+  read_tools?: string[];
+  /** Library browse metadata (D49/D50). */
+  category?: string;
+  vendor?: string;
+  official?: boolean;
+  /** Optional pick, shown apart in the library. */
+  optional?: boolean;
+  /** One-line purpose. */
+  summary?: string;
+  /** `metered`: every call spends money (G7). */
+  billing?: string;
 };
 
 /** Status of one secret slot. Never carries the value. */

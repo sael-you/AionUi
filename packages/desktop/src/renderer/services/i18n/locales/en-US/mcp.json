@@ -189,7 +189,9 @@
       "forcedByTier": "Set by the {{tier}} tier.",
       "dormantUntilComplete": "It stays dormant until these are filled in: {{keys}}",
       "startsDormant": "New MCPs start dormant. Activate one when its values are set and the connection test passes.",
-      "secretsNotSaved": "{{name}} was created, but these secrets were not saved: {{keys}}. Set them in the instance drawer."
+      "secretsNotSaved": "{{name}} was created, but these secrets were not saved: {{keys}}. Set them in the instance drawer.",
+      "fullToolsNote": "Full tools (read + write), the default. What agents may do comes from skills and rules; a write to production data, payments, ads or email still needs the owner's written OK for that change.",
+      "patternProblem": "{{key}} does not have the expected format."
     },
     "attach": {
       "title": "Attach {{name}}",
@@ -290,6 +292,43 @@
       "rateLimited": "Too many requests. Wait a moment and try again.",
       "internal": "The server hit an internal error. Try again; if it persists, check the AionUi logs.",
       "upstream": "A service behind the server did not answer in time. Try again."
+    },
+    "library": {
+      "official": "Official",
+      "community": "Community",
+      "optional": "Optional",
+      "metered": "Paid per call",
+      "addNamed": "Add {{name}}",
+      "keysLabel": "Keys:",
+      "needsKey": "needs {{keys}}",
+      "noKey": "no key needed",
+      "readOnlyLabel": "Read-only:",
+      "enforcement": {
+        "server": "enforced by the server",
+        "credential": "enforced by the credential's permissions",
+        "proxy": "enforced by the pinned tool allowlist of the proxy",
+        "none": "not enforced (tool allowlist outside production only)"
+      },
+      "modeLabel": "Mode:",
+      "modeFull": "installs with full tools (read + write); switch an instance to read-only any time",
+      "modeReadOnly": "read-only server",
+      "categoryFilter": "Category",
+      "allCategories": "All categories",
+      "noMatch": "No MCP in the library matches.",
+      "category": {
+        "developer": "Developer platform",
+        "payments": "Payments",
+        "analytics": "Analytics",
+        "seo": "SEO",
+        "ads": "Ads",
+        "email": "Email",
+        "data": "Docs and data",
+        "research": "Research and web",
+        "media": "Design and media",
+        "other": "Other"
+      },
+      "count_one": "{{count}} MCP",
+      "count_other": "{{count}} MCPs"
     }
   }
 }

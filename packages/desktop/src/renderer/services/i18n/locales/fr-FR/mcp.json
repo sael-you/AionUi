@@ -189,7 +189,9 @@
       "forcedByTier": "Défini par le niveau {{tier}}.",
       "dormantUntilComplete": "Reste en veille jusqu'à ce que ces champs soient remplis : {{keys}}",
       "startsDormant": "Les nouveaux MCP démarrent en veille. Activez-en un lorsque ses valeurs sont définies et que le test de connexion réussit.",
-      "secretsNotSaved": "{{name}} a été créé, mais ces secrets n'ont pas été enregistrés : {{keys}}. Définissez-les dans le panneau de l'instance."
+      "secretsNotSaved": "{{name}} a été créé, mais ces secrets n'ont pas été enregistrés : {{keys}}. Définissez-les dans le panneau de l'instance.",
+      "fullToolsNote": "Par défaut, tous les outils (lecture + écriture). Ce que les agents peuvent faire dépend des skills et des règles ; une écriture sur des données de production, des paiements, de la publicité ou des e-mails exige toujours l'accord écrit du propriétaire pour ce changement.",
+      "patternProblem": "{{key}} n'a pas le format attendu."
     },
     "attach": {
       "title": "Rattacher {{name}}",
@@ -290,6 +292,43 @@
       "rateLimited": "Trop de requêtes. Patientez un instant puis réessayez.",
       "internal": "Erreur interne du serveur. Réessayez ; si elle persiste, consultez les journaux AionUi.",
       "upstream": "Un service derrière le serveur n'a pas répondu à temps. Réessayez."
+    },
+    "library": {
+      "official": "Officiel",
+      "community": "Communauté",
+      "optional": "Facultatif",
+      "metered": "Payant à l'appel",
+      "addNamed": "Ajouter {{name}}",
+      "keysLabel": "Clés :",
+      "needsKey": "nécessite {{keys}}",
+      "noKey": "aucune clé nécessaire",
+      "readOnlyLabel": "Lecture seule :",
+      "enforcement": {
+        "server": "imposée par le serveur",
+        "credential": "imposée par les droits de l'identifiant",
+        "proxy": "imposée par la liste d'outils figée du proxy",
+        "none": "non imposée (liste d'outils hors production uniquement)"
+      },
+      "modeLabel": "Mode :",
+      "modeFull": "s'installe avec tous les outils (lecture + écriture) ; passez une instance en lecture seule à tout moment",
+      "modeReadOnly": "serveur en lecture seule",
+      "categoryFilter": "Catégorie",
+      "allCategories": "Toutes les catégories",
+      "noMatch": "Aucun MCP de la bibliothèque ne correspond.",
+      "category": {
+        "developer": "Plateforme de développement",
+        "payments": "Paiements",
+        "analytics": "Analytique",
+        "seo": "SEO",
+        "ads": "Publicité",
+        "email": "E-mail",
+        "data": "Documents et données",
+        "research": "Recherche et web",
+        "media": "Design et médias",
+        "other": "Autres"
+      },
+      "count_one": "{{count}} MCP",
+      "count_other": "{{count}} MCP"
     }
   }
 }

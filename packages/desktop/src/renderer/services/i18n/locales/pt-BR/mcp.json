@@ -189,7 +189,9 @@
       "forcedByTier": "Definido pelo nível {{tier}}.",
       "dormantUntilComplete": "Permanece inativo até que estes campos sejam preenchidos: {{keys}}",
       "startsDormant": "Novos MCPs começam inativos. Ative um quando seus valores estiverem definidos e o teste de conexão for aprovado.",
-      "secretsNotSaved": "{{name}} foi criado, mas estes segredos não foram salvos: {{keys}}. Defina-os no painel da instância."
+      "secretsNotSaved": "{{name}} foi criado, mas estes segredos não foram salvos: {{keys}}. Defina-os no painel da instância.",
+      "fullToolsNote": "Todas as ferramentas (leitura + escrita) é o padrão. O que os agentes podem fazer vem de skills e regras; uma escrita em dados de produção, pagamentos, anúncios ou e-mail ainda precisa do OK por escrito do dono para essa mudança.",
+      "patternProblem": "{{key}} não está no formato esperado."
     },
     "attach": {
       "title": "Anexar {{name}}",
@@ -290,6 +292,43 @@
       "rateLimited": "Solicitações demais. Aguarde um pouco e tente novamente.",
       "internal": "O servidor teve um erro interno. Tente novamente; se persistir, verifique os logs do AionUi.",
       "upstream": "Um serviço por trás do servidor não respondeu a tempo. Tente novamente."
+    },
+    "library": {
+      "official": "Oficial",
+      "community": "Comunidade",
+      "optional": "Opcional",
+      "metered": "Pago por chamada",
+      "addNamed": "Adicionar {{name}}",
+      "keysLabel": "Chaves:",
+      "needsKey": "precisa de {{keys}}",
+      "noKey": "não precisa de chave",
+      "readOnlyLabel": "Somente leitura:",
+      "enforcement": {
+        "server": "garantido pelo servidor",
+        "credential": "garantido pelas permissões da credencial",
+        "proxy": "garantido pela lista fixa de ferramentas do proxy",
+        "none": "não garantido (lista de ferramentas só fora de produção)"
+      },
+      "modeLabel": "Modo:",
+      "modeFull": "instala com todas as ferramentas (leitura + escrita); mude uma instância para somente leitura quando quiser",
+      "modeReadOnly": "servidor somente leitura",
+      "categoryFilter": "Categoria",
+      "allCategories": "Todas as categorias",
+      "noMatch": "Nenhum MCP da biblioteca corresponde.",
+      "category": {
+        "developer": "Plataforma de desenvolvimento",
+        "payments": "Pagamentos",
+        "analytics": "Análise",
+        "seo": "SEO",
+        "ads": "Anúncios",
+        "email": "E-mail",
+        "data": "Documentos e dados",
+        "research": "Pesquisa e web",
+        "media": "Design e mídia",
+        "other": "Outros"
+      },
+      "count_one": "{{count}} MCP",
+      "count_other": "{{count}} MCPs"
     }
   }
 }

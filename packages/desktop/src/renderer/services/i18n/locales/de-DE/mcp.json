@@ -189,7 +189,9 @@
       "forcedByTier": "Durch die Stufe {{tier}} festgelegt.",
       "dormantUntilComplete": "Bleibt ruhend, bis diese Felder ausgefüllt sind: {{keys}}",
       "startsDormant": "Neue MCPs starten ruhend. Aktivieren Sie ein MCP, wenn seine Werte festgelegt sind und der Verbindungstest erfolgreich ist.",
-      "secretsNotSaved": "{{name}} wurde erstellt, aber diese Geheimnisse wurden nicht gespeichert: {{keys}}. Lege sie im Instanzbereich fest."
+      "secretsNotSaved": "{{name}} wurde erstellt, aber diese Geheimnisse wurden nicht gespeichert: {{keys}}. Lege sie im Instanzbereich fest.",
+      "fullToolsNote": "Standard sind alle Tools (lesen + schreiben). Was Agenten dürfen, bestimmen Skills und Regeln; ein Schreibzugriff auf Produktionsdaten, Zahlungen, Werbung oder E-Mail braucht weiterhin die schriftliche Zustimmung des Eigentümers für genau diese Änderung.",
+      "patternProblem": "{{key}} hat nicht das erwartete Format."
     },
     "attach": {
       "title": "{{name}} anbinden",
@@ -290,6 +292,43 @@
       "rateLimited": "Zu viele Anfragen. Kurz warten und erneut versuchen.",
       "internal": "Interner Serverfehler. Erneut versuchen; falls er bleibt, die AionUi-Logs prüfen.",
       "upstream": "Ein Dienst hinter dem Server hat nicht rechtzeitig geantwortet. Erneut versuchen."
+    },
+    "library": {
+      "official": "Offiziell",
+      "community": "Community",
+      "optional": "Optional",
+      "metered": "Kosten pro Aufruf",
+      "addNamed": "{{name}} hinzufügen",
+      "keysLabel": "Schlüssel:",
+      "needsKey": "benötigt {{keys}}",
+      "noKey": "kein Schlüssel nötig",
+      "readOnlyLabel": "Nur lesen:",
+      "enforcement": {
+        "server": "vom Server erzwungen",
+        "credential": "durch die Rechte der Zugangsdaten erzwungen",
+        "proxy": "durch die feste Tool-Positivliste des Proxys erzwungen",
+        "none": "nicht erzwungen (Tool-Positivliste nur außerhalb der Produktion)"
+      },
+      "modeLabel": "Modus:",
+      "modeFull": "wird mit allen Tools (lesen + schreiben) installiert; eine Instanz lässt sich jederzeit auf nur lesen umstellen",
+      "modeReadOnly": "reiner Lese-Server",
+      "categoryFilter": "Kategorie",
+      "allCategories": "Alle Kategorien",
+      "noMatch": "Kein MCP in der Bibliothek passt.",
+      "category": {
+        "developer": "Entwicklerplattform",
+        "payments": "Zahlungen",
+        "analytics": "Analyse",
+        "seo": "SEO",
+        "ads": "Werbung",
+        "email": "E-Mail",
+        "data": "Dokumente und Daten",
+        "research": "Recherche und Web",
+        "media": "Design und Medien",
+        "other": "Sonstiges"
+      },
+      "count_one": "{{count}} MCP",
+      "count_other": "{{count}} MCPs"
     }
   }
 }
