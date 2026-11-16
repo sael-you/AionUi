@@ -324,5 +324,112 @@
       "count_one": "{{count}} MCP",
       "count_other": "{{count}} MCPs"
     }
+  },
+  "kits": {
+    "title": "Kits",
+    "description": "Bundles of skills and MCP servers. Attach a kit or a single item globally, to a project, an assistant or a conversation, as Add or Remove. The lower level wins.",
+    "create": "New kit",
+    "edit": "Edit kit",
+    "editLabel": "Edit kit {{name}}",
+    "deleteLabel": "Delete kit {{name}}",
+    "deleteConfirmTitle": "Delete kit \"{{name}}\"?",
+    "deleteConfirmContent": "The kit and all of its attachments are removed. Conversations that already exist keep their skills.",
+    "deleted": "Kit deleted",
+    "saved": "Kit saved",
+    "staleEdit": "This kit was changed elsewhere and has been reloaded. Open it again and redo your change.",
+    "empty": "No kits yet.",
+    "loading": "Loading…",
+    "builtin": "Built-in {{key}}",
+    "skills": "Skills",
+    "mcps": "MCP servers",
+    "none": "None",
+    "missingInstance": "Deleted instance ({{id}})",
+    "needsInstance": "{{template}} · needs an instance",
+    "attachedAt": "Attached at",
+    "notAttached": "Not attached",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "Kits",
+    "headerButton": "Kits: what this conversation gets",
+    "level": {
+      "global": "Global",
+      "project": "Project",
+      "assistant": "Assistant",
+      "conversation": "Conversation"
+    },
+    "kind": {
+      "kit": "Kit",
+      "skill": "Skill",
+      "mcp": "MCP server"
+    },
+    "op": {
+      "add": "Add",
+      "remove": "Remove"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "e.g. Platform Dev",
+      "description": "Description",
+      "descriptionPlaceholder": "What this kit is for",
+      "skillsPlaceholder": "Pick skills from the library",
+      "mcpsPlaceholder": "Pick MCP instances from the market",
+      "templates": "Wanted MCP templates",
+      "templatesHint": "A template without an instance shows as \"needs an instance\" and is never delivered.",
+      "templatesPlaceholder": "Pick catalogue templates",
+      "errors": {
+        "nameRequired": "Enter a name.",
+        "nameTooLong": "The name can have at most {{max}} characters.",
+        "skillInvalid": "Skill names may only contain letters, digits, dots, dashes and underscores."
+      }
+    },
+    "attach": {
+      "globalTitle": "Global attachments",
+      "globalHint": "Global applies to every conversation. Only the read-only Context7 and studio-memory MCP instances can be attached globally.",
+      "empty": "Nothing is attached at this level.",
+      "listLabel": "Attachments at this level",
+      "formLabel": "Attach",
+      "kind": "Type",
+      "item": "Item",
+      "itemPlaceholder": "Choose a kit, skill or MCP server",
+      "noOptions": "Nothing to choose",
+      "op": "Effect",
+      "submit": "Attach",
+      "attached": "Attached",
+      "detach": "Detach",
+      "detachLabel": "Detach {{name}}",
+      "detached": "Detached",
+      "missing": "Deleted ({{ref}})",
+      "blocked": {
+        "write": "write instances are not allowed globally",
+        "notGlobal": "not allowed globally"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "Kits for project {{name}}",
+      "projectHint": "Applies to every conversation in this project.",
+      "conversationTitle": "Kits for this conversation",
+      "conversationHint": "Applies to this conversation only. Skill changes take effect at the next session start.",
+      "attachTab": "Attachments"
+    },
+    "assistantSection": {
+      "title": "Kits",
+      "hint": "Applies wherever this assistant runs, in every project.",
+      "saveFirst": "Save the assistant first to attach kits."
+    },
+    "effective": {
+      "title": "What this conversation gets",
+      "hint": "Skills and MCP servers decided by kits, and where each one comes from. Lower levels win: global → project → assistant → conversation.",
+      "empty": "No kit or attachment decides anything for this conversation yet.",
+      "included": "Included",
+      "removed": "Removed",
+      "fromKit": "{{level}} · kit {{kit}}",
+      "fromItem": "{{level}} · single item",
+      "delivered": "Launched at session start",
+      "notDelivered": "Not launched",
+      "notDeliveredReason": "Not launched: {{reason}}",
+      "frozenTitle": "Skills fixed at creation",
+      "frozenHint": "The skills this conversation was created with, kits included.",
+      "missingTitle": "Wanted, no instance yet",
+      "missingItem": "{{template}} (kit {{kit}})"
+    }
   }
 }

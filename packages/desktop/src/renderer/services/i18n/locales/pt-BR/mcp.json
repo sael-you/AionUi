@@ -324,5 +324,112 @@
       "count_one": "{{count}} MCP",
       "count_other": "{{count}} MCPs"
     }
+  },
+  "kits": {
+    "title": "Kits",
+    "description": "Pacotes de skills e servidores MCP. Anexe um kit ou um item único globalmente, a um projeto, assistente ou conversa, como Adicionar ou Remover. O nível mais baixo prevalece.",
+    "create": "Novo kit",
+    "edit": "Editar kit",
+    "editLabel": "Editar kit {{name}}",
+    "deleteLabel": "Excluir kit {{name}}",
+    "deleteConfirmTitle": "Excluir o kit \"{{name}}\"?",
+    "deleteConfirmContent": "O kit e todos os seus anexos serão removidos. As conversas existentes mantêm suas skills.",
+    "deleted": "Kit excluído",
+    "saved": "Kit salvo",
+    "staleEdit": "Este kit foi alterado em outro lugar e foi recarregado. Abra-o de novo e refaça sua alteração.",
+    "empty": "Ainda não há kits.",
+    "loading": "Carregando…",
+    "builtin": "Integrado {{key}}",
+    "skills": "Skills",
+    "mcps": "Servidores MCP",
+    "none": "Nenhum",
+    "missingInstance": "Instância excluída ({{id}})",
+    "needsInstance": "{{template}} · precisa de uma instância",
+    "attachedAt": "Anexado em",
+    "notAttached": "Não anexado",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "Kits",
+    "headerButton": "Kits: o que esta conversa recebe",
+    "level": {
+      "global": "Global",
+      "project": "Projeto",
+      "assistant": "Assistente",
+      "conversation": "Conversa"
+    },
+    "kind": {
+      "kit": "Kit",
+      "skill": "Skill",
+      "mcp": "Servidor MCP"
+    },
+    "op": {
+      "add": "Adicionar",
+      "remove": "Remover"
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "ex.: Platform Dev",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Para que serve este kit",
+      "skillsPlaceholder": "Escolha skills da biblioteca",
+      "mcpsPlaceholder": "Escolha instâncias MCP do marketplace",
+      "templates": "Templates MCP desejados",
+      "templatesHint": "Um template sem instância aparece como \"precisa de uma instância\" e nunca é entregue.",
+      "templatesPlaceholder": "Escolha templates do catálogo",
+      "errors": {
+        "nameRequired": "Informe um nome.",
+        "nameTooLong": "O nome pode ter no máximo {{max}} caracteres.",
+        "skillInvalid": "Nomes de skills só podem conter letras, dígitos, pontos, hifens e sublinhados."
+      }
+    },
+    "attach": {
+      "globalTitle": "Anexos globais",
+      "globalHint": "O nível global vale para todas as conversas. Só as instâncias MCP somente leitura Context7 e studio-memory podem ser anexadas globalmente.",
+      "empty": "Nada anexado neste nível.",
+      "listLabel": "Anexos neste nível",
+      "formLabel": "Anexar",
+      "kind": "Tipo",
+      "item": "Item",
+      "itemPlaceholder": "Escolha um kit, skill ou servidor MCP",
+      "noOptions": "Nada para escolher",
+      "op": "Efeito",
+      "submit": "Anexar",
+      "attached": "Anexado",
+      "detach": "Desanexar",
+      "detachLabel": "Desanexar {{name}}",
+      "detached": "Desanexado",
+      "missing": "Excluído ({{ref}})",
+      "blocked": {
+        "write": "instâncias de escrita não podem ser anexadas globalmente",
+        "notGlobal": "não pode ser anexado globalmente"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "Kits do projeto {{name}}",
+      "projectHint": "Vale para todas as conversas deste projeto.",
+      "conversationTitle": "Kits desta conversa",
+      "conversationHint": "Vale só para esta conversa. Mudanças de skills valem a partir do próximo início de sessão.",
+      "attachTab": "Anexos"
+    },
+    "assistantSection": {
+      "title": "Kits",
+      "hint": "Vale onde este assistente roda, em todos os projetos.",
+      "saveFirst": "Salve o assistente antes de anexar kits."
+    },
+    "effective": {
+      "title": "O que esta conversa recebe",
+      "hint": "Skills e servidores MCP decididos por kits e de onde cada um vem. O nível mais baixo prevalece: global → projeto → assistente → conversa.",
+      "empty": "Nenhum kit ou anexo decide nada para esta conversa ainda.",
+      "included": "Incluído",
+      "removed": "Removido",
+      "fromKit": "{{level}} · kit {{kit}}",
+      "fromItem": "{{level}} · item único",
+      "delivered": "Iniciado no começo da sessão",
+      "notDelivered": "Não iniciado",
+      "notDeliveredReason": "Não iniciado: {{reason}}",
+      "frozenTitle": "Skills fixadas na criação",
+      "frozenHint": "As skills com que esta conversa foi criada, incluindo kits.",
+      "missingTitle": "Desejado, ainda sem instância",
+      "missingItem": "{{template}} (kit {{kit}})"
+    }
   }
 }

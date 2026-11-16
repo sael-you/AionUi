@@ -17,7 +17,7 @@ import { useRovingTree } from '@/renderer/hooks/ui/useRovingTree';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Button, Dropdown, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
-import { Comment, FolderClose, MoreOne, Plus, ViewGridDetail } from '@icon-park/react';
+import { Box, Comment, FolderClose, MoreOne, Plus, ViewGridDetail } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import ConversationChildren from './components/ConversationChildren';
 import MoveUnderModal from './components/MoveUnderModal';
+import KitLevelModal from '@/renderer/pages/settings/ToolsSettings/kits/KitLevelModal';
 import NeedsYouBox, { RunStateAnnouncer, type NeedsYouItem } from './components/NeedsYouBox';
 import ProjectGroup from './components/ProjectGroup';
 import SectionHeader, { sectionGroupId } from './components/SectionHeader';
@@ -96,6 +97,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   const rovingTree = useRovingTree(treeRef);
   // Which project's menu is open (keeps its actions visible while open).
   const [openProjectMenu, setOpenProjectMenu] = useState<string | null>(null);
+  // Project whose Kits modal is open (C27).
+  const [kitsProject, setKitsProject] = useState<{ projectId: string; name: string } | null>(null);
   const { getJobStatus, markAsRead, setActiveConversation } = useCronJobsMap();
 
   const {
@@ -659,6 +662,11 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
         />
       </Modal>
 
+      <KitLevelModal
+        target={kitsProject ? { level: 'project', ...kitsProject } : null}
+        onClose={() => setKitsProject(null)}
+      />
+
       <MoveUnderModal
         target={moveTarget}
         targetNode={
@@ -860,6 +868,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         } else if (key === 'keeper' && group.source.projectId) {
                           void openBoardKeeper(group.source.projectId);
                           onSessionClick?.();
+                        } else if (key === 'kits' && group.source.projectId) {
+                          setKitsProject({ projectId: group.source.projectId, name: group.displayName });
                         } else if (key === 'archive') {
                           handleArchiveProject(group.displayName, group.source.conversations);
                         } else if (key === 'color:auto') {
@@ -887,6 +897,12 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         <span className='flex items-center gap-8px'>
                           <Comment theme='outline' size='14' />
                           {t('board.keeper.talk')}
+                        </span>
+                      </Menu.Item>
+                      <Menu.Item key='kits' disabled={!group.source.projectId}>
+                        <span className='flex items-center gap-8px'>
+                          <Box theme='outline' size='14' />
+                          {t('mcp.kits.projectMenu')}
                         </span>
                       </Menu.Item>
                       <Menu.SubMenu

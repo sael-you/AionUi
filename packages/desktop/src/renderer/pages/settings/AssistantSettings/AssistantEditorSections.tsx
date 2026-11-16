@@ -22,6 +22,8 @@ import IdentitySection from './editor/IdentitySection';
 import PromptsSection from './editor/PromptsSection';
 import DefaultsSection from './editor/DefaultsSection';
 import RulesSection from './editor/RulesSection';
+import { SectionCard } from './editor/editorSectionPrimitives';
+import KitAttachPanel from '@/renderer/pages/settings/ToolsSettings/kits/KitAttachPanel';
 
 export type AssistantEditorSectionsProps = {
   editor: AssistantEditorViewModel;
@@ -557,6 +559,17 @@ const AssistantEditorSections: React.FC<AssistantEditorSectionsProps> = ({ edito
         autoDefaultOptionLabel={autoDefaultOptionLabel}
         readonlySelectionSummary={readonlySelectionSummary}
       />
+
+      <SectionCard title={t('mcp.kits.assistantSection.title')} testId='assistant-kits-section'>
+        {!isCreating && activeAssistant?.id ? (
+          <div className='flex flex-col gap-8px'>
+            <p className='m-0 text-12px text-t-secondary'>{t('mcp.kits.assistantSection.hint')}</p>
+            <KitAttachPanel level='assistant' targetId={activeAssistant.id} />
+          </div>
+        ) : (
+          <p className='m-0 text-12px text-t-secondary'>{t('mcp.kits.assistantSection.saveFirst')}</p>
+        )}
+      </SectionCard>
 
       <RulesSection
         isReadOnly={isReadOnlyAssistant}

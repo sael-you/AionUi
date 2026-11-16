@@ -837,6 +837,132 @@ export type McpMarketCreateAssignmentRequest = {
   clis: string[];
 };
 
+// ---------------------------------------------------------------------------
+// Kits (C27, D49/D50): AionCore `aionui-api-types::kit`, snake_case. Request
+// types are `deny_unknown_fields` on the server: send exactly these fields.
+// ---------------------------------------------------------------------------
+
+/** Attach level, applied top-down (global → project → assistant → conversation); a lower level wins. */
+export type KitLevel = 'global' | 'project' | 'assistant' | 'conversation';
+/** What an attachment points at: a whole kit, one library skill or one MCP market instance. */
+export type KitItemKind = 'kit' | 'skill' | 'mcp';
+export type KitOp = 'add' | 'remove';
+
+export const KIT_LEVELS: readonly KitLevel[] = ['global', 'project', 'assistant', 'conversation'];
+
+/** An MCP instance member of a kit (`missing` when the instance was deleted). */
+export type KitMcpMember = {
+  instance_id: string;
+  instance_name: string;
+  missing?: boolean;
+};
+
+export type KitResponse = {
+  id: string;
+  name: string;
+  description: string;
+  /** `K1`…`K12` for the seeded kits; absent for the owner's own kits. */
+  builtin_key?: string;
+  skills: string[];
+  mcps: KitMcpMember[];
+  /** Wanted catalogue templates without an instance in the kit ("needs an instance"; never delivered). */
+  mcp_templates: string[];
+  created_at: number;
+  updated_at: number;
+};
+
+/** `POST /api/kits`. */
+export type CreateKitRequest = {
+  name: string;
+  description?: string;
+  skills: string[];
+  mcp_instance_ids: string[];
+  mcp_templates: string[];
+};
+
+/** `PUT /api/kits/{id}`: a list present replaces that member set; stale `expected_updated_at` → 409. */
+export type UpdateKitRequest = {
+  name?: string;
+  description?: string;
+  skills?: string[];
+  mcp_instance_ids?: string[];
+  mcp_templates?: string[];
+  expected_updated_at?: number;
+};
+
+export type KitAttachmentResponse = {
+  id: string;
+  level: KitLevel;
+  /** `''` for global. */
+  target_id: string;
+  item_kind: KitItemKind;
+  item_ref: string;
+  /** Kit, skill or instance name; empty when the referenced kit/instance is gone. */
+  item_name: string;
+  op: KitOp;
+  created_at: number;
+  updated_at: number;
+};
+
+/** `POST /api/kits/attachments` (upsert on level + target + kind + ref). `target_id` absent for global. */
+export type AttachKitItemRequest = {
+  level: KitLevel;
+  target_id?: string;
+  item_kind: KitItemKind;
+  item_ref: string;
+  op: KitOp;
+};
+
+export type KitAttachmentsQuery = { level?: KitLevel; target_id?: string };
+
+/** `GET /api/kits/effective`: a conversation, or a project/assistant preview. */
+export type KitEffectiveQuery = { conversation_id?: string; project_id?: string; assistant_id?: string };
+
+/** The last level that decided an item. */
+export type KitProvenance = {
+  level: KitLevel;
+  op: KitOp;
+  kit_id?: string;
+  kit_name?: string;
+};
+
+export type KitEffectiveMcp = {
+  instance_name: string;
+  template_id?: string;
+  /** `active | dormant | revoked`; empty when the instance is gone. */
+  status: string;
+  environment?: string;
+  tier?: string;
+  enforcement?: string;
+  clis: string[];
+  /** Whether a session start would launch it; `reason` says why not otherwise. */
+  delivered: boolean;
+  reason?: string;
+};
+
+export type KitEffectiveItem = {
+  kind: KitItemKind;
+  /** Skill name or MCP instance id. */
+  item_ref: string;
+  /** `false` = removed by `provenance`. */
+  included: boolean;
+  provenance: KitProvenance;
+  mcp?: KitEffectiveMcp;
+};
+
+export type KitMissingTemplate = { template_id: string; kit_id: string; kit_name: string };
+
+export type KitEffectiveSetResponse = {
+  conversation_id?: string;
+  project_id?: string;
+  assistant_id?: string;
+  skills: KitEffectiveItem[];
+  mcps: KitEffectiveItem[];
+  /** The conversation's frozen skill snapshot; absent for a project/assistant preview. */
+  conversation_skills?: string[];
+  missing_templates: KitMissingTemplate[];
+};
+
 export type McpMarketInstanceHealth = {
   id: string;
   name: string;

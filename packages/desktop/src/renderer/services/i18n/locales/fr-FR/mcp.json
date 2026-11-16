@@ -324,5 +324,112 @@
       "count_one": "{{count}} MCP",
       "count_other": "{{count}} MCP"
     }
+  },
+  "kits": {
+    "title": "Kits",
+    "description": "Ensembles de skills et de serveurs MCP. Attachez un kit ou un élément seul globalement, à un projet, un assistant ou une conversation, en Ajouter ou Retirer. Le niveau inférieur l’emporte.",
+    "create": "Nouveau kit",
+    "edit": "Modifier le kit",
+    "editLabel": "Modifier le kit {{name}}",
+    "deleteLabel": "Supprimer le kit {{name}}",
+    "deleteConfirmTitle": "Supprimer le kit « {{name}} » ?",
+    "deleteConfirmContent": "Le kit et toutes ses attaches sont supprimés. Les conversations existantes gardent leurs skills.",
+    "deleted": "Kit supprimé",
+    "saved": "Kit enregistré",
+    "staleEdit": "Ce kit a été modifié ailleurs et a été rechargé. Rouvrez-le et refaites votre modification.",
+    "empty": "Aucun kit pour l’instant.",
+    "loading": "Chargement…",
+    "builtin": "Intégré {{key}}",
+    "skills": "Skills",
+    "mcps": "Serveurs MCP",
+    "none": "Aucun",
+    "missingInstance": "Instance supprimée ({{id}})",
+    "needsInstance": "{{template}} · instance requise",
+    "attachedAt": "Attaché au niveau",
+    "notAttached": "Non attaché",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "Kits",
+    "headerButton": "Kits : ce que reçoit cette conversation",
+    "level": {
+      "global": "Global",
+      "project": "Projet",
+      "assistant": "Assistant",
+      "conversation": "Conversation"
+    },
+    "kind": {
+      "kit": "Kit",
+      "skill": "Skill",
+      "mcp": "Serveur MCP"
+    },
+    "op": {
+      "add": "Ajouter",
+      "remove": "Retirer"
+    },
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "ex. Platform Dev",
+      "description": "Description",
+      "descriptionPlaceholder": "À quoi sert ce kit",
+      "skillsPlaceholder": "Choisir des skills de la bibliothèque",
+      "mcpsPlaceholder": "Choisir des instances MCP du marché",
+      "templates": "Modèles MCP souhaités",
+      "templatesHint": "Un modèle sans instance apparaît comme « instance requise » et n’est jamais fourni.",
+      "templatesPlaceholder": "Choisir des modèles du catalogue",
+      "errors": {
+        "nameRequired": "Saisissez un nom.",
+        "nameTooLong": "Le nom peut contenir au plus {{max}} caractères.",
+        "skillInvalid": "Les noms de skills ne peuvent contenir que des lettres, chiffres, points, tirets et traits de soulignement."
+      }
+    },
+    "attach": {
+      "globalTitle": "Attaches globales",
+      "globalHint": "Le niveau global s’applique à toutes les conversations. Seules les instances MCP en lecture seule Context7 et studio-memory peuvent être attachées globalement.",
+      "empty": "Rien n’est attaché à ce niveau.",
+      "listLabel": "Attaches à ce niveau",
+      "formLabel": "Attacher",
+      "kind": "Type",
+      "item": "Élément",
+      "itemPlaceholder": "Choisir un kit, une skill ou un serveur MCP",
+      "noOptions": "Rien à choisir",
+      "op": "Effet",
+      "submit": "Attacher",
+      "attached": "Attaché",
+      "detach": "Détacher",
+      "detachLabel": "Détacher {{name}}",
+      "detached": "Détaché",
+      "missing": "Supprimé ({{ref}})",
+      "blocked": {
+        "write": "les instances en écriture ne peuvent pas être globales",
+        "notGlobal": "non autorisé globalement"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "Kits du projet {{name}}",
+      "projectHint": "S’applique à toutes les conversations de ce projet.",
+      "conversationTitle": "Kits de cette conversation",
+      "conversationHint": "S’applique uniquement à cette conversation. Les changements de skills prennent effet au prochain démarrage de session.",
+      "attachTab": "Attaches"
+    },
+    "assistantSection": {
+      "title": "Kits",
+      "hint": "S’applique partout où cet assistant s’exécute, dans tous les projets.",
+      "saveFirst": "Enregistrez d’abord l’assistant pour attacher des kits."
+    },
+    "effective": {
+      "title": "Ce que reçoit cette conversation",
+      "hint": "Les skills et serveurs MCP décidés par les kits, et d’où vient chacun. Le niveau inférieur l’emporte : global → projet → assistant → conversation.",
+      "empty": "Aucun kit ni attache ne décide encore quoi que ce soit pour cette conversation.",
+      "included": "Inclus",
+      "removed": "Retiré",
+      "fromKit": "{{level}} · kit {{kit}}",
+      "fromItem": "{{level}} · élément seul",
+      "delivered": "Lancé au démarrage de la session",
+      "notDelivered": "Non lancé",
+      "notDeliveredReason": "Non lancé : {{reason}}",
+      "frozenTitle": "Skills fixées à la création",
+      "frozenHint": "Les skills avec lesquelles cette conversation a été créée, kits compris.",
+      "missingTitle": "Souhaités, pas encore d’instance",
+      "missingItem": "{{template}} (kit {{kit}})"
+    }
   }
 }

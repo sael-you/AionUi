@@ -324,5 +324,112 @@
       "count_one": "{{count}} 個 MCP",
       "count_other": "{{count}} 個 MCP"
     }
+  },
+  "kits": {
+    "title": "套件",
+    "description": "技能與 MCP 伺服器的組合。可將套件或單一項目以「新增」或「移除」方式附加到全域、專案、助理或對話；層級越低優先。",
+    "create": "新增套件",
+    "edit": "編輯套件",
+    "editLabel": "編輯套件 {{name}}",
+    "deleteLabel": "刪除套件 {{name}}",
+    "deleteConfirmTitle": "刪除套件「{{name}}」？",
+    "deleteConfirmContent": "將刪除此套件及其所有附加項。既有對話保留其技能。",
+    "deleted": "套件已刪除",
+    "saved": "套件已儲存",
+    "staleEdit": "此套件已在其他地方被修改並已重新載入。請重新開啟後再修改一次。",
+    "empty": "尚無套件。",
+    "loading": "載入中…",
+    "builtin": "內建 {{key}}",
+    "skills": "技能",
+    "mcps": "MCP 伺服器",
+    "none": "無",
+    "missingInstance": "已刪除的執行個體（{{id}}）",
+    "needsInstance": "{{template}} · 需要執行個體",
+    "attachedAt": "附加於",
+    "notAttached": "未附加",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "套件",
+    "headerButton": "套件：此對話取得的內容",
+    "level": {
+      "global": "全域",
+      "project": "專案",
+      "assistant": "助理",
+      "conversation": "對話"
+    },
+    "kind": {
+      "kit": "套件",
+      "skill": "技能",
+      "mcp": "MCP 伺服器"
+    },
+    "op": {
+      "add": "新增",
+      "remove": "移除"
+    },
+    "form": {
+      "name": "名稱",
+      "namePlaceholder": "例如 Platform Dev",
+      "description": "說明",
+      "descriptionPlaceholder": "此套件的用途",
+      "skillsPlaceholder": "從技能庫選擇技能",
+      "mcpsPlaceholder": "從市集選擇 MCP 執行個體",
+      "templates": "需要的 MCP 範本",
+      "templatesHint": "沒有執行個體的範本顯示為「需要執行個體」，不會被交付。",
+      "templatesPlaceholder": "選擇目錄範本",
+      "errors": {
+        "nameRequired": "請輸入名稱。",
+        "nameTooLong": "名稱最多 {{max}} 個字元。",
+        "skillInvalid": "技能名稱只能包含字母、數字、點、連字號與底線。"
+      }
+    },
+    "attach": {
+      "globalTitle": "全域附加",
+      "globalHint": "全域會套用到所有對話。只有唯讀的 Context7 與 studio-memory MCP 執行個體可以全域附加。",
+      "empty": "此層級沒有附加任何項目。",
+      "listLabel": "此層級的附加項",
+      "formLabel": "附加",
+      "kind": "類型",
+      "item": "項目",
+      "itemPlaceholder": "選擇套件、技能或 MCP 伺服器",
+      "noOptions": "沒有可選項目",
+      "op": "效果",
+      "submit": "附加",
+      "attached": "已附加",
+      "detach": "解除附加",
+      "detachLabel": "解除附加 {{name}}",
+      "detached": "已解除附加",
+      "missing": "已刪除（{{ref}}）",
+      "blocked": {
+        "write": "不允許全域附加寫入執行個體",
+        "notGlobal": "不允許全域附加"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "專案 {{name}} 的套件",
+      "projectHint": "套用到此專案中的所有對話。",
+      "conversationTitle": "此對話的套件",
+      "conversationHint": "僅套用到此對話。技能變更在下次工作階段啟動時生效。",
+      "attachTab": "附加項"
+    },
+    "assistantSection": {
+      "title": "套件",
+      "hint": "在此助理執行的所有專案中生效。",
+      "saveFirst": "請先儲存助理再附加套件。"
+    },
+    "effective": {
+      "title": "此對話取得的內容",
+      "hint": "由套件決定的技能與 MCP 伺服器及其來源。層級越低優先：全域 → 專案 → 助理 → 對話。",
+      "empty": "目前沒有套件或附加項影響此對話。",
+      "included": "已包含",
+      "removed": "已移除",
+      "fromKit": "{{level}} · 套件 {{kit}}",
+      "fromItem": "{{level}} · 單一項目",
+      "delivered": "工作階段啟動時執行",
+      "notDelivered": "未執行",
+      "notDeliveredReason": "未執行：{{reason}}",
+      "frozenTitle": "建立時確定的技能",
+      "frozenHint": "此對話建立時取得的技能（含套件）。",
+      "missingTitle": "需要但尚無執行個體",
+      "missingItem": "{{template}}（套件 {{kit}}）"
+    }
   }
 }

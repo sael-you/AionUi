@@ -324,5 +324,112 @@
       "count_one": "MCP {{count}}개",
       "count_other": "MCP {{count}}개"
     }
+  },
+  "kits": {
+    "title": "키트",
+    "description": "스킬과 MCP 서버 묶음입니다. 키트나 단일 항목을 '추가' 또는 '제거'로 전역, 프로젝트, 어시스턴트, 대화에 연결할 수 있으며 하위 수준이 우선합니다.",
+    "create": "새 키트",
+    "edit": "키트 편집",
+    "editLabel": "키트 {{name}} 편집",
+    "deleteLabel": "키트 {{name}} 삭제",
+    "deleteConfirmTitle": "키트 \"{{name}}\"을(를) 삭제할까요?",
+    "deleteConfirmContent": "키트와 모든 연결이 삭제됩니다. 기존 대화의 스킬은 유지됩니다.",
+    "deleted": "키트를 삭제했습니다",
+    "saved": "키트를 저장했습니다",
+    "staleEdit": "이 키트가 다른 곳에서 변경되어 다시 불러왔습니다. 다시 열어 변경 내용을 적용하세요.",
+    "empty": "아직 키트가 없습니다.",
+    "loading": "불러오는 중…",
+    "builtin": "기본 제공 {{key}}",
+    "skills": "스킬",
+    "mcps": "MCP 서버",
+    "none": "없음",
+    "missingInstance": "삭제된 인스턴스({{id}})",
+    "needsInstance": "{{template}} · 인스턴스 필요",
+    "attachedAt": "연결 위치",
+    "notAttached": "연결 안 됨",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "키트",
+    "headerButton": "키트: 이 대화가 받는 항목",
+    "level": {
+      "global": "전역",
+      "project": "프로젝트",
+      "assistant": "어시스턴트",
+      "conversation": "대화"
+    },
+    "kind": {
+      "kit": "키트",
+      "skill": "스킬",
+      "mcp": "MCP 서버"
+    },
+    "op": {
+      "add": "추가",
+      "remove": "제거"
+    },
+    "form": {
+      "name": "이름",
+      "namePlaceholder": "예: Platform Dev",
+      "description": "설명",
+      "descriptionPlaceholder": "이 키트의 용도",
+      "skillsPlaceholder": "라이브러리에서 스킬 선택",
+      "mcpsPlaceholder": "마켓에서 MCP 인스턴스 선택",
+      "templates": "필요한 MCP 템플릿",
+      "templatesHint": "인스턴스가 없는 템플릿은 '인스턴스 필요'로 표시되며 제공되지 않습니다.",
+      "templatesPlaceholder": "카탈로그 템플릿 선택",
+      "errors": {
+        "nameRequired": "이름을 입력하세요.",
+        "nameTooLong": "이름은 최대 {{max}}자입니다.",
+        "skillInvalid": "스킬 이름에는 문자, 숫자, 점, 하이픈, 밑줄만 사용할 수 있습니다."
+      }
+    },
+    "attach": {
+      "globalTitle": "전역 연결",
+      "globalHint": "전역은 모든 대화에 적용됩니다. 읽기 전용 Context7 및 studio-memory MCP 인스턴스만 전역으로 연결할 수 있습니다.",
+      "empty": "이 수준에 연결된 항목이 없습니다.",
+      "listLabel": "이 수준의 연결",
+      "formLabel": "연결",
+      "kind": "유형",
+      "item": "항목",
+      "itemPlaceholder": "키트, 스킬 또는 MCP 서버 선택",
+      "noOptions": "선택할 항목이 없습니다",
+      "op": "효과",
+      "submit": "연결",
+      "attached": "연결했습니다",
+      "detach": "연결 해제",
+      "detachLabel": "{{name}} 연결 해제",
+      "detached": "연결을 해제했습니다",
+      "missing": "삭제됨({{ref}})",
+      "blocked": {
+        "write": "쓰기 인스턴스는 전역으로 연결할 수 없습니다",
+        "notGlobal": "전역 연결 불가"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "프로젝트 {{name}}의 키트",
+      "projectHint": "이 프로젝트의 모든 대화에 적용됩니다.",
+      "conversationTitle": "이 대화의 키트",
+      "conversationHint": "이 대화에만 적용됩니다. 스킬 변경은 다음 세션 시작 시 적용됩니다.",
+      "attachTab": "연결"
+    },
+    "assistantSection": {
+      "title": "키트",
+      "hint": "이 어시스턴트가 실행되는 모든 프로젝트에 적용됩니다.",
+      "saveFirst": "키트를 연결하려면 먼저 어시스턴트를 저장하세요."
+    },
+    "effective": {
+      "title": "이 대화가 받는 항목",
+      "hint": "키트가 결정한 스킬과 MCP 서버, 그리고 각각의 출처입니다. 하위 수준이 우선: 전역 → 프로젝트 → 어시스턴트 → 대화.",
+      "empty": "아직 이 대화에 영향을 주는 키트나 연결이 없습니다.",
+      "included": "포함됨",
+      "removed": "제거됨",
+      "fromKit": "{{level}} · 키트 {{kit}}",
+      "fromItem": "{{level}} · 단일 항목",
+      "delivered": "세션 시작 시 실행",
+      "notDelivered": "실행 안 됨",
+      "notDeliveredReason": "실행 안 됨: {{reason}}",
+      "frozenTitle": "생성 시 고정된 스킬",
+      "frozenHint": "이 대화가 생성될 때 받은 스킬(키트 포함)입니다.",
+      "missingTitle": "필요하지만 인스턴스 없음",
+      "missingItem": "{{template}} (키트 {{kit}})"
+    }
   }
 }
