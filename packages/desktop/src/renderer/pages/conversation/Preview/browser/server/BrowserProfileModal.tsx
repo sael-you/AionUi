@@ -140,7 +140,7 @@ const BrowserProfileModal: React.FC<BrowserProfileModalProps> = ({ target, savin
                 {({ checked }) => (
                   <span
                     className={classNames(
-                      'inline-flex size-24px items-center justify-center rd-full border-2 border-solid',
+                      'inline-flex size-24px items-center justify-center rd-full border-[2px] border-solid',
                       checked ? 'border-primary-6' : 'border-transparent'
                     )}
                   >
