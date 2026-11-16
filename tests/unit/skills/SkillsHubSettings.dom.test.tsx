@@ -89,17 +89,21 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-// The By kit pane (C28) has its own tests; here only which tab opens and what it receives.
-const kitPane = vi.hoisted(() => ({
-  props: null as null | { skillNames: readonly string[]; projectId: string | null },
-}));
-vi.mock('@/renderer/pages/settings/SkillsSettings/SkillsByKitPane', () => ({
-  default: (props: { skillNames: readonly string[]; projectId: string | null }) => {
-    kitPane.props = props;
-    return <div data-testid='skills-by-kit-stub' />;
+// The library layout (C33) has its own tests; here only what the page hands it and how its callbacks act.
+const library = vi.hoisted(() => ({ props: null as null | SkillsLibraryProps }));
+vi.mock('@/renderer/pages/settings/SkillsSettings/SkillsLibrary', () => ({
+  default: (props: SkillsLibraryProps) => {
+    library.props = props;
+    return (
+      <div data-testid='skills-library-stub'>
+        <p>{props.description}</p>
+        {props.headerActions}
+      </div>
+    );
   },
 }));
 
+import type { SkillsLibraryProps } from '@/renderer/pages/settings/SkillsSettings/SkillsLibrary';
 import SkillsHubSettings from '@/renderer/pages/settings/SkillsSettings/SkillsHubSettings';
 
 describe('SkillsHubSettings', () => {
@@ -113,6 +117,7 @@ describe('SkillsHubSettings', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    library.props = null;
     searchParamsMock.current = new URLSearchParams();
     searchParamsMock.pathname = '/settings/capabilities';
     searchParamsMock.state = undefined;
@@ -317,145 +322,44 @@ describe('SkillsHubSettings', () => {
     expect(screen.queryByText('Repair: update the skill files and import again')).not.toBeInTheDocument();
   });
 
-  it('does not render an available status tag for imported skills', async () => {
-    mocks.listAvailableSkills.mockResolvedValue([
-      {
-        name: 'sample-single',
-        description: 'Single folder import fixture.',
-        location: '/tmp/user-skills/sample-single',
-        is_custom: true,
-        source: 'custom',
-      },
-    ]);
-
-    render(<SkillsHubSettings withWrapper={false} />);
-
-    const card = await screen.findByTestId('my-skill-card-sample-single');
-    // Per-card source badges were removed (the tab/section already conveys origin);
-    // the card shows only the name + description, no "Custom" / "Available" tag.
-    expect(card.textContent).not.toContain('Custom');
-    expect(screen.queryByText('Available')).not.toBeInTheDocument();
-  });
-
-  it('splits custom and official skills into two tabs, with auto-injected under Official', async () => {
+  it('hands the library every skill except the ones generated for scheduled tasks', async () => {
     mocks.listAvailableSkills.mockResolvedValue([
       {
         name: 'cron',
-        description: 'Auto injected cron skill.',
-        location: '/tmp/builtin-skills/auto-inject/cron/SKILL.md',
+        description: 'Auto.',
+        location: '/b/cron/SKILL.md',
         is_auto_inject: true,
         is_custom: false,
         source: 'builtin',
       },
       {
         name: 'officecli',
-        description: 'Official builtin skill.',
-        location: '/tmp/builtin-skills/officecli/SKILL.md',
+        description: 'Official.',
+        location: '/b/officecli/SKILL.md',
         is_auto_inject: false,
         is_custom: false,
         source: 'builtin',
       },
-      {
-        name: 'sample-single',
-        description: 'Single folder import fixture.',
-        location: '/tmp/user-skills/sample-single',
-        is_custom: true,
-        source: 'custom',
-      },
-      {
-        name: 'job-generated',
-        description: 'Generated for a scheduled task.',
-        location: '/tmp/cron/skills/job-generated',
-        is_custom: false,
-        source: 'cron',
-      },
+      { name: 'sample-single', description: 'Mine.', location: '/u/sample-single', is_custom: true, source: 'custom' },
+      { name: 'job-generated', description: 'Cron.', location: '/c/job-generated', is_custom: false, source: 'cron' },
     ]);
 
     render(<SkillsHubSettings withWrapper={false} />);
 
-    // Custom tab is active by default: shows the imported skill, not the builtin/auto ones.
-    await waitFor(() => expect(screen.getByTestId('my-skill-card-sample-single')).toBeInTheDocument());
-    expect(screen.queryByTestId('auto-skills-section')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('official-skill-card-officecli')).not.toBeInTheDocument();
-
-    // Switch to the Official tab: official builtin list + auto-injected section appear.
-    fireEvent.click(screen.getByTestId('settings-tab-official'));
-    expect(screen.getByTestId('official-skill-card-officecli')).toBeInTheDocument();
-    expect(screen.getByTestId('auto-skills-section')).toBeInTheDocument();
-    expect(screen.getByText('cron')).toBeInTheDocument();
-    // cron-source skills are never listed.
-    expect(screen.queryByText('job-generated')).not.toBeInTheDocument();
-    // The custom skill is not in the Official tab.
-    expect(screen.queryByTestId('my-skill-card-sample-single')).not.toBeInTheDocument();
-  });
-
-  it('opens the By kit tab with the project when opened from a project (C28)', async () => {
-    searchParamsMock.current = new URLSearchParams('project=proj-tb');
-    mocks.listAvailableSkills.mockResolvedValue([
-      {
-        name: 'officecli',
-        description: 'Official builtin skill.',
-        location: '/tmp/builtin-skills/officecli/SKILL.md',
-        is_auto_inject: false,
-        is_custom: false,
-        source: 'builtin',
-      },
-    ]);
-
-    render(<SkillsHubSettings withWrapper={false} />);
-
-    expect(await screen.findByTestId('skills-by-kit-stub')).toBeInTheDocument();
-    await waitFor(() => expect(kitPane.props?.skillNames).toEqual(['officecli']));
-    expect(kitPane.props?.projectId).toBe('proj-tb');
-  });
-
-  it('restores the originating tab and preserves it when opening another skill', async () => {
-    searchParamsMock.state = { skillsTab: 'official' };
-    mocks.listAvailableSkills.mockResolvedValue([
-      {
-        name: 'officecli',
-        description: 'Official builtin skill.',
-        location: '/tmp/builtin-skills/officecli/SKILL.md',
-        is_auto_inject: false,
-        is_custom: false,
-        source: 'builtin',
-      },
-    ]);
-
-    render(<SkillsHubSettings withWrapper={false} />);
-
-    const card = await screen.findByTestId('official-skill-card-officecli');
-    fireEvent.click(card);
-    expect(searchParamsMock.navigate).toHaveBeenCalledWith('/settings/skills/detail/officecli', {
-      state: { skillsTab: 'official' },
-    });
-  });
-
-  it('renders the auto-injected skills hint without an Arco popup trigger', async () => {
-    mocks.listAvailableSkills.mockResolvedValue([
-      {
-        name: 'officecli',
-        description: 'Create, analyze, proofread, and modify Office documents.',
-        location: '/tmp/builtin-skills/auto-inject/officecli/SKILL.md',
-        is_auto_inject: true,
-        is_custom: false,
-        source: 'builtin',
-      },
-    ]);
-
-    render(<SkillsHubSettings withWrapper={false} />);
-
-    fireEvent.click(await screen.findByTestId('settings-tab-official'));
-
-    const autoSection = screen.getByTestId('auto-skills-section');
-    const nativeHint = Array.from(autoSection.querySelectorAll('[title]')).some(
-      (el) =>
-        el.getAttribute('title') ===
-        'Loaded automatically into every conversation — no need to enable them; the agent decides when to use them.'
+    await waitFor(() =>
+      expect(library.props?.skills.map((s) => s.name)).toEqual(['cron', 'officecli', 'sample-single'])
     );
+  });
 
-    expect(nativeHint).toBe(true);
-    expect(autoSection.querySelector('.arco-trigger')).not.toBeInTheDocument();
+  it('opens on the project of ?project= and passes the highlight deep link (C28)', async () => {
+    searchParamsMock.current = new URLSearchParams('project=proj-tb&highlight=officecli');
+
+    render(<SkillsHubSettings withWrapper={false} />);
+
+    await waitFor(() => expect(library.props?.initialProjectId).toBe('proj-tb'));
+    expect(library.props?.highlightName).toBe('officecli');
+    library.props?.onHighlightDone();
+    expect(searchParamsMock.setSearchParams).toHaveBeenCalledWith({}, { replace: true });
   });
 
   it('does not expose the local skills directory path on the skills page', async () => {
@@ -469,138 +373,64 @@ describe('SkillsHubSettings', () => {
     render(<SkillsHubSettings withWrapper={false} />);
 
     await waitFor(() => expect(mocks.getSkillImportLimits).toHaveBeenCalled());
-    expect(screen.getByText(/12 MB per file and 64 MB per skill/)).toBeInTheDocument();
+    expect(await screen.findByText(/12 MB per file and 64 MB per skill/)).toBeInTheDocument();
   });
 
-  describe('batch delete (Custom tab)', () => {
-    const customSkills = [
-      {
-        name: 'skill-alpha',
-        description: 'First custom skill.',
-        location: '/tmp/user-skills/skill-alpha',
-        is_auto_inject: false,
-        is_custom: true,
-        source: 'custom',
-      },
-      {
-        name: 'skill-beta',
-        description: 'Second custom skill.',
-        location: '/tmp/user-skills/skill-beta',
-        is_auto_inject: false,
-        is_custom: true,
-        source: 'custom',
-      },
-      {
-        name: 'skill-gamma',
-        description: 'Third custom skill.',
-        location: '/tmp/user-skills/skill-gamma',
-        is_auto_inject: false,
-        is_custom: true,
-        source: 'custom',
-      },
-    ];
-
-    const confirmBatchDelete = async () => {
-      // Modal.confirm is mocked; invoke the onOk callback the component passed in.
+  describe('delete and batch delete (library callbacks)', () => {
+    const confirmed = async () => {
+      // Modal.confirm is mocked; invoke the onOk callback the page passed in.
       await waitFor(() => expect(mocks.modalConfirm).toHaveBeenCalled());
-      const config = mocks.modalConfirm.mock.calls.at(-1)?.[0] as { onOk?: () => Promise<void> };
+      const config = mocks.modalConfirm.mock.calls.at(-1)?.[0] as { onOk?: () => Promise<void> | void };
       await config.onOk?.();
     };
 
     beforeEach(() => {
-      mocks.listAvailableSkills.mockResolvedValue(customSkills);
       mocks.deleteSkill.mockResolvedValue(undefined);
     });
 
-    it('hides batch manage entry when there are no custom skills', async () => {
-      mocks.listAvailableSkills.mockResolvedValue([]);
+    it('deletes one skill after confirmation and reloads the list', async () => {
       render(<SkillsHubSettings withWrapper={false} />);
+      await waitFor(() => expect(library.props).not.toBeNull());
+      const before = mocks.listAvailableSkills.mock.calls.length;
 
-      await waitFor(() => expect(mocks.listAvailableSkills).toHaveBeenCalled());
-      expect(screen.queryByTestId('btn-batch-manage')).not.toBeInTheDocument();
+      library.props?.onDelete('skill-alpha');
+      await confirmed();
+
+      await waitFor(() => expect(mocks.deleteSkill).toHaveBeenCalledWith({ skill_name: 'skill-alpha' }));
+      await waitFor(() => expect(mocks.messageSuccess).toHaveBeenCalledWith('Skill deleted'));
+      await waitFor(() => expect(mocks.listAvailableSkills.mock.calls.length).toBeGreaterThan(before));
     });
 
-    it('enters batch mode: shows checkboxes, hides per-card delete buttons', async () => {
+    it('deletes the selected skills after one confirmation and ends batch mode', async () => {
       render(<SkillsHubSettings withWrapper={false} />);
+      await waitFor(() => expect(library.props).not.toBeNull());
+      const done = vi.fn();
 
-      await screen.findByTestId('my-skill-card-skill-alpha');
-      expect(screen.getByTestId('btn-delete-skill-alpha')).toBeInTheDocument();
-
-      fireEvent.click(screen.getByTestId('btn-batch-manage'));
-
-      expect(screen.getByTestId('checkbox-skill-skill-alpha')).toBeInTheDocument();
-      expect(screen.getByTestId('checkbox-skill-skill-beta')).toBeInTheDocument();
-      expect(screen.queryByTestId('btn-delete-skill-alpha')).not.toBeInTheDocument();
-      expect(screen.getByTestId('btn-batch-delete')).toBeDisabled();
-    });
-
-    it('selects skills and deletes them after confirmation', async () => {
-      render(<SkillsHubSettings withWrapper={false} />);
-
-      await screen.findByTestId('my-skill-card-skill-alpha');
-      fireEvent.click(screen.getByTestId('btn-batch-manage'));
-
-      fireEvent.click(screen.getByTestId('my-skill-card-skill-alpha'));
-      fireEvent.click(screen.getByTestId('my-skill-card-skill-beta'));
-      expect(screen.getByText('2 selected')).toBeInTheDocument();
-
-      fireEvent.click(screen.getByTestId('btn-batch-delete'));
-      await confirmBatchDelete();
+      library.props?.onBatchDelete(['skill-alpha', 'skill-beta'], done);
+      await confirmed();
 
       await waitFor(() => expect(mocks.deleteSkill).toHaveBeenCalledTimes(2));
-      expect(mocks.deleteSkill).toHaveBeenCalledWith({ skill_name: 'skill-alpha' });
-      expect(mocks.deleteSkill).toHaveBeenCalledWith({ skill_name: 'skill-beta' });
-      await waitFor(() => expect(mocks.messageSuccess).toHaveBeenCalledWith('Deleted 2 skill(s)'));
-      // Batch mode exits after deletion.
-      await waitFor(() => expect(screen.queryByTestId('btn-batch-delete')).not.toBeInTheDocument());
+      expect(mocks.messageSuccess).toHaveBeenCalledWith('Deleted 2 skill(s)');
+      expect(done).toHaveBeenCalled();
     });
 
-    it('select all toggles every visible skill', async () => {
-      render(<SkillsHubSettings withWrapper={false} />);
-
-      await screen.findByTestId('my-skill-card-skill-alpha');
-      fireEvent.click(screen.getByTestId('btn-batch-manage'));
-
-      const selectAll = screen.getByTestId('checkbox-select-all-skills');
-      fireEvent.click(selectAll.querySelector('input') ?? selectAll);
-      expect(screen.getByText('3 selected')).toBeInTheDocument();
-
-      fireEvent.click(selectAll.querySelector('input') ?? selectAll);
-      expect(screen.getByText('0 selected')).toBeInTheDocument();
-    });
-
-    it('shows partial warning when some deletions fail', async () => {
+    it('reports a partial batch failure', async () => {
       mocks.deleteSkill.mockImplementation(({ skill_name }: { skill_name: string }) =>
         skill_name === 'skill-beta' ? Promise.reject(new Error('boom')) : Promise.resolve(undefined)
       );
-
       render(<SkillsHubSettings withWrapper={false} />);
+      await waitFor(() => expect(library.props).not.toBeNull());
 
-      await screen.findByTestId('my-skill-card-skill-alpha');
-      fireEvent.click(screen.getByTestId('btn-batch-manage'));
-      fireEvent.click(screen.getByTestId('my-skill-card-skill-alpha'));
-      fireEvent.click(screen.getByTestId('my-skill-card-skill-beta'));
-      fireEvent.click(screen.getByTestId('btn-batch-delete'));
-      await confirmBatchDelete();
+      library.props?.onBatchDelete(['skill-alpha', 'skill-beta'], vi.fn());
+      await confirmed();
 
       await waitFor(() => expect(mocks.messageWarning).toHaveBeenCalledWith('Deleted 1 skill(s), 1 failed'));
     });
 
-    it('cancel exits batch mode and clears selection', async () => {
+    it('an empty selection asks nothing', () => {
       render(<SkillsHubSettings withWrapper={false} />);
-
-      await screen.findByTestId('my-skill-card-skill-alpha');
-      fireEvent.click(screen.getByTestId('btn-batch-manage'));
-      fireEvent.click(screen.getByTestId('my-skill-card-skill-alpha'));
-      fireEvent.click(screen.getByTestId('btn-batch-cancel'));
-
-      expect(screen.queryByTestId('checkbox-skill-skill-alpha')).not.toBeInTheDocument();
-      expect(screen.getByTestId('btn-delete-skill-alpha')).toBeInTheDocument();
-      expect(mocks.deleteSkill).not.toHaveBeenCalled();
-
-      // Re-entering batch mode starts with a clean selection.
-      fireEvent.click(screen.getByTestId('btn-batch-manage'));
-      expect(screen.getByText('0 selected')).toBeInTheDocument();
+      library.props?.onBatchDelete([], vi.fn());
+      expect(mocks.modalConfirm).not.toHaveBeenCalled();
     });
   });
 });

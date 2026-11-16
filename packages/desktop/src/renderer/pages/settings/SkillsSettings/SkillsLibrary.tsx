@@ -372,7 +372,7 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
   const sourceChip = (skill: LibrarySkill) => {
     if (isAlwaysOn(skill)) {
       return (
-        <Tag size='small' color='green'>
+        <Tag size='small' color='green' title={t('settings.autoInjectedSkillsHint')}>
           {t('settings.skillsLibrary.source.alwaysOn')}
         </Tag>
       );

@@ -41,12 +41,12 @@ export type LibrarySkill = {
 export type SkillSourceFilter = 'all' | 'mine' | 'official' | 'imported';
 export const SKILL_SOURCE_FILTERS: readonly SkillSourceFilter[] = ['all', 'mine', 'official', 'imported'];
 
-/** Mine = the owner's own skills (custom, cron); Official = built-in; Imported = from extensions. */
+/** Mine = the owner's own skills; Official = built-in; Imported = from extensions. */
 export const skillMatchesSource = (skill: LibrarySkill, filter: SkillSourceFilter): boolean => {
   if (filter === 'all') return true;
   if (filter === 'official') return skill.source === 'builtin';
   if (filter === 'imported') return skill.source === 'extension';
-  return skill.source === 'custom' || skill.source === 'cron' || skill.source === undefined;
+  return skill.source === 'custom' || skill.source === undefined;
 };
 
 /** Built-in skills loaded into every conversation regardless of kits. */

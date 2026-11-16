@@ -121,6 +121,8 @@ const SkillsHubSettings: React.FC<SkillsHubSettingsProps> = ({ withWrapper = tru
   const [importHistory, setImportHistory] = useState<SkillImportRecord[]>([]);
   const [importLimits, setImportLimits] = useState<SkillImportLimits | null>(null);
   const kitsProjectId = searchParams.get('project');
+  // Skills generated for scheduled tasks are never listed (they belong to their job).
+  const librarySkills = useMemo(() => availableSkills.filter((skill) => skill.source !== 'cron'), [availableSkills]);
   const importHistoryGroups = useMemo(() => buildImportHistoryGroups(importHistory), [importHistory]);
 
   const fetchData = useCallback(async () => {
@@ -561,7 +563,7 @@ const SkillsHubSettings: React.FC<SkillsHubSettingsProps> = ({ withWrapper = tru
     importHistoryContent
   ) : (
     <SkillsLibrary
-      skills={availableSkills}
+      skills={librarySkills}
       loading={loading}
       description={
         <>
