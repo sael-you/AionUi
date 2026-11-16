@@ -477,6 +477,55 @@
       "count": "{{count}} skills",
       "count_one": "{{count}} skill",
       "count_other": "{{count}} skills"
+    },
+    "import": {
+      "open": "Importer les clés depuis .mcp.json",
+      "buttonHint": "Seules les clés sont importées ; chaque serveur vient du catalogue AionUi.",
+      "title": "Importer les clés du .mcp.json de ce projet",
+      "hint": "Seuls les identifiants sont copiés, côté serveur. Chaque serveur vient toujours de son modèle du catalogue AionUi ; l’ancienne commande, la version du paquet et l’URL sont ignorées. Les valeurs ne sont jamais affichées.",
+      "noFile": "Ce projet n’a pas d’espace de travail ou pas de .mcp.json valide.",
+      "noServers": "Le .mcp.json ne contient aucun serveur.",
+      "serversLabel": "Serveurs du .mcp.json",
+      "resultsLabel": "Résultat de l’import",
+      "pickLabel": "Importer {{name}}",
+      "instanceNameLabel": "Nom d’instance pour {{name}}",
+      "environmentLabel": "Environnement pour {{name}}",
+      "tierLabel": "Niveau pour {{name}}",
+      "oauth": "OAuth : connectez-le dans l’instance après l’import",
+      "noKeys": "Aucune clé requise",
+      "keyFound": "{{field}} trouvée",
+      "keyMissing": "{{field}} manquante",
+      "created": "{{name}} créée",
+      "failed": "Non importé",
+      "test": "Tester",
+      "testLabel": "Tester {{name}}",
+      "missingSecrets": "Clés manquantes : {{fields}}. L’instance a été créée en sommeil : collez-les dans Paramètres > Outils > MCP, puis testez.",
+      "testFailed": "Échec du test : {{detail}}",
+      "match": {
+        "custom": "Serveur personnalisé : à ajouter à la main",
+        "none": "Absent du catalogue"
+      },
+      "errors": {
+        "invalid": "Le serveur a refusé cet élément : {{detail}} S’il s’agit des outils de lecture, choisissez le niveau écriture.",
+        "nameTaken": "Ce nom d’instance est déjà utilisé. Choisissez-en un autre. {{detail}}",
+        "notInFile": "Ce serveur n’est plus dans le .mcp.json. Rechargez l’aperçu.",
+        "unknownTemplate": "Aucun modèle du catalogue ne correspond à ce serveur.",
+        "other": "Non importé : {{detail}}"
+      },
+      "nameProblem": {
+        "required": "Saisissez un nom d’instance.",
+        "pattern": "Minuscules, chiffres et tirets simples, en commençant par une lettre.",
+        "tooLong": "24 caractères au maximum.",
+        "reserved": "Ce nom est réservé.",
+        "notInMarket": "Ce nom appartient à un serveur hors du marché.",
+        "taken": "Ce nom est déjà utilisé."
+      },
+      "submit": "Importer {{count}} serveurs",
+      "submit_one": "Importer {{count}} serveur",
+      "submit_other": "Importer {{count}} serveurs",
+      "testOk": "Connecté · {{count}} outils",
+      "testOk_one": "Connecté · {{count}} outil",
+      "testOk_other": "Connecté · {{count}} outils"
     }
   }
 }

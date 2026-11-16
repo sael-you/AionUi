@@ -971,6 +971,56 @@ export type KitEffectiveSetResponse = {
   missing_templates: KitMissingTemplate[];
 };
 
+// ---------------------------------------------------------------------------
+// Import keys from a project's .mcp.json (C28 §5): only credentials are taken;
+// the server always comes from the catalogue template. Never carries a value.
+// ---------------------------------------------------------------------------
+
+export type KitImportMatch = 'catalogue' | 'custom' | 'none';
+
+export type KitImportSecret = { field: string; found: boolean };
+
+export type KitImportPreviewServer = {
+  name: string;
+  /** `null` when no catalogue template matches. */
+  template_id: string | null;
+  match: KitImportMatch;
+  secrets: KitImportSecret[];
+  oauth_only: boolean;
+};
+
+/** `GET /api/projects/{project_id}/kit/import-preview`. */
+export type KitImportPreviewResponse = {
+  project_id: string;
+  /** `false` when the project has no workspace or no valid `<workspace>/.mcp.json`. */
+  file_found: boolean;
+  /** Sorted by name. */
+  servers: KitImportPreviewServer[];
+};
+
+/** One server of `POST /api/projects/{project_id}/kit/import` (`deny_unknown_fields`). */
+export type KitImportServerRequest = {
+  name: string;
+  template_id: string;
+  instance_name: string;
+  environment: string;
+  tier: string;
+};
+
+export type KitImportRequest = { servers: KitImportServerRequest[] };
+
+export type KitImportServerResult = {
+  name: string;
+  instance_id: string | null;
+  error_code: string | null;
+  message?: string;
+  /** Required secrets the file did not have: the instance is created dormant without them. */
+  missing_secrets: string[];
+};
+
+/** HTTP 200 even when some servers fail; results in request order. */
+export type KitImportResponse = { kit_id: string; servers: KitImportServerResult[] };
+
 export type McpMarketInstanceHealth = {
   id: string;
   name: string;

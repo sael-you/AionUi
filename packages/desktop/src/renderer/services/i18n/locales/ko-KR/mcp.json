@@ -477,6 +477,55 @@
       "count": "스킬 {{count}}개",
       "count_one": "스킬 {{count}}개",
       "count_other": "스킬 {{count}}개"
+    },
+    "import": {
+      "open": ".mcp.json에서 키 가져오기",
+      "buttonHint": "키만 가져오며 서버는 AionUi 카탈로그에서 가져옵니다.",
+      "title": "이 프로젝트의 .mcp.json에서 키 가져오기",
+      "hint": "자격 증명만 서버 측에서 복사합니다. 서버는 항상 AionUi 카탈로그 템플릿에서 가져오며 이전 명령, 패키지 버전, URL은 무시됩니다. 값은 표시되지 않습니다.",
+      "noFile": "이 프로젝트에는 작업 공간이나 유효한 .mcp.json이 없습니다.",
+      "noServers": ".mcp.json에 서버가 없습니다.",
+      "serversLabel": ".mcp.json의 서버",
+      "resultsLabel": "가져오기 결과",
+      "pickLabel": "{{name}} 가져오기",
+      "instanceNameLabel": "{{name}}의 인스턴스 이름",
+      "environmentLabel": "{{name}}의 환경",
+      "tierLabel": "{{name}}의 권한 수준",
+      "oauth": "OAuth: 가져온 뒤 인스턴스에서 연결",
+      "noKeys": "키 필요 없음",
+      "keyFound": "{{field}} 찾음",
+      "keyMissing": "{{field}} 없음",
+      "created": "{{name}}을(를) 만들었습니다",
+      "failed": "가져오지 않음",
+      "test": "테스트",
+      "testLabel": "{{name}} 테스트",
+      "missingSecrets": "없는 키: {{fields}}. 인스턴스는 휴면 상태로 만들어졌습니다. 설정 > 도구 > MCP에서 붙여 넣은 뒤 테스트하세요.",
+      "testFailed": "테스트 실패: {{detail}}",
+      "match": {
+        "custom": "사용자 지정 서버: 직접 추가하세요",
+        "none": "카탈로그에 없음"
+      },
+      "errors": {
+        "invalid": "서버가 이 항목을 거부했습니다: {{detail}} 읽기 도구와 관련된 경우 쓰기 수준을 선택하세요.",
+        "nameTaken": "이미 사용 중인 인스턴스 이름입니다. 다른 이름을 선택하세요. {{detail}}",
+        "notInFile": "이 서버는 더 이상 .mcp.json에 없습니다. 미리 보기를 다시 불러오세요.",
+        "unknownTemplate": "이 서버와 일치하는 카탈로그 템플릿이 없습니다.",
+        "other": "가져오지 않음: {{detail}}"
+      },
+      "nameProblem": {
+        "required": "인스턴스 이름을 입력하세요.",
+        "pattern": "소문자, 숫자, 단일 하이픈을 사용하고 문자로 시작하세요.",
+        "tooLong": "최대 24자입니다.",
+        "reserved": "예약된 이름입니다.",
+        "notInMarket": "마켓 밖의 서버에 속한 이름입니다.",
+        "taken": "이미 사용 중인 이름입니다."
+      },
+      "submit": "서버 {{count}}개 가져오기",
+      "submit_one": "서버 {{count}}개 가져오기",
+      "submit_other": "서버 {{count}}개 가져오기",
+      "testOk": "연결됨 · 도구 {{count}}개",
+      "testOk_one": "연결됨 · 도구 {{count}}개",
+      "testOk_other": "연결됨 · 도구 {{count}}개"
     }
   }
 }

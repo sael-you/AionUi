@@ -28,6 +28,9 @@ import type {
   KitAttachmentsQuery,
   KitEffectiveQuery,
   KitEffectiveSetResponse,
+  KitImportPreviewResponse,
+  KitImportRequest,
+  KitImportResponse,
   KitListQuery,
   KitResponse,
   McpMarketAssignment,
@@ -1521,6 +1524,15 @@ export const kits = {
     (p) => p.data
   ),
   remove: httpDelete<void, { id: string }>((p) => `/api/kits/${encodeURIComponent(p.id)}`),
+  /** Servers of the project's `.mcp.json` with the catalogue template and which keys were found (C28 §5). */
+  importPreview: httpGet<KitImportPreviewResponse, { project_id: string }>(
+    (p) => `/api/projects/${encodeURIComponent(p.project_id)}/kit/import-preview`
+  ),
+  /** Create catalogue instances with the file's keys copied server-side and add them to the project kit. */
+  importKeys: httpPost<KitImportResponse, { project_id: string; data: KitImportRequest }>(
+    (p) => `/api/projects/${encodeURIComponent(p.project_id)}/kit/import`,
+    (p) => p.data
+  ),
   listAttachments: httpGet<KitAttachmentResponse[], KitAttachmentsQuery>(
     (p) => `/api/kits/attachments${kitQueryString({ level: p?.level, target_id: p?.target_id })}`
   ),

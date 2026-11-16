@@ -21,6 +21,7 @@ import type { KitResponse, UpdateKitRequest } from '@/common/config/storage';
 import { describeKitError, kitFormFromKit } from '@/renderer/hooks/mcp/market/kitModel';
 import { useKitActions, useKitLibrary, useProjectKit } from '@/renderer/hooks/mcp/market/useKits';
 import { MarketErrorNotice, touchClass, useIsMobileLayout } from '../market/shared';
+import McpJsonImportModal from './McpJsonImportModal';
 
 type ProjectKitPanelProps = { projectId: string; projectName: string };
 
@@ -108,6 +109,21 @@ const ProjectKitPanel: React.FC<ProjectKitPanelProps> = ({ projectId, projectNam
   const library = useKitLibrary();
   const { createKit, patchKit } = useKitActions();
   const [busy, setBusy] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+
+  const importButton = (
+    <Button size='small' className={touchClass(isMobile)} onClick={() => setImportOpen(true)}>
+      {t('mcp.kits.import.open')}
+    </Button>
+  );
+  const importModal = (
+    <McpJsonImportModal
+      projectId={projectId}
+      projectName={projectName}
+      visible={importOpen}
+      onClose={() => setImportOpen(false)}
+    />
+  );
 
   const run = async (action: () => Promise<unknown>, success: string) => {
     setBusy(true);
@@ -143,6 +159,8 @@ const ProjectKitPanel: React.FC<ProjectKitPanelProps> = ({ projectId, projectNam
         >
           {t('mcp.kits.projectKit.create')}
         </Button>
+        {importButton}
+        {importModal}
       </div>
     );
   }
@@ -169,6 +187,11 @@ const ProjectKitPanel: React.FC<ProjectKitPanelProps> = ({ projectId, projectNam
         </Button>
       </div>
       <p className='m-0 text-12px text-t-secondary'>{t('mcp.kits.projectKit.hint')}</p>
+      <div className='flex flex-wrap items-center gap-8px'>
+        {importButton}
+        <span className='text-12px text-t-tertiary'>{t('mcp.kits.import.buttonHint')}</span>
+      </div>
+      {importModal}
       <MemberList
         title={t('mcp.kits.skills')}
         testId='project-kit-skills'

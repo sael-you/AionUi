@@ -22,6 +22,8 @@ import type {
   KitAttachmentsQuery,
   KitEffectiveQuery,
   KitEffectiveSetResponse,
+  KitImportPreviewResponse,
+  KitImportServerRequest,
   KitResponse,
   McpMarketInstance,
   McpMarketTemplate,
@@ -59,6 +61,15 @@ export const useProjectKit = (projectId: string | null) => {
     }
   );
   return { projectKit: data ?? null, error: error as unknown, isLoading };
+};
+
+/** The `.mcp.json` import preview of a project (C28 §5); `null` = not loaded (closed). */
+export const useKitImportPreview = (projectId: string | null) => {
+  const { data, error, isLoading } = useSWR<KitImportPreviewResponse>(
+    projectId ? `kits.import-preview:${projectId}` : null,
+    () => kitsApi.importPreview.invoke({ project_id: projectId ?? '' })
+  );
+  return { preview: data ?? null, error: error as unknown, isLoading };
 };
 
 /** Attachments at one level/target; no query fields = every attachment of the user. */
@@ -130,9 +141,15 @@ export const useKitActions = () => {
       after(kitsApi.update.invoke({ id: kit.id, data: updateKitRequest(kit, values) })),
     [after]
   );
+  /** Import keys from the project's `.mcp.json` (C28 §5); creates the project kit when missing. */
+  const importKeys = useCallback(
+    (projectId: string, servers: KitImportServerRequest[]) =>
+      after(kitsApi.importKeys.invoke({ project_id: projectId, data: { servers } })),
+    [after]
+  );
   const deleteKit = useCallback((kitId: string) => after(kitsApi.remove.invoke({ id: kitId })), [after]);
   const attach = useCallback((request: AttachKitItemRequest) => after(kitsApi.attach.invoke(request)), [after]);
   const detach = useCallback((attachmentId: string) => after(kitsApi.detach.invoke({ id: attachmentId })), [after]);
 
-  return { createKit, updateKit, patchKit, deleteKit, attach, detach };
+  return { createKit, updateKit, patchKit, deleteKit, attach, detach, importKeys };
 };

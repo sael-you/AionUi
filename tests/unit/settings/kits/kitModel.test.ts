@@ -9,7 +9,9 @@ import type { KitAttachmentResponse, KitEffectiveItem, KitResponse } from '@/com
 import { BackendHttpError } from '@/common/adapter/httpBridge';
 import {
   attachRequest,
+  describeImportError,
   describeKitError,
+  importInstanceName,
   createKitRequest,
   globalAttachBlock,
   kitAttachmentLevels,
@@ -179,5 +181,22 @@ describe('kitModel', () => {
 
     expect(describeKitError(keyT, csrf)).toBe('mcp.market.errors.csrf');
     expect(describeKitError(keyT, new Error('offline'))).toBe('offline');
+  });
+
+  it('suggests tb-<template> instance names that fit the market name rule', () => {
+    expect(importInstanceName('TB-test', 'paddle')).toBe('tb-paddle');
+    expect(importInstanceName('clauterm-studio', 'google_workspace')).toBe('clauterm-google-workspac');
+    expect(importInstanceName('9 Lives', 'sentry')).toBe('lives-sentry');
+    expect(importInstanceName('', 'github')).toBe('p-github');
+  });
+
+  it('explains import error codes with the server message, unknown codes generically', () => {
+    expect(describeImportError(echoT, 'MCP_MARKET_CONFLICT', ' taken ')).toBe(
+      'mcp.kits.import.errors.nameTaken|{"detail":"taken"}'
+    );
+    expect(describeImportError(echoT, 'KIT_IMPORT_NOT_IN_FILE')).toBe(
+      'mcp.kits.import.errors.notInFile|{"detail":"KIT_IMPORT_NOT_IN_FILE"}'
+    );
+    expect(describeImportError(echoT, 'MCP_MARKET_SOMETHING', 'x')).toBe('mcp.kits.import.errors.other|{"detail":"x"}');
   });
 });

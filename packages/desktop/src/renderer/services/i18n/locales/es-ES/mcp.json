@@ -477,6 +477,55 @@
       "count": "{{count}} skills",
       "count_one": "{{count}} skill",
       "count_other": "{{count}} skills"
+    },
+    "import": {
+      "open": "Importar claves de .mcp.json",
+      "buttonHint": "Solo se importan las claves; cada servidor viene del catálogo de AionUi.",
+      "title": "Importar claves del .mcp.json de este proyecto",
+      "hint": "Solo se copian las credenciales, en el servidor. Cada servidor viene siempre de su plantilla del catálogo de AionUi; se ignoran el comando, la versión del paquete y la URL anteriores. Los valores nunca se muestran.",
+      "noFile": "Este proyecto no tiene espacio de trabajo ni un .mcp.json válido.",
+      "noServers": "El .mcp.json no contiene servidores.",
+      "serversLabel": "Servidores en .mcp.json",
+      "resultsLabel": "Resultado de la importación",
+      "pickLabel": "Importar {{name}}",
+      "instanceNameLabel": "Nombre de instancia para {{name}}",
+      "environmentLabel": "Entorno para {{name}}",
+      "tierLabel": "Nivel para {{name}}",
+      "oauth": "OAuth: conéctalo en la instancia tras importar",
+      "noKeys": "No necesita claves",
+      "keyFound": "{{field}} encontrada",
+      "keyMissing": "Falta {{field}}",
+      "created": "{{name}} creada",
+      "failed": "No importado",
+      "test": "Probar",
+      "testLabel": "Probar {{name}}",
+      "missingSecrets": "Faltan claves: {{fields}}. La instancia se creó inactiva: pégalas en Ajustes > Herramientas > MCP y pruébala.",
+      "testFailed": "La prueba falló: {{detail}}",
+      "match": {
+        "custom": "Servidor propio: añádelo a mano",
+        "none": "No está en el catálogo"
+      },
+      "errors": {
+        "invalid": "El servidor rechazó este elemento: {{detail}} Si es por las herramientas de lectura, elige el nivel de escritura.",
+        "nameTaken": "Ese nombre de instancia ya está en uso. Elige otro. {{detail}}",
+        "notInFile": "Este servidor ya no está en el .mcp.json. Recarga la vista previa.",
+        "unknownTemplate": "Ninguna plantilla del catálogo coincide con este servidor.",
+        "other": "No importado: {{detail}}"
+      },
+      "nameProblem": {
+        "required": "Escribe un nombre de instancia.",
+        "pattern": "Usa minúsculas, dígitos y guiones simples, empezando por una letra.",
+        "tooLong": "Como máximo 24 caracteres.",
+        "reserved": "Este nombre está reservado.",
+        "notInMarket": "Este nombre pertenece a un servidor fuera del mercado.",
+        "taken": "Este nombre ya está en uso."
+      },
+      "submit": "Importar {{count}} servidores",
+      "submit_one": "Importar {{count}} servidor",
+      "submit_other": "Importar {{count}} servidores",
+      "testOk": "Conectado · {{count}} herramientas",
+      "testOk_one": "Conectado · {{count}} herramienta",
+      "testOk_other": "Conectado · {{count}} herramientas"
     }
   }
 }

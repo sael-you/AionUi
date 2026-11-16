@@ -477,6 +477,55 @@
       "count": "{{count}} 個のスキル",
       "count_one": "{{count}} 個のスキル",
       "count_other": "{{count}} 個のスキル"
+    },
+    "import": {
+      "open": ".mcp.json からキーを取り込む",
+      "buttonHint": "取り込むのはキーだけです。サーバーは AionUi カタログから使います。",
+      "title": "このプロジェクトの .mcp.json からキーを取り込む",
+      "hint": "資格情報だけをサーバー側でコピーします。サーバーは常に AionUi カタログのテンプレートから使い、古いコマンド・パッケージのバージョン・URL は無視します。値は表示されません。",
+      "noFile": "このプロジェクトにはワークスペースまたは有効な .mcp.json がありません。",
+      "noServers": ".mcp.json にサーバーがありません。",
+      "serversLabel": ".mcp.json のサーバー",
+      "resultsLabel": "取り込み結果",
+      "pickLabel": "{{name}} を取り込む",
+      "instanceNameLabel": "{{name}} のインスタンス名",
+      "environmentLabel": "{{name}} の環境",
+      "tierLabel": "{{name}} の権限",
+      "oauth": "OAuth：取り込み後にインスタンスで接続",
+      "noKeys": "キー不要",
+      "keyFound": "{{field}} あり",
+      "keyMissing": "{{field}} なし",
+      "created": "{{name}} を作成しました",
+      "failed": "取り込まれませんでした",
+      "test": "テスト",
+      "testLabel": "{{name}} をテスト",
+      "missingSecrets": "不足しているキー：{{fields}}。インスタンスは休止状態で作成されました。設定 > ツール > MCP で貼り付けてからテストしてください。",
+      "testFailed": "テストに失敗しました：{{detail}}",
+      "match": {
+        "custom": "カスタムサーバー：手動で追加してください",
+        "none": "カタログにありません"
+      },
+      "errors": {
+        "invalid": "サーバーがこの項目を拒否しました：{{detail}} 読み取りツールに関する場合は書き込み権限を選んでください。",
+        "nameTaken": "そのインスタンス名はすでに使われています。別の名前にしてください。{{detail}}",
+        "notInFile": "このサーバーはもう .mcp.json にありません。プレビューを再読み込みしてください。",
+        "unknownTemplate": "このサーバーに合うカタログテンプレートがありません。",
+        "other": "取り込まれませんでした：{{detail}}"
+      },
+      "nameProblem": {
+        "required": "インスタンス名を入力してください。",
+        "pattern": "英小文字・数字・単一のハイフンを使い、英字で始めてください。",
+        "tooLong": "最大 24 文字です。",
+        "reserved": "この名前は予約されています。",
+        "notInMarket": "この名前はマーケット外のサーバーのものです。",
+        "taken": "この名前はすでに使われています。"
+      },
+      "submit": "{{count}} 件のサーバーを取り込む",
+      "submit_one": "{{count}} 件のサーバーを取り込む",
+      "submit_other": "{{count}} 件のサーバーを取り込む",
+      "testOk": "接続済み · ツール {{count}} 件",
+      "testOk_one": "接続済み · ツール {{count}} 件",
+      "testOk_other": "接続済み · ツール {{count}} 件"
     }
   }
 }

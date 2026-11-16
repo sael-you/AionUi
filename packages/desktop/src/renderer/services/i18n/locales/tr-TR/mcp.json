@@ -477,6 +477,55 @@
       "count": "{{count}} beceri",
       "count_one": "{{count}} beceri",
       "count_other": "{{count}} beceri"
+    },
+    "import": {
+      "open": ".mcp.json'dan anahtarları içe aktar",
+      "buttonHint": "Yalnızca anahtarlar alınır; her sunucu AionUi kataloğundan gelir.",
+      "title": "Bu projenin .mcp.json dosyasından anahtarları içe aktar",
+      "hint": "Yalnızca kimlik bilgileri sunucu tarafında kopyalanır. Her sunucu her zaman AionUi katalog şablonundan gelir; eski komut, paket sürümü ve URL yok sayılır. Değerler asla gösterilmez.",
+      "noFile": "Bu projenin çalışma alanı veya geçerli bir .mcp.json dosyası yok.",
+      "noServers": ".mcp.json hiç sunucu listelemiyor.",
+      "serversLabel": ".mcp.json içindeki sunucular",
+      "resultsLabel": "İçe aktarma sonuçları",
+      "pickLabel": "{{name}} içe aktar",
+      "instanceNameLabel": "{{name}} için örnek adı",
+      "environmentLabel": "{{name}} için ortam",
+      "tierLabel": "{{name}} için katman",
+      "oauth": "OAuth: içe aktardıktan sonra örnekte bağlanın",
+      "noKeys": "Anahtar gerekmez",
+      "keyFound": "{{field}} bulundu",
+      "keyMissing": "{{field}} eksik",
+      "created": "{{name}} oluşturuldu",
+      "failed": "İçe aktarılmadı",
+      "test": "Test et",
+      "testLabel": "{{name}} test et",
+      "missingSecrets": "Eksik anahtarlar: {{fields}}. Örnek uykuda oluşturuldu: Ayarlar > Araçlar > MCP'de yapıştırın, sonra test edin.",
+      "testFailed": "Test başarısız: {{detail}}",
+      "match": {
+        "custom": "Özel sunucu: elle ekleyin",
+        "none": "Katalogda yok"
+      },
+      "errors": {
+        "invalid": "Sunucu bunu reddetti: {{detail}} Okuma araçlarıyla ilgiliyse yazma katmanını seçin.",
+        "nameTaken": "Bu örnek adı zaten kullanılıyor. Başka bir ad seçin. {{detail}}",
+        "notInFile": "Bu sunucu artık .mcp.json içinde değil. Önizlemeyi yeniden yükleyin.",
+        "unknownTemplate": "Bu sunucuyla eşleşen katalog şablonu yok.",
+        "other": "İçe aktarılmadı: {{detail}}"
+      },
+      "nameProblem": {
+        "required": "Bir örnek adı girin.",
+        "pattern": "Küçük harf, rakam ve tek tire kullanın; bir harfle başlayın.",
+        "tooLong": "En fazla 24 karakter.",
+        "reserved": "Bu ad ayrılmış.",
+        "notInMarket": "Bu ad pazarın dışındaki bir sunucuya ait.",
+        "taken": "Bu ad zaten kullanılıyor."
+      },
+      "submit": "{{count}} sunucuyu içe aktar",
+      "submit_one": "{{count}} sunucuyu içe aktar",
+      "submit_other": "{{count}} sunucuyu içe aktar",
+      "testOk": "Bağlandı · {{count}} araç",
+      "testOk_one": "Bağlandı · {{count}} araç",
+      "testOk_other": "Bağlandı · {{count}} araç"
     }
   }
 }

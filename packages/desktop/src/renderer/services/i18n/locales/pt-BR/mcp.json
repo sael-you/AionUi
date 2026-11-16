@@ -477,6 +477,55 @@
       "count": "{{count}} skills",
       "count_one": "{{count}} skill",
       "count_other": "{{count}} skills"
+    },
+    "import": {
+      "open": "Importar chaves do .mcp.json",
+      "buttonHint": "Só as chaves são importadas; cada servidor vem do catálogo do AionUi.",
+      "title": "Importar chaves do .mcp.json deste projeto",
+      "hint": "Só as credenciais são copiadas, no servidor. Cada servidor sempre vem do template do catálogo do AionUi; o comando, a versão do pacote e a URL antigos são ignorados. Os valores nunca são exibidos.",
+      "noFile": "Este projeto não tem workspace ou um .mcp.json válido.",
+      "noServers": "O .mcp.json não lista servidores.",
+      "serversLabel": "Servidores no .mcp.json",
+      "resultsLabel": "Resultado da importação",
+      "pickLabel": "Importar {{name}}",
+      "instanceNameLabel": "Nome da instância para {{name}}",
+      "environmentLabel": "Ambiente para {{name}}",
+      "tierLabel": "Nível para {{name}}",
+      "oauth": "OAuth: conecte na instância após importar",
+      "noKeys": "Sem chaves necessárias",
+      "keyFound": "{{field}} encontrada",
+      "keyMissing": "{{field}} ausente",
+      "created": "{{name}} criada",
+      "failed": "Não importado",
+      "test": "Testar",
+      "testLabel": "Testar {{name}}",
+      "missingSecrets": "Chaves ausentes: {{fields}}. A instância foi criada inativa: cole-as em Configurações > Ferramentas > MCP e teste.",
+      "testFailed": "Falha no teste: {{detail}}",
+      "match": {
+        "custom": "Servidor personalizado: adicione manualmente",
+        "none": "Fora do catálogo"
+      },
+      "errors": {
+        "invalid": "O servidor recusou este item: {{detail}} Se for sobre ferramentas de leitura, escolha o nível de escrita.",
+        "nameTaken": "Esse nome de instância já está em uso. Escolha outro. {{detail}}",
+        "notInFile": "Este servidor não está mais no .mcp.json. Recarregue a prévia.",
+        "unknownTemplate": "Nenhum template do catálogo corresponde a este servidor.",
+        "other": "Não importado: {{detail}}"
+      },
+      "nameProblem": {
+        "required": "Informe um nome de instância.",
+        "pattern": "Use letras minúsculas, dígitos e hifens simples, começando por letra.",
+        "tooLong": "No máximo 24 caracteres.",
+        "reserved": "Este nome é reservado.",
+        "notInMarket": "Este nome pertence a um servidor fora do marketplace.",
+        "taken": "Este nome já está em uso."
+      },
+      "submit": "Importar {{count}} servidores",
+      "submit_one": "Importar {{count}} servidor",
+      "submit_other": "Importar {{count}} servidores",
+      "testOk": "Conectado · {{count}} ferramentas",
+      "testOk_one": "Conectado · {{count}} ferramenta",
+      "testOk_other": "Conectado · {{count}} ferramentas"
     }
   }
 }

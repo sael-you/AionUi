@@ -91,6 +91,8 @@ describe('ProjectKitPanel (C28)', () => {
       'mcp.kits.projectKit.none|{"name":"TB-test"}'
     );
     expect(api.kits.projectKit.invoke).toHaveBeenCalledWith({ project_id: 'proj-tb' });
+    // §5: keys can be imported before the kit exists (the import creates it).
+    expect(screen.getByRole('button', { name: 'mcp.kits.import.open' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'mcp.kits.projectKit.create' }));
     await waitFor(() =>
@@ -187,6 +189,7 @@ describe('ProjectKitPanel (C28)', () => {
       expect(Message.error).toHaveBeenCalledWith(expect.stringMatching(/^mcp\.kits\.errors\.stale\|/))
     );
 
+    expect(screen.getByRole('button', { name: 'mcp.kits.import.open' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'mcp.kits.projectKit.viewSkills' }));
     expect(api.navigate).toHaveBeenCalledWith('/settings/skills?project=proj-tb');
   });

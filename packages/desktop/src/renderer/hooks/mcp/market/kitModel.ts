@@ -25,7 +25,7 @@ import type {
 } from '@/common/config/storage';
 import { KIT_LEVELS } from '@/common/config/storage';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
-import { describeMarketError, globalBlockReason } from './marketModel';
+import { MCP_INSTANCE_NAME_MAX, describeMarketError, globalBlockReason } from './marketModel';
 
 /** Server rule: kit name 1–80 characters, unique per user among live kits. */
 export const KIT_NAME_MAX = 80;
@@ -162,3 +162,37 @@ export const describeKitError = (t: TFn, error: unknown): string => {
   }
   return describeMarketError(t, error);
 };
+
+/** Lowercase letters and digits joined by single hyphens. */
+const slug = (text: string): string =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+/**
+ * Suggested instance name for an imported server, `tb-<template>` style: the
+ * project name's first word as prefix, then the template id, fitted to the
+ * market name rule (lowercase letters, digits and single hyphens, at most 24).
+ */
+export const importInstanceName = (projectName: string, templateId: string): string => {
+  const prefix =
+    (
+      slug(projectName)
+        .replace(/^[^a-z]+/, '')
+        .split('-')[0] ?? ''
+    ).slice(0, 8) || 'p';
+  return `${prefix}-${slug(templateId)}`.slice(0, MCP_INSTANCE_NAME_MAX).replace(/-+$/, '');
+};
+
+/** `error_code` of one import result → `mcp.kits.import.errors.*` key (unknown codes use the generic one). */
+const IMPORT_ERROR_KEYS: Record<string, string> = {
+  MCP_MARKET_INVALID: 'invalid',
+  MCP_MARKET_CONFLICT: 'nameTaken',
+  KIT_IMPORT_NOT_IN_FILE: 'notInFile',
+  KIT_IMPORT_UNKNOWN_TEMPLATE: 'unknownTemplate',
+};
+
+/** The message for a failed import row; the server's own message is shown as the detail. */
+export const describeImportError = (t: TFn, code: string, message?: string): string =>
+  t(`mcp.kits.import.errors.${IMPORT_ERROR_KEYS[code] ?? 'other'}`, { detail: message?.trim() || code });
