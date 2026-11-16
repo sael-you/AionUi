@@ -324,5 +324,112 @@
       "count_one": "{{count}} 件の MCP",
       "count_other": "{{count}} 件の MCP"
     }
+  },
+  "kits": {
+    "title": "キット",
+    "description": "スキルと MCP サーバーのまとまり。キットや単一項目を「追加」または「削除」として、グローバル・プロジェクト・アシスタント・会話に付けられます。下位レベルが優先されます。",
+    "create": "新しいキット",
+    "edit": "キットを編集",
+    "editLabel": "キット {{name}} を編集",
+    "deleteLabel": "キット {{name}} を削除",
+    "deleteConfirmTitle": "キット「{{name}}」を削除しますか？",
+    "deleteConfirmContent": "キットとそのすべての割り当てが削除されます。既存の会話のスキルはそのままです。",
+    "deleted": "キットを削除しました",
+    "saved": "キットを保存しました",
+    "staleEdit": "このキットは別の場所で変更されたため再読み込みしました。もう一度開いて変更をやり直してください。",
+    "empty": "キットはまだありません。",
+    "loading": "読み込み中…",
+    "builtin": "組み込み {{key}}",
+    "skills": "スキル",
+    "mcps": "MCP サーバー",
+    "none": "なし",
+    "missingInstance": "削除済みインスタンス（{{id}}）",
+    "needsInstance": "{{template}} · インスタンスが必要",
+    "attachedAt": "割り当て先",
+    "notAttached": "未割り当て",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "キット",
+    "headerButton": "キット：この会話に含まれるもの",
+    "level": {
+      "global": "グローバル",
+      "project": "プロジェクト",
+      "assistant": "アシスタント",
+      "conversation": "会話"
+    },
+    "kind": {
+      "kit": "キット",
+      "skill": "スキル",
+      "mcp": "MCP サーバー"
+    },
+    "op": {
+      "add": "追加",
+      "remove": "削除"
+    },
+    "form": {
+      "name": "名前",
+      "namePlaceholder": "例：Platform Dev",
+      "description": "説明",
+      "descriptionPlaceholder": "このキットの用途",
+      "skillsPlaceholder": "ライブラリからスキルを選択",
+      "mcpsPlaceholder": "マーケットから MCP インスタンスを選択",
+      "templates": "必要な MCP テンプレート",
+      "templatesHint": "インスタンスのないテンプレートは「インスタンスが必要」と表示され、配信されません。",
+      "templatesPlaceholder": "カタログのテンプレートを選択",
+      "errors": {
+        "nameRequired": "名前を入力してください。",
+        "nameTooLong": "名前は最大 {{max}} 文字です。",
+        "skillInvalid": "スキル名に使えるのは英字、数字、ピリオド、ハイフン、アンダースコアのみです。"
+      }
+    },
+    "attach": {
+      "globalTitle": "グローバルの割り当て",
+      "globalHint": "グローバルはすべての会話に適用されます。グローバルに割り当てられるのは読み取り専用の Context7 と studio-memory の MCP インスタンスのみです。",
+      "empty": "このレベルには何も割り当てられていません。",
+      "listLabel": "このレベルの割り当て",
+      "formLabel": "割り当て",
+      "kind": "種類",
+      "item": "項目",
+      "itemPlaceholder": "キット、スキル、MCP サーバーを選択",
+      "noOptions": "選択肢がありません",
+      "op": "効果",
+      "submit": "割り当てる",
+      "attached": "割り当てました",
+      "detach": "解除",
+      "detachLabel": "{{name}} を解除",
+      "detached": "解除しました",
+      "missing": "削除済み（{{ref}}）",
+      "blocked": {
+        "write": "書き込みインスタンスはグローバルに割り当てられません",
+        "notGlobal": "グローバルには割り当てられません"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "プロジェクト {{name}} のキット",
+      "projectHint": "このプロジェクトのすべての会話に適用されます。",
+      "conversationTitle": "この会話のキット",
+      "conversationHint": "この会話にのみ適用されます。スキルの変更は次のセッション開始時に反映されます。",
+      "attachTab": "割り当て"
+    },
+    "assistantSection": {
+      "title": "キット",
+      "hint": "このアシスタントが動くすべてのプロジェクトに適用されます。",
+      "saveFirst": "キットを割り当てる前にアシスタントを保存してください。"
+    },
+    "effective": {
+      "title": "この会話に含まれるもの",
+      "hint": "キットが決めたスキルと MCP サーバー、およびそれぞれの出どころ。下位レベルが優先：グローバル → プロジェクト → アシスタント → 会話。",
+      "empty": "この会話に影響するキットや割り当てはまだありません。",
+      "included": "含まれる",
+      "removed": "除外",
+      "fromKit": "{{level}} · キット {{kit}}",
+      "fromItem": "{{level}} · 単一項目",
+      "delivered": "セッション開始時に起動",
+      "notDelivered": "起動しない",
+      "notDeliveredReason": "起動しない：{{reason}}",
+      "frozenTitle": "作成時に確定したスキル",
+      "frozenHint": "この会話の作成時に付与されたスキル（キットを含む）。",
+      "missingTitle": "必要だがインスタンスなし",
+      "missingItem": "{{template}}（キット {{kit}}）"
+    }
   }
 }

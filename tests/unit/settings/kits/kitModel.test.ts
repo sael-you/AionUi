@@ -42,6 +42,14 @@ const attachment = (over: Partial<KitAttachmentResponse>): KitAttachmentResponse
   ...over,
 });
 
+const item = (ref: string, included: boolean, name?: string): KitEffectiveItem => ({
+  kind: name ? 'mcp' : 'skill',
+  item_ref: ref,
+  included,
+  provenance: { level: 'global', op: included ? 'add' : 'remove' },
+  ...(name ? { mcp: { instance_name: name, status: 'active', clis: [], delivered: true } } : {}),
+});
+
 describe('kitModel', () => {
   it('sends exactly the CreateKitRequest fields, trimmed, sorted and de-duplicated', () => {
     const request = createKitRequest({
@@ -121,14 +129,6 @@ describe('kitModel', () => {
   });
 
   it('sorts effective items: included first, then by display name', () => {
-    const item = (ref: string, included: boolean, name?: string): KitEffectiveItem => ({
-      kind: name ? 'mcp' : 'skill',
-      item_ref: ref,
-      included,
-      provenance: { level: 'global', op: included ? 'add' : 'remove' },
-      ...(name ? { mcp: { instance_name: name, status: 'active', clis: [], delivered: true } } : {}),
-    });
-
     const sorted = sortEffectiveItems([item('b', false), item('z', true), item('id-1', true, 'alpha')]);
     expect(sorted.map((entry) => entry.item_ref)).toEqual(['id-1', 'z', 'b']);
   });

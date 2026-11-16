@@ -324,5 +324,112 @@
       "count_one": "{{count}} 个 MCP",
       "count_other": "{{count}} 个 MCP"
     }
+  },
+  "kits": {
+    "title": "套件",
+    "description": "技能和 MCP 服务器的组合。可将套件或单个条目以“添加”或“移除”方式附加到全局、项目、助手或会话；层级越低优先级越高。",
+    "create": "新建套件",
+    "edit": "编辑套件",
+    "editLabel": "编辑套件 {{name}}",
+    "deleteLabel": "删除套件 {{name}}",
+    "deleteConfirmTitle": "删除套件“{{name}}”？",
+    "deleteConfirmContent": "将删除该套件及其所有附加项。已有会话保留其技能。",
+    "deleted": "套件已删除",
+    "saved": "套件已保存",
+    "staleEdit": "该套件已在其他地方被修改并已重新加载。请重新打开并再次修改。",
+    "empty": "暂无套件。",
+    "loading": "加载中…",
+    "builtin": "内置 {{key}}",
+    "skills": "技能",
+    "mcps": "MCP 服务器",
+    "none": "无",
+    "missingInstance": "已删除的实例（{{id}}）",
+    "needsInstance": "{{template}} · 需要实例",
+    "attachedAt": "附加于",
+    "notAttached": "未附加",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "套件",
+    "headerButton": "套件：此会话获得的内容",
+    "level": {
+      "global": "全局",
+      "project": "项目",
+      "assistant": "助手",
+      "conversation": "会话"
+    },
+    "kind": {
+      "kit": "套件",
+      "skill": "技能",
+      "mcp": "MCP 服务器"
+    },
+    "op": {
+      "add": "添加",
+      "remove": "移除"
+    },
+    "form": {
+      "name": "名称",
+      "namePlaceholder": "例如 Platform Dev",
+      "description": "描述",
+      "descriptionPlaceholder": "此套件的用途",
+      "skillsPlaceholder": "从技能库中选择技能",
+      "mcpsPlaceholder": "从市场中选择 MCP 实例",
+      "templates": "需要的 MCP 模板",
+      "templatesHint": "没有实例的模板显示为“需要实例”，不会被交付。",
+      "templatesPlaceholder": "选择目录模板",
+      "errors": {
+        "nameRequired": "请输入名称。",
+        "nameTooLong": "名称最多 {{max}} 个字符。",
+        "skillInvalid": "技能名称只能包含字母、数字、点、短横线和下划线。"
+      }
+    },
+    "attach": {
+      "globalTitle": "全局附加",
+      "globalHint": "全局作用于所有会话。只有只读的 Context7 和 studio-memory MCP 实例可以全局附加。",
+      "empty": "此层级没有附加任何内容。",
+      "listLabel": "此层级的附加项",
+      "formLabel": "附加",
+      "kind": "类型",
+      "item": "条目",
+      "itemPlaceholder": "选择套件、技能或 MCP 服务器",
+      "noOptions": "没有可选项",
+      "op": "效果",
+      "submit": "附加",
+      "attached": "已附加",
+      "detach": "解除附加",
+      "detachLabel": "解除附加 {{name}}",
+      "detached": "已解除附加",
+      "missing": "已删除（{{ref}}）",
+      "blocked": {
+        "write": "不允许全局附加写入实例",
+        "notGlobal": "不允许全局附加"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "项目 {{name}} 的套件",
+      "projectHint": "作用于此项目中的所有会话。",
+      "conversationTitle": "此会话的套件",
+      "conversationHint": "仅作用于此会话。技能变更在下次会话启动时生效。",
+      "attachTab": "附加项"
+    },
+    "assistantSection": {
+      "title": "套件",
+      "hint": "在该助手运行的所有项目中生效。",
+      "saveFirst": "请先保存助手再附加套件。"
+    },
+    "effective": {
+      "title": "此会话获得的内容",
+      "hint": "由套件决定的技能和 MCP 服务器及其来源。层级越低优先级越高：全局 → 项目 → 助手 → 会话。",
+      "empty": "目前没有套件或附加项影响此会话。",
+      "included": "已包含",
+      "removed": "已移除",
+      "fromKit": "{{level}} · 套件 {{kit}}",
+      "fromItem": "{{level}} · 单个条目",
+      "delivered": "会话启动时运行",
+      "notDelivered": "未运行",
+      "notDeliveredReason": "未运行：{{reason}}",
+      "frozenTitle": "创建时确定的技能",
+      "frozenHint": "此会话创建时获得的技能（含套件）。",
+      "missingTitle": "需要但尚无实例",
+      "missingItem": "{{template}}（套件 {{kit}}）"
+    }
   }
 }

@@ -324,5 +324,112 @@
       "count_one": "{{count}} MCP",
       "count_other": "{{count}} MCP"
     }
+  },
+  "kits": {
+    "title": "Kitler",
+    "description": "Beceri ve MCP sunucusu paketleri. Bir kiti veya tek bir öğeyi Ekle ya da Kaldır olarak genel, proje, asistan veya sohbet düzeyine bağlayın. Alt düzey önceliklidir.",
+    "create": "Yeni kit",
+    "edit": "Kiti düzenle",
+    "editLabel": "{{name}} kitini düzenle",
+    "deleteLabel": "{{name}} kitini sil",
+    "deleteConfirmTitle": "\"{{name}}\" kiti silinsin mi?",
+    "deleteConfirmContent": "Kit ve tüm bağlantıları kaldırılır. Mevcut sohbetler becerilerini korur.",
+    "deleted": "Kit silindi",
+    "saved": "Kit kaydedildi",
+    "staleEdit": "Bu kit başka bir yerde değiştirildi ve yeniden yüklendi. Tekrar açıp değişikliğinizi yeniden yapın.",
+    "empty": "Henüz kit yok.",
+    "loading": "Yükleniyor…",
+    "builtin": "Yerleşik {{key}}",
+    "skills": "Beceriler",
+    "mcps": "MCP sunucuları",
+    "none": "Yok",
+    "missingInstance": "Silinmiş örnek ({{id}})",
+    "needsInstance": "{{template}} · örnek gerekiyor",
+    "attachedAt": "Bağlı olduğu yer",
+    "notAttached": "Bağlı değil",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "Kitler",
+    "headerButton": "Kitler: bu sohbetin aldıkları",
+    "level": {
+      "global": "Genel",
+      "project": "Proje",
+      "assistant": "Asistan",
+      "conversation": "Sohbet"
+    },
+    "kind": {
+      "kit": "Kit",
+      "skill": "Beceri",
+      "mcp": "MCP sunucusu"
+    },
+    "op": {
+      "add": "Ekle",
+      "remove": "Kaldır"
+    },
+    "form": {
+      "name": "Ad",
+      "namePlaceholder": "ör. Platform Dev",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Bu kit ne için",
+      "skillsPlaceholder": "Kitaplıktan beceri seçin",
+      "mcpsPlaceholder": "Pazardan MCP örneği seçin",
+      "templates": "İstenen MCP şablonları",
+      "templatesHint": "Örneği olmayan bir şablon \"örnek gerekiyor\" olarak gösterilir ve asla sağlanmaz.",
+      "templatesPlaceholder": "Katalog şablonu seçin",
+      "errors": {
+        "nameRequired": "Bir ad girin.",
+        "nameTooLong": "Ad en fazla {{max}} karakter olabilir.",
+        "skillInvalid": "Beceri adları yalnızca harf, rakam, nokta, tire ve alt çizgi içerebilir."
+      }
+    },
+    "attach": {
+      "globalTitle": "Genel bağlantılar",
+      "globalHint": "Genel düzey tüm sohbetlere uygulanır. Yalnızca salt okunur Context7 ve studio-memory MCP örnekleri genel olarak bağlanabilir.",
+      "empty": "Bu düzeyde bağlı bir şey yok.",
+      "listLabel": "Bu düzeydeki bağlantılar",
+      "formLabel": "Bağla",
+      "kind": "Tür",
+      "item": "Öğe",
+      "itemPlaceholder": "Kit, beceri veya MCP sunucusu seçin",
+      "noOptions": "Seçilecek bir şey yok",
+      "op": "Etki",
+      "submit": "Bağla",
+      "attached": "Bağlandı",
+      "detach": "Bağlantıyı kaldır",
+      "detachLabel": "{{name}} bağlantısını kaldır",
+      "detached": "Bağlantı kaldırıldı",
+      "missing": "Silindi ({{ref}})",
+      "blocked": {
+        "write": "yazma örnekleri genel olarak bağlanamaz",
+        "notGlobal": "genel olarak bağlanamaz"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "{{name}} projesinin kitleri",
+      "projectHint": "Bu projedeki tüm sohbetlere uygulanır.",
+      "conversationTitle": "Bu sohbetin kitleri",
+      "conversationHint": "Yalnızca bu sohbete uygulanır. Beceri değişiklikleri bir sonraki oturum başlangıcında geçerli olur.",
+      "attachTab": "Bağlantılar"
+    },
+    "assistantSection": {
+      "title": "Kitler",
+      "hint": "Bu asistanın çalıştığı her projede uygulanır.",
+      "saveFirst": "Kit bağlamak için önce asistanı kaydedin."
+    },
+    "effective": {
+      "title": "Bu sohbetin aldıkları",
+      "hint": "Kitlerin belirlediği beceriler ve MCP sunucuları ile her birinin kaynağı. Alt düzey önceliklidir: genel → proje → asistan → sohbet.",
+      "empty": "Henüz bu sohbet için hiçbir kit veya bağlantı bir şey belirlemiyor.",
+      "included": "Dahil",
+      "removed": "Kaldırıldı",
+      "fromKit": "{{level}} · kit {{kit}}",
+      "fromItem": "{{level}} · tek öğe",
+      "delivered": "Oturum başında başlatılır",
+      "notDelivered": "Başlatılmaz",
+      "notDeliveredReason": "Başlatılmaz: {{reason}}",
+      "frozenTitle": "Oluşturulurken sabitlenen beceriler",
+      "frozenHint": "Bu sohbetin oluşturulduğu beceriler (kitler dahil).",
+      "missingTitle": "İstenen, henüz örnek yok",
+      "missingItem": "{{template}} (kit {{kit}})"
+    }
   }
 }

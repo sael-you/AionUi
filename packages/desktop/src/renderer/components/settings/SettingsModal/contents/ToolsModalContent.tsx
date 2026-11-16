@@ -49,6 +49,7 @@ import {
   setClientBusinessSetting,
 } from '@/renderer/services/clientBusinessSettings';
 import classNames from 'classnames';
+import KitsSection from '@/renderer/pages/settings/ToolsSettings/kits/KitsSection';
 import { useSettingsTabNavigate, useSettingsViewMode } from '../settingsViewContext';
 
 type MessageInstance = ReturnType<typeof Message.useMessage>[0];
@@ -525,6 +526,10 @@ const ToolsModalContent: React.FC = () => {
                 />
               </AionScrollArea>
             </div>
+          </div>
+          {/* Kits (C27) */}
+          <div className='px-[12px] md:px-[32px] py-[24px] bg-2 rd-12px md:rd-16px border border-border-2'>
+            <KitsSection />
           </div>
           {/* 图像生成 */}
           <div className='px-[12px] md:px-[32px] py-[24px] bg-2 rd-12px md:rd-16px border border-border-2'>

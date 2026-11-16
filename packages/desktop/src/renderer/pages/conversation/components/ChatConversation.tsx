@@ -9,6 +9,7 @@ import type { IConversationMcpStatus, IProvider, TChatConversation, TProviderWit
 import { uuid } from '@/common/utils';
 import addChatIcon from '@/renderer/assets/icons/add-chat.svg';
 import { CronJobManager } from '@/renderer/pages/cron';
+import ConversationKitsButton from '@/renderer/pages/settings/ToolsSettings/kits/ConversationKitsButton';
 import { resolveCronJobId } from '@/renderer/pages/cron/cronUtils';
 import { classifyConfigSetError, useAcpConfigOptions } from '@/renderer/hooks/agent/useAcpConfigOptions';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
@@ -216,6 +217,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
         <ParentBreadcrumb conversation={conversation} />
         <RunSummaryPill conversationId={conversation.id} />
         <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />
+        <ConversationKitsButton conversationId={conversation.id} />
         {!isMobile && (
           <AionrsModelSelector
             selection={modelSelection}
@@ -421,6 +423,11 @@ const ChatConversation: React.FC<{
       {conversation && (
         <div className='shrink-0'>
           <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />
+        </div>
+      )}
+      {conversation && (
+        <div className='shrink-0'>
+          <ConversationKitsButton conversationId={conversation.id} />
         </div>
       )}
       {modelSelector && <div className='shrink-0'>{modelSelector}</div>}

@@ -324,5 +324,112 @@
       "count_one": "{{count}} MCP",
       "count_other": "{{count}} MCPs"
     }
+  },
+  "kits": {
+    "title": "Kits",
+    "description": "Bündel aus Skills und MCP-Servern. Hängen Sie ein Kit oder ein einzelnes Element global, an ein Projekt, einen Assistenten oder eine Unterhaltung an – als Hinzufügen oder Entfernen. Die untere Ebene gewinnt.",
+    "create": "Neues Kit",
+    "edit": "Kit bearbeiten",
+    "editLabel": "Kit {{name}} bearbeiten",
+    "deleteLabel": "Kit {{name}} löschen",
+    "deleteConfirmTitle": "Kit „{{name}}“ löschen?",
+    "deleteConfirmContent": "Das Kit und alle seine Zuordnungen werden entfernt. Bestehende Unterhaltungen behalten ihre Skills.",
+    "deleted": "Kit gelöscht",
+    "saved": "Kit gespeichert",
+    "staleEdit": "Dieses Kit wurde an anderer Stelle geändert und neu geladen. Öffnen Sie es erneut und wiederholen Sie Ihre Änderung.",
+    "empty": "Noch keine Kits.",
+    "loading": "Wird geladen…",
+    "builtin": "Integriert {{key}}",
+    "skills": "Skills",
+    "mcps": "MCP-Server",
+    "none": "Keine",
+    "missingInstance": "Gelöschte Instanz ({{id}})",
+    "needsInstance": "{{template}} · benötigt eine Instanz",
+    "attachedAt": "Zugeordnet auf",
+    "notAttached": "Nicht zugeordnet",
+    "levelCount": "{{level}} ×{{count}}",
+    "projectMenu": "Kits",
+    "headerButton": "Kits: was diese Unterhaltung erhält",
+    "level": {
+      "global": "Global",
+      "project": "Projekt",
+      "assistant": "Assistent",
+      "conversation": "Unterhaltung"
+    },
+    "kind": {
+      "kit": "Kit",
+      "skill": "Skill",
+      "mcp": "MCP-Server"
+    },
+    "op": {
+      "add": "Hinzufügen",
+      "remove": "Entfernen"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "z. B. Platform Dev",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Wofür dieses Kit ist",
+      "skillsPlaceholder": "Skills aus der Bibliothek wählen",
+      "mcpsPlaceholder": "MCP-Instanzen aus dem Marktplatz wählen",
+      "templates": "Gewünschte MCP-Vorlagen",
+      "templatesHint": "Eine Vorlage ohne Instanz erscheint als „benötigt eine Instanz“ und wird nie bereitgestellt.",
+      "templatesPlaceholder": "Katalogvorlagen wählen",
+      "errors": {
+        "nameRequired": "Geben Sie einen Namen ein.",
+        "nameTooLong": "Der Name darf höchstens {{max}} Zeichen haben.",
+        "skillInvalid": "Skill-Namen dürfen nur Buchstaben, Ziffern, Punkte, Bindestriche und Unterstriche enthalten."
+      }
+    },
+    "attach": {
+      "globalTitle": "Globale Zuordnungen",
+      "globalHint": "Global gilt für jede Unterhaltung. Global zuordnen lassen sich nur die schreibgeschützten MCP-Instanzen Context7 und studio-memory.",
+      "empty": "Auf dieser Ebene ist nichts zugeordnet.",
+      "listLabel": "Zuordnungen auf dieser Ebene",
+      "formLabel": "Zuordnen",
+      "kind": "Typ",
+      "item": "Element",
+      "itemPlaceholder": "Kit, Skill oder MCP-Server wählen",
+      "noOptions": "Nichts zur Auswahl",
+      "op": "Wirkung",
+      "submit": "Zuordnen",
+      "attached": "Zugeordnet",
+      "detach": "Lösen",
+      "detachLabel": "{{name}} lösen",
+      "detached": "Gelöst",
+      "missing": "Gelöscht ({{ref}})",
+      "blocked": {
+        "write": "Schreib-Instanzen sind global nicht erlaubt",
+        "notGlobal": "global nicht erlaubt"
+      }
+    },
+    "levelModal": {
+      "projectTitle": "Kits für Projekt {{name}}",
+      "projectHint": "Gilt für jede Unterhaltung in diesem Projekt.",
+      "conversationTitle": "Kits für diese Unterhaltung",
+      "conversationHint": "Gilt nur für diese Unterhaltung. Skill-Änderungen wirken beim nächsten Sitzungsstart.",
+      "attachTab": "Zuordnungen"
+    },
+    "assistantSection": {
+      "title": "Kits",
+      "hint": "Gilt überall, wo dieser Assistent läuft, in jedem Projekt.",
+      "saveFirst": "Speichern Sie den Assistenten zuerst, um Kits zuzuordnen."
+    },
+    "effective": {
+      "title": "Was diese Unterhaltung erhält",
+      "hint": "Von Kits bestimmte Skills und MCP-Server und woher jedes stammt. Die untere Ebene gewinnt: global → Projekt → Assistent → Unterhaltung.",
+      "empty": "Noch bestimmt kein Kit und keine Zuordnung etwas für diese Unterhaltung.",
+      "included": "Enthalten",
+      "removed": "Entfernt",
+      "fromKit": "{{level}} · Kit {{kit}}",
+      "fromItem": "{{level}} · einzelnes Element",
+      "delivered": "Wird beim Sitzungsstart gestartet",
+      "notDelivered": "Wird nicht gestartet",
+      "notDeliveredReason": "Wird nicht gestartet: {{reason}}",
+      "frozenTitle": "Bei der Erstellung festgelegte Skills",
+      "frozenHint": "Die Skills, mit denen diese Unterhaltung erstellt wurde, einschließlich Kits.",
+      "missingTitle": "Gewünscht, noch keine Instanz",
+      "missingItem": "{{template}} (Kit {{kit}})"
+    }
   }
 }
