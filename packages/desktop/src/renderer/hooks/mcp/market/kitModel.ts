@@ -24,7 +24,8 @@ import type {
   UpdateKitRequest,
 } from '@/common/config/storage';
 import { KIT_LEVELS } from '@/common/config/storage';
-import { globalBlockReason } from './marketModel';
+import { isBackendHttpError } from '@/common/adapter/httpBridge';
+import { describeMarketError, globalBlockReason } from './marketModel';
 
 /** Server rule: kit name 1–80 characters, unique per user among live kits. */
 export const KIT_NAME_MAX = 80;
@@ -128,3 +129,31 @@ export const sortEffectiveItems = (items: readonly KitEffectiveItem[]): KitEffec
     const nameB = b.mcp?.instance_name || b.item_ref;
     return nameA.localeCompare(nameB);
   });
+
+type TFn = (key: string, options?: Record<string, unknown>) => string;
+
+/** AionCore `KitErrorCode` (`ErrorResponse.code`) → `mcp.kits.errors.*` key. */
+const KIT_ERROR_KEYS: Record<string, string> = {
+  KIT_NAME_TAKEN: 'nameTaken',
+  KIT_STALE: 'stale',
+  KIT_NOT_FOUND: 'notFound',
+  KIT_ATTACHMENT_NOT_FOUND: 'attachmentNotFound',
+  KIT_UNKNOWN_TARGET: 'unknownTarget',
+  KIT_INVALID_NAME: 'invalidName',
+  KIT_INVALID_ITEM: 'invalidItem',
+  KIT_INVALID_TARGET: 'invalidTarget',
+  KIT_GLOBAL_NOT_ALLOWED: 'globalNotAllowed',
+};
+
+/**
+ * A user-facing message for a failed kits request: one message per
+ * `KitErrorCode` (with the server's detail where it names the rule), and the
+ * shared market mapping for everything else (session, CSRF, 5xx, …).
+ */
+export const describeKitError = (t: TFn, error: unknown): string => {
+  if (isBackendHttpError(error)) {
+    const key = KIT_ERROR_KEYS[error.code];
+    if (key) return t(`mcp.kits.errors.${key}`, { detail: error.backendMessage.trim(), max: KIT_NAME_MAX });
+  }
+  return describeMarketError(t, error);
+};

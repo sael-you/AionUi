@@ -336,7 +336,6 @@
     "deleteConfirmContent": "Das Kit und alle seine Zuordnungen werden entfernt. Bestehende Unterhaltungen behalten ihre Skills.",
     "deleted": "Kit gelöscht",
     "saved": "Kit gespeichert",
-    "staleEdit": "Dieses Kit wurde an anderer Stelle geändert und neu geladen. Öffnen Sie es erneut und wiederholen Sie Ihre Änderung.",
     "empty": "Noch keine Kits.",
     "loading": "Wird geladen…",
     "builtin": "Integriert {{key}}",
@@ -430,6 +429,17 @@
       "frozenHint": "Die Skills, mit denen diese Unterhaltung erstellt wurde, einschließlich Kits.",
       "missingTitle": "Gewünscht, noch keine Instanz",
       "missingItem": "{{template}} (Kit {{kit}})"
+    },
+    "errors": {
+      "nameTaken": "Es gibt bereits ein Kit mit diesem Namen. Wählen Sie einen anderen Namen.",
+      "stale": "Dieses Kit wurde an anderer Stelle geändert und neu geladen. Öffnen Sie es erneut und wiederholen Sie Ihre Änderung.",
+      "notFound": "Dieses Kit existiert nicht mehr. Die Liste wurde aktualisiert.",
+      "attachmentNotFound": "Diese Zuordnung existiert nicht mehr. Die Liste wurde aktualisiert.",
+      "unknownTarget": "Das Projekt oder die Unterhaltung existiert nicht mehr.",
+      "invalidName": "Der Kit-Name muss 1 bis {{max}} Zeichen lang sein.",
+      "invalidItem": "Der Server hat ein Element dieser Anfrage abgelehnt: {{detail}}",
+      "invalidTarget": "Das Ziel passt nicht zur Ebene: Global hat kein Ziel, die anderen Ebenen brauchen eines. {{detail}}",
+      "globalNotAllowed": "Global zuordnen lassen sich nur die schreibgeschützten MCP-Instanzen Context7 und studio-memory."
     }
   }
 }

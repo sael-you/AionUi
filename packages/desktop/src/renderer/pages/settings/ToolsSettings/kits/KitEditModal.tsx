@@ -14,10 +14,10 @@
 import { Alert, Input, Message, Modal, Select } from '@arco-design/web-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import type { KitResponse } from '@/common/config/storage';
 import {
   KIT_NAME_MAX,
+  describeKitError,
   kitFormFromKit,
   validateKitForm,
   type KitFormError,
@@ -58,18 +58,6 @@ const KitEditModal: React.FC<KitEditModalProps> = ({ visible, kit, onClose }) =>
     kit?.mcps.find((member) => member.instance_id === id)?.instance_name ??
     id;
 
-  /**
-   * A 409 means "name taken" or "changed elsewhere" (stale `expected_updated_at`);
-   * both share the CONFLICT code. With the name unchanged only the second is
-   * possible; otherwise the server's own detail is shown.
-   */
-  const describeSaveError = (saveError: unknown): string => {
-    const conflict = isBackendHttpError(saveError) && saveError.status === 409;
-    if (!kit || !conflict) return describeMarketError(t, saveError, 'name');
-    if (values.name.trim() === kit.name) return t('mcp.kits.staleEdit');
-    return describeMarketError(t, saveError);
-  };
-
   const handleSave = async () => {
     const problem = validateKitForm(values);
     setFormError(problem);
@@ -84,7 +72,7 @@ const KitEditModal: React.FC<KitEditModalProps> = ({ visible, kit, onClose }) =>
       Message.success(t('mcp.kits.saved'));
       onClose();
     } catch (saveError) {
-      Message.error(describeSaveError(saveError));
+      Message.error(describeKitError(t, saveError));
     } finally {
       setSaving(false);
     }

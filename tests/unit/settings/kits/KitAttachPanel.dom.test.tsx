@@ -8,6 +8,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { Message } from '@arco-design/web-react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { BackendHttpError } from '@/common/adapter/httpBridge';
 import { INSTANCES, KIT_OPS, KIT_PLATFORM, attachmentRow, fakeT, renderWithSwr } from './kitFixtures';
 
 const api = vi.hoisted(() => {
@@ -160,5 +161,38 @@ describe('KitAttachPanel (C27 attach flows)', () => {
     await chooseOption('mcp.kits.attach.item', 'Ship & Ops');
     fireEvent.click(screen.getByRole('button', { name: 'mcp.kits.attach.submit' }));
     await waitFor(() => expect(Message.error).toHaveBeenCalledWith('refused by rule'));
+  });
+
+  it('explains KIT_GLOBAL_NOT_ALLOWED and KIT_ATTACHMENT_NOT_FOUND from the server', async () => {
+    api.kits.listAttachments.invoke.mockResolvedValue([attachmentRow({ id: 'a1', level: 'global', target_id: '' })]);
+    api.kits.attach.invoke.mockRejectedValueOnce(
+      new BackendHttpError({
+        method: 'POST',
+        path: '/api/kits/attachments',
+        status: 400,
+        body: { code: 'KIT_GLOBAL_NOT_ALLOWED', error: 'kit carries a write instance' },
+      })
+    );
+    api.kits.detach.invoke.mockRejectedValueOnce(
+      new BackendHttpError({
+        method: 'DELETE',
+        path: '/api/kits/attachments/a1',
+        status: 404,
+        body: { code: 'KIT_ATTACHMENT_NOT_FOUND', error: '' },
+      })
+    );
+    renderWithSwr(<KitAttachPanel level='global' targetId='' />);
+    await screen.findByTestId('kit-attach-global-row');
+
+    await chooseOption('mcp.kits.attach.item', 'Platform Dev');
+    fireEvent.click(screen.getByRole('button', { name: 'mcp.kits.attach.submit' }));
+    await waitFor(() =>
+      expect(Message.error).toHaveBeenCalledWith(expect.stringMatching(/^mcp\.kits\.errors\.globalNotAllowed\|/))
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /mcp\.kits\.attach\.detachLabel/ }));
+    await waitFor(() =>
+      expect(Message.error).toHaveBeenCalledWith(expect.stringMatching(/^mcp\.kits\.errors\.attachmentNotFound\|/))
+    );
   });
 });

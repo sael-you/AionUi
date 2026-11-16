@@ -336,7 +336,6 @@
     "deleteConfirmContent": "O kit e todos os seus anexos serão removidos. As conversas existentes mantêm suas skills.",
     "deleted": "Kit excluído",
     "saved": "Kit salvo",
-    "staleEdit": "Este kit foi alterado em outro lugar e foi recarregado. Abra-o de novo e refaça sua alteração.",
     "empty": "Ainda não há kits.",
     "loading": "Carregando…",
     "builtin": "Integrado {{key}}",
@@ -430,6 +429,17 @@
       "frozenHint": "As skills com que esta conversa foi criada, incluindo kits.",
       "missingTitle": "Desejado, ainda sem instância",
       "missingItem": "{{template}} (kit {{kit}})"
+    },
+    "errors": {
+      "nameTaken": "Já existe um kit com esse nome. Escolha outro nome.",
+      "stale": "Este kit foi alterado em outro lugar e foi recarregado. Abra-o de novo e refaça sua alteração.",
+      "notFound": "Este kit não existe mais. A lista foi atualizada.",
+      "attachmentNotFound": "Este anexo não existe mais. A lista foi atualizada.",
+      "unknownTarget": "O projeto ou a conversa não existe mais.",
+      "invalidName": "O nome do kit deve ter de 1 a {{max}} caracteres.",
+      "invalidItem": "O servidor recusou um item desta solicitação: {{detail}}",
+      "invalidTarget": "O alvo não combina com o nível: o global não tem alvo, os demais níveis precisam de um. {{detail}}",
+      "globalNotAllowed": "Só as instâncias MCP somente leitura Context7 e studio-memory podem ser anexadas globalmente."
     }
   }
 }

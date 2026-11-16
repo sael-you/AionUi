@@ -16,8 +16,7 @@ import { Button, Message, Radio, Select, Tag } from '@arco-design/web-react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { KitAttachmentResponse, KitItemKind, KitLevel, KitOp } from '@/common/config/storage';
-import { attachRequest, globalAttachBlock } from '@/renderer/hooks/mcp/market/kitModel';
-import { describeMarketError } from '@/renderer/hooks/mcp/market/marketModel';
+import { attachRequest, globalAttachBlock, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
 import { useKitActions, useKitAttachments, useKitLibrary, useKitList } from '@/renderer/hooks/mcp/market/useKits';
 import { MarketErrorNotice, touchClass, useIsMobileLayout } from '../market/shared';
 
@@ -75,7 +74,7 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({ level, targetId, idPref
       Message.success(t('mcp.kits.attach.attached'));
       setItemRef(undefined);
     } catch (attachError) {
-      Message.error(describeMarketError(t, attachError, 'attach'));
+      Message.error(describeKitError(t, attachError));
     } finally {
       setBusy(null);
     }
@@ -87,7 +86,7 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({ level, targetId, idPref
       await detach(row.id);
       Message.success(t('mcp.kits.attach.detached'));
     } catch (detachError) {
-      Message.error(describeMarketError(t, detachError));
+      Message.error(describeKitError(t, detachError));
     } finally {
       setBusy(null);
     }
@@ -97,7 +96,7 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({ level, targetId, idPref
 
   return (
     <div className='flex flex-col gap-12px' data-testid={idPrefix}>
-      {error ? <MarketErrorNotice message={describeMarketError(t, error)} /> : null}
+      {error ? <MarketErrorNotice message={describeKitError(t, error)} /> : null}
       {isLoading ? (
         <div className='text-13px text-t-secondary'>{t('mcp.kits.loading')}</div>
       ) : attachments.length === 0 ? (

@@ -17,8 +17,7 @@ import { Attention, CheckOne } from '@icon-park/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { KitEffectiveItem, KitEffectiveQuery } from '@/common/config/storage';
-import { sortEffectiveItems } from '@/renderer/hooks/mcp/market/kitModel';
-import { describeMarketError } from '@/renderer/hooks/mcp/market/marketModel';
+import { sortEffectiveItems, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
 import { useKitEffective } from '@/renderer/hooks/mcp/market/useKits';
 import { MarketErrorNotice, MarketStatusTag } from '../market/shared';
 import { KitOpTag } from './KitAttachPanel';
@@ -108,7 +107,7 @@ const KitEffectivePanel: React.FC<{ query: KitEffectiveQuery }> = ({ query }) =>
   const { effective, error, isLoading, reload } = useKitEffective(query);
 
   if (error) {
-    return <MarketErrorNotice message={describeMarketError(t, error)} onRetry={() => void reload()} />;
+    return <MarketErrorNotice message={describeKitError(t, error)} onRetry={() => void reload()} />;
   }
   if (isLoading || !effective) {
     return <div className='text-13px text-t-secondary'>{t('mcp.kits.loading')}</div>;
