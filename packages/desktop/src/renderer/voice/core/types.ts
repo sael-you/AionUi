@@ -122,7 +122,8 @@ export type VoiceCaption = {
 /**
  * `voice.followUp` statuses: conversation follow-ups (`finished`, `failed`, `needs_approval`),
  * agent lines (`says`, `asks`), draft outcomes (`sent`, `queued`, `failed`, `saved_not_started`,
- * `expired`, `interrupted`) and a refused spoken confirmation (`confirm_rejected`).
+ * `expired`, `interrupted`), a refused spoken confirmation (`confirm_rejected`) and the
+ * cascade engine's answer clips (`reply`, the only status without a conversation).
  */
 export type FollowUpStatus =
   | 'finished'
@@ -143,7 +144,12 @@ export type FollowUpStatus =
   /** Conversation mode: a bare "stop" silenced the agent's speech only. */
   | 'silenced'
   /** Conversation mode: the bound conversation's turn failed (`failed` = the send failed). */
-  | 'turn_failed';
+  | 'turn_failed'
+  /**
+   * `minimax-cascade`: one sentence of Jarvis's spoken answer (no conversation). Played in
+   * order without a tone and never listed as a follow-up.
+   */
+  | 'reply';
 
 export type VoiceFollowUp = {
   id: number;

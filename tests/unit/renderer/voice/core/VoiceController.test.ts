@@ -521,6 +521,83 @@ describe('VoiceController — follow-ups, budget, errors', () => {
     expect(f.clips.play).toHaveBeenCalledTimes(2);
   });
 
+  describe('minimax-cascade answer clips (TASK-91)', () => {
+    const reply = (clipId: string, line = 'Sure.') =>
+      ({ name: 'voice.followUp', voiceSessionId: 'vs-1', conversationId: '', status: 'reply', line, clipId }) as const;
+
+    it('plays reply clips in order with no tone and no follow-up entry', async () => {
+      const { f, c } = await inCall();
+      const before = f.earcons().length;
+      f.frame(reply('k1'));
+      f.frame(reply('k2', 'Done.'));
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(f.fx.api.fetchClip.mock.calls.map(([id]) => id)).toEqual(['k1', 'k2']);
+      expect(f.clips.play).toHaveBeenCalledTimes(2);
+      expect(f.earcons().slice(before)).toEqual([]);
+      expect(c.store.getSnapshot().followUps).toEqual([]);
+    });
+
+    it("plays Jarvis's answer while a draft awaits confirmation", async () => {
+      const { f } = await inCall();
+      f.frame({ name: 'voice.draftUpdated', voiceSessionId: 'vs-1', ...draft() });
+      f.frame(reply('k1', 'Shall I send it?'));
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(f.fx.api.fetchClip).toHaveBeenCalledWith('k1');
+    });
+
+    it('a barge-in stops the playing reply and drops the queued ones', async () => {
+      const { f } = await inCall();
+      const playing = Promise.withResolvers<{ completed: boolean; tStart: number; tEnd: number }>();
+      f.clips.play.mockImplementationOnce(() => playing.promise);
+      f.clips.stop.mockImplementation(() => playing.resolve({ completed: false, tStart: 1, tEnd: 1.2 }));
+      f.frame(reply('k1'));
+      f.frame(reply('k2'));
+      await vi.advanceTimersByTimeAsync(100);
+      expect(f.clips.play).toHaveBeenCalledTimes(1);
+      // You start to speak: the backend says `listening` (not after assistantAudioFinished).
+      f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'listening', reason: null });
+      expect(f.clips.stop).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(f.fx.api.fetchClip).not.toHaveBeenCalledWith('k2');
+      expect(f.clips.play).toHaveBeenCalledTimes(1);
+    });
+
+    it('the end of the answer (listening after assistantAudioFinished) keeps the clips playing', async () => {
+      const { f } = await inCall();
+      const playing = Promise.withResolvers<{ completed: boolean; tStart: number; tEnd: number }>();
+      f.clips.play.mockImplementationOnce(() => playing.promise);
+      f.frame(reply('k1'));
+      f.frame(reply('k2'));
+      await vi.advanceTimersByTimeAsync(100);
+      f.frame({ name: 'voice.assistantAudioFinished', voiceSessionId: 'vs-1', responseId: 'r1' });
+      f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'listening', reason: null });
+      expect(f.clips.stop).not.toHaveBeenCalled();
+      playing.resolve({ completed: true, tStart: 1, tEnd: 2 });
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(f.fx.api.fetchClip).toHaveBeenCalledWith('k2');
+      expect(f.clips.play).toHaveBeenCalledTimes(2);
+    });
+
+    it('a barge-in leaves an agent follow-up clip alone', async () => {
+      const { f } = await inCall();
+      const playing = Promise.withResolvers<{ completed: boolean; tStart: number; tEnd: number }>();
+      f.clips.play.mockImplementationOnce(() => playing.promise);
+      f.frame({
+        name: 'voice.followUp',
+        voiceSessionId: null,
+        conversationId: 'c9',
+        status: 'says',
+        line: 'x',
+        clipId: 'clip9',
+      });
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(f.clips.play).toHaveBeenCalledTimes(1);
+      f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'listening', reason: null });
+      expect(f.clips.stop).not.toHaveBeenCalled();
+      playing.resolve({ completed: true, tStart: 1, tEnd: 2 });
+    });
+  });
+
   it('keeps only the five most recent follow-ups', async () => {
     const { f, c } = await armed();
     for (let i = 0; i < 7; i++) {
