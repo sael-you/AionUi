@@ -63,7 +63,10 @@ const QuoteEditModal: React.FC<QuoteEditModalProps> = ({ item, onSave, onRemove,
       }
     >
       <div className='flex flex-col gap-12px' data-testid='quote-edit-modal' data-quote-ui>
-        <blockquote className='m-0 ps-10px border-s-3 border-s-solid border-border-2 text-13px text-t-secondary whitespace-pre-wrap break-words max-h-240px overflow-auto'>
+        <blockquote
+          className='m-0 ps-10px pe-8px py-6px rd-6px bg-fill-1 text-13px text-t-secondary whitespace-pre-wrap break-words max-h-240px overflow-auto'
+          style={{ borderInlineStart: '3px solid var(--color-border-3)' }}
+        >
           {item?.content}
         </blockquote>
         <QuoteReplyField value={reply} onChange={setReply} onSubmit={save} onCancel={onClose} />
