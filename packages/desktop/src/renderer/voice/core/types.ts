@@ -24,7 +24,15 @@ export type ServerVoiceState = 'armed' | 'listening' | 'thinking' | 'speaking' |
 
 /** What the orb shows; derived from the controller state (see stateMachine.ts). */
 export type OrbState =
-  'off' | 'arming' | 'armed' | 'connecting' | 'listening' | 'thinking' | 'speaking' | 'offline' | 'frozen';
+  | 'off'
+  | 'arming'
+  | 'armed'
+  | 'connecting'
+  | 'listening'
+  | 'thinking'
+  | 'speaking'
+  | 'offline'
+  | 'frozen';
 
 export type DraftState =
   | 'drafted'
