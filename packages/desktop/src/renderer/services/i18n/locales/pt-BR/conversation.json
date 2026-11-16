@@ -648,6 +648,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (tentativa {{attempts}}, {{elapsed}} decorridos — o provedor do agente derruba a conexão repetidamente; o AionUi está aguardando.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "As tarefas em segundo plano estão desativadas nesta sessão."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "Este agente não pode mover esta chamada de ferramenta para segundo plano."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "A chamada de ferramenta já havia terminado."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "Não foi possível mover a chamada de ferramenta para segundo plano."
       }
     }
   },
@@ -961,5 +973,10 @@
       "label": "Trabalho delegado: {{summary}}"
     },
     "breadcrumb": "Caminho da conversa"
+  },
+  "backgroundTool": {
+    "continue": "Continuar em segundo plano",
+    "running": "Em execução em segundo plano",
+    "failed": "Não foi possível mover a chamada de ferramenta para segundo plano."
   }
 }

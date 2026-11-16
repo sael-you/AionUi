@@ -643,6 +643,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (intento {{attempts}}, {{elapsed}} transcurridos: el proveedor del agente corta la conexión una y otra vez; AionUi está esperando.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "Las tareas en segundo plano están desactivadas en esta sesión."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "Este agente no puede pasar esta llamada a segundo plano."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "La llamada a la herramienta ya había terminado."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "No se pudo pasar la llamada a la herramienta a segundo plano."
       }
     }
   },
@@ -956,5 +968,10 @@
       "label": "Trabajo delegado: {{summary}}"
     },
     "breadcrumb": "Ruta de la conversación"
+  },
+  "backgroundTool": {
+    "continue": "Continuar en segundo plano",
+    "running": "Ejecutándose en segundo plano",
+    "failed": "No se pudo pasar la llamada a la herramienta a segundo plano."
   }
 }

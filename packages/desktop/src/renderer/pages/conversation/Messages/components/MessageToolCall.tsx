@@ -15,6 +15,7 @@ import { IconDown, IconRight } from '@arco-design/web-react/icon';
 import { createTwoFilesPatch } from 'diff';
 import React, { useMemo, useState } from 'react';
 import type { BadgeProps } from '@arco-design/web-react';
+import { BackgroundToolButton } from './MessageToolGroupSummary';
 import './MessageToolGroupSummary.css';
 
 const statusToBadge = (status: NormalizedToolStatus): BadgeProps['status'] => {
@@ -87,6 +88,7 @@ const MessageToolCall: React.FC<{ message: IMessageToolCall }> = ({ message }) =
           <span className='font-medium text-13px'>{normalized.name}</span>
           {normalized.description && <span className='m-l-4px opacity-80 text-13px'>{normalized.description}</span>}
         </span>
+        <BackgroundToolButton callId={normalized.key} status={normalized.status} />
         {hasDetail && (
           <span
             className='flex-shrink-0 cursor-pointer hover:color-#4E5969 transition-colors'

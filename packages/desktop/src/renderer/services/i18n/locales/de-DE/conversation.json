@@ -643,6 +643,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (Versuch {{attempts}}, bisher {{elapsed}} – der Anbieter des Agents bricht die Verbindung wiederholt ab; AionUi wartet ab.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "Hintergrundaufgaben sind in dieser Sitzung deaktiviert."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "Dieser Agent kann diesen Tool-Aufruf nicht in den Hintergrund verschieben."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "Der Tool-Aufruf war bereits beendet."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "Der Tool-Aufruf konnte nicht in den Hintergrund verschoben werden."
       }
     }
   },
@@ -956,5 +968,10 @@
       "label": "Delegierte Arbeit: {{summary}}"
     },
     "breadcrumb": "Pfad der Unterhaltung"
+  },
+  "backgroundTool": {
+    "continue": "Im Hintergrund fortsetzen",
+    "running": "Läuft im Hintergrund",
+    "failed": "Der Tool-Aufruf konnte nicht in den Hintergrund verschoben werden."
   }
 }

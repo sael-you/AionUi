@@ -642,6 +642,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (attempt {{attempts}}, {{elapsed}} so far — the agent's provider keeps dropping the connection; AionUi is waiting it out.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "Background tasks are disabled in this session."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "This agent cannot move this tool call to the background."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "The tool call had already finished."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "The tool call could not be moved to the background."
       }
     }
   },
@@ -955,5 +967,10 @@
       "label": "Delegated work: {{summary}}"
     },
     "breadcrumb": "Conversation path"
+  },
+  "backgroundTool": {
+    "continue": "Continue in background",
+    "running": "Running in background",
+    "failed": "Could not move the tool call to the background."
   }
 }

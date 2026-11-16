@@ -461,6 +461,13 @@ export const conversation = {
   // Dedicated answer channel for the structured question card (AskUserQuestion)
   // — question answers must not ride the permission confirm endpoint
   // (2026-08-05 ruling). Send either answers[] or decline:true, never both.
+  // "Continue in background" on a running tool call (TASK-8): 202, the outcome
+  // arrives on the stream (a running-in-background card or a TOOL_BACKGROUND_* tip).
+  backgroundToolCall: httpPost<void, { conversation_id: string; call_id: string }>(
+    (p) =>
+      `/api/conversations/${encodeURIComponent(p.conversation_id)}/tool-calls/${encodeURIComponent(p.call_id)}/background`,
+    () => ({})
+  ),
   answerAsk: httpPost<void, IAnswerAskParams>(
     (p) => `/api/conversations/${p.conversation_id}/asks/${encodeURIComponent(p.request_id)}/answer`,
     (p) => (p.decline ? { decline: true } : { answers: p.answers ?? [] })
