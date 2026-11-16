@@ -102,6 +102,8 @@ export type BrowserState = {
   can_go_forward: boolean;
   /** An agent sent CDP within the last few seconds ("agent is driving"). */
   agent_active: boolean;
+  /** The tab an agent last acted on, so the panel can follow it. */
+  agent_tab_id?: string;
 };
 
 export type BrowserDialogKind = 'alert' | 'confirm' | 'prompt' | 'beforeunload';

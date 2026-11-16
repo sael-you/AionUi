@@ -187,5 +187,44 @@
   "zoomIn": "放大",
   "zoomOut": "縮小",
   "zoomReset": "重設視圖",
-  "diagramZoomHint": "滾輪縮放 • 拖曳平移 • ESC 關閉"
+  "diagramZoomHint": "滾輪縮放 • 拖曳平移 • ESC 關閉",
+  "serverBrowser": {
+    "agentDriving": "代理正在操作",
+    "closeTab": "關閉 {{title}}",
+    "dialogPrompt": "回答",
+    "dialogTitle": "頁面詢問",
+    "fileUploadUnsupported": "暫不支援從伺服器瀏覽器上傳檔案。",
+    "googleRejected": "Google 拒絕在此瀏覽器中登入，因此暫不支援 Google 帳號。",
+    "instanceLabel": "瀏覽器",
+    "instanceMain": "瀏覽器 1（你的登入）",
+    "instanceN": "瀏覽器 {{n}}",
+    "start": "啟動瀏覽器",
+    "surfaceLabel": "伺服器瀏覽器頁面。點一下即可在其中使用滑鼠與鍵盤。",
+    "surfaceRole": "遠端瀏覽器",
+    "tabsLabel": "瀏覽器分頁",
+    "typeEnter": "Enter",
+    "typeLabel": "在頁面中輸入",
+    "typePlaceholder": "在此輸入，然後傳送",
+    "typeSend": "傳送",
+    "errors": {
+      "unavailable": "伺服器瀏覽器無法使用。",
+      "startFailed": "瀏覽器未能啟動。",
+      "notRunning": "瀏覽器未執行。",
+      "urlBlocked": "此位址在伺服器瀏覽器中被封鎖。",
+      "agentsDisabled": "代理不得使用瀏覽器（設定 → 瀏覽器）。",
+      "methodBlocked": "不允許此操作。",
+      "tabLimit": "已達分頁上限，請先關閉一個分頁。",
+      "instanceLimit": "此瀏覽器編號超出你的上限。",
+      "settingOutOfRange": "此值超出範圍。",
+      "tabNotFound": "此分頁已不存在。",
+      "badMessage": "瀏覽器無法理解此操作。",
+      "busy": "瀏覽器忙碌中，請稍後再試。"
+    },
+    "status": {
+      "starting": "正在啟動瀏覽器…",
+      "running": "執行中",
+      "stopped": "瀏覽器已停止。",
+      "error": "瀏覽器因錯誤而停止。"
+    }
+  }
 }

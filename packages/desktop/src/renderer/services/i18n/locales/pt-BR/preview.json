@@ -187,5 +187,44 @@
   "zoomIn": "Ampliar",
   "zoomOut": "Reduzir",
   "zoomReset": "Redefinir visualização",
-  "diagramZoomHint": "Role para ampliar • Arraste para mover • ESC para fechar"
+  "diagramZoomHint": "Role para ampliar • Arraste para mover • ESC para fechar",
+  "serverBrowser": {
+    "agentDriving": "Agente no controle",
+    "closeTab": "Fechar {{title}}",
+    "dialogPrompt": "Resposta",
+    "dialogTitle": "A página pergunta",
+    "fileUploadUnsupported": "Ainda não é possível enviar arquivos pelo navegador do servidor.",
+    "googleRejected": "O Google recusa o login neste navegador, então contas Google ainda não são suportadas aqui.",
+    "instanceLabel": "Navegador",
+    "instanceMain": "Navegador 1 (seus logins)",
+    "instanceN": "Navegador {{n}}",
+    "start": "Iniciar navegador",
+    "surfaceLabel": "Página do navegador do servidor. Clique para usar o mouse e o teclado nela.",
+    "surfaceRole": "navegador remoto",
+    "tabsLabel": "Abas do navegador",
+    "typeEnter": "Enter",
+    "typeLabel": "Digitar na página",
+    "typePlaceholder": "Digite aqui e toque em Enviar",
+    "typeSend": "Enviar",
+    "errors": {
+      "unavailable": "O navegador do servidor não está disponível.",
+      "startFailed": "O navegador não iniciou.",
+      "notRunning": "O navegador não está em execução.",
+      "urlBlocked": "Este endereço está bloqueado no navegador do servidor.",
+      "agentsDisabled": "Agentes não podem usar o navegador (Configurações → Navegador).",
+      "methodBlocked": "Essa ação não é permitida.",
+      "tabLimit": "Limite de abas atingido. Feche uma aba primeiro.",
+      "instanceLimit": "Esse número de navegador está acima do seu limite.",
+      "settingOutOfRange": "Esse valor está fora do intervalo.",
+      "tabNotFound": "Essa aba não existe mais.",
+      "badMessage": "O navegador não entendeu essa ação.",
+      "busy": "O navegador está ocupado. Tente de novo em instantes."
+    },
+    "status": {
+      "starting": "Iniciando o navegador…",
+      "running": "Em execução",
+      "stopped": "O navegador está parado.",
+      "error": "O navegador parou com um erro."
+    }
+  }
 }

@@ -119,3 +119,10 @@ export const isGoogleSignInRejected = (url: string): boolean =>
 /** `wss://<host>/api/browser/ws?instance=<n>` for this page. */
 export const browserStreamUrl = (location: Pick<Location, 'protocol' | 'host'>, instance: number): string =>
   `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/api/browser/ws?instance=${instance}`;
+
+/** `BROWSER_URL_BLOCKED` → `urlBlocked`: the key under `preview.serverBrowser.errors`. */
+export const errorKey = (code: string): string =>
+  code
+    .replace(/^BROWSER_/, '')
+    .toLowerCase()
+    .replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());

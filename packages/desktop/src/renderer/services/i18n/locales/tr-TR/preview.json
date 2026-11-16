@@ -187,5 +187,44 @@
   "zoomIn": "Yakınlaştır",
   "zoomOut": "Uzaklaştır",
   "zoomReset": "Görünümü sıfırla",
-  "diagramZoomHint": "Yakınlaştırmak için kaydırın • Taşımak için sürükleyin • ESC ile kapatın"
+  "diagramZoomHint": "Yakınlaştırmak için kaydırın • Taşımak için sürükleyin • ESC ile kapatın",
+  "serverBrowser": {
+    "agentDriving": "Ajan kullanıyor",
+    "closeTab": "{{title}} sekmesini kapat",
+    "dialogPrompt": "Yanıt",
+    "dialogTitle": "Sayfa soruyor",
+    "fileUploadUnsupported": "Sunucu tarayıcısından dosya yükleme henüz desteklenmiyor.",
+    "googleRejected": "Google bu tarayıcıda oturum açmayı reddediyor, bu yüzden Google hesapları şimdilik desteklenmiyor.",
+    "instanceLabel": "Tarayıcı",
+    "instanceMain": "Tarayıcı 1 (oturumlarınız)",
+    "instanceN": "Tarayıcı {{n}}",
+    "start": "Tarayıcıyı başlat",
+    "surfaceLabel": "Sunucu tarayıcısı sayfası. Fare ve klavyeyi orada kullanmak için tıklayın.",
+    "surfaceRole": "uzak tarayıcı",
+    "tabsLabel": "Tarayıcı sekmeleri",
+    "typeEnter": "Enter",
+    "typeLabel": "Sayfaya yazın",
+    "typePlaceholder": "Buraya yazın, sonra Gönder",
+    "typeSend": "Gönder",
+    "errors": {
+      "unavailable": "Sunucu tarayıcısı kullanılamıyor.",
+      "startFailed": "Tarayıcı başlamadı.",
+      "notRunning": "Tarayıcı çalışmıyor.",
+      "urlBlocked": "Bu adres sunucu tarayıcısında engellendi.",
+      "agentsDisabled": "Ajanlar tarayıcıyı kullanamaz (Ayarlar → Tarayıcı).",
+      "methodBlocked": "Bu işleme izin verilmiyor.",
+      "tabLimit": "Sekme sınırına ulaşıldı. Önce bir sekmeyi kapatın.",
+      "instanceLimit": "Bu tarayıcı numarası sınırınızın üzerinde.",
+      "settingOutOfRange": "Bu değer aralık dışında.",
+      "tabNotFound": "Bu sekme artık yok.",
+      "badMessage": "Tarayıcı bu işlemi anlamadı.",
+      "busy": "Tarayıcı meşgul. Birazdan tekrar deneyin."
+    },
+    "status": {
+      "starting": "Tarayıcı başlatılıyor…",
+      "running": "Çalışıyor",
+      "stopped": "Tarayıcı durduruldu.",
+      "error": "Tarayıcı bir hatayla durdu."
+    }
+  }
 }

@@ -187,5 +187,44 @@
   "zoomIn": "Acercar",
   "zoomOut": "Alejar",
   "zoomReset": "Restablecer vista",
-  "diagramZoomHint": "Desplazarse para ampliar • Arrastrar para mover • ESC para cerrar"
+  "diagramZoomHint": "Desplazarse para ampliar • Arrastrar para mover • ESC para cerrar",
+  "serverBrowser": {
+    "agentDriving": "El agente está al mando",
+    "closeTab": "Cerrar {{title}}",
+    "dialogPrompt": "Respuesta",
+    "dialogTitle": "La página pregunta",
+    "fileUploadUnsupported": "Aún no se pueden subir archivos desde el navegador del servidor.",
+    "googleRejected": "Google rechaza el inicio de sesión en este navegador, así que por ahora no se admiten cuentas de Google aquí.",
+    "instanceLabel": "Navegador",
+    "instanceMain": "Navegador 1 (tus sesiones)",
+    "instanceN": "Navegador {{n}}",
+    "start": "Iniciar navegador",
+    "surfaceLabel": "Página del navegador del servidor. Haz clic para usar ahí el ratón y el teclado.",
+    "surfaceRole": "navegador remoto",
+    "tabsLabel": "Pestañas del navegador",
+    "typeEnter": "Intro",
+    "typeLabel": "Escribir en la página",
+    "typePlaceholder": "Escribe aquí y pulsa Enviar",
+    "typeSend": "Enviar",
+    "errors": {
+      "unavailable": "El navegador del servidor no está disponible.",
+      "startFailed": "El navegador no se inició.",
+      "notRunning": "El navegador no está en marcha.",
+      "urlBlocked": "Esta dirección está bloqueada en el navegador del servidor.",
+      "agentsDisabled": "Los agentes no pueden usar el navegador (Ajustes → Navegador).",
+      "methodBlocked": "Esa acción no está permitida.",
+      "tabLimit": "Límite de pestañas alcanzado. Cierra una pestaña primero.",
+      "instanceLimit": "Ese número de navegador supera tu límite.",
+      "settingOutOfRange": "Ese valor está fuera de rango.",
+      "tabNotFound": "Esa pestaña ya no existe.",
+      "badMessage": "El navegador no entendió esa acción.",
+      "busy": "El navegador está ocupado. Vuelve a intentarlo en un momento."
+    },
+    "status": {
+      "starting": "Iniciando el navegador…",
+      "running": "En marcha",
+      "stopped": "El navegador está detenido.",
+      "error": "El navegador se detuvo con un error."
+    }
+  }
 }

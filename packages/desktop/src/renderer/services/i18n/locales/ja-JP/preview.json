@@ -187,5 +187,44 @@
   "zoomIn": "拡大",
   "zoomOut": "縮小",
   "zoomReset": "表示をリセット",
-  "diagramZoomHint": "スクロールでズーム • ドラッグで移動 • ESC で閉じる"
+  "diagramZoomHint": "スクロールでズーム • ドラッグで移動 • ESC で閉じる",
+  "serverBrowser": {
+    "agentDriving": "エージェントが操作中",
+    "closeTab": "{{title}} を閉じる",
+    "dialogPrompt": "回答",
+    "dialogTitle": "ページからの確認",
+    "fileUploadUnsupported": "サーバーブラウザーからのファイルアップロードにはまだ対応していません。",
+    "googleRejected": "Google はこのブラウザーでのログインを拒否するため、現在 Google アカウントには対応していません。",
+    "instanceLabel": "ブラウザー",
+    "instanceMain": "ブラウザー 1（あなたのログイン）",
+    "instanceN": "ブラウザー {{n}}",
+    "start": "ブラウザーを起動",
+    "surfaceLabel": "サーバーブラウザーのページ。クリックするとマウスとキーボードで操作できます。",
+    "surfaceRole": "リモートブラウザー",
+    "tabsLabel": "ブラウザーのタブ",
+    "typeEnter": "Enter",
+    "typeLabel": "ページに入力",
+    "typePlaceholder": "ここに入力して送信",
+    "typeSend": "送信",
+    "errors": {
+      "unavailable": "サーバーブラウザーは利用できません。",
+      "startFailed": "ブラウザーが起動しませんでした。",
+      "notRunning": "ブラウザーは起動していません。",
+      "urlBlocked": "このアドレスはサーバーブラウザーでブロックされています。",
+      "agentsDisabled": "エージェントはブラウザーを使用できません（設定 → ブラウザー）。",
+      "methodBlocked": "その操作は許可されていません。",
+      "tabLimit": "タブの上限に達しました。先にタブを閉じてください。",
+      "instanceLimit": "このブラウザー番号は上限を超えています。",
+      "settingOutOfRange": "値が範囲外です。",
+      "tabNotFound": "そのタブはもう存在しません。",
+      "badMessage": "ブラウザーがその操作を理解できませんでした。",
+      "busy": "ブラウザーが処理中です。少し待ってから再試行してください。"
+    },
+    "status": {
+      "starting": "ブラウザーを起動しています…",
+      "running": "実行中",
+      "stopped": "ブラウザーは停止しています。",
+      "error": "ブラウザーがエラーで停止しました。"
+    }
+  }
 }
