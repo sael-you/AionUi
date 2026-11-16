@@ -64,11 +64,12 @@ export const validateKitForm = (values: KitFormValues): KitFormError | null => {
   return null;
 };
 
-export const createKitRequest = (values: KitFormValues): CreateKitRequest => {
+export const createKitRequest = (values: KitFormValues, projectId?: string): CreateKitRequest => {
   const description = values.description.trim();
   return {
     name: values.name.trim(),
     ...(description ? { description } : {}),
+    ...(projectId ? { project_id: projectId } : {}),
     skills: normalizeList(values.skills),
     mcp_instance_ids: normalizeList(values.mcpInstanceIds),
     mcp_templates: normalizeList(values.mcpTemplates),
@@ -143,6 +144,7 @@ const KIT_ERROR_KEYS: Record<string, string> = {
   KIT_INVALID_ITEM: 'invalidItem',
   KIT_INVALID_TARGET: 'invalidTarget',
   KIT_GLOBAL_NOT_ALLOWED: 'globalNotAllowed',
+  KIT_PROJECT_HAS_KIT: 'projectHasKit',
 };
 
 /**

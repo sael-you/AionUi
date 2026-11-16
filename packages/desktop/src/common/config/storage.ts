@@ -861,8 +861,10 @@ export type KitResponse = {
   id: string;
   name: string;
   description: string;
-  /** `K1`…`K12` for the seeded kits; absent for the owner's own kits. */
+  /** `K0` (Global) and `K1`…`K12` for the seeded kits; absent for the owner's own kits. */
   builtin_key?: string;
+  /** Set = the project kit of that project (`projects.project_id`, C28); absent/null = a shared kit. */
+  project_id?: string | null;
   skills: string[];
   mcps: KitMcpMember[];
   /** Wanted catalogue templates without an instance in the kit ("needs an instance"; never delivered). */
@@ -871,10 +873,11 @@ export type KitResponse = {
   updated_at: number;
 };
 
-/** `POST /api/kits`. */
+/** `POST /api/kits`. `project_id` makes it that project's kit (one per project, C28). */
 export type CreateKitRequest = {
   name: string;
   description?: string;
+  project_id?: string;
   skills: string[];
   mcp_instance_ids: string[];
   mcp_templates: string[];
@@ -915,6 +918,9 @@ export type AttachKitItemRequest = {
 
 export type KitAttachmentsQuery = { level?: KitLevel; target_id?: string };
 
+/** `GET /api/kits` filter (C28); omitted = every kit. */
+export type KitListQuery = { project_id?: string };
+
 /** `GET /api/kits/effective`: a conversation, or a project/assistant preview. */
 export type KitEffectiveQuery = { conversation_id?: string; project_id?: string; assistant_id?: string };
 
@@ -938,6 +944,8 @@ export type KitEffectiveMcp = {
   /** Whether a session start would launch it; `reason` says why not otherwise. */
   delivered: boolean;
   reason?: string;
+  /** The conversation's workspace `.mcp.json` defines a server of the same name, so it would load twice (C28). */
+  shadowed_by_project_file?: boolean;
 };
 
 export type KitEffectiveItem = {

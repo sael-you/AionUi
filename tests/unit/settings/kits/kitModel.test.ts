@@ -75,6 +75,18 @@ describe('kitModel', () => {
     expect(Object.keys(request)).not.toContain('description');
   });
 
+  it('creates a project kit with project_id only when a project is given', () => {
+    const values = { ...kitFormFromKit(null), name: 'TB-test' };
+    expect(createKitRequest(values, 'proj-tb')).toEqual({
+      name: 'TB-test',
+      project_id: 'proj-tb',
+      skills: [],
+      mcp_instance_ids: [],
+      mcp_templates: [],
+    });
+    expect(Object.keys(createKitRequest(values))).not.toContain('project_id');
+  });
+
   it('replaces every member set on update, guarded by the updated_at the editor opened with', () => {
     const request = updateKitRequest(kit, { ...kitFormFromKit(kit), skills: ['pf-core'] });
 
@@ -149,6 +161,7 @@ describe('kitModel', () => {
     ['KIT_INVALID_ITEM', 400, 'invalidItem'],
     ['KIT_INVALID_TARGET', 400, 'invalidTarget'],
     ['KIT_GLOBAL_NOT_ALLOWED', 400, 'globalNotAllowed'],
+    ['KIT_PROJECT_HAS_KIT', 409, 'projectHasKit'],
   ])('maps %s to its own message with the server detail', (code, status, key) => {
     const error = new BackendHttpError({ method: 'POST', path: '/api/kits', status, body: { code, error: ' why ' } });
     expect(describeKitError(echoT, error)).toBe(`mcp.kits.errors.${key}|{"detail":"why","max":80}`);

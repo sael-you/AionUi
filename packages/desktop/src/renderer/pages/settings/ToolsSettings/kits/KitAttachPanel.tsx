@@ -17,6 +17,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { KitAttachmentResponse, KitItemKind, KitLevel, KitOp } from '@/common/config/storage';
 import { attachRequest, globalAttachBlock, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
+import { attachableKits } from '@/renderer/hooks/mcp/market/kitGroups';
 import { useKitActions, useKitAttachments, useKitLibrary, useKitList } from '@/renderer/hooks/mcp/market/useKits';
 import { MarketErrorNotice, touchClass, useIsMobileLayout } from '../market/shared';
 
@@ -54,7 +55,7 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({ level, targetId, idPref
   const [busy, setBusy] = useState<string | null>(null);
 
   const options = useMemo((): Array<{ value: string; label: string; disabled?: boolean }> => {
-    if (kind === 'kit') return kits.map((kit) => ({ value: kit.id, label: kit.name }));
+    if (kind === 'kit') return attachableKits(kits).map((kit) => ({ value: kit.id, label: kit.name }));
     if (kind === 'skill') return library.skillNames.map((name) => ({ value: name, label: name }));
     return library.instances.map((instance) => {
       const block = globalAttachBlock(level, instance);
