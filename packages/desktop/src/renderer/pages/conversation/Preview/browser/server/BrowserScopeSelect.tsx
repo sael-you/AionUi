@@ -10,11 +10,11 @@
  */
 
 import { Select } from '@arco-design/web-react';
-import { Laptop } from '@icon-park/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BrowserDevice } from '@/common/types/platform/serverBrowser';
 import BrowserProfileLabel from './BrowserProfileLabel';
+import { DeviceLabel } from './DeviceBrowserView';
 import type { ServerBrowserProfile } from './useServerBrowserAvailability';
 
 export type BrowserScope = { kind: 'profile'; instance: number } | { kind: 'device'; deviceId: string };
@@ -23,24 +23,9 @@ const keyOf = (scope: BrowserScope): string =>
   scope.kind === 'profile' ? `p:${scope.instance}` : `d:${scope.deviceId}`;
 
 const scopeOf = (key: string): BrowserScope =>
-  key.startsWith('d:') ? { kind: 'device', deviceId: key.slice(2) } : { kind: 'profile', instance: Number(key.slice(2)) };
-
-export const DeviceLabel: React.FC<{ device: Pick<BrowserDevice, 'name' | 'browser' | 'online'> }> = ({ device }) => {
-  const { t } = useTranslation();
-  return (
-    <span className='inline-flex items-center gap-6px min-w-0' data-testid='browser-device-label'>
-      <span
-        className={`inline-block size-8px rd-full flex-shrink-0 ${device.online ? 'bg-success-6' : 'bg-fill-4'}`}
-        aria-hidden
-      />
-      <Laptop theme='outline' size={12} className='flex-shrink-0' aria-hidden />
-      <span className='truncate'>{device.name}</span>
-      <span className='sr-only'>
-        {t(device.online ? 'preview.browserDevices.online' : 'preview.browserDevices.offline')}
-      </span>
-    </span>
-  );
-};
+  key.startsWith('d:')
+    ? { kind: 'device', deviceId: key.slice(2) }
+    : { kind: 'profile', instance: Number(key.slice(2)) };
 
 const BrowserScopeSelect: React.FC<{
   profiles: ServerBrowserProfile[];

@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import { serverBrowser } from '@/common/adapter/ipcBridge';
 import type { BrowserDevice, BrowserPairingCode, BrowserSettings } from '@/common/types/platform/serverBrowser';
-import { DeviceLabel } from '@/renderer/pages/conversation/Preview/browser/server/BrowserScopeSelect';
+import { DeviceLabel } from '@/renderer/pages/conversation/Preview/browser/server/DeviceBrowserView';
 import { useBrowserDevices } from '@/renderer/pages/conversation/Preview/browser/server/useBrowserDevices';
 import { SERVER_BROWSER_SETTINGS_KEY } from '@/renderer/pages/conversation/Preview/browser/server/useServerBrowserAvailability';
 import { formatDateTime } from '@/renderer/services/i18n/format';
@@ -193,7 +193,9 @@ const BrowserDevicesSettings: React.FC = () => {
           {t('settings.browserDevices.pairButton')}
         </Button>
       </div>
-      <p className='m-0 mb-8px text-12px text-t-secondary leading-relaxed'>{t('settings.browserDevices.description')}</p>
+      <p className='m-0 mb-8px text-12px text-t-secondary leading-relaxed'>
+        {t('settings.browserDevices.description')}
+      </p>
       {settings ? (
         <PreferenceRow
           label={t('settings.browserDevices.agentsLabel')}

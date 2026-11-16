@@ -22,6 +22,16 @@ const api = vi.hoisted(() => {
     createInstance: fn(),
     updateInstance: fn(),
     deleteInstance: fn(),
+    createPairingCode: fn(),
+    listDevices: fn(),
+    revokeDevice: fn(),
+    listeners: new Map<string, () => void>(),
+    devicesChanged: {
+      on: (callback: () => void) => {
+        api.listeners.set('devicesChanged', callback);
+        return () => undefined;
+      },
+    },
   };
 });
 
@@ -30,6 +40,7 @@ vi.mock('@/renderer/hooks/context/ThemeContext', () => ({ useThemeContext: () =>
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => (options ? `${key}|${JSON.stringify(options)}` : key),
+    i18n: { language: 'en-US' },
   }),
 }));
 
@@ -38,6 +49,9 @@ import {
   profileFields,
 } from '@/renderer/pages/conversation/Preview/browser/server/BrowserProfileModal';
 import ServerBrowserSettings from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/ServerBrowserSettings';
+import BrowserDevicesSettings, {
+  formatCountdown,
+} from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserDevicesSettings';
 
 const SETTINGS: BrowserSettings = {
   agents_enabled: true,
@@ -307,5 +321,85 @@ describe('browser profile draft rules (TASK-124)', () => {
       color: 'teal',
       emoji: '🎮',
     });
+  });
+});
+
+const MAC = {
+  device_id: 'dev_mac',
+  name: 'Mac · Chrome',
+  browser: 'Chrome 157',
+  created_at: 1,
+  last_seen_at: 1_700_000_000_000,
+  online: true,
+  new_tabs: true,
+  shared_tabs: 2,
+};
+
+const renderDevices = () =>
+  render(
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+      <BrowserDevicesSettings />
+    </SWRConfig>
+  );
+
+describe('BrowserDevicesSettings (C34 Settings > Browser > your own browser)', () => {
+  beforeEach(() => {
+    api.getSettings.invoke.mockResolvedValue({ ...SETTINGS, devices_agents_enabled: false });
+    api.updateSettings.invoke.mockImplementation(async (update: Partial<BrowserSettings>) => ({
+      ...SETTINGS,
+      devices_agents_enabled: false,
+      ...update,
+    }));
+    api.listDevices.invoke.mockResolvedValue([MAC]);
+    api.createPairingCode.invoke.mockResolvedValue({ code: 'ABCD-2345', expires_at: Date.now() + 300_000 });
+    api.revokeDevice.invoke.mockResolvedValue(undefined);
+    vi.spyOn(Message, 'success').mockImplementation(() => ({}) as never);
+    vi.spyOn(Message, 'error').mockImplementation(() => ({}) as never);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
+
+  it('lists paired browsers with their state and shared tabs', async () => {
+    renderDevices();
+    const row = await screen.findByTestId('browser-device-row');
+    expect(row).toHaveTextContent('Mac · Chrome');
+    expect(row).toHaveTextContent('Chrome 157');
+    expect(row).toHaveTextContent('settings.browserDevices.sharedTabs|{"count":2}');
+    expect(row).toHaveTextContent('preview.browserDevices.online');
+  });
+
+  it('"Agents may use my Mac browser" saves devices_agents_enabled only', async () => {
+    renderDevices();
+    fireEvent.click(await screen.findByRole('switch', { name: 'settings.browserDevices.agentsLabel' }));
+    await waitFor(() => expect(api.updateSettings.invoke).toHaveBeenCalledWith({ devices_agents_enabled: true }));
+  });
+
+  it('pairing shows the one-time code and the address, and closes once the new browser shows up', async () => {
+    api.listDevices.invoke.mockResolvedValue([]);
+    renderDevices();
+    fireEvent.click(await screen.findByTestId('browser-devices-pair'));
+    expect(await screen.findByTestId('browser-pairing-code')).toHaveTextContent('ABCD-2345');
+    expect(screen.getByTestId('browser-pairing')).toHaveTextContent(window.location.origin);
+    api.listDevices.invoke.mockResolvedValue([MAC]);
+    api.listeners.get('devicesChanged')?.();
+    await waitFor(() => expect(screen.queryByTestId('browser-pairing')).toBeNull());
+    expect(Message.success).toHaveBeenCalledWith('settings.browserDevices.pair.done|{"name":"Mac · Chrome"}');
+  });
+
+  it('revokes a browser after confirmation', async () => {
+    renderDevices();
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'settings.browserDevices.revokeLabel|{"name":"Mac · Chrome"}' })
+    );
+    await confirmIn('settings.browserDevices.revokeTitle|{"name":"Mac · Chrome"}', 'settings.browserDevices.revoke');
+    await waitFor(() => expect(api.revokeDevice.invoke).toHaveBeenCalledWith({ device_id: 'dev_mac' }));
+  });
+
+  it('formats the countdown', () => {
+    expect(formatCountdown(299)).toBe('4:59');
+    expect(formatCountdown(5)).toBe('0:05');
   });
 });

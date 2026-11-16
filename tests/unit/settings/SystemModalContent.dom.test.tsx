@@ -50,6 +50,13 @@ vi.mock('@/renderer/components/settings/LanguageSwitcher', () => ({
   default: () => <div>LanguageSwitcher</div>,
 }));
 
+// The browser sections have their own tests (ServerBrowserSettings.dom.test.tsx) and pull in the theme context.
+vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalContent/ServerBrowserSettings', () => ({
+  default: () => null,
+}));
+vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserDevicesSettings', () => ({
+  default: () => null,
+}));
 vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalContent/DevSettings', () => ({
   default: () => <div>DevSettings</div>,
 }));

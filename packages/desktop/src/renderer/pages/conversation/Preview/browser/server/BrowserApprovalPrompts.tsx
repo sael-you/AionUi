@@ -39,7 +39,9 @@ const ApprovalCard: React.FC<{
     setBusy(approve ? 'approve' : 'deny');
     try {
       await serverBrowser.decideApproval.invoke({ approval_id: approval.approval_id, approve });
-      Message.success(t(approve ? 'preview.browserDevices.approval.allowed' : 'preview.browserDevices.approval.denied'));
+      Message.success(
+        t(approve ? 'preview.browserDevices.approval.allowed' : 'preview.browserDevices.approval.denied')
+      );
     } catch (error) {
       Message.error(
         t(
