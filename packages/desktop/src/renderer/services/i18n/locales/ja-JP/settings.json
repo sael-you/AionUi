@@ -1539,5 +1539,45 @@
       "community": "コミュニティ",
       "custom": "カスタム"
     }
+  },
+  "serverBrowser": {
+    "title": "ブラウザー（サーバー）",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "サーバーブラウザーは利用できません：{{reason}}",
+    "agentsLabel": "エージェントがブラウザーを使用できる",
+    "agentsDesc": "会話中のエージェントは、これらのブラウザーでタブを開き、移動し、クリックし、入力し、ページのスクリプトを実行できます。ブラウザー安全ルールに従い、送信・削除・支払い・設定変更にはあなたの許可が必要です。",
+    "maxInstancesLabel": "ブラウザー",
+    "maxInstancesDesc": "それぞれ独自のプロファイルを持つ別々の Chrome。ブラウザー 1 はパネルのもので、あなたのログインがあります。",
+    "maxTabsLabel": "ブラウザーごとのタブ数",
+    "maxTabsDesc": "あなたとエージェントは各ブラウザーでこの数までタブを開けます。",
+    "instancesLabel": "ブラウザー",
+    "instanceMain": "ブラウザー 1（パネル、あなたのログイン）",
+    "instanceN": "ブラウザー {{n}}",
+    "notRunning": "停止中",
+    "agentActive": "エージェント動作中",
+    "stop": "停止",
+    "stopLabel": "{{name}} を停止",
+    "stopped": "ブラウザー {{n}} を停止しました",
+    "clearLabel": "{{name}} の閲覧データを消去",
+    "hideAutomationLabel": "ブラウザーが自動操作されていることを隠す",
+    "hideAutomationDesc": "既定ではオフ。このブラウザーの次回起動時に適用されます。",
+    "hideAutomationAria": "{{name}} が自動操作されていることを隠す",
+    "hideAutomationConfirmTitle": "このブラウザーの自動操作を隠しますか？",
+    "hideAutomationWarning": "このブラウザーがソフトウェアで制御されているという標準の表示がサイトから見えなくなります。多くのサイトは規約でアカウントの自動利用を禁止しており、検出されることもあります。これらのアカウントのリスクはあなたが負います。Google のログインは引き続き拒否されます。ブラウザーの次回起動時に有効になります。",
+    "hideAutomationConfirmOk": "隠す",
+    "appliesNextStart": "変更を適用するには、このブラウザーを停止してパネルを開き直してください。",
+    "lowerInstancesTitle": "ブラウザーの数を減らしますか？",
+    "saved": "保存しました",
+    "errors": {
+      "generic": "設定を保存できませんでした。もう一度お試しください。",
+      "outOfRange": "値が範囲外です。",
+      "busy": "そのブラウザーは処理中です。少し待ってから再試行してください。"
+    },
+    "running": "実行中 · タブ {{count}} 個",
+    "running_one": "実行中 · タブ {{count}} 個",
+    "running_other": "実行中 · タブ {{count}} 個",
+    "lowerInstancesContent": "新しい上限を超える実行中のブラウザー {{count}} 個が停止されます。",
+    "lowerInstancesContent_one": "新しい上限を超える実行中のブラウザー {{count}} 個が停止されます。",
+    "lowerInstancesContent_other": "新しい上限を超える実行中のブラウザー {{count}} 個が停止されます。"
   }
 }

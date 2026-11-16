@@ -21,17 +21,16 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { WebSocketServer, type WebSocket } from 'ws';
-import { webContents, type Debugger, type WebContents } from 'electron';
+import type { CdpTarget, CdpTargetEvents } from './cdpTarget';
 import {
-  SINGLE_SESSION_ID,
   buildListPayload,
-  buildTargetInfo,
   buildVersionPayload,
   decideCdpCommand,
   isAcceptableSessionId,
   tokensMatch,
   type CdpRequest,
 } from './cdpTargetProtocol';
+import { createElectronWebviewTarget } from './electronWebviewTarget';
 
 const HOST = '127.0.0.1';
 const WS_PATH = '/aionui-cdp';
@@ -44,106 +43,6 @@ export type CdpBridgeHandle = {
   attach: (webContentsId: number) => { ok: true } | { ok: false; reason: string };
   detach: () => void;
   close: () => Promise<void>;
-};
-
-type AttachedState = {
-  contents: WebContents;
-  dbg: Debugger;
-  onMessage: (event: unknown, method: string, params: unknown, sessionId: string) => void;
-  onDestroyed: () => void;
-};
-
-let attached: AttachedState | null = null;
-let sockets = new Set<WebSocket>();
-
-const currentTargetInfo = () => {
-  if (!attached || attached.contents.isDestroyed()) return buildTargetInfo('', 'about:blank');
-  return buildTargetInfo(attached.contents.getTitle(), attached.contents.getURL());
-};
-
-const broadcast = (payload: Record<string, unknown>) => {
-  const text = JSON.stringify(payload);
-  for (const ws of sockets) {
-    if (ws.readyState === ws.OPEN) ws.send(text);
-  }
-};
-
-const detachInternal = () => {
-  if (!attached) return;
-  const { contents, dbg, onMessage, onDestroyed } = attached;
-  attached = null;
-  try {
-    dbg.removeListener('message', onMessage);
-    contents.removeListener('destroyed', onDestroyed);
-    if (dbg.isAttached()) dbg.detach();
-  } catch {
-    // 已经销毁/已分离时 Electron 会抛，忽略即可。
-    // Electron throws if it is already destroyed or detached; nothing to do.
-  }
-};
-
-/**
- * 附加到指定 webContents。
- *
- * 两道校验都必须报错而不是「尽力而为」：
- *  - getType() 必须是 webview：防止把主窗口（带 preload 桥）交出去，这正是原方案的漏洞。
- *  - debugger.attach() 会和同一个 webContents 上打开的 DevTools 冲突（Electron 限制），
- *    这时给出可读的原因，而不是抛一个原始异常。
- *
- * Both checks must fail loudly rather than degrade:
- *  - getType() must be 'webview', so the main window (with its preload bridge) can never
- *    be handed over — that is precisely the hole in the process-wide approach.
- *  - debugger.attach() conflicts with DevTools open on the same webContents (an Electron
- *    limitation); surface a readable reason instead of a raw throw.
- */
-const attachInternal = (webContentsId: number): { ok: true } | { ok: false; reason: string } => {
-  const contents = webContents.fromId(webContentsId);
-  if (!contents || contents.isDestroyed()) {
-    return { ok: false, reason: `No live webContents with id ${webContentsId}` };
-  }
-
-  const type = contents.getType();
-  if (type !== 'webview') {
-    return {
-      ok: false,
-      reason: `Refusing to attach to webContents of type "${type}"; only the in-app browser webview may be exposed.`,
-    };
-  }
-
-  if (attached?.contents.id === webContentsId) return { ok: true };
-  detachInternal();
-
-  const dbg = contents.debugger;
-  try {
-    if (!dbg.isAttached()) dbg.attach('1.3');
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return { ok: false, reason: `Could not attach debugger (DevTools open on this view will block it): ${message}` };
-  }
-
-  const onMessage = (_event: unknown, method: string, params: unknown, _sessionId: string) => {
-    /**
-     * 统一贴上我们那个固定 sessionId 再转发。
-     *
-     * puppeteer 用 flatten 模式，它靠 sessionId 把事件路由到对应的页面会话；不贴的话
-     * 事件会被当成浏览器级的，Page/Runtime 那些事件就丢了。
-     *
-     * Stamp our fixed sessionId before forwarding. puppeteer runs in flatten mode and
-     * routes events to the page session by sessionId; without it these would look
-     * browser-level and Page/Runtime events would be dropped.
-     */
-    broadcast({ method, params: params ?? {}, sessionId: SINGLE_SESSION_ID });
-  };
-
-  const onDestroyed = () => {
-    detachInternal();
-    broadcast({ method: 'Target.targetDestroyed', params: { targetId: currentTargetInfo().targetId } });
-  };
-
-  dbg.on('message', onMessage);
-  contents.once('destroyed', onDestroyed);
-  attached = { contents, dbg, onMessage, onDestroyed };
-  return { ok: true };
 };
 
 /**
@@ -184,7 +83,7 @@ const sendError = (ws: WebSocket, id: number | undefined, message: string, sessi
  * the set across connections would starve the second client of that event, leaving
  * browser.pages() at 0 forever.
  */
-const handleSocketMessage = async (ws: WebSocket, raw: string, announcedSessions: Set<string>) => {
+const handleSocketMessage = async (target: CdpTarget, ws: WebSocket, raw: string, announcedSessions: Set<string>) => {
   let req: CdpRequest;
   try {
     req = JSON.parse(raw) as CdpRequest;
@@ -200,7 +99,7 @@ const handleSocketMessage = async (ws: WebSocket, raw: string, announcedSessions
     return;
   }
 
-  const decision = decideCdpCommand(req, currentTargetInfo);
+  const decision = decideCdpCommand(req, target.targetInfo);
 
   if (decision.kind === 'error') {
     sendError(ws, id, decision.message, sessionId);
@@ -259,7 +158,7 @@ const handleSocketMessage = async (ws: WebSocket, raw: string, announcedSessions
   }
 
   // forward
-  if (!attached || attached.contents.isDestroyed()) {
+  if (!target.isAttached()) {
     /**
      * 说清楚「怎么办」，因为 Agent 侧无法自己修复：attach 只由渲染进程在 webview
      * dom-ready 时上报触发（WebviewHost.tsx），Target.createTarget 又是明确拒绝的。
@@ -280,7 +179,7 @@ const handleSocketMessage = async (ws: WebSocket, raw: string, announcedSessions
   }
 
   try {
-    const result = await attached.dbg.sendCommand(method, params ?? {});
+    const result = await target.send(method, params ?? {});
     ws.send(JSON.stringify({ id, result: result ?? {}, sessionId }));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -337,16 +236,39 @@ const writeJson = (res: ServerResponse, body: unknown) => {
  * main window never is (see the getType() check in attachInternal). Treating same-user local
  * processes as inside the trust boundary is an explicit assumption here.
  */
-export const startCdpBridge = async (): Promise<CdpBridgeHandle> => {
+export type CdpBridgeServer<T extends CdpTarget> = {
+  port: number;
+  token: string;
+  target: T;
+  close: () => Promise<void>;
+};
+
+/**
+ * Target-agnostic bridge server (TASK-111): discovery + token-checked WebSocket on 127.0.0.1,
+ * Target.* answered locally, everything else forwarded to the target that `createTarget` builds
+ * (it receives the broadcast sink for its events).
+ */
+export const createCdpBridgeServer = async <T extends CdpTarget>(
+  createTarget: (events: CdpTargetEvents) => T,
+  chromeVersion: string
+): Promise<CdpBridgeServer<T>> => {
   const token = randomBytes(24).toString('hex');
+  let sockets = new Set<WebSocket>();
+  const broadcast = (payload: Record<string, unknown>) => {
+    const text = JSON.stringify(payload);
+    for (const ws of sockets) {
+      if (ws.readyState === ws.OPEN) ws.send(text);
+    }
+  };
+  const target = createTarget({ emit: broadcast });
 
   const httpServer: Server = createServer((req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(req.url ?? '/', `http://${HOST}`);
     const wsUrl = `ws://${HOST}:${port}${WS_PATH}?token=${token}`;
-    const info = currentTargetInfo();
+    const info = target.targetInfo();
 
     if (url.pathname === '/json/version') {
-      writeJson(res, buildVersionPayload(wsUrl, process.versions.chrome ?? '0.0.0.0'));
+      writeJson(res, buildVersionPayload(wsUrl, chromeVersion));
       return;
     }
     if (url.pathname === '/json/list' || url.pathname === '/json') {
@@ -368,7 +290,7 @@ export const startCdpBridge = async (): Promise<CdpBridgeHandle> => {
     wss.handleUpgrade(req, socket, head, (ws) => {
       sockets.add(ws);
       const announcedSessions = new Set<string>();
-      ws.on('message', (data) => void handleSocketMessage(ws, data.toString(), announcedSessions));
+      ws.on('message', (data) => void handleSocketMessage(target, ws, data.toString(), announcedSessions));
       ws.on('close', () => sockets.delete(ws));
       ws.on('error', () => sockets.delete(ws));
     });
@@ -388,16 +310,30 @@ export const startCdpBridge = async (): Promise<CdpBridgeHandle> => {
   return {
     port,
     token,
-    attachedWebContentsId: () => (attached && !attached.contents.isDestroyed() ? attached.contents.id : null),
-    attach: attachInternal,
-    detach: detachInternal,
+    target,
     close: async () => {
-      detachInternal();
       for (const ws of sockets) ws.close();
       sockets = new Set();
       await new Promise<void>((resolve) => {
         wss.close(() => httpServer.close(() => resolve()));
       });
+    },
+  };
+};
+
+/** Desktop: the bridge over the in-app browser webview (unchanged behaviour and handle). */
+export const startCdpBridge = async (): Promise<CdpBridgeHandle> => {
+  const server = await createCdpBridgeServer(createElectronWebviewTarget, process.versions.chrome ?? '0.0.0.0');
+  const { target } = server;
+  return {
+    port: server.port,
+    token: server.token,
+    attachedWebContentsId: target.attachedWebContentsId,
+    attach: target.attach,
+    detach: target.detach,
+    close: async () => {
+      target.detach();
+      await server.close();
     },
   };
 };

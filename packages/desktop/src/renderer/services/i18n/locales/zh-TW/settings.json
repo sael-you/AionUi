@@ -1539,5 +1539,45 @@
       "community": "社群",
       "custom": "自訂"
     }
+  },
+  "serverBrowser": {
+    "title": "瀏覽器（伺服器）",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "伺服器瀏覽器無法使用：{{reason}}",
+    "agentsLabel": "代理可以使用瀏覽器",
+    "agentsDesc": "你對話中的代理可在這些瀏覽器中開啟分頁、瀏覽、點擊、輸入並執行頁面腳本。它們遵守瀏覽器安全規則：任何傳送、刪除、付款或變更設定的操作都需要你同意。",
+    "maxInstancesLabel": "瀏覽器",
+    "maxInstancesDesc": "獨立的 Chrome，各有自己的設定檔。瀏覽器 1 是面板中的瀏覽器，帶有你的登入。",
+    "maxTabsLabel": "每個瀏覽器的分頁",
+    "maxTabsDesc": "你和代理在每個瀏覽器中最多可開啟這麼多分頁。",
+    "instancesLabel": "瀏覽器",
+    "instanceMain": "瀏覽器 1（面板，你的登入）",
+    "instanceN": "瀏覽器 {{n}}",
+    "notRunning": "已停止",
+    "agentActive": "代理活動中",
+    "stop": "停止",
+    "stopLabel": "停止 {{name}}",
+    "stopped": "瀏覽器 {{n}} 已停止",
+    "clearLabel": "清除 {{name}} 的瀏覽資料",
+    "hideAutomationLabel": "隱藏瀏覽器受自動化控制",
+    "hideAutomationDesc": "預設關閉。在此瀏覽器下次啟動時生效。",
+    "hideAutomationAria": "隱藏 {{name}} 受自動化控制",
+    "hideAutomationConfirmTitle": "要為此瀏覽器隱藏自動化嗎？",
+    "hideAutomationWarning": "網站將不再看到此瀏覽器由軟體控制的標準標記。許多網站在條款中禁止自動使用帳號，部分網站仍能偵測：這些帳號的風險由你承擔。Google 登入仍會拒絕此瀏覽器。在瀏覽器下次啟動時生效。",
+    "hideAutomationConfirmOk": "隱藏",
+    "appliesNextStart": "停止此瀏覽器並重新開啟面板以套用變更。",
+    "lowerInstancesTitle": "減少瀏覽器數量？",
+    "saved": "已儲存",
+    "errors": {
+      "generic": "無法儲存設定，請再試一次。",
+      "outOfRange": "此值超出範圍。",
+      "busy": "此瀏覽器忙碌中，請稍後再試。"
+    },
+    "running": "執行中 · {{count}} 個分頁",
+    "running_one": "執行中 · {{count}} 個分頁",
+    "running_other": "執行中 · {{count}} 個分頁",
+    "lowerInstancesContent": "超出新上限的 {{count}} 個執行中瀏覽器將被停止。",
+    "lowerInstancesContent_one": "超出新上限的 {{count}} 個執行中瀏覽器將被停止。",
+    "lowerInstancesContent_other": "超出新上限的 {{count}} 個執行中瀏覽器將被停止。"
   }
 }

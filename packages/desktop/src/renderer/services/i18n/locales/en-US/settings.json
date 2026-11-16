@@ -1537,5 +1537,45 @@
       "community": "Community",
       "custom": "Custom"
     }
+  },
+  "serverBrowser": {
+    "title": "Browser (server)",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "The server browser is not available: {{reason}}",
+    "agentsLabel": "Agents can use the browser",
+    "agentsDesc": "Agents in your conversations can open tabs, navigate, click, type and run page scripts in these browsers. They follow the browser-safety rules: anything that sends, deletes, pays or changes settings needs your OK.",
+    "maxInstancesLabel": "Browsers",
+    "maxInstancesDesc": "Separate Chromes, each with its own profile. Browser 1 is the one in the panel, with your logins.",
+    "maxTabsLabel": "Tabs per browser",
+    "maxTabsDesc": "You and agents can open up to this many tabs in each browser.",
+    "instancesLabel": "Browsers",
+    "instanceMain": "Browser 1 (panel, your logins)",
+    "instanceN": "Browser {{n}}",
+    "notRunning": "Stopped",
+    "agentActive": "Agent active",
+    "stop": "Stop",
+    "stopLabel": "Stop {{name}}",
+    "stopped": "Browser {{n}} stopped",
+    "clearLabel": "Clear browsing data of {{name}}",
+    "hideAutomationLabel": "Hide that the browser is automated",
+    "hideAutomationDesc": "Off by default. Applies at this browser's next start.",
+    "hideAutomationAria": "Hide that {{name}} is automated",
+    "hideAutomationConfirmTitle": "Hide automation for this browser?",
+    "hideAutomationWarning": "Sites will no longer see the standard sign that this browser is controlled by software. Many sites forbid automated use of accounts in their terms, and some still detect it: the risk to these accounts is yours. Google sign-in still refuses this browser. Takes effect at the browser's next start.",
+    "hideAutomationConfirmOk": "Hide it",
+    "appliesNextStart": "Stop this browser and open the panel again to apply the change.",
+    "lowerInstancesTitle": "Lower the number of browsers?",
+    "saved": "Saved",
+    "errors": {
+      "generic": "The setting could not be saved. Try again.",
+      "outOfRange": "That value is out of range.",
+      "busy": "That browser is busy. Try again in a moment."
+    },
+    "running": "Running · {{count}} tabs",
+    "running_one": "Running · {{count}} tab",
+    "running_other": "Running · {{count}} tabs",
+    "lowerInstancesContent": "{{count}} running browsers above the new limit will be stopped.",
+    "lowerInstancesContent_one": "{{count}} running browser above the new limit will be stopped.",
+    "lowerInstancesContent_other": "{{count}} running browsers above the new limit will be stopped."
   }
 }

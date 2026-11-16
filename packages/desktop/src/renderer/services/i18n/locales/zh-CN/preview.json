@@ -187,5 +187,44 @@
   "zoomIn": "放大",
   "zoomOut": "缩小",
   "zoomReset": "重置视图",
-  "diagramZoomHint": "滚轮缩放 • 拖拽平移 • ESC 关闭"
+  "diagramZoomHint": "滚轮缩放 • 拖拽平移 • ESC 关闭",
+  "serverBrowser": {
+    "agentDriving": "代理正在操作",
+    "closeTab": "关闭 {{title}}",
+    "dialogPrompt": "回答",
+    "dialogTitle": "页面询问",
+    "fileUploadUnsupported": "暂不支持从服务器浏览器上传文件。",
+    "googleRejected": "Google 拒绝在此浏览器中登录，因此暂不支持 Google 账号。",
+    "instanceLabel": "浏览器",
+    "instanceMain": "浏览器 1（你的登录）",
+    "instanceN": "浏览器 {{n}}",
+    "start": "启动浏览器",
+    "surfaceLabel": "服务器浏览器页面。点击后即可在其中使用鼠标和键盘。",
+    "surfaceRole": "远程浏览器",
+    "tabsLabel": "浏览器标签页",
+    "typeEnter": "回车",
+    "typeLabel": "在页面中输入",
+    "typePlaceholder": "在此输入，然后发送",
+    "typeSend": "发送",
+    "errors": {
+      "unavailable": "服务器浏览器不可用。",
+      "startFailed": "浏览器未能启动。",
+      "notRunning": "浏览器未运行。",
+      "urlBlocked": "此地址在服务器浏览器中被屏蔽。",
+      "agentsDisabled": "代理不得使用浏览器（设置 → 浏览器）。",
+      "methodBlocked": "不允许该操作。",
+      "tabLimit": "已达到标签页上限，请先关闭一个标签页。",
+      "instanceLimit": "此浏览器编号超出你的上限。",
+      "settingOutOfRange": "该值超出范围。",
+      "tabNotFound": "该标签页已不存在。",
+      "badMessage": "浏览器无法理解该操作。",
+      "busy": "浏览器正忙，请稍后再试。"
+    },
+    "status": {
+      "starting": "正在启动浏览器…",
+      "running": "运行中",
+      "stopped": "浏览器已停止。",
+      "error": "浏览器因错误而停止。"
+    }
+  }
 }

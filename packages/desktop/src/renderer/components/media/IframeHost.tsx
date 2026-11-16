@@ -208,7 +208,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
   return (
     <div className={`h-full w-full flex flex-col ${className ?? ''}`} style={style} data-testid='iframe-host'>
       {showNavBar && (
-        <div className='flex items-center gap-6px h-40px px-10px bg-bg-2 border-b border-border-1 flex-shrink-0'>
+        <div className='flex items-center gap-6px h-40px px-10px bg-2 border-b border-3 flex-shrink-0'>
           <Button
             size='small'
             icon={<Left theme='outline' size={16} className='rtl:rotate-180' />}
@@ -285,7 +285,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
         </div>
       )}
       {showNavBar && decision.kind === 'embed' && !hintDismissed && (
-        <div className='flex items-start gap-6px px-10px py-4px text-11px text-t-tertiary bg-bg-2 border-b border-border-1 flex-shrink-0'>
+        <div className='flex items-start gap-6px px-10px py-4px text-11px text-t-tertiary bg-2 border-b border-3 flex-shrink-0'>
           <span className='flex-1'>{t('preview.browser.webModeHint')}</span>
           <Button
             size='small'

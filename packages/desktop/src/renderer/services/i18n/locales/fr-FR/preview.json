@@ -187,5 +187,44 @@
   "zoomIn": "Zoom avant",
   "zoomOut": "Zoom arrière",
   "zoomReset": "Réinitialiser la vue",
-  "diagramZoomHint": "Molette pour zoomer • Glisser pour déplacer • Échap pour fermer"
+  "diagramZoomHint": "Molette pour zoomer • Glisser pour déplacer • Échap pour fermer",
+  "serverBrowser": {
+    "agentDriving": "Un agent pilote",
+    "closeTab": "Fermer {{title}}",
+    "dialogPrompt": "Réponse",
+    "dialogTitle": "La page demande",
+    "fileUploadUnsupported": "L’envoi de fichiers depuis le navigateur du serveur n’est pas encore pris en charge.",
+    "googleRejected": "Google refuse la connexion dans ce navigateur : les comptes Google ne sont donc pas pris en charge ici pour l’instant.",
+    "instanceLabel": "Navigateur",
+    "instanceMain": "Navigateur 1 (vos connexions)",
+    "instanceN": "Navigateur {{n}}",
+    "start": "Démarrer le navigateur",
+    "surfaceLabel": "Page du navigateur du serveur. Cliquez pour y utiliser la souris et le clavier.",
+    "surfaceRole": "navigateur distant",
+    "tabsLabel": "Onglets du navigateur",
+    "typeEnter": "Entrée",
+    "typeLabel": "Saisir dans la page",
+    "typePlaceholder": "Saisissez ici, puis Envoyer",
+    "typeSend": "Envoyer",
+    "errors": {
+      "unavailable": "Le navigateur du serveur n’est pas disponible.",
+      "startFailed": "Le navigateur n’a pas démarré.",
+      "notRunning": "Le navigateur n’est pas lancé.",
+      "urlBlocked": "Cette adresse est bloquée dans le navigateur du serveur.",
+      "agentsDisabled": "Les agents ne peuvent pas utiliser le navigateur (Paramètres → Navigateur).",
+      "methodBlocked": "Cette action n’est pas autorisée.",
+      "tabLimit": "Limite d’onglets atteinte. Fermez d’abord un onglet.",
+      "instanceLimit": "Ce numéro de navigateur dépasse votre limite.",
+      "settingOutOfRange": "Cette valeur est hors limites.",
+      "tabNotFound": "Cet onglet n’existe plus.",
+      "badMessage": "Le navigateur n’a pas compris cette action.",
+      "busy": "Le navigateur est occupé. Réessayez dans un instant."
+    },
+    "status": {
+      "starting": "Démarrage du navigateur…",
+      "running": "En cours",
+      "stopped": "Le navigateur est arrêté.",
+      "error": "Le navigateur s’est arrêté sur une erreur."
+    }
+  }
 }

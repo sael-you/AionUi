@@ -1,0 +1,438 @@
+{
+  "description": "Shared rules of the AionUi single-target CDP emulation (TASK-111). The TypeScript bridge (ui: process/resources/builtinMcp/cdpTargetProtocol.ts) and the Rust bridge (core: aionui-browser) both replay this file; a byte-identical copy lives in each repo. Change both implementations and both copies together.",
+  "version": 1,
+  "constants": {
+    "target_id": "aionui-browser-target",
+    "session_id": "aionui-browser-session",
+    "browser_context_id": "aionui-browser-context"
+  },
+  "target": {
+    "title": "Discord",
+    "url": "https://discord.com/login"
+  },
+  "decide": [
+    {
+      "name": "setDiscoverTargets on backfills targetCreated",
+      "request": {
+        "id": 1,
+        "method": "Target.setDiscoverTargets",
+        "params": {
+          "discover": true
+        }
+      },
+      "expect": {
+        "kind": "reply-and-emit",
+        "payload": {},
+        "emit": [
+          {
+            "method": "Target.targetCreated",
+            "params": {
+              "targetInfo": {
+                "targetId": "aionui-browser-target",
+                "type": "page",
+                "title": "Discord",
+                "url": "https://discord.com/login",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "aionui-browser-context"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "setDiscoverTargets off only acknowledges",
+      "request": {
+        "id": 2,
+        "method": "Target.setDiscoverTargets",
+        "params": {
+          "discover": false
+        }
+      },
+      "expect": {
+        "kind": "reply",
+        "payload": {}
+      }
+    },
+    {
+      "name": "browser-level setAutoAttach announces the single session",
+      "request": {
+        "id": 3,
+        "method": "Target.setAutoAttach",
+        "params": {
+          "autoAttach": true,
+          "flatten": true,
+          "waitForDebuggerOnStart": true
+        }
+      },
+      "expect": {
+        "kind": "reply-and-emit",
+        "payload": {},
+        "emit": [
+          {
+            "method": "Target.attachedToTarget",
+            "params": {
+              "sessionId": "aionui-browser-session",
+              "targetInfo": {
+                "targetId": "aionui-browser-target",
+                "type": "page",
+                "title": "Discord",
+                "url": "https://discord.com/login",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "aionui-browser-context"
+              },
+              "waitingForDebugger": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "browser-level setAutoAttach with empty sessionId announces too",
+      "request": {
+        "id": 4,
+        "method": "Target.setAutoAttach",
+        "params": {
+          "autoAttach": true
+        },
+        "sessionId": ""
+      },
+      "expect": {
+        "kind": "reply-and-emit",
+        "payload": {},
+        "emit": [
+          {
+            "method": "Target.attachedToTarget",
+            "params": {
+              "sessionId": "aionui-browser-session",
+              "targetInfo": {
+                "targetId": "aionui-browser-target",
+                "type": "page",
+                "title": "Discord",
+                "url": "https://discord.com/login",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "aionui-browser-context"
+              },
+              "waitingForDebugger": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "session-scoped setAutoAttach only acknowledges (no loop)",
+      "request": {
+        "id": 5,
+        "method": "Target.setAutoAttach",
+        "params": {
+          "autoAttach": true
+        },
+        "sessionId": "aionui-browser-session"
+      },
+      "expect": {
+        "kind": "reply",
+        "payload": {}
+      }
+    },
+    {
+      "name": "getTargets lists exactly the one page",
+      "request": {
+        "id": 6,
+        "method": "Target.getTargets"
+      },
+      "expect": {
+        "kind": "reply",
+        "payload": {
+          "targetInfos": [
+            {
+              "targetId": "aionui-browser-target",
+              "type": "page",
+              "title": "Discord",
+              "url": "https://discord.com/login",
+              "attached": true,
+              "canAccessOpener": false,
+              "browserContextId": "aionui-browser-context"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "getTargetInfo returns the page",
+      "request": {
+        "id": 7,
+        "method": "Target.getTargetInfo",
+        "params": {}
+      },
+      "expect": {
+        "kind": "reply",
+        "payload": {
+          "targetInfo": {
+            "targetId": "aionui-browser-target",
+            "type": "page",
+            "title": "Discord",
+            "url": "https://discord.com/login",
+            "attached": true,
+            "canAccessOpener": false,
+            "browserContextId": "aionui-browser-context"
+          }
+        }
+      }
+    },
+    {
+      "name": "getBrowserContexts returns the single context",
+      "request": {
+        "id": 8,
+        "method": "Target.getBrowserContexts"
+      },
+      "expect": {
+        "kind": "reply",
+        "payload": {
+          "browserContextIds": ["aionui-browser-context"]
+        }
+      }
+    },
+    {
+      "name": "attachToTarget without targetId attaches the page",
+      "request": {
+        "id": 9,
+        "method": "Target.attachToTarget",
+        "params": {
+          "flatten": true
+        }
+      },
+      "expect": {
+        "kind": "reply-and-emit",
+        "payload": {
+          "sessionId": "aionui-browser-session"
+        },
+        "emit": [
+          {
+            "method": "Target.attachedToTarget",
+            "params": {
+              "sessionId": "aionui-browser-session",
+              "targetInfo": {
+                "targetId": "aionui-browser-target",
+                "type": "page",
+                "title": "Discord",
+                "url": "https://discord.com/login",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "aionui-browser-context"
+              },
+              "waitingForDebugger": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "attachToTarget with our targetId attaches the page",
+      "request": {
+        "id": 10,
+        "method": "Target.attachToTarget",
+        "params": {
+          "targetId": "aionui-browser-target",
+          "flatten": true
+        }
+      },
+      "expect": {
+        "kind": "reply-and-emit",
+        "payload": {
+          "sessionId": "aionui-browser-session"
+        },
+        "emit": [
+          {
+            "method": "Target.attachedToTarget",
+            "params": {
+              "sessionId": "aionui-browser-session",
+              "targetInfo": {
+                "targetId": "aionui-browser-target",
+                "type": "page",
+                "title": "Discord",
+                "url": "https://discord.com/login",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "aionui-browser-context"
+              },
+              "waitingForDebugger": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "attachToTarget with a foreign targetId is an error",
+      "request": {
+        "id": 11,
+        "method": "Target.attachToTarget",
+        "params": {
+          "targetId": "OTHER"
+        }
+      },
+      "expect": {
+        "kind": "error",
+        "message": "No such target id: OTHER"
+      }
+    },
+    {
+      "name": "detachFromTarget is acknowledged and ignored",
+      "request": {
+        "id": 12,
+        "method": "Target.detachFromTarget",
+        "params": {
+          "sessionId": "aionui-browser-session"
+        }
+      },
+      "expect": {
+        "kind": "reply",
+        "payload": {}
+      }
+    },
+    {
+      "name": "closeTarget is acknowledged and ignored",
+      "request": {
+        "id": 13,
+        "method": "Target.closeTarget",
+        "params": {
+          "targetId": "aionui-browser-target"
+        }
+      },
+      "expect": {
+        "kind": "reply",
+        "payload": {}
+      }
+    },
+    {
+      "name": "createTarget is refused",
+      "request": {
+        "id": 14,
+        "method": "Target.createTarget",
+        "params": {
+          "url": "about:blank"
+        }
+      },
+      "expect": {
+        "kind": "error",
+        "message": "AionUi in-app browser exposes a single fixed tab; Target.createTarget is not supported."
+      }
+    },
+    {
+      "name": "createBrowserContext is refused",
+      "request": {
+        "id": 15,
+        "method": "Target.createBrowserContext"
+      },
+      "expect": {
+        "kind": "error",
+        "message": "AionUi in-app browser does not support multiple browser contexts."
+      }
+    },
+    {
+      "name": "disposeBrowserContext is refused",
+      "request": {
+        "id": 16,
+        "method": "Target.disposeBrowserContext",
+        "params": {
+          "browserContextId": "x"
+        }
+      },
+      "expect": {
+        "kind": "error",
+        "message": "AionUi in-app browser does not support multiple browser contexts."
+      }
+    },
+    {
+      "name": "Browser.close is refused",
+      "request": {
+        "id": 17,
+        "method": "Browser.close"
+      },
+      "expect": {
+        "kind": "error",
+        "message": "Browser.close is not permitted against the AionUi in-app browser."
+      }
+    },
+    {
+      "name": "page commands are forwarded",
+      "request": {
+        "id": 18,
+        "method": "Page.navigate",
+        "params": {
+          "url": "https://example.com"
+        },
+        "sessionId": "aionui-browser-session"
+      },
+      "expect": {
+        "kind": "forward"
+      }
+    },
+    {
+      "name": "Runtime commands are forwarded",
+      "request": {
+        "id": 19,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "1+1"
+        },
+        "sessionId": "aionui-browser-session"
+      },
+      "expect": {
+        "kind": "forward"
+      }
+    },
+    {
+      "name": "Browser.getVersion is forwarded",
+      "request": {
+        "id": 20,
+        "method": "Browser.getVersion"
+      },
+      "expect": {
+        "kind": "forward"
+      }
+    }
+  ],
+  "session_ids": [
+    {
+      "session_id": null,
+      "acceptable": true
+    },
+    {
+      "session_id": "",
+      "acceptable": true
+    },
+    {
+      "session_id": "aionui-browser-session",
+      "acceptable": true
+    },
+    {
+      "session_id": "FOREIGN",
+      "acceptable": false
+    }
+  ],
+  "tokens": [
+    {
+      "a": "abc123",
+      "b": "abc123",
+      "match": true
+    },
+    {
+      "a": "abc123",
+      "b": "abc124",
+      "match": false
+    },
+    {
+      "a": "abc123",
+      "b": "abc12",
+      "match": false
+    },
+    {
+      "a": "abc123",
+      "b": "",
+      "match": false
+    }
+  ]
+}

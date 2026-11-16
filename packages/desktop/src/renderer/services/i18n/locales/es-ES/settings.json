@@ -1537,5 +1537,45 @@
       "community": "Comunidad",
       "custom": "Propios"
     }
+  },
+  "serverBrowser": {
+    "title": "Navegador (servidor)",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "El navegador del servidor no está disponible: {{reason}}",
+    "agentsLabel": "Los agentes pueden usar el navegador",
+    "agentsDesc": "Los agentes de tus conversaciones pueden abrir pestañas, navegar, hacer clic, escribir y ejecutar scripts de página en estos navegadores. Siguen las reglas de seguridad del navegador: enviar, borrar, pagar o cambiar ajustes necesita tu OK.",
+    "maxInstancesLabel": "Navegadores",
+    "maxInstancesDesc": "Chromes separados, cada uno con su propio perfil. El navegador 1 es el del panel, con tus sesiones.",
+    "maxTabsLabel": "Pestañas por navegador",
+    "maxTabsDesc": "Tú y los agentes podéis abrir hasta este número de pestañas en cada navegador.",
+    "instancesLabel": "Navegadores",
+    "instanceMain": "Navegador 1 (panel, tus sesiones)",
+    "instanceN": "Navegador {{n}}",
+    "notRunning": "Detenido",
+    "agentActive": "Agente activo",
+    "stop": "Detener",
+    "stopLabel": "Detener {{name}}",
+    "stopped": "Navegador {{n}} detenido",
+    "clearLabel": "Borrar datos de navegación de {{name}}",
+    "hideAutomationLabel": "Ocultar que el navegador está automatizado",
+    "hideAutomationDesc": "Desactivado por defecto. Se aplica en el próximo inicio de este navegador.",
+    "hideAutomationAria": "Ocultar que {{name}} está automatizado",
+    "hideAutomationConfirmTitle": "¿Ocultar la automatización de este navegador?",
+    "hideAutomationWarning": "Los sitios dejarán de ver la señal estándar de que este navegador está controlado por software. Muchos sitios prohíben en sus condiciones el uso automatizado de cuentas, y algunos aún lo detectan: el riesgo para esas cuentas es tuyo. El inicio de sesión de Google sigue rechazando este navegador. Se aplica en el próximo inicio del navegador.",
+    "hideAutomationConfirmOk": "Ocultar",
+    "appliesNextStart": "Detén este navegador y vuelve a abrir el panel para aplicar el cambio.",
+    "lowerInstancesTitle": "¿Reducir el número de navegadores?",
+    "saved": "Guardado",
+    "errors": {
+      "generic": "No se pudo guardar el ajuste. Inténtalo de nuevo.",
+      "outOfRange": "Ese valor está fuera de rango.",
+      "busy": "Ese navegador está ocupado. Vuelve a intentarlo en un momento."
+    },
+    "running": "En marcha · {{count}} pestañas",
+    "running_one": "En marcha · {{count}} pestaña",
+    "running_other": "En marcha · {{count}} pestañas",
+    "lowerInstancesContent": "Se detendrán {{count}} navegadores en marcha por encima del nuevo límite.",
+    "lowerInstancesContent_one": "Se detendrá {{count}} navegador en marcha por encima del nuevo límite.",
+    "lowerInstancesContent_other": "Se detendrán {{count}} navegadores en marcha por encima del nuevo límite."
   }
 }

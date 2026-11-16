@@ -17,6 +17,7 @@ import type { AcpSlashCommandApiItem } from '@/common/chat/slash/types';
 import { bridge } from '@/common/platform/bridge';
 import { buildListTasksPath } from './teamTaskPath';
 import type { OpenDialogOptions } from 'electron';
+import type { BrowserSettings, BrowserSettingsUpdate, BrowserStatusResponse } from '../types/platform/serverBrowser';
 import type {
   AttachKitItemRequest,
   CreateKitRequest,
@@ -942,6 +943,26 @@ export const application = {
     'app.log-stream'
   ),
   devToolsStateChanged: bridge.buildEmitter<{ isOpen: boolean }>('app.devtools-state-changed'),
+};
+
+// ---------------------------------------------------------------------------
+// Server-side in-app browser (WebUI, C30): settings, status and per-instance
+// actions over HTTP (CSRF via httpBridge). The stream is WS /api/browser/ws.
+// ---------------------------------------------------------------------------
+
+export const serverBrowser = {
+  getSettings: httpGet<BrowserSettings, void>('/api/browser/settings'),
+  updateSettings: httpPut<BrowserSettings, BrowserSettingsUpdate>('/api/browser/settings'),
+  getStatus: httpGet<BrowserStatusResponse, void>('/api/browser/status'),
+  /** Wipe that instance's profile (signs out everywhere) and restart it if it was running. */
+  clearInstance: httpPost<BrowserStatusResponse, { instance: number }>(
+    (p) => `/api/browser/instances/${encodeURIComponent(String(p.instance))}/clear`,
+    () => ({})
+  ),
+  stopInstance: httpPost<BrowserStatusResponse, { instance: number }>(
+    (p) => `/api/browser/instances/${encodeURIComponent(String(p.instance))}/stop`,
+    () => ({})
+  ),
 };
 
 // ---------------------------------------------------------------------------

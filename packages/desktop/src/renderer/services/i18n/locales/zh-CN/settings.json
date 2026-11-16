@@ -1538,5 +1538,45 @@
       "community": "社区",
       "custom": "自定义"
     }
+  },
+  "serverBrowser": {
+    "title": "浏览器（服务器）",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "服务器浏览器不可用：{{reason}}",
+    "agentsLabel": "代理可以使用浏览器",
+    "agentsDesc": "你对话中的代理可以在这些浏览器中打开标签页、导航、点击、输入和运行页面脚本。它们遵守浏览器安全规则：任何发送、删除、付款或更改设置的操作都需要你的同意。",
+    "maxInstancesLabel": "浏览器",
+    "maxInstancesDesc": "独立的 Chrome，各自拥有自己的配置文件。浏览器 1 是面板中的浏览器，带有你的登录。",
+    "maxTabsLabel": "每个浏览器的标签页",
+    "maxTabsDesc": "你和代理在每个浏览器中最多可打开这么多标签页。",
+    "instancesLabel": "浏览器",
+    "instanceMain": "浏览器 1（面板，你的登录）",
+    "instanceN": "浏览器 {{n}}",
+    "notRunning": "已停止",
+    "agentActive": "代理活动中",
+    "stop": "停止",
+    "stopLabel": "停止 {{name}}",
+    "stopped": "浏览器 {{n}} 已停止",
+    "clearLabel": "清除 {{name}} 的浏览数据",
+    "hideAutomationLabel": "隐藏浏览器被自动化控制",
+    "hideAutomationDesc": "默认关闭。在此浏览器下次启动时生效。",
+    "hideAutomationAria": "隐藏 {{name}} 被自动化控制",
+    "hideAutomationConfirmTitle": "为此浏览器隐藏自动化？",
+    "hideAutomationWarning": "网站将不再看到此浏览器由软件控制的标准标识。许多网站在条款中禁止自动使用账号，部分网站仍能检测到：这些账号的风险由你承担。Google 登录仍会拒绝此浏览器。在浏览器下次启动时生效。",
+    "hideAutomationConfirmOk": "隐藏",
+    "appliesNextStart": "停止此浏览器并重新打开面板以应用更改。",
+    "lowerInstancesTitle": "减少浏览器数量？",
+    "saved": "已保存",
+    "errors": {
+      "generic": "设置未能保存，请重试。",
+      "outOfRange": "该值超出范围。",
+      "busy": "该浏览器正忙，请稍后再试。"
+    },
+    "running": "运行中 · {{count}} 个标签页",
+    "running_one": "运行中 · {{count}} 个标签页",
+    "running_other": "运行中 · {{count}} 个标签页",
+    "lowerInstancesContent": "超出新上限的 {{count}} 个运行中的浏览器将被停止。",
+    "lowerInstancesContent_one": "超出新上限的 {{count}} 个运行中的浏览器将被停止。",
+    "lowerInstancesContent_other": "超出新上限的 {{count}} 个运行中的浏览器将被停止。"
   }
 }

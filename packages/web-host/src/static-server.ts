@@ -2,8 +2,8 @@
  * WebUI static server.
  *
  * Serves out/renderer/ as the SPA and reverse-proxies /api/*, /ws, /api/stt/stream,
- * /login and /logout to aioncore (/api/voice/ws, the voice-mode control channel, is
- * spliced like /ws). All auth goes to backend's aionui-auth crate;
+ * /login and /logout to aioncore (/api/voice/ws, the voice-mode control channel, and
+ * /api/browser/ws, the server-side in-app browser stream, are spliced like /ws). All auth goes to backend's aionui-auth crate;
  * /login and /logout are aionui-auth's top-level paths, the rest live under
  * /api/auth/*. /ws and /api/stt/stream are WebSocket/stream upgrades spliced at
  * TCP level; /api/stt/stream is the STT streaming endpoint. Every request and
@@ -259,8 +259,9 @@ function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffe
 
 /**
  * Decide routing from the first chunk of an incoming HTTP connection:
- *  - `true`  → `GET /ws[...]`, `GET /api/stt/stream[...]` or `GET /api/voice/ws[...]` (HTTP/1.x WebSocket/stream
- *    upgrades; `/api/voice/ws` is the voice-mode control channel), splice to backend
+ *  - `true`  → `GET /ws[...]`, `GET /api/stt/stream[...]`, `GET /api/voice/ws[...]` or `GET /api/browser/ws[...]`
+ *    (HTTP/1.x WebSocket/stream upgrades; `/api/voice/ws` is the voice-mode control channel, `/api/browser/ws` the
+ *    server-side in-app browser's screencast and input stream, TASK-111), splice to backend
  *  - `false` → any other HTTP method / path, hand to internal HTTP server
  *  - `null`  → need more bytes (no CRLF yet)
  *
@@ -273,7 +274,9 @@ export function peekWsRoute(buf: Buffer): boolean | null {
   const newlineIdx = buf.indexOf(0x0a); // \n
   if (newlineIdx < 0) return null;
   const firstLine = buf.slice(0, newlineIdx).toString('ascii');
-  return /^GET\s+\/(?:ws|api\/stt\/stream|api\/voice\/ws)(?:\?[^\s]*)?\s+HTTP\/1\.[01]\r?$/.test(firstLine);
+  return /^GET\s+\/(?:ws|api\/stt\/stream|api\/voice\/ws|api\/browser\/ws)(?:\?[^\s]*)?\s+HTTP\/1\.[01]\r?$/.test(
+    firstLine
+  );
 }
 
 export async function startStaticServer(opts: StaticServerOptions): Promise<StaticServerHandle> {

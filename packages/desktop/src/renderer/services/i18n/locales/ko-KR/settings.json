@@ -1539,5 +1539,45 @@
       "community": "커뮤니티",
       "custom": "사용자 지정"
     }
+  },
+  "serverBrowser": {
+    "title": "브라우저(서버)",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "서버 브라우저를 사용할 수 없습니다: {{reason}}",
+    "agentsLabel": "에이전트가 브라우저를 사용할 수 있음",
+    "agentsDesc": "대화의 에이전트가 이 브라우저에서 탭을 열고, 이동하고, 클릭하고, 입력하고, 페이지 스크립트를 실행할 수 있습니다. 브라우저 안전 규칙을 따르며, 보내기·삭제·결제·설정 변경에는 사용자의 동의가 필요합니다.",
+    "maxInstancesLabel": "브라우저",
+    "maxInstancesDesc": "각자 프로필을 가진 별도의 Chrome입니다. 브라우저 1은 패널의 브라우저로 내 로그인이 있습니다.",
+    "maxTabsLabel": "브라우저별 탭 수",
+    "maxTabsDesc": "나와 에이전트는 각 브라우저에서 이 수만큼 탭을 열 수 있습니다.",
+    "instancesLabel": "브라우저",
+    "instanceMain": "브라우저 1(패널, 내 로그인)",
+    "instanceN": "브라우저 {{n}}",
+    "notRunning": "중지됨",
+    "agentActive": "에이전트 활동 중",
+    "stop": "중지",
+    "stopLabel": "{{name}} 중지",
+    "stopped": "브라우저 {{n}}을(를) 중지했습니다",
+    "clearLabel": "{{name}}의 인터넷 사용 기록 삭제",
+    "hideAutomationLabel": "브라우저가 자동화되었음을 숨기기",
+    "hideAutomationDesc": "기본값은 꺼짐. 이 브라우저의 다음 시작 시 적용됩니다.",
+    "hideAutomationAria": "{{name}}이(가) 자동화되었음을 숨기기",
+    "hideAutomationConfirmTitle": "이 브라우저의 자동화를 숨길까요?",
+    "hideAutomationWarning": "사이트가 이 브라우저가 소프트웨어로 제어된다는 표준 신호를 더 이상 보지 못합니다. 많은 사이트가 약관에서 계정의 자동 사용을 금지하며, 일부는 여전히 감지합니다. 이 계정들의 위험은 사용자에게 있습니다. Google 로그인은 계속 이 브라우저를 거부합니다. 브라우저의 다음 시작 시 적용됩니다.",
+    "hideAutomationConfirmOk": "숨기기",
+    "appliesNextStart": "변경을 적용하려면 이 브라우저를 중지하고 패널을 다시 여세요.",
+    "lowerInstancesTitle": "브라우저 수를 줄일까요?",
+    "saved": "저장됨",
+    "errors": {
+      "generic": "설정을 저장하지 못했습니다. 다시 시도하세요.",
+      "outOfRange": "값이 범위를 벗어났습니다.",
+      "busy": "그 브라우저가 사용 중입니다. 잠시 후 다시 시도하세요."
+    },
+    "running": "실행 중 · 탭 {{count}}개",
+    "running_one": "실행 중 · 탭 {{count}}개",
+    "running_other": "실행 중 · 탭 {{count}}개",
+    "lowerInstancesContent": "새 한도를 넘는 실행 중인 브라우저 {{count}}개가 중지됩니다.",
+    "lowerInstancesContent_one": "새 한도를 넘는 실행 중인 브라우저 {{count}}개가 중지됩니다.",
+    "lowerInstancesContent_other": "새 한도를 넘는 실행 중인 브라우저 {{count}}개가 중지됩니다."
   }
 }

@@ -187,5 +187,44 @@
   "zoomIn": "Zoom in",
   "zoomOut": "Zoom out",
   "zoomReset": "Reset view",
-  "diagramZoomHint": "Scroll to zoom • Drag to pan • ESC to close"
+  "diagramZoomHint": "Scroll to zoom • Drag to pan • ESC to close",
+  "serverBrowser": {
+    "agentDriving": "Agent is driving",
+    "closeTab": "Close {{title}}",
+    "dialogPrompt": "Answer",
+    "dialogTitle": "The page asks",
+    "fileUploadUnsupported": "Uploading files from the server browser is not supported yet.",
+    "googleRejected": "Google refuses sign-in in this browser, so Google accounts are not supported here for now.",
+    "instanceLabel": "Browser",
+    "instanceMain": "Browser 1 (your logins)",
+    "instanceN": "Browser {{n}}",
+    "start": "Start browser",
+    "surfaceLabel": "Server browser page. Click it to use your mouse and keyboard there.",
+    "surfaceRole": "remote browser",
+    "tabsLabel": "Browser tabs",
+    "typeEnter": "Enter",
+    "typeLabel": "Type into the page",
+    "typePlaceholder": "Type here, then Send",
+    "typeSend": "Send",
+    "errors": {
+      "unavailable": "The server browser is not available.",
+      "startFailed": "The browser did not start.",
+      "notRunning": "The browser is not running.",
+      "urlBlocked": "This address is blocked in the server browser.",
+      "agentsDisabled": "Agents may not use the browser (Settings → Browser).",
+      "methodBlocked": "That action is not allowed.",
+      "tabLimit": "Tab limit reached. Close a tab first.",
+      "instanceLimit": "This browser number is above your limit.",
+      "settingOutOfRange": "That value is out of range.",
+      "tabNotFound": "That tab no longer exists.",
+      "badMessage": "The browser did not understand that action.",
+      "busy": "The browser is busy. Try again in a moment."
+    },
+    "status": {
+      "starting": "Starting the browser…",
+      "running": "Running",
+      "stopped": "The browser is stopped.",
+      "error": "The browser stopped with an error."
+    }
+  }
 }

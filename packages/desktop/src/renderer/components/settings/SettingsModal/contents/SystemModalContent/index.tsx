@@ -28,6 +28,7 @@ import { useSettingsViewMode } from '../../settingsViewContext';
 import BrowserNotificationGrant from './BrowserNotificationGrant';
 import DevSettings from './DevSettings';
 import BrowserDataSection from './BrowserDataSection';
+import ServerBrowserSettings from './ServerBrowserSettings';
 import DirInputItem from './DirInputItem';
 import PreferenceRow from './PreferenceRow';
 import VoiceInputSection from './VoiceInputSection';
@@ -576,7 +577,8 @@ const SystemModalContent: React.FC = () => {
           <VoiceInputSection />
 
           {/* In-app browser: sign-in state and cache */}
-          <BrowserDataSection />
+          {/* Desktop: the webview's data and CDP switch. WebUI: the server-side browser (C30). */}
+          {isDesktop ? <BrowserDataSection /> : <ServerBrowserSettings />}
 
           {/* Developer settings: DevTools + CDP (only visible in dev mode) */}
           <DevSettings />

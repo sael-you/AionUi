@@ -7,6 +7,8 @@
 import React, { useCallback } from 'react';
 import type { PreviewTab, PreviewTabPatch } from '../context/PreviewContext';
 import BrowserViewer from './BrowserViewer';
+import ServerBrowserView from './server/ServerBrowserView';
+import { useServerBrowserAvailability } from './server/useServerBrowserAvailability';
 
 export interface BrowserTabLayerProps {
   /** 所有浏览器类型的 tab / Every browser-type tab */
@@ -51,9 +53,21 @@ const BrowserTabLayer: React.FC<BrowserTabLayerProps> = ({ browserTabs, activeTa
     [updateTab]
   );
 
+  const serverBrowser = useServerBrowserAvailability();
+
   if (browserTabs.length === 0) return null;
 
   const isBrowserActive = browserTabs.some((tab) => tab.id === activeTabId);
+
+  // WebUI with the server browser (C30): one real Chrome with its own tabs, instead of one iframe per tab.
+  if (serverBrowser.available) {
+    const requested = browserTabs.find((tab) => tab.id === activeTabId) ?? browserTabs.at(-1);
+    return (
+      <div className='relative flex-1 overflow-hidden' style={{ display: isBrowserActive ? undefined : 'none' }}>
+        <ServerBrowserView maxInstances={serverBrowser.maxInstances} requestedUrl={requested?.content} />
+      </div>
+    );
+  }
 
   return (
     <div className='relative flex-1 overflow-hidden' style={{ display: isBrowserActive ? undefined : 'none' }}>

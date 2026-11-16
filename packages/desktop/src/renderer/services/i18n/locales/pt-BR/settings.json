@@ -1540,5 +1540,45 @@
       "community": "Comunidade",
       "custom": "Personalizados"
     }
+  },
+  "serverBrowser": {
+    "title": "Navegador (servidor)",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "O navegador do servidor não está disponível: {{reason}}",
+    "agentsLabel": "Agentes podem usar o navegador",
+    "agentsDesc": "Os agentes das suas conversas podem abrir abas, navegar, clicar, digitar e executar scripts nas páginas destes navegadores. Eles seguem as regras de segurança do navegador: enviar, excluir, pagar ou mudar configurações exige o seu OK.",
+    "maxInstancesLabel": "Navegadores",
+    "maxInstancesDesc": "Chromes separados, cada um com seu próprio perfil. O navegador 1 é o do painel, com seus logins.",
+    "maxTabsLabel": "Abas por navegador",
+    "maxTabsDesc": "Você e os agentes podem abrir até este número de abas em cada navegador.",
+    "instancesLabel": "Navegadores",
+    "instanceMain": "Navegador 1 (painel, seus logins)",
+    "instanceN": "Navegador {{n}}",
+    "notRunning": "Parado",
+    "agentActive": "Agente ativo",
+    "stop": "Parar",
+    "stopLabel": "Parar {{name}}",
+    "stopped": "Navegador {{n}} parado",
+    "clearLabel": "Limpar dados de navegação de {{name}}",
+    "hideAutomationLabel": "Ocultar que o navegador é automatizado",
+    "hideAutomationDesc": "Desativado por padrão. Vale a partir do próximo início deste navegador.",
+    "hideAutomationAria": "Ocultar que {{name}} é automatizado",
+    "hideAutomationConfirmTitle": "Ocultar a automação deste navegador?",
+    "hideAutomationWarning": "Os sites deixarão de ver o sinal padrão de que este navegador é controlado por software. Muitos sites proíbem o uso automatizado de contas nos termos, e alguns ainda detectam: o risco para essas contas é seu. O login do Google continua recusando este navegador. Vale a partir do próximo início do navegador.",
+    "hideAutomationConfirmOk": "Ocultar",
+    "appliesNextStart": "Pare este navegador e abra o painel de novo para aplicar a mudança.",
+    "lowerInstancesTitle": "Diminuir o número de navegadores?",
+    "saved": "Salvo",
+    "errors": {
+      "generic": "Não foi possível salvar a configuração. Tente de novo.",
+      "outOfRange": "Esse valor está fora do intervalo.",
+      "busy": "Esse navegador está ocupado. Tente de novo em instantes."
+    },
+    "running": "Em execução · {{count}} abas",
+    "running_one": "Em execução · {{count}} aba",
+    "running_other": "Em execução · {{count}} abas",
+    "lowerInstancesContent": "{{count}} navegadores em execução acima do novo limite serão parados.",
+    "lowerInstancesContent_one": "{{count}} navegador em execução acima do novo limite será parado.",
+    "lowerInstancesContent_other": "{{count}} navegadores em execução acima do novo limite serão parados."
   }
 }

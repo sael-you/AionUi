@@ -1537,5 +1537,45 @@
       "community": "Communauté",
       "custom": "Personnalisés"
     }
+  },
+  "serverBrowser": {
+    "title": "Navigateur (serveur)",
+    "chromeVersion": "Google Chrome {{version}}",
+    "unavailable": "Le navigateur du serveur n’est pas disponible : {{reason}}",
+    "agentsLabel": "Les agents peuvent utiliser le navigateur",
+    "agentsDesc": "Les agents de vos conversations peuvent ouvrir des onglets, naviguer, cliquer, saisir et exécuter des scripts de page dans ces navigateurs. Ils suivent les règles de sécurité du navigateur : envoyer, supprimer, payer ou modifier des paramètres demande votre accord.",
+    "maxInstancesLabel": "Navigateurs",
+    "maxInstancesDesc": "Des Chrome séparés, chacun avec son propre profil. Le navigateur 1 est celui du panneau, avec vos connexions.",
+    "maxTabsLabel": "Onglets par navigateur",
+    "maxTabsDesc": "Vous et les agents pouvez ouvrir jusqu’à ce nombre d’onglets dans chaque navigateur.",
+    "instancesLabel": "Navigateurs",
+    "instanceMain": "Navigateur 1 (panneau, vos connexions)",
+    "instanceN": "Navigateur {{n}}",
+    "notRunning": "Arrêté",
+    "agentActive": "Agent actif",
+    "stop": "Arrêter",
+    "stopLabel": "Arrêter {{name}}",
+    "stopped": "Navigateur {{n}} arrêté",
+    "clearLabel": "Effacer les données de navigation de {{name}}",
+    "hideAutomationLabel": "Masquer que le navigateur est automatisé",
+    "hideAutomationDesc": "Désactivé par défaut. S’applique au prochain démarrage de ce navigateur.",
+    "hideAutomationAria": "Masquer que {{name}} est automatisé",
+    "hideAutomationConfirmTitle": "Masquer l’automatisation de ce navigateur ?",
+    "hideAutomationWarning": "Les sites ne verront plus le signal standard indiquant que ce navigateur est piloté par un logiciel. Beaucoup de sites interdisent l’usage automatisé des comptes dans leurs conditions, et certains le détectent quand même : le risque pour ces comptes est le vôtre. La connexion Google refuse toujours ce navigateur. Prend effet au prochain démarrage du navigateur.",
+    "hideAutomationConfirmOk": "Masquer",
+    "appliesNextStart": "Arrêtez ce navigateur et rouvrez le panneau pour appliquer le changement.",
+    "lowerInstancesTitle": "Réduire le nombre de navigateurs ?",
+    "saved": "Enregistré",
+    "errors": {
+      "generic": "Impossible d’enregistrer le paramètre. Réessayez.",
+      "outOfRange": "Cette valeur est hors limites.",
+      "busy": "Ce navigateur est occupé. Réessayez dans un instant."
+    },
+    "running": "En cours · {{count}} onglets",
+    "running_one": "En cours · {{count}} onglet",
+    "running_other": "En cours · {{count}} onglets",
+    "lowerInstancesContent": "{{count}} navigateurs lancés au-delà de la nouvelle limite seront arrêtés.",
+    "lowerInstancesContent_one": "{{count}} navigateur lancé au-delà de la nouvelle limite sera arrêté.",
+    "lowerInstancesContent_other": "{{count}} navigateurs lancés au-delà de la nouvelle limite seront arrêtés."
   }
 }
