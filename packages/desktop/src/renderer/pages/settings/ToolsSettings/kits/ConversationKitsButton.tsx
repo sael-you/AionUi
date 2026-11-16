@@ -17,7 +17,10 @@ import { iconColors } from '@/renderer/styles/colors';
 import { touchClass, useIsMobileLayout } from '../market/shared';
 import KitLevelModal from './KitLevelModal';
 
-const ConversationKitsButton: React.FC<{ conversationId: string }> = ({ conversationId }) => {
+const ConversationKitsButton: React.FC<{ conversationId: string; projectId?: string | null }> = ({
+  conversationId,
+  projectId,
+}) => {
   const { t } = useTranslation();
   const isMobile = useIsMobileLayout();
   const [open, setOpen] = useState(false);
@@ -40,7 +43,10 @@ const ConversationKitsButton: React.FC<{ conversationId: string }> = ({ conversa
           </span>
         </Button>
       </Tooltip>
-      <KitLevelModal target={open ? { level: 'conversation', conversationId } : null} onClose={() => setOpen(false)} />
+      <KitLevelModal
+        target={open ? { level: 'conversation', conversationId, projectId } : null}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 };

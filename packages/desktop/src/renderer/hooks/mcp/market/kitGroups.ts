@@ -13,7 +13,7 @@
  * library (D47); kits only reference them by name.
  */
 
-import type { KitAttachmentResponse, KitResponse } from '@/common/config/storage';
+import type { KitAttachmentResponse, KitLevel, KitResponse } from '@/common/config/storage';
 
 export type SkillGroupKey = 'global' | 'project' | 'shared' | 'ungrouped';
 
@@ -85,5 +85,21 @@ export const groupSkillsByKit = (input: {
   return { global, project, shared, ungrouped, membership };
 };
 
-/** Kits that may be attached at any level: shared kits only (C28: a project kit applies implicitly in its project). */
-export const attachableKits = (kits: readonly KitResponse[]): KitResponse[] => kits.filter((kit) => !kit.project_id);
+/**
+ * Kits that may be attached at `level` (C28, server rule `KIT_INVALID_TARGET`):
+ * a project kit already applies implicitly in its project, so it is never
+ * offered at global or project level; at assistant level it is allowed (it
+ * only takes effect inside its project); at conversation level only the kit
+ * of that conversation's project (`projectId`) is.
+ */
+export const attachableKits = (
+  kits: readonly KitResponse[],
+  level: KitLevel,
+  projectId?: string | null
+): KitResponse[] =>
+  kits.filter((kit) => {
+    if (!kit.project_id) return true;
+    if (level === 'assistant') return true;
+    if (level === 'conversation') return Boolean(projectId) && kit.project_id === projectId;
+    return false;
+  });

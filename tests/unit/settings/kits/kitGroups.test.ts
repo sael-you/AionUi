@@ -88,7 +88,14 @@ describe('groupSkillsByKit (C28)', () => {
     expect(groups.shared[0]?.skills).toEqual(['pf-ui']);
   });
 
-  it('never offers a project kit for attaching', () => {
-    expect(attachableKits([K0, K1, TB]).map((entry) => entry.id)).toEqual(['k0', 'k1']);
+  it('offers a project kit only where the server allows it', () => {
+    const ids = (level: Parameters<typeof attachableKits>[1], projectId?: string) =>
+      attachableKits([K0, K1, TB, OTHER], level, projectId).map((entry) => entry.id);
+
+    expect(ids('global')).toEqual(['k0', 'k1']);
+    expect(ids('project', 'proj-tb')).toEqual(['k0', 'k1']);
+    expect(ids('assistant')).toEqual(['k0', 'k1', 'kp', 'kq']);
+    expect(ids('conversation', 'proj-tb')).toEqual(['k0', 'k1', 'kp']);
+    expect(ids('conversation')).toEqual(['k0', 'k1']);
   });
 });

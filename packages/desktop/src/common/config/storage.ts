@@ -863,8 +863,8 @@ export type KitResponse = {
   description: string;
   /** `K0` (Global) and `K1`…`K12` for the seeded kits; absent for the owner's own kits. */
   builtin_key?: string;
-  /** Set = the project kit of that project (`projects.project_id`, C28); absent/null = a shared kit. */
-  project_id?: string | null;
+  /** Set = the project kit of that project (`projects.project_id`, C28); absent = a shared kit. Fixed once created. */
+  project_id?: string;
   skills: string[];
   mcps: KitMcpMember[];
   /** Wanted catalogue templates without an instance in the kit ("needs an instance"; never delivered). */
@@ -944,8 +944,8 @@ export type KitEffectiveMcp = {
   /** Whether a session start would launch it; `reason` says why not otherwise. */
   delivered: boolean;
   reason?: string;
-  /** The conversation's workspace `.mcp.json` defines a server of the same name, so it would load twice (C28). */
-  shadowed_by_project_file?: boolean;
+  /** The conversation's workspace `.mcp.json` defines a server of the same name, so it would load twice (C28; false for previews). */
+  shadowed_by_project_file: boolean;
 };
 
 export type KitEffectiveItem = {

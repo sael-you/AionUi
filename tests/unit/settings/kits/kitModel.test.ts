@@ -49,7 +49,9 @@ const item = (ref: string, included: boolean, name?: string): KitEffectiveItem =
   item_ref: ref,
   included,
   provenance: { level: 'global', op: included ? 'add' : 'remove' },
-  ...(name ? { mcp: { instance_name: name, status: 'active', clis: [], delivered: true } } : {}),
+  ...(name
+    ? { mcp: { instance_name: name, status: 'active', clis: [], delivered: true, shadowed_by_project_file: false } }
+    : {}),
 });
 
 /** `t` stand-ins: key with options, and key only. */

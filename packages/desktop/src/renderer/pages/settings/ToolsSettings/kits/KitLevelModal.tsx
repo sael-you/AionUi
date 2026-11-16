@@ -18,7 +18,7 @@ import KitEffectivePanel from './KitEffectivePanel';
 
 export type KitLevelTarget =
   | { level: 'project'; projectId: string; name: string }
-  | { level: 'conversation'; conversationId: string; initialTab?: 'attach' | 'effective' };
+  | { level: 'conversation'; conversationId: string; projectId?: string | null; initialTab?: 'attach' | 'effective' };
 
 const KitLevelModal: React.FC<{ target: KitLevelTarget | null; onClose: () => void }> = ({ target, onClose }) => {
   const { t } = useTranslation();
@@ -51,7 +51,7 @@ const KitLevelModal: React.FC<{ target: KitLevelTarget | null; onClose: () => vo
           <Tabs.TabPane key='attach' title={t('mcp.kits.levelModal.attachTab')}>
             <div className='flex flex-col gap-8px'>
               <p className='m-0 text-12px text-t-secondary'>{t('mcp.kits.levelModal.conversationHint')}</p>
-              <KitAttachPanel level='conversation' targetId={target.conversationId} />
+              <KitAttachPanel level='conversation' targetId={target.conversationId} projectId={target.projectId} />
             </div>
           </Tabs.TabPane>
         </Tabs>

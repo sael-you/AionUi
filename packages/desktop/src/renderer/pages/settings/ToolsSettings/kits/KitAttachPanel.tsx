@@ -30,6 +30,8 @@ type KitAttachPanelProps = {
   targetId: string;
   /** Prefix for test ids and element ids, unique on the page. */
   idPrefix?: string;
+  /** Conversation level: the conversation's project, whose project kit may be attached here (C28). */
+  projectId?: string | null;
 };
 
 export const KitOpTag: React.FC<{ op: KitOp }> = ({ op }) => {
@@ -41,7 +43,12 @@ export const KitOpTag: React.FC<{ op: KitOp }> = ({ op }) => {
   );
 };
 
-const KitAttachPanel: React.FC<KitAttachPanelProps> = ({ level, targetId, idPrefix = `kit-attach-${level}` }) => {
+const KitAttachPanel: React.FC<KitAttachPanelProps> = ({
+  level,
+  targetId,
+  idPrefix = `kit-attach-${level}`,
+  projectId,
+}) => {
   const { t } = useTranslation();
   const isMobile = useIsMobileLayout();
   const query = useMemo(() => ({ level, target_id: level === 'global' ? '' : targetId }), [level, targetId]);
@@ -55,7 +62,8 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({ level, targetId, idPref
   const [busy, setBusy] = useState<string | null>(null);
 
   const options = useMemo((): Array<{ value: string; label: string; disabled?: boolean }> => {
-    if (kind === 'kit') return attachableKits(kits).map((kit) => ({ value: kit.id, label: kit.name }));
+    if (kind === 'kit')
+      return attachableKits(kits, level, projectId).map((kit) => ({ value: kit.id, label: kit.name }));
     if (kind === 'skill') return library.skillNames.map((name) => ({ value: name, label: name }));
     return library.instances.map((instance) => {
       const block = globalAttachBlock(level, instance);
@@ -65,7 +73,7 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({ level, targetId, idPref
         disabled: block !== null,
       };
     });
-  }, [kind, kits, library.skillNames, library.instances, level, t]);
+  }, [kind, kits, library.skillNames, library.instances, level, projectId, t]);
 
   const handleAttach = async () => {
     if (!itemRef) return;
