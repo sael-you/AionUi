@@ -274,5 +274,10 @@
   .voiceBarCaption {
     order: 3;
     flex-basis: 100%;
+    /* Phones: up to two lines, so a notice ("the restart interrupted the task …") reads in full. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
   }
 }
