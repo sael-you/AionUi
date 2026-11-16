@@ -107,12 +107,15 @@ export const attachRequest = (
 /** Levels a kit is attached to (any op), in resolution order, with how many targets per level. */
 export const kitAttachmentLevels = (
   kitId: string,
-  attachments: readonly KitAttachmentResponse[]
+  attachments: readonly KitAttachmentResponse[],
+  /** A project kit (C28) applies at its project without an attachment row: counted as one project add. */
+  projectId?: string
 ): Array<{ level: KitLevel; count: number; removes: number }> => {
   const rows = attachments.filter((row) => row.item_kind === 'kit' && row.item_ref === kitId);
   return KIT_LEVELS.map((level) => {
     const atLevel = rows.filter((row) => row.level === level);
-    return { level, count: atLevel.length, removes: atLevel.filter((row) => row.op === 'remove').length };
+    const implicit = level === 'project' && projectId ? 1 : 0;
+    return { level, count: atLevel.length + implicit, removes: atLevel.filter((row) => row.op === 'remove').length };
   }).filter((entry) => entry.count > 0);
 };
 

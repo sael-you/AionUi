@@ -407,7 +407,8 @@
       "projectHint": "Applies to every conversation in this project.",
       "conversationTitle": "Kits for this conversation",
       "conversationHint": "Applies to this conversation only. Skill changes take effect at the next session start.",
-      "attachTab": "Attachments"
+      "attachTab": "Attachments",
+      "sharedTab": "Shared kits"
     },
     "assistantSection": {
       "title": "Kits",
@@ -428,7 +429,9 @@
       "frozenTitle": "Skills fixed at creation",
       "frozenHint": "The skills this conversation was created with, kits included.",
       "missingTitle": "Wanted, no instance yet",
-      "missingItem": "{{template}} (kit {{kit}})"
+      "missingItem": "{{template}} (kit {{kit}})",
+      "projectTitle": "What conversations here get",
+      "shadowed": "Also defined in the project's .mcp.json: it would load twice."
     },
     "errors": {
       "nameTaken": "A kit with this name already exists. Choose another name.",
@@ -439,7 +442,41 @@
       "invalidName": "The kit name must be 1 to {{max}} characters.",
       "invalidItem": "The server refused an item in this request: {{detail}}",
       "invalidTarget": "This target does not fit the level: Global takes none, the other levels need one. {{detail}}",
-      "globalNotAllowed": "Only the read-only Context7 and studio-memory MCP instances can be attached globally."
+      "globalNotAllowed": "Only the read-only Context7 and studio-memory MCP instances can be attached globally.",
+      "projectHasKit": "This project already has a kit. The view has been refreshed."
+    },
+    "projectKit": {
+      "title": "Project kit",
+      "hint": "This kit applies to every conversation in the project, with no attachment needed. Assistants and conversations can still remove items.",
+      "none": "{{name}} has no project kit yet.",
+      "create": "Create project kit",
+      "created": "Project kit created",
+      "of": "Project · {{name}}",
+      "viewSkills": "View skills by kit",
+      "addSkill": "Add a skill from the library",
+      "addMcp": "Add an MCP instance",
+      "addTemplate": "Add a wanted catalogue template",
+      "removeLabel": "Remove {{name}}",
+      "customHint": "Need a custom MCP server? Create it as an instance in Settings > Tools > MCP, then add it here.",
+      "count": "{{count}} items",
+      "count_one": "{{count}} item",
+      "count_other": "{{count}} items"
+    },
+    "skillGroups": {
+      "tab": "By kit",
+      "hint": "The one skill library, grouped by the kits that use it. A skill can be in several groups.",
+      "filterLabel": "Show group",
+      "all": "All",
+      "global": "Global",
+      "project": "This project's kit",
+      "projectOf": "This project's kit · {{name}}",
+      "shared": "Shared kits",
+      "ungrouped": "Not in any kit",
+      "noProjectKit": "This project has no kit yet. Create it from the project menu > Kits.",
+      "openSkill": "Open skill {{name}}",
+      "count": "{{count}} skills",
+      "count_one": "{{count}} skill",
+      "count_other": "{{count}} skills"
     }
   }
 }

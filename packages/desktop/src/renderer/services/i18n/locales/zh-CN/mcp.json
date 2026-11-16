@@ -407,7 +407,8 @@
       "projectHint": "作用于此项目中的所有会话。",
       "conversationTitle": "此会话的套件",
       "conversationHint": "仅作用于此会话。技能变更在下次会话启动时生效。",
-      "attachTab": "附加项"
+      "attachTab": "附加项",
+      "sharedTab": "共享套件"
     },
     "assistantSection": {
       "title": "套件",
@@ -428,7 +429,9 @@
       "frozenTitle": "创建时确定的技能",
       "frozenHint": "此会话创建时获得的技能（含套件）。",
       "missingTitle": "需要但尚无实例",
-      "missingItem": "{{template}}（套件 {{kit}}）"
+      "missingItem": "{{template}}（套件 {{kit}}）",
+      "projectTitle": "此项目中的会话获得的内容",
+      "shadowed": "项目的 .mcp.json 中也定义了它：会被加载两次。"
     },
     "errors": {
       "nameTaken": "已存在同名套件，请换一个名称。",
@@ -439,7 +442,41 @@
       "invalidName": "套件名称须为 1 到 {{max}} 个字符。",
       "invalidItem": "服务器拒绝了请求中的某个条目：{{detail}}",
       "invalidTarget": "目标与层级不匹配：全局不需要目标，其他层级必须有目标。{{detail}}",
-      "globalNotAllowed": "只有只读的 Context7 和 studio-memory MCP 实例可以全局附加。"
+      "globalNotAllowed": "只有只读的 Context7 和 studio-memory MCP 实例可以全局附加。",
+      "projectHasKit": "此项目已有套件，视图已刷新。"
+    },
+    "projectKit": {
+      "title": "项目套件",
+      "hint": "此套件作用于项目中的所有会话，无需附加。助手和会话仍可移除其中的条目。",
+      "none": "{{name}} 还没有项目套件。",
+      "create": "创建项目套件",
+      "created": "项目套件已创建",
+      "of": "项目 · {{name}}",
+      "viewSkills": "按套件查看技能",
+      "addSkill": "从技能库添加技能",
+      "addMcp": "添加 MCP 实例",
+      "addTemplate": "添加需要的目录模板",
+      "removeLabel": "移除 {{name}}",
+      "customHint": "需要自定义 MCP 服务器？请在 设置 > 工具 > MCP 中将其创建为实例，再在此添加。",
+      "count": "{{count}} 项",
+      "count_one": "{{count}} 项",
+      "count_other": "{{count}} 项"
+    },
+    "skillGroups": {
+      "tab": "按套件",
+      "hint": "同一个技能库，按使用它的套件分组。一个技能可以属于多个分组。",
+      "filterLabel": "显示分组",
+      "all": "全部",
+      "global": "全局",
+      "project": "此项目的套件",
+      "projectOf": "此项目的套件 · {{name}}",
+      "shared": "共享套件",
+      "ungrouped": "不在任何套件中",
+      "noProjectKit": "此项目还没有套件。请在项目菜单 > 套件 中创建。",
+      "openSkill": "打开技能 {{name}}",
+      "count": "{{count}} 个技能",
+      "count_one": "{{count}} 个技能",
+      "count_other": "{{count}} 个技能"
     }
   }
 }

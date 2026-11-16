@@ -34,6 +34,9 @@ vi.mock('@/common/adapter/ipcBridge', () => ({ kits: api.kits, mcpService: { mar
 vi.mock('@/common', () => ({ ipcBridge: { fs: { listAvailableSkills: api.listSkills } } }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: fakeT }) }));
 vi.mock('@/renderer/hooks/context/LayoutContext', () => ({ useLayoutContext: () => ({ isMobile: false }) }));
+vi.mock('@/renderer/pages/conversation/GroupedHistory/hooks/useStandardProjects', () => ({
+  useStandardProjects: () => [{ workspace: '/root/projects/tb', name: 'TB-test', project_id: 'proj-tb' }],
+}));
 
 import KitsSection from '@/renderer/pages/settings/ToolsSettings/kits/KitsSection';
 

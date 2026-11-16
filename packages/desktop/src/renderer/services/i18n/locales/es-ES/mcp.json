@@ -407,7 +407,8 @@
       "projectHint": "Se aplica a todas las conversaciones de este proyecto.",
       "conversationTitle": "Kits de esta conversación",
       "conversationHint": "Se aplica solo a esta conversación. Los cambios de skills se aplican en el próximo inicio de sesión.",
-      "attachTab": "Adjuntos"
+      "attachTab": "Adjuntos",
+      "sharedTab": "Kits compartidos"
     },
     "assistantSection": {
       "title": "Kits",
@@ -428,7 +429,9 @@
       "frozenTitle": "Skills fijadas al crearla",
       "frozenHint": "Las skills con las que se creó esta conversación, kits incluidos.",
       "missingTitle": "Deseadas, aún sin instancia",
-      "missingItem": "{{template}} (kit {{kit}})"
+      "missingItem": "{{template}} (kit {{kit}})",
+      "projectTitle": "Lo que reciben las conversaciones de aquí",
+      "shadowed": "También definido en el .mcp.json del proyecto: se cargaría dos veces."
     },
     "errors": {
       "nameTaken": "Ya existe un kit con ese nombre. Elige otro nombre.",
@@ -439,7 +442,41 @@
       "invalidName": "El nombre del kit debe tener entre 1 y {{max}} caracteres.",
       "invalidItem": "El servidor rechazó un elemento de esta solicitud: {{detail}}",
       "invalidTarget": "El destino no encaja con el nivel: lo global no lleva destino y los demás niveles necesitan uno. {{detail}}",
-      "globalNotAllowed": "Solo las instancias MCP de solo lectura Context7 y studio-memory pueden adjuntarse globalmente."
+      "globalNotAllowed": "Solo las instancias MCP de solo lectura Context7 y studio-memory pueden adjuntarse globalmente.",
+      "projectHasKit": "Este proyecto ya tiene un kit. Se ha actualizado la vista."
+    },
+    "projectKit": {
+      "title": "Kit del proyecto",
+      "hint": "Este kit se aplica a todas las conversaciones del proyecto sin adjuntarlo. Los asistentes y las conversaciones aún pueden quitar elementos.",
+      "none": "{{name}} aún no tiene kit de proyecto.",
+      "create": "Crear kit del proyecto",
+      "created": "Kit del proyecto creado",
+      "of": "Proyecto · {{name}}",
+      "viewSkills": "Ver skills por kit",
+      "addSkill": "Añadir una skill de la biblioteca",
+      "addMcp": "Añadir una instancia MCP",
+      "addTemplate": "Añadir una plantilla del catálogo deseada",
+      "removeLabel": "Quitar {{name}}",
+      "customHint": "¿Necesitas un servidor MCP propio? Créalo como instancia en Ajustes > Herramientas > MCP y añádelo aquí.",
+      "count": "{{count}} elementos",
+      "count_one": "{{count}} elemento",
+      "count_other": "{{count}} elementos"
+    },
+    "skillGroups": {
+      "tab": "Por kit",
+      "hint": "La única biblioteca de skills, agrupada por los kits que las usan. Una skill puede estar en varios grupos.",
+      "filterLabel": "Mostrar grupo",
+      "all": "Todos",
+      "global": "Global",
+      "project": "Kit de este proyecto",
+      "projectOf": "Kit de este proyecto · {{name}}",
+      "shared": "Kits compartidos",
+      "ungrouped": "En ningún kit",
+      "noProjectKit": "Este proyecto aún no tiene kit. Créalo desde el menú del proyecto > Kits.",
+      "openSkill": "Abrir skill {{name}}",
+      "count": "{{count}} skills",
+      "count_one": "{{count}} skill",
+      "count_other": "{{count}} skills"
     }
   }
 }
