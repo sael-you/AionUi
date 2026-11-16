@@ -1417,5 +1417,97 @@
   "crossSessionMessageDesc": "Permite que agentes enviem mensagens para suas outras conversas. Desativar também desliga a menção @@ na caixa de entrada.",
   "crossSessionMessageDisabledBanner": "As mensagens entre conversas estão desativadas, a menção @@ não está disponível.",
   "crossSessionMessageResume": "Ativar novamente",
-  "crossSessionMessageUpdateFailed": "Falha ao atualizar a configuração de mensagens entre conversas"
+  "crossSessionMessageUpdateFailed": "Falha ao atualizar a configuração de mensagens entre conversas",
+  "library": {
+    "scope": "Escopo",
+    "categories": "Categorias",
+    "railLabel": "Escopos e categorias",
+    "scopeGlobal": "Global",
+    "scopeChip": "Escopo: {{name}}",
+    "categoryChip": "Categoria: {{name}}",
+    "emptyProjects_one": "{{count}} projeto vazio",
+    "emptyProjects_other": "{{count}} projetos vazios",
+    "allCategories": "Todas",
+    "count_one": "{{count}} item",
+    "count_other": "{{count}} itens",
+    "tabActive": "Ativos",
+    "tabLibrary": "Biblioteca",
+    "tabsLabel": "Visualização",
+    "sourcesLabel": "Origem",
+    "select": "Selecionar",
+    "selectNamed": "Selecionar {{name}}",
+    "selected_one": "{{count}} selecionado",
+    "selected_other": "{{count}} selecionados",
+    "batchLabel": "Itens selecionados",
+    "batchAdd": "Adicionar a {{scope}}",
+    "batchRemove": "Remover de {{scope}}",
+    "batchDelete_one": "Excluir {{count}} skill",
+    "batchDelete_other": "Excluir {{count}} skills",
+    "batchDone_one": "{{count}} skill atualizada em {{scope}}",
+    "batchDone_other": "{{count}} skills atualizadas em {{scope}}",
+    "moreActions": "Mais ações para {{name}}",
+    "menu": {
+      "details": "Detalhes",
+      "removeFrom": "Remover de {{scope}}",
+      "delete": "Excluir da biblioteca"
+    },
+    "onIn": "Ativo em {{scope}}",
+    "turnedOn": "{{name}} está ativo em {{scope}}",
+    "turnedOff": "{{name}} está desativado em {{scope}}",
+    "kitAttached": "{{name}} adicionado a {{scope}}",
+    "kitDetached": "{{name}} removido de {{scope}}",
+    "detachKit": "Desvincular kit",
+    "detachKitTitle": "Desvincular {{name}}?",
+    "detachKitBody": "As conversas de {{scope}} deixam de receber as skills e os MCPs de {{name}}. O kit continua existindo.",
+    "addCategory": "Adicionar a categoria inteira a {{scope}}",
+    "editKit": "Editar kit",
+    "manageInGlobal": "Gerenciar em Global",
+    "fromGlobalHint": "Vem de Global. Desativar aqui afeta só este projeto.",
+    "group": {
+      "projectKit": "Kit deste projeto",
+      "single": "Adicionado a {{scope}}",
+      "fromGlobal": "De Global",
+      "removed": "Desativado aqui",
+      "globalKit": "Kit global",
+      "kit": "De kits compartilhados · {{name}}"
+    },
+    "noProjectKit": "{{name}} ainda não tem kit. Crie um para escolher suas skills e MCPs.",
+    "emptyGroup": "Nada aqui ainda.",
+    "emptyActive": "Nada está ativo aqui ainda — explore a biblioteca.",
+    "browseLibrary": "Explorar a biblioteca",
+    "noMatch": "Nenhum resultado.",
+    "results": "Resultados",
+    "usedIn": "Usado em",
+    "usedNowhere": "Ainda não está ativo em nenhum lugar.",
+    "inKit": "Kit: {{name}}",
+    "summary": {
+      "active_one": "{{count}} ativo",
+      "active_other": "{{count}} ativos",
+      "fromGlobal_one": "{{count}} de Global",
+      "fromGlobal_other": "{{count}} de Global",
+      "kits_one": "{{count}} kit",
+      "kits_other": "{{count}} kits"
+    }
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "Projeto",
+      "builtin": "Integradas",
+      "other": "Outras"
+    },
+    "filter": {
+      "all": "Todas",
+      "mine": "Minhas",
+      "official": "Oficiais",
+      "imported": "Importadas"
+    },
+    "source": {
+      "mine": "Minha",
+      "official": "Oficial",
+      "imported": "Importada",
+      "alwaysOn": "Sempre ativa"
+    },
+    "openPage": "Abrir página completa",
+    "skillFile": "SKILL.md"
+  }
 }

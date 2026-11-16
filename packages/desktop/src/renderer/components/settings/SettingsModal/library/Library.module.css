@@ -1,0 +1,568 @@
+/* Shared library layout (C33): Arco variables only, 8-px spacing grid, 12-px card radius. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.search {
+  width: 240px;
+}
+
+.searchMobile {
+  width: 100%;
+}
+
+.body {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* ---------- rail ---------- */
+
+.rail {
+  position: sticky;
+  top: 96px;
+  flex: 0 0 232px;
+  width: 232px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 16px;
+}
+
+.railHeading {
+  margin: 12px 8px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-3);
+}
+
+.railHeading:first-child {
+  margin-top: 0;
+}
+
+.railList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rail :global(.arco-btn).railItem,
+.mobileRail :global(.arco-btn).railItem,
+:global(.arco-drawer) :global(.arco-btn).railItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  color: var(--color-text-2);
+  text-align: start;
+}
+
+:global(.arco-btn).railItem:hover {
+  background: var(--color-fill-2);
+  color: var(--color-text-1);
+}
+
+:global(.arco-btn).railItemSelected,
+:global(.arco-btn).railItemSelected:hover {
+  background: var(--color-primary-light-1);
+  color: var(--color-text-1);
+  font-weight: 600;
+}
+
+.railLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.railCount {
+  flex: none;
+  font-size: 12px;
+  color: var(--color-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+:global(.arco-btn).railFold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--color-text-3);
+}
+
+.scopeDot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--project-accent, var(--color-text-3));
+}
+
+.mobileRail {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mobileRail :global(.arco-btn).mobileChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 0;
+  max-width: 50%;
+}
+
+.mobileChipLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- main ---------- */
+
+.main {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scopeLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+}
+
+.scopeTitle {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.summary {
+  font-size: 13px;
+  color: var(--color-text-2);
+}
+
+.tabsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+  border-bottom: 1px solid var(--color-border-2);
+}
+
+.tabs {
+  display: flex;
+  gap: 24px;
+}
+
+.tabs :global(.arco-btn).tab {
+  position: relative;
+  height: auto;
+  padding: 0 2px 12px;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-3);
+}
+
+.tabs :global(.arco-btn).tab:hover {
+  background: transparent;
+  color: var(--color-text-2);
+}
+
+.tabs :global(.arco-btn).tabSelected,
+.tabs :global(.arco-btn).tabSelected:hover {
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.tabs :global(.arco-btn).tabSelected::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--primary);
+}
+
+.tabCount {
+  margin-inline-start: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-3);
+}
+
+.tabsTools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding-bottom: 16px;
+}
+
+/* ---------- sections ---------- */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sectionHeader :global(.arco-btn).sectionToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 32px;
+  padding: 0 4px;
+  color: var(--color-text-1);
+}
+
+.sectionTitle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sectionCount {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-3);
+}
+
+.sectionActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sectionHint {
+  margin: -4px 0 0 30px;
+  font-size: 12px;
+  color: var(--color-text-3);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- card ---------- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--color-border-2);
+  border-radius: 12px;
+  background: var(--color-bg-2);
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    transform 0.16s ease,
+    background-color 0.16s ease;
+}
+
+.card:hover {
+  border-color: var(--color-border-3);
+  transform: translateY(-1px);
+}
+
+.card:focus-within {
+  border-color: var(--primary);
+}
+
+.cardHighlighted {
+  border-color: var(--primary);
+  background: var(--color-primary-light-1);
+}
+
+.cardSelected {
+  border-color: var(--primary);
+  background: var(--color-primary-light-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cardHeading {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardHeading :global(.arco-btn).cardName {
+  height: auto;
+  min-height: 24px;
+  padding: 0;
+  justify-content: flex-start;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-1);
+  text-align: start;
+}
+
+.cardHeading :global(.arco-btn).cardName:hover {
+  background: transparent;
+  color: var(--primary);
+}
+
+.cardChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cardCheck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+}
+
+.cardDescription {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  min-height: 36px;
+  color: var(--color-text-2);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-1);
+  cursor: default;
+}
+
+.cardToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--color-text-2);
+  cursor: pointer;
+}
+
+.menuDanger {
+  color: var(--danger);
+}
+
+/* Category tile: an Arco Tag in a preset colour, squared. */
+.categoryIcon:global(.arco-tag) {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+}
+
+.categoryIconSmall:global(.arco-tag) {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 6px;
+}
+
+/* ---------- empty, drawer, batch ---------- */
+
+.empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  border: 1px dashed var(--color-border-2);
+  border-radius: 12px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--color-text-2);
+}
+
+.drawerBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.drawerBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawerBlockTitle {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-3);
+}
+
+.batchBar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border-2);
+  border-radius: 12px;
+  background: var(--color-bg-3);
+  box-shadow: 0 -4px 16px var(--color-fill-2);
+}
+
+.batchCount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.batchActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 767px) {
+  .body {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tabsRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tabsTools {
+    padding-bottom: 8px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card :global(.arco-btn),
+  .card :global(.arco-switch) {
+    min-height: 32px;
+  }
+}

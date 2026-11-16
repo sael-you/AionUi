@@ -1414,5 +1414,97 @@
   "crossSessionMessageDesc": "به عامل‌ها اجازه می‌دهد به گفتگوهای دیگر شما پیام بفرستند. با خاموش کردن، منشن @@ در کادر ورودی نیز غیرفعال می‌شود.",
   "crossSessionMessageDisabledBanner": "پیام‌های بین گفتگوها خاموش است، منشن @@ در دسترس نیست.",
   "crossSessionMessageResume": "روشن کردن دوباره",
-  "crossSessionMessageUpdateFailed": "به‌روزرسانی تنظیم پیام‌های بین گفتگوها ناموفق بود"
+  "crossSessionMessageUpdateFailed": "به‌روزرسانی تنظیم پیام‌های بین گفتگوها ناموفق بود",
+  "library": {
+    "scope": "دامنه",
+    "categories": "دسته‌ها",
+    "railLabel": "دامنه‌ها و دسته‌ها",
+    "scopeGlobal": "سراسری",
+    "scopeChip": "دامنه: {{name}}",
+    "categoryChip": "دسته: {{name}}",
+    "emptyProjects_one": "{{count}} پروژهٔ خالی",
+    "emptyProjects_other": "{{count}} پروژهٔ خالی",
+    "allCategories": "همه",
+    "count_one": "{{count}} مورد",
+    "count_other": "{{count}} مورد",
+    "tabActive": "فعال",
+    "tabLibrary": "کتابخانه",
+    "tabsLabel": "نما",
+    "sourcesLabel": "منبع",
+    "select": "انتخاب",
+    "selectNamed": "انتخاب {{name}}",
+    "selected_one": "{{count}} انتخاب شده",
+    "selected_other": "{{count}} انتخاب شده",
+    "batchLabel": "موارد انتخاب‌شده",
+    "batchAdd": "افزودن به {{scope}}",
+    "batchRemove": "حذف از {{scope}}",
+    "batchDelete_one": "حذف {{count}} مهارت",
+    "batchDelete_other": "حذف {{count}} مهارت",
+    "batchDone_one": "{{count}} مهارت در {{scope}} به‌روز شد",
+    "batchDone_other": "{{count}} مهارت در {{scope}} به‌روز شد",
+    "moreActions": "کارهای بیشتر برای {{name}}",
+    "menu": {
+      "details": "جزئیات",
+      "removeFrom": "حذف از {{scope}}",
+      "delete": "حذف از کتابخانه"
+    },
+    "onIn": "روشن در {{scope}}",
+    "turnedOn": "{{name}} در {{scope}} روشن است",
+    "turnedOff": "{{name}} در {{scope}} خاموش است",
+    "kitAttached": "{{name}} به {{scope}} افزوده شد",
+    "kitDetached": "{{name}} از {{scope}} برداشته شد",
+    "detachKit": "جدا کردن کیت",
+    "detachKitTitle": "{{name}} جدا شود؟",
+    "detachKitBody": "گفت‌وگوهای {{scope}} دیگر مهارت‌ها و MCPهای {{name}} را نمی‌گیرند. خود کیت باقی می‌ماند.",
+    "addCategory": "افزودن کل دسته به {{scope}}",
+    "editKit": "ویرایش کیت",
+    "manageInGlobal": "مدیریت در سراسری",
+    "fromGlobalHint": "از سراسری می‌آید. خاموش کردن آن در اینجا فقط بر این پروژه اثر دارد.",
+    "group": {
+      "projectKit": "کیت این پروژه",
+      "single": "افزوده‌شده به {{scope}}",
+      "fromGlobal": "از سراسری",
+      "removed": "در اینجا خاموش",
+      "globalKit": "کیت سراسری",
+      "kit": "از کیت‌های مشترک · {{name}}"
+    },
+    "noProjectKit": "{{name}} هنوز کیت ندارد. برای انتخاب مهارت‌ها و MCPها یک کیت بسازید.",
+    "emptyGroup": "هنوز چیزی اینجا نیست.",
+    "emptyActive": "هنوز چیزی اینجا فعال نیست — کتابخانه را ببینید.",
+    "browseLibrary": "دیدن کتابخانه",
+    "noMatch": "موردی پیدا نشد.",
+    "results": "نتایج",
+    "usedIn": "استفاده در",
+    "usedNowhere": "هنوز در جایی روشن نیست.",
+    "inKit": "کیت: {{name}}",
+    "summary": {
+      "active_one": "{{count}} فعال",
+      "active_other": "{{count}} فعال",
+      "fromGlobal_one": "{{count}} از سراسری",
+      "fromGlobal_other": "{{count}} از سراسری",
+      "kits_one": "{{count}} کیت",
+      "kits_other": "{{count}} کیت"
+    }
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "پروژه",
+      "builtin": "داخلی",
+      "other": "سایر"
+    },
+    "filter": {
+      "all": "همه",
+      "mine": "مال من",
+      "official": "رسمی",
+      "imported": "واردشده"
+    },
+    "source": {
+      "mine": "مال من",
+      "official": "رسمی",
+      "imported": "واردشده",
+      "alwaysOn": "همیشه روشن"
+    },
+    "openPage": "باز کردن صفحهٔ کامل",
+    "skillFile": "SKILL.md"
+  }
 }

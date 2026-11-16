@@ -1416,5 +1416,97 @@
   "crossSessionMessageDesc": "允許 Agent 向你的其他對話傳送訊息。關閉後，輸入框的 @@ 對話提及與投遞功能會同時停用。",
   "crossSessionMessageDisabledBanner": "跨對話訊息已關閉，輸入框的 @@ 對話提及不可用。",
   "crossSessionMessageResume": "重新開啟",
-  "crossSessionMessageUpdateFailed": "跨對話訊息設定更新失敗"
+  "crossSessionMessageUpdateFailed": "跨對話訊息設定更新失敗",
+  "library": {
+    "scope": "範圍",
+    "categories": "分類",
+    "railLabel": "範圍與分類",
+    "scopeGlobal": "全域",
+    "scopeChip": "範圍：{{name}}",
+    "categoryChip": "分類：{{name}}",
+    "emptyProjects_one": "{{count}} 個空專案",
+    "emptyProjects_other": "{{count}} 個空專案",
+    "allCategories": "全部",
+    "count_one": "{{count}} 項",
+    "count_other": "{{count}} 項",
+    "tabActive": "已啟用",
+    "tabLibrary": "資料庫",
+    "tabsLabel": "檢視",
+    "sourcesLabel": "來源",
+    "select": "選取",
+    "selectNamed": "選取 {{name}}",
+    "selected_one": "已選取 {{count}} 項",
+    "selected_other": "已選取 {{count}} 項",
+    "batchLabel": "已選取項目",
+    "batchAdd": "加入 {{scope}}",
+    "batchRemove": "從 {{scope}} 移除",
+    "batchDelete_one": "刪除 {{count}} 個技能",
+    "batchDelete_other": "刪除 {{count}} 個技能",
+    "batchDone_one": "已更新 {{scope}} 中的 {{count}} 個技能",
+    "batchDone_other": "已更新 {{scope}} 中的 {{count}} 個技能",
+    "moreActions": "{{name}} 的更多操作",
+    "menu": {
+      "details": "詳細資料",
+      "removeFrom": "從 {{scope}} 移除",
+      "delete": "從資料庫刪除"
+    },
+    "onIn": "在 {{scope}} 中啟用",
+    "turnedOn": "{{name}} 已在 {{scope}} 中啟用",
+    "turnedOff": "{{name}} 已在 {{scope}} 中停用",
+    "kitAttached": "已將 {{name}} 加入 {{scope}}",
+    "kitDetached": "已從 {{scope}} 移除 {{name}}",
+    "detachKit": "解除套件",
+    "detachKitTitle": "解除 {{name}}？",
+    "detachKitBody": "{{scope}} 中的對話將不再取得 {{name}} 的技能與 MCP。套件本身會保留。",
+    "addCategory": "將整個分類加入 {{scope}}",
+    "editKit": "編輯套件",
+    "manageInGlobal": "在全域中管理",
+    "fromGlobalHint": "來自全域。在這裡停用只影響本專案。",
+    "group": {
+      "projectKit": "本專案的套件",
+      "single": "已加入 {{scope}}",
+      "fromGlobal": "來自全域",
+      "removed": "在此停用",
+      "globalKit": "全域套件",
+      "kit": "來自共用套件 · {{name}}"
+    },
+    "noProjectKit": "{{name}} 還沒有套件。建立一個以選擇它的技能與 MCP。",
+    "emptyGroup": "目前沒有內容。",
+    "emptyActive": "這裡尚未啟用任何內容——去資料庫看看。",
+    "browseLibrary": "瀏覽資料庫",
+    "noMatch": "沒有符合項目。",
+    "results": "結果",
+    "usedIn": "使用位置",
+    "usedNowhere": "尚未在任何地方啟用。",
+    "inKit": "套件：{{name}}",
+    "summary": {
+      "active_one": "{{count}} 個已啟用",
+      "active_other": "{{count}} 個已啟用",
+      "fromGlobal_one": "{{count}} 個來自全域",
+      "fromGlobal_other": "{{count}} 個來自全域",
+      "kits_one": "{{count}} 個套件",
+      "kits_other": "{{count}} 個套件"
+    }
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "專案",
+      "builtin": "內建",
+      "other": "其他"
+    },
+    "filter": {
+      "all": "全部",
+      "mine": "我的",
+      "official": "官方",
+      "imported": "匯入"
+    },
+    "source": {
+      "mine": "我的",
+      "official": "官方",
+      "imported": "匯入",
+      "alwaysOn": "一律啟用"
+    },
+    "openPage": "開啟完整頁面",
+    "skillFile": "SKILL.md"
+  }
 }
