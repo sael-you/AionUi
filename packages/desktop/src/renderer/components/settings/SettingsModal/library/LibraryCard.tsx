@@ -81,6 +81,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
       aria-describedby={description ? descriptionId : undefined}
       data-testid='library-card'
       data-card-id={id}
+      data-highlighted={highlighted ? 'true' : undefined}
       onClick={activate}
     >
       <div className={styles.cardTop}>

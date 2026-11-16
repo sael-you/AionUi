@@ -750,6 +750,7 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
               <Button
                 size='small'
                 status='danger'
+                data-testid='skill-drawer-delete'
                 onClick={() => {
                   setOpenName(null);
                   onDelete(openSkill.name);

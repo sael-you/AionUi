@@ -42,26 +42,30 @@ export interface ExternalSource {
 }
 
 // ============================================================================
-// Navigation
+// Navigation and selectors (library layout, C33 / TASK-119)
 // ============================================================================
 
+/** CSS attribute value with quotes and backslashes escaped. */
+const attr = (value: string): string => value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
+/** One skill card (a skill in several categories has one card per category; use `.first()`). */
+export const skillCardSelector = (skillName: string): string =>
+  `[data-testid="library-card"][data-card-id="${attr(skillName)}"]`;
+
+/** Every card of an E2E test skill (`E2E-Test-…`). */
+export const E2E_SKILL_CARDS = '[data-testid="library-card"][data-card-id^="E2E-Test-"]';
+
 /**
- * Navigate to Skills Hub settings page using UI click
- * Note: Skills is a standalone settings entry (`/settings/skills`) since the
- * capabilities page was split into separate Skills / Tools sider entries.
+ * Navigate to the Skills page and open its Library tab (every skill, grouped by category).
+ * Skills is a standalone settings entry (`/settings/skills`).
  */
 export async function goToSkillsHub(page: Page): Promise<void> {
-  // Navigate to Skills settings page
   await navigateTo(page, '#/settings/skills');
-
-  // Wait a bit for React Router to settle
   await page.waitForTimeout(500);
 
-  // Wait for tab content to load. Dev-mode cold boot needs ~6-15s after
-  // navigation before SkillsHub's unconditional `my-skills-section` div
-  // finishes layout (Vite dev + Arco Tabs + initial skill list render).
-  const section = page.locator('[data-testid="my-skills-section"]');
-  await section.waitFor({ state: 'visible', timeout: 15_000 });
+  // Dev-mode cold boot needs ~6-15s before the library layout renders.
+  await page.locator('[data-testid="skills-library"]').waitFor({ state: 'visible', timeout: 15_000 });
+  await openSkillsTab(page, 'library');
 
   // Wait for backend skills API to respond. A 200 on /api/skills/paths
   // confirms the backend is up and the renderer can reach it.
@@ -81,8 +85,15 @@ export async function goToSkillsHub(page: Page): Promise<void> {
   }
 }
 
+/** Switch the Skills page between its Active and Library tabs. */
+export async function openSkillsTab(page: Page, tab: 'active' | 'library'): Promise<void> {
+  const button = page.locator(`[data-testid="library-tab-${tab}"]`);
+  await button.click();
+  await page.waitForSelector(`[data-testid="library-tab-${tab}"][aria-selected="true"]`, { timeout: 5000 });
+}
+
 /**
- * Refresh the Skills Hub page to trigger data reload
+ * Reload the Skills page data (the page has no refresh button: leaving and coming back refetches).
  */
 export async function refreshSkillsHub(page: Page): Promise<void> {
   await page.evaluate(() => {
@@ -232,116 +243,27 @@ export async function removeCustomExternalPath(
 // UI Operations
 // ============================================================================
 
-/**
- * Search in "My Skills" section
- */
+/** Type into the page search (a query shows one de-duplicated "Results" section). */
 export async function searchMySkills(page: Page, query: string): Promise<void> {
-  await page.fill('[data-testid="input-search-my-skills"]', query);
+  await page.fill('[data-testid="library-search"]', query);
   await page.waitForTimeout(100); // No debounce in current implementation
 }
 
-/**
- * Search in "External Skills" section
- */
-export async function searchExternalSkills(page: Page, query: string): Promise<void> {
-  await page.fill('[data-testid="input-search-external"]', query);
-  await page.waitForTimeout(100);
+/** Open a skill's details drawer from its card. */
+export async function openSkillDrawer(page: Page, skillName: string): Promise<void> {
+  await page.locator(skillCardSelector(skillName)).first().locator('[data-testid="library-card-open"]').click();
+  await page.locator('[data-testid="skill-drawer"]').waitFor({ state: 'visible', timeout: 5000 });
 }
 
-/**
- * Refresh "My Skills" list
- */
-export async function refreshMySkills(page: Page): Promise<void> {
-  await page.click('[data-testid="btn-refresh-my-skills"]');
-  await page.waitForTimeout(500); // Wait for refresh to complete
-}
-
-/**
- * Refresh external skills list
- */
-export async function refreshExternalSkills(page: Page): Promise<void> {
-  await page.click('[data-testid="btn-refresh-external"]');
-  await page.waitForTimeout(500);
-}
-
-/**
- * Import a skill via UI (single skill from external sources)
- * Note: The entire card is clickable, not just the button
- */
-export async function importSkillViaUI(page: Page, skillName: string): Promise<void> {
-  const normalizedName = normalizeTestId(skillName);
-  // Click the card itself (the entire card triggers import)
-  await page.click(`[data-testid="external-skill-card-${normalizedName}"]`);
-  await page.waitForSelector('.arco-message-success', { timeout: 10_000 });
-  await page.waitForTimeout(500); // Wait for list refresh
-}
-
-/**
- * Delete a skill via UI
- */
+/** Delete one of the owner's skills from its drawer, confirming the dialog. */
 export async function deleteSkillViaUI(page: Page, skillName: string): Promise<void> {
-  const normalizedName = normalizeTestId(skillName);
-
-  // Click delete button
-  await page.click(`[data-testid="btn-delete-${normalizedName}"]`);
-
-  // Confirm in modal
-  await page.waitForSelector('[data-testid="modal-delete-skill"]', { timeout: 2000 });
-  await page.click('[data-testid="btn-confirm-delete"]');
-
-  // Wait for success message
+  await openSkillDrawer(page, skillName);
+  await page.click('[data-testid="skill-drawer-delete"]');
+  const modal = page.locator('.modal-delete-skill .arco-modal');
+  await modal.waitFor({ state: 'visible', timeout: 2000 });
+  await modal.locator('.arco-btn-primary').click();
   await page.waitForSelector('.arco-message-success', { timeout: 5000 });
   await page.waitForTimeout(500); // Wait for list refresh
-}
-
-/**
- * Export a skill to an external source via UI
- */
-export async function exportSkillViaUI(page: Page, skillName: string, targetSource: string): Promise<void> {
-  const normalizedName = normalizeTestId(skillName);
-
-  // Click export button (opens dropdown)
-  await page.click(`[data-testid="btn-export-${normalizedName}"]`);
-
-  // Select target source from dropdown
-  // Note: Dropdown structure may need adjustment based on actual implementation
-  await page.click(`text="${targetSource}"`);
-
-  // Wait for processing message or success
-  await page.waitForSelector('.arco-message', { timeout: 10_000 });
-}
-
-/**
- * Import all skills from current external source
- */
-export async function importAllSkills(page: Page): Promise<void> {
-  await page.click('[data-testid="btn-import-all"]');
-  await page.waitForSelector('.arco-message-success', { timeout: 10_000 });
-  await page.waitForTimeout(500); // Wait for list refresh
-}
-
-/**
- * Add custom external path via UI
- */
-export async function addCustomPathViaUI(page: Page, name: string, pathValue: string): Promise<void> {
-  // Click add button
-  await page.click('[data-testid="btn-add-custom-source"]');
-
-  // Wait for modal
-  await page.waitForSelector('[data-testid="modal-add-custom-path"]', { timeout: 2000 });
-
-  // Fill form
-  await page.fill('[data-testid="input-custom-path-name"]', name);
-  await page.fill('[data-testid="input-custom-path-value"]', pathValue);
-
-  // Confirm
-  await page.click('button:has-text("Confirm")'); // May need testid adjustment
-
-  // Wait for modal close
-  await page.waitForSelector('[data-testid="modal-add-custom-path"]', {
-    state: 'hidden',
-    timeout: 2000,
-  });
 }
 
 // ============================================================================

@@ -1,8 +1,7 @@
 /**
- * Skills Hub E2E Tests - Manual Import (P1 Priority)
+ * Skills Hub E2E Tests - Manual Import (P1), library layout (C33 / TASK-119)
  *
- * Test Cases Covered:
- * - TC-S-29: Import from Folder with mocked dialog
+ * - TC-S-29: Add Skill → Import Skills with a mocked folder dialog imports the skill
  */
 
 import { test, expect } from '../../../fixtures';
@@ -12,19 +11,14 @@ import {
   createTempExternalSource,
   createTestSkill,
   cleanupTestSkills,
-  normalizeTestId,
+  skillCardSelector,
 } from '../../../helpers/skillsHub';
-import { takeScreenshot } from '../../../helpers/screenshots';
 import * as path from 'path';
 
 test.describe('Skills Hub - Manual Import (P1)', () => {
   test.afterEach(async ({ page }) => {
     await cleanupTestSkills(page);
   });
-
-  // ============================================================================
-  // TC-S-29: Import from Folder with mocked dialog
-  // ============================================================================
 
   test('TC-S-29: should import skill from folder via mocked dialog', async ({ page, electronApp }) => {
     const tempSource = createTempExternalSource('tc-s-29');
@@ -35,67 +29,27 @@ test.describe('Skills Hub - Manual Import (P1)', () => {
 
       await goToSkillsHub(page);
 
-      // Screenshot 01: Initial state
-      await takeScreenshot(page, 'skills-hub/tc-s-29/01-initial-state.png');
-
-      // Step 1: Mock dialog.showOpenDialog to return test skill path
       await electronApp.evaluate(({ dialog }, targetPath) => {
-        // Store original showOpenDialog
         const originalShowOpenDialog = dialog.showOpenDialog;
-
-        // Mock showOpenDialog to return test skill path
         dialog.showOpenDialog = () => {
-          // Restore original after first call
           dialog.showOpenDialog = originalShowOpenDialog;
-
-          return Promise.resolve({
-            canceled: false,
-            filePaths: [targetPath],
-          });
+          return Promise.resolve({ canceled: false, filePaths: [targetPath] });
         };
       }, skillPath);
 
-      // Screenshot 02: Before clicking import button
-      await takeScreenshot(page, 'skills-hub/tc-s-29/02-before-click.png');
+      // Add Skill is a menu button; "Import Skills" is its manual item.
+      await page.click('[data-testid="btn-add-skill"]');
+      const manual = page.locator('[data-testid="btn-add-skill-manual"]');
+      await expect(manual).toBeVisible();
+      await manual.click();
 
-      // Step 2: Click "Import from Folder" button
-      const importButton = page.locator('[data-testid="btn-manual-import"]');
-      await expect(importButton).toBeVisible();
-      await importButton.click();
+      await expect(page.locator('.arco-message-success')).toBeVisible({ timeout: 10000 });
 
-      // Wait for import to complete
-      await page.waitForTimeout(2000);
-
-      // Screenshot 03: After clicking import button
-      await takeScreenshot(page, 'skills-hub/tc-s-29/03-after-click.png');
-
-      // Expected: Success message shown
-      const successMessage = page.locator('.arco-message-success');
-      await expect(successMessage).toBeVisible({ timeout: 5000 });
-
-      // Screenshot 04: Success message visible
-      await takeScreenshot(page, 'skills-hub/tc-s-29/04-success-message.png');
-
-      // Expected: New skill appears in My Skills
       await goToSkillsHub(page);
-      await page.waitForTimeout(500);
+      await expect(page.locator(skillCardSelector(skillName)).first()).toBeVisible();
 
-      const skillCard = page.locator(`[data-testid="my-skill-card-${normalizeTestId(skillName)}"]`);
-      await expect(skillCard).toBeVisible();
-
-      // Screenshot 05: Skill card visible
-      await takeScreenshot(page, 'skills-hub/tc-s-29/05-skill-card.png');
-
-      // Verify skill is in My Skills via Bridge
-      const mySkills = await getMySkills(page);
-      const importedSkill = mySkills.find((s) => s.name === skillName);
-      expect(importedSkill).toBeDefined();
+      const importedSkill = (await getMySkills(page)).find((s) => s.name === skillName);
       expect(importedSkill?.source).toBe('custom');
-
-      console.log(`[TC-S-29] Successfully imported skill: ${skillName}`);
-
-      // Screenshot 06: Final state
-      await takeScreenshot(page, 'skills-hub/tc-s-29/06-final-state.png');
     } finally {
       tempSource.cleanup();
     }
