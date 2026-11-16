@@ -184,7 +184,8 @@
     "needsDecision": "Attend votre décision",
     "moveLocked": "Décidez dans la carte pour la déplacer",
     "moveAutomated": "Déplacée par l'automatisation du déploiement",
-    "moveTargetAutomated": "{{column}} (automatisation du déploiement uniquement)"
+    "moveTargetAutomated": "{{column}} (automatisation du déploiement uniquement)",
+    "openAssigneeConversation": "Ouvrir la conversation assignée {{name}}"
   },
   "dnd": {
     "roleDescription": "carte déplaçable",
@@ -440,7 +441,12 @@
     "question_added": "{{actor}} : question posée à {{to}}",
     "question_answered": "{{actor}} : réponse à une question",
     "board_unarchived": "Le tableau a été réactivé",
-    "other": "{{actor}} : carte modifiée ({{kind}})"
+    "other": "{{actor}} : carte modifiée ({{kind}})",
+    "gate_crossed": "{{actor}} a déplacé la carte de {{from}} vers {{to}} à travers une porte",
+    "gate_crossed_forced": "{{actor}} a forcé la carte de {{from}} vers {{to}} à travers une porte",
+    "approvalNote": "Votre approbation : « {{note}} »",
+    "approvalNotNeeded": "Aucune approbation requise : les agents avaient un accès complet.",
+    "approvalMissing": "Aucune note d’approbation enregistrée."
   },
   "settings": {
     "title": "Paramètres des colonnes",
@@ -466,5 +472,16 @@
     "label": "Progression",
     "updated": "Mis à jour {{age}}",
     "stale": "Aucune mise à jour depuis plus de 24 heures"
+  },
+  "agentAccess": {
+    "title": "Accès des agents au tableau",
+    "full": "Complet",
+    "fullHelp": "Les agents peuvent faire passer les cartes par les portes d’eux-mêmes.",
+    "approval": "Seulement avec votre approbation enregistrée",
+    "approvalHelp": "Un agent ne peut faire passer une carte par une porte qu’avec votre note d’approbation, enregistrée dans l’historique de la carte.",
+    "saved": {
+      "full": "Les agents ont désormais un accès complet à ce tableau.",
+      "approval": "Les agents ont désormais besoin de votre approbation enregistrée pour passer une porte."
+    }
   }
 }

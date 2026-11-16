@@ -179,7 +179,8 @@
     "needsDecision": "Needs your decision",
     "moveLocked": "Decide in the card to move it",
     "moveAutomated": "Moved by the deploy automation",
-    "moveTargetAutomated": "{{column}} (deploy automation only)"
+    "moveTargetAutomated": "{{column}} (deploy automation only)",
+    "openAssigneeConversation": "Open the assignee conversation {{name}}"
   },
   "dnd": {
     "roleDescription": "movable card",
@@ -435,7 +436,12 @@
     "question_added": "{{actor}} asked {{to}} a question",
     "question_answered": "{{actor}} answered a question",
     "board_unarchived": "The board was reactivated",
-    "other": "{{actor}} changed the card ({{kind}})"
+    "other": "{{actor}} changed the card ({{kind}})",
+    "gate_crossed": "{{actor}} moved the card from {{from}} to {{to}} through a gate",
+    "gate_crossed_forced": "{{actor}} forced the card from {{from}} to {{to}} through a gate",
+    "approvalNote": "Your approval: “{{note}}”",
+    "approvalNotNeeded": "No approval needed: agents had full access.",
+    "approvalMissing": "No approval note recorded."
   },
   "settings": {
     "title": "Column settings",
@@ -461,5 +467,16 @@
     "label": "Progress",
     "updated": "Updated {{age}}",
     "stale": "No update for more than 24 hours"
+  },
+  "agentAccess": {
+    "title": "Agent access to the board",
+    "full": "Full",
+    "fullHelp": "Agents may move cards through gates on their own.",
+    "approval": "Only with your recorded approval",
+    "approvalHelp": "An agent may move a card through a gate only with your approval note, recorded in the card history.",
+    "saved": {
+      "full": "Agents now have full access to this board.",
+      "approval": "Agents now need your recorded approval to pass a gate."
+    }
   }
 }

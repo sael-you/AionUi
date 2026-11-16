@@ -179,7 +179,8 @@
     "needsDecision": "あなたの判断待ち",
     "moveLocked": "移動するにはカード内で判断してください",
     "moveAutomated": "デプロイ自動化によって移動されます",
-    "moveTargetAutomated": "{{column}}（デプロイ自動化のみ）"
+    "moveTargetAutomated": "{{column}}（デプロイ自動化のみ）",
+    "openAssigneeConversation": "担当の会話 {{name}} を開く"
   },
   "dnd": {
     "roleDescription": "移動可能なカード",
@@ -435,7 +436,12 @@
     "question_added": "{{actor}} が {{to}} に質問しました",
     "question_answered": "{{actor}} が質問に回答しました",
     "board_unarchived": "ボードが再有効化されました",
-    "other": "{{actor}} がカードを変更しました（{{kind}}）"
+    "other": "{{actor}} がカードを変更しました（{{kind}}）",
+    "gate_crossed": "{{actor}} がカードをゲート経由で {{from}} から {{to}} へ移動しました",
+    "gate_crossed_forced": "{{actor}} がカードをゲート経由で {{from}} から {{to}} へ強制移動しました",
+    "approvalNote": "あなたの承認: 「{{note}}」",
+    "approvalNotNeeded": "承認は不要でした: エージェントにフルアクセスがありました。",
+    "approvalMissing": "承認メモは記録されていません。"
   },
   "settings": {
     "title": "列の設定",
@@ -461,5 +467,16 @@
     "label": "進捗",
     "updated": "{{age}}に更新",
     "stale": "24 時間以上更新がありません"
+  },
+  "agentAccess": {
+    "title": "ボードへのエージェントのアクセス",
+    "full": "フル",
+    "fullHelp": "エージェントは自分でカードをゲートの先へ移動できます。",
+    "approval": "記録された承認がある場合のみ",
+    "approvalHelp": "エージェントはカード履歴に記録されるあなたの承認メモがある場合にのみ、カードをゲートの先へ移動できます。",
+    "saved": {
+      "full": "エージェントにこのボードへのフルアクセスを許可しました。",
+      "approval": "ゲートを通過するには、あなたの記録された承認が必要になりました。"
+    }
   }
 }

@@ -18,6 +18,12 @@ vi.mock('@/common', async (importOriginal) =>
 // Each test drives the whole board page (and often the drawer) on a shared, busy CPU.
 vi.setConfig({ testTimeout: 60000 });
 
+// Conversation assignees (TASK-116): the name comes from the conversation itself.
+const conversations = vi.hoisted(() => new Map<string, { id: string; name: string } | null>());
+vi.mock('@/renderer/pages/conversation/utils/conversationCache', () => ({
+  getConversationOrNull: async (id: string) => conversations.get(id) ?? null,
+}));
+
 vi.mock('@/renderer/hooks/context/AuthContext', () => ({
   useAuth: () => ({ user: { id: 'u1', username: 'me' } }),
   useOptionalAuth: () => ({ user: { id: 'u1', username: 'me' } }),
@@ -322,5 +328,64 @@ describe('drawer layout', () => {
     const { dialog } = await openDrawer();
     expect(within(dialog).queryByTestId('board-drawer-actions')).not.toBeInTheDocument();
     expect(dialog.querySelector('.arco-drawer-footer')).toBeNull();
+  });
+});
+
+describe('agent access in the drawer (TASK-116)', () => {
+  it('links a card assigned to a conversation, named after the conversation (the server sends no name)', async () => {
+    conversations.set('conv-42', { id: 'conv-42', name: 'TB deploy run' });
+    bridge.getCard.mockResolvedValue(
+      detail1({ assignee_kind: 'conversation', assignee_ref: 'conv-42', assignee_name: null })
+    );
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    const link = await within(dialog).findByTestId('board-assignee-conversation');
+    await waitFor(() => expect(link).toHaveTextContent('TB deploy run'));
+    expect(link).toHaveAccessibleName('Open the assignee conversation TB deploy run');
+  });
+
+  it('shows a deleted assignee conversation as plain text (nothing to open)', async () => {
+    bridge.getCard.mockResolvedValue(
+      detail1({ assignee_kind: 'conversation', assignee_ref: 'abcdef0123456789', assignee_name: null })
+    );
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    const gone = await within(dialog).findByTestId('board-assignee-conversation-gone');
+    expect(gone).toHaveTextContent('Conversation abcdef01');
+    expect(within(dialog).queryByTestId('board-assignee-conversation')).not.toBeInTheDocument();
+  });
+
+  it('shows the recorded approval note under a gate crossing, or that agents had full access', async () => {
+    bridge.getCard.mockResolvedValue(
+      makeDetail(fullCard(card1), [
+        makeEvent(5, 'gate_crossed', {
+          actor_kind: 'agent',
+          actor_ref: 'assistant:coder@claude',
+          payload: {
+            from: 'decision',
+            to: 'planned',
+            gate: 'decision',
+            agent_access: 'approval',
+            approval: { by: 'owner', via: 'Go ahead, tested on staging', at: 1_700_000_000_000 },
+          },
+        }),
+        makeEvent(4, 'gate_crossed', {
+          actor_kind: 'agent',
+          actor_ref: 'assistant:coder@claude',
+          payload: { from: 'triage', to: 'decision', gate: 'triage', agent_access: 'full', approval: null },
+        }),
+      ])
+    );
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    const notes = await within(dialog).findAllByTestId('board-activity-approval');
+    expect(notes.map((node) => node.textContent)).toEqual([
+      'Your approval: “Go ahead, tested on staging”',
+      'No approval needed: agents had full access.',
+    ]);
+    const items = within(dialog)
+      .getAllByTestId('board-activity-item')
+      .map((node) => node.textContent);
+    expect(items[0]).toContain('through a gate');
   });
 });

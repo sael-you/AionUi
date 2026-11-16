@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import type { BoardCardSummary, BoardPriority } from '@/common/types/board';
 
 import { assigneeLabel } from '../utils/boardFormat';
+import { AssigneeConversationLink, hasAssigneeConversation } from './AssigneeConversationLink';
 import { cardRef } from '../utils/boardModel';
 import { CardProgressBar } from './CardProgressBar';
 
@@ -146,7 +147,13 @@ export const BoardCardTile: React.FC<BoardCardTileProps> = ({
         </div>
       )}
       <CardProgressBar card={card} />
-      <div className='text-12px text-t-secondary truncate'>{assigneeLabel(card, t)}</div>
+      {hasAssigneeConversation(card) ? (
+        <div className='text-12px min-w-0 flex'>
+          <AssigneeConversationLink card={card} />
+        </div>
+      ) : (
+        <div className='text-12px text-t-secondary truncate'>{assigneeLabel(card, t)}</div>
+      )}
     </div>
   );
 };

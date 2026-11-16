@@ -10,14 +10,16 @@
  * `PUT …/columns` guarded by the board version.
  */
 
-import { Button, Input, InputNumber, Modal, Tooltip } from '@arco-design/web-react';
+import { Button, Input, InputNumber, Modal, Radio, Tooltip } from '@arco-design/web-react';
 import { ArrowDown, ArrowUp, Inbox, Plus, Undo } from '@icon-park/react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  BOARD_AGENT_ACCESS,
   BOARD_CATEGORIES,
   STUDIO_COLUMN_KEYS,
+  type BoardAgentAccess,
   type BoardCategory,
   type BoardColumn,
   type BoardColumnInput,
@@ -293,6 +295,54 @@ const DialogBody: React.FC<{
   );
 };
 
+/**
+ * Agent access to the board (TASK-116): Full, or Only with your recorded approval
+ * (agents crossing a gate must carry your approval note). Applies at once — it is
+ * its own setting, not part of the column draft below.
+ */
+export const AgentAccessSection: React.FC<{ board: BoardController }> = ({ board }) => {
+  const { t } = useTranslation();
+  const [saving, setSaving] = useState<BoardAgentAccess | null>(null);
+  const current = board.snapshot?.settings.agent_access;
+  if (!current) return null;
+  const change = async (value: BoardAgentAccess) => {
+    if (value === current) return;
+    setSaving(value);
+    try {
+      await board.setAgentAccess(value);
+    } finally {
+      setSaving(null);
+    }
+  };
+  return (
+    <section
+      aria-labelledby='board-agent-access-title'
+      className='flex flex-col gap-8px mb-16px'
+      data-testid='board-agent-access'
+    >
+      <h3 id='board-agent-access-title' className='m-0 text-14px font-medium text-t-primary'>
+        {t('board.agentAccess.title')}
+      </h3>
+      <Radio.Group
+        direction='vertical'
+        value={saving ?? current}
+        disabled={saving !== null || board.readOnly}
+        onChange={(value: BoardAgentAccess) => void change(value)}
+        aria-labelledby='board-agent-access-title'
+      >
+        {BOARD_AGENT_ACCESS.map((option) => (
+          <Radio key={option} value={option} data-testid={`board-agent-access-${option}`}>
+            <span className='flex flex-col'>
+              <span className='text-13px text-t-primary'>{t(`board.agentAccess.${option}`)}</span>
+              <span className='text-12px text-t-secondary'>{t(`board.agentAccess.${option}Help`)}</span>
+            </span>
+          </Radio>
+        ))}
+      </Radio.Group>
+    </section>
+  );
+};
+
 export const ColumnSettingsDialog: React.FC<{ board: BoardController; visible: boolean; onClose: () => void }> = ({
   board,
   visible,
@@ -343,6 +393,7 @@ export const ColumnSettingsDialog: React.FC<{ board: BoardController; visible: b
       unmountOnExit
       style={{ width: 640, maxWidth: 'calc(100vw - 32px)' }}
     >
+      {snapshot && <AgentAccessSection board={board} />}
       {snapshot && <DialogBody snapshot={snapshot} draft={draft} setDraft={setDraft} error={error} />}
     </Modal>
   );

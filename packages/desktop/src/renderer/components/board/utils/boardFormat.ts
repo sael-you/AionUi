@@ -72,10 +72,19 @@ export const creatorName = (
   return actorName(card.creator_kind, card.creator_ref, t);
 };
 
+/** Name of an assignee conversation: its current name, else a short id. */
+export const assigneeConversationName = (
+  card: Pick<BoardCardSummary, 'assignee_ref' | 'assignee_name'>,
+  t: TFunction
+): string =>
+  card.assignee_name?.trim() ||
+  t('board.actor.conversation', { id: (card.assignee_ref ?? '').slice(0, SHORT_ID_LENGTH) });
+
 /** Assignee line for a card. */
 export const assigneeLabel = (card: BoardCardSummary, t: TFunction): string => {
   if (!card.assignee_kind || !card.assignee_ref) return t('board.card.unassigned');
   if (card.assignee_kind === 'user') return t('board.actor.you');
+  if (card.assignee_kind === 'conversation') return assigneeConversationName(card, t);
   const name = card.assignee_name || card.assignee_ref;
   return card.assignee_kind === 'team' ? t('board.actor.team', { name }) : name;
 };
@@ -127,6 +136,12 @@ export const describeEvent = (event: BoardEvent, columns: BoardColumn[], t: TFun
         from: columnNameByKey(columns, payloadString(payload, 'from'), t),
         to: columnNameByKey(columns, payloadString(payload, 'to'), t),
       });
+    case 'gate_crossed':
+      return t(payload.forced === true ? 'board.activity.gate_crossed_forced' : 'board.activity.gate_crossed', {
+        actor,
+        from: columnNameByKey(columns, payloadString(payload, 'from'), t),
+        to: columnNameByKey(columns, payloadString(payload, 'to'), t),
+      });
     case 'card_assigned':
     case 'link_parent_fallback':
     case 'packet_send_failed':
@@ -161,4 +176,27 @@ export const describeEvent = (event: BoardEvent, columns: BoardColumn[], t: TFun
     default:
       return t('board.activity.other', { actor, kind: event.kind });
   }
+};
+
+export type GateApproval = {
+  /** The board's agent access when the gate was crossed. */
+  access: 'full' | 'approval' | null;
+  /** The owner's recorded approval note, when the move carried one. */
+  note: string | null;
+  at: number | null;
+};
+
+/**
+ * The approval record of a `gate_crossed` event (TASK-116): payload `agent_access`
+ * and `approval: { by: 'owner', via: <note>, at }` (or null). Null for other events.
+ */
+export const gateApprovalOf = (event: BoardEvent): GateApproval | null => {
+  if (event.kind !== 'gate_crossed') return null;
+  const payload = event.payload ?? {};
+  const access = payload.agent_access === 'full' || payload.agent_access === 'approval' ? payload.agent_access : null;
+  const approval =
+    payload.approval && typeof payload.approval === 'object' ? (payload.approval as Record<string, unknown>) : null;
+  const note = approval && typeof approval.via === 'string' && approval.via.trim() ? approval.via.trim() : null;
+  const at = approval && typeof approval.at === 'number' ? approval.at : null;
+  return { access, note, at };
 };

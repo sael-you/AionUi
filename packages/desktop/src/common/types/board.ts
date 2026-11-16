@@ -24,7 +24,15 @@ export type BoardPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type BoardSize = 's' | 'm' | 'l';
 export type BoardTier = 't0' | 't1' | 't2' | 't3';
 export type BoardActorKind = 'user' | 'agent' | 'system';
-export type BoardAssigneeKind = 'assistant' | 'team' | 'user';
+export type BoardAssigneeKind = 'assistant' | 'team' | 'user' | 'conversation';
+
+/**
+ * Agent access to the board (TASK-116): `full` = agents move cards across gates on
+ * their own; `approval` = an agent crossing a gate must carry the owner's recorded
+ * approval note (else `board_agent_move_denied`). Stored as `settings.agent_access`.
+ */
+export type BoardAgentAccess = 'full' | 'approval';
+export const BOARD_AGENT_ACCESS: readonly BoardAgentAccess[] = ['full', 'approval'];
 
 export const BOARD_CATEGORIES: readonly BoardCategory[] = ['backlog', 'todo', 'in_progress', 'done'];
 export const BOARD_CARD_TYPES: readonly BoardCardType[] = ['idea', 'bug', 'feature', 'update', 'chore', 'research'];
@@ -92,6 +100,11 @@ export type BoardSettings = {
   /** Guards settings and the columns collection (`PUT …/settings`, `PUT …/columns`). */
   version: number;
   settings: Record<string, unknown>;
+  /**
+   * Effective agent access (TASK-116): the stored `settings.agent_access`, else the
+   * server default for the project. Absent on servers that predate it.
+   */
+  agent_access?: BoardAgentAccess;
   /** Set while the project is archived → the board is read-only (409 `board_archived`). */
   archived_at: number | null;
   /** The project's Board Keeper conversation (D40); null until it is created. */

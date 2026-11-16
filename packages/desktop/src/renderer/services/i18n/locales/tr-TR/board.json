@@ -179,7 +179,8 @@
     "needsDecision": "Kararınızı bekliyor",
     "moveLocked": "Taşımak için kartta karar verin",
     "moveAutomated": "Dağıtım otomasyonu tarafından taşınır",
-    "moveTargetAutomated": "{{column}} (yalnızca dağıtım otomasyonu)"
+    "moveTargetAutomated": "{{column}} (yalnızca dağıtım otomasyonu)",
+    "openAssigneeConversation": "Atanan sohbeti aç: {{name}}"
   },
   "dnd": {
     "roleDescription": "taşınabilir kart",
@@ -435,7 +436,12 @@
     "question_added": "{{actor}}: {{to}} için soru soruldu",
     "question_answered": "{{actor}}: bir soru yanıtlandı",
     "board_unarchived": "Pano yeniden etkinleştirildi",
-    "other": "{{actor}}: kart değiştirildi ({{kind}})"
+    "other": "{{actor}}: kart değiştirildi ({{kind}})",
+    "gate_crossed": "{{actor}} kartı bir kapıdan {{from}} sütunundan {{to}} sütununa taşıdı",
+    "gate_crossed_forced": "{{actor}} kartı bir kapıdan {{from}} sütunundan {{to}} sütununa zorla geçirdi",
+    "approvalNote": "Onayınız: “{{note}}”",
+    "approvalNotNeeded": "Onay gerekmedi: ajanların tam erişimi vardı.",
+    "approvalMissing": "Kayıtlı onay notu yok."
   },
   "settings": {
     "title": "Sütun ayarları",
@@ -461,5 +467,16 @@
     "label": "İlerleme",
     "updated": "Güncellendi: {{age}}",
     "stale": "24 saatten uzun süredir güncelleme yok"
+  },
+  "agentAccess": {
+    "title": "Ajanların panoya erişimi",
+    "full": "Tam",
+    "fullHelp": "Ajanlar kartları kapılardan kendi başlarına geçirebilir.",
+    "approval": "Yalnızca kayıtlı onayınızla",
+    "approvalHelp": "Bir ajan bir kartı yalnızca kart geçmişine kaydedilen onay notunuzla bir kapıdan geçirebilir.",
+    "saved": {
+      "full": "Ajanların artık bu panoya tam erişimi var.",
+      "approval": "Ajanların artık bir kapıyı geçmek için kayıtlı onayınıza ihtiyacı var."
+    }
   }
 }
