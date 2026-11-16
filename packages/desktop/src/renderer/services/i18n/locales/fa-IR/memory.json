@@ -1,0 +1,68 @@
+{
+  "title": "حافظه",
+  "pageTitle": "حافظه · {{project}}",
+  "openMemory": "بررسی حافظه",
+  "projectPicker": "پروژه",
+  "noProjects": "هنوز پروژه‌ای وجود ندارد.",
+  "loadFailed": "بارگیری حافظه ممکن نشد.",
+  "noMemory": "Claude هنوز برای این پروژه حافظه‌ای ندارد.",
+  "searchPlaceholder": "جستجو در حافظه",
+  "searchContents": "جستجو در محتوا نیز",
+  "filters": {
+    "type": "نوع",
+    "allTypes": "همه انواع",
+    "stale": "احتمالاً قدیمی",
+    "issues": "دارای مشکل"
+  },
+  "type": {
+    "user": "کاربر",
+    "feedback": "بازخورد",
+    "project": "پروژه",
+    "reference": "مرجع",
+    "other": "سایر"
+  },
+  "review": {
+    "button": "بررسی با هوش مصنوعی",
+    "buttonSelected": "بررسی {{count}} فایل با هوش مصنوعی",
+    "buttonSelected_one": "بررسی {{count}} فایل با هوش مصنوعی",
+    "buttonSelected_other": "بررسی {{count}} فایل با هوش مصنوعی",
+    "noClaude": "دستیار Claude Code در دسترس نیست.",
+    "failed": "شروع گفتگوی بررسی ممکن نشد.",
+    "conversationName": "بررسی حافظه"
+  },
+  "listLabel": "فایل‌های حافظه",
+  "summary": "{{count}} حافظه · فهرست {{lines}} خط",
+  "summary_one": "{{count}} حافظه · فهرست {{lines}} خط",
+  "summary_other": "{{count}} حافظه · فهرست {{lines}} خط",
+  "lint": {
+    "duplicate": "تکراری",
+    "not_in_index": "در فهرست نیست",
+    "missing_file": "فایل موجود نیست",
+    "broken_link": "پیوند شکسته",
+    "stale": "احتمالاً قدیمی",
+    "missingFiles": "فهرست به {{count}} فایل ناموجود اشاره می‌کند: {{files}}",
+    "missingFiles_one": "فهرست به {{count}} فایل ناموجود اشاره می‌کند: {{files}}",
+    "missingFiles_other": "فهرست به {{count}} فایل ناموجود اشاره می‌کند: {{files}}"
+  },
+  "noMatches": "هیچ حافظه‌ای با فیلترها مطابقت ندارد.",
+  "pickOne": "برای خواندن، یک حافظه را انتخاب کنید.",
+  "selectForReview": "انتخاب {{name}} برای بررسی هوش مصنوعی",
+  "detail": {
+    "back": "بازگشت به فهرست",
+    "modified": "تغییر یافته {{date}}",
+    "frontmatter": "فرامتن",
+    "body": "محتوا (markdown)",
+    "links": "پیوندها",
+    "loadFailed": "بارگیری این حافظه ممکن نشد.",
+    "saveFailed": "ذخیره ناموفق بود",
+    "conflict": "این حافظه در این فاصله تغییر کرده است (ممکن است عامل آن را نوشته باشد). دوباره بارگیری و ویرایش کنید.",
+    "deleted": "{{file}} حذف شد",
+    "deletedHint": "خط فهرست آن نیز حذف شد. یک نسخه به مدت ۳۰ روز نگهداری می‌شود.",
+    "undo": "واگرد",
+    "restoreFailed": "بازیابی ناموفق بود",
+    "deleteFailed": "حذف ناموفق بود",
+    "size": "{{count}} بایت",
+    "size_one": "{{count}} بایت",
+    "size_other": "{{count}} بایت"
+  }
+}

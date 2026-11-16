@@ -22,6 +22,7 @@ import {
   System,
   Toolkit,
   Voice,
+  Brain,
 } from '@icon-park/react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -79,6 +80,7 @@ export function getBuiltinSettingsNavItems(isDesktop: boolean, t: TranslateFn): 
       path: 'webui',
     },
     voice: { id: 'voice', label: t('voice.settings.title'), icon: <Voice theme='outline' size='16' />, path: 'voice' },
+    memory: { id: 'memory', label: t('memory.title'), icon: <Brain theme='outline' size='16' />, path: 'memory' },
     pet: { id: 'pet', label: t('pet.desktopPet'), icon: <Cat theme='outline' size='16' />, path: 'pet' },
     system: { id: 'system', label: t('settings.system'), icon: <System theme='outline' size='16' />, path: 'system' },
     archived: {

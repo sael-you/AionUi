@@ -17,7 +17,7 @@ import { useRovingTree } from '@/renderer/hooks/ui/useRovingTree';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Button, Dropdown, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
-import { Box, Comment, FolderClose, MoreOne, Plus, ViewGridDetail } from '@icon-park/react';
+import { Box, Brain, Comment, FolderClose, MoreOne, Plus, ViewGridDetail } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -865,6 +865,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         } else if (key === 'board' && group.source.projectId) {
                           void navigate(`/board/${encodeURIComponent(group.source.projectId)}`);
                           onSessionClick?.();
+                        } else if (key === 'memory' && group.source.projectId) {
+                          void navigate(`/memory/${encodeURIComponent(group.source.projectId)}`);
+                          onSessionClick?.();
                         } else if (key === 'keeper' && group.source.projectId) {
                           void openBoardKeeper(group.source.projectId);
                           onSessionClick?.();
@@ -891,6 +894,13 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         <span className='flex items-center gap-8px'>
                           <ViewGridDetail theme='outline' size='14' />
                           {t('board.openBoard')}
+                        </span>
+                      </Menu.Item>
+                      {/* Claude memory review of the project (C29). */}
+                      <Menu.Item key='memory' disabled={!group.source.projectId}>
+                        <span className='flex items-center gap-8px'>
+                          <Brain theme='outline' size='14' />
+                          {t('memory.openMemory')}
                         </span>
                       </Menu.Item>
                       <Menu.Item key='keeper' disabled={!group.source.projectId}>

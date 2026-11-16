@@ -1,0 +1,68 @@
+{
+  "title": "記憶",
+  "pageTitle": "記憶 · {{project}}",
+  "openMemory": "檢視記憶",
+  "projectPicker": "專案",
+  "noProjects": "還沒有專案。",
+  "loadFailed": "無法載入記憶。",
+  "noMemory": "Claude 還沒有此專案的記憶。",
+  "searchPlaceholder": "搜尋記憶",
+  "searchContents": "同時搜尋內容",
+  "filters": {
+    "type": "類型",
+    "allTypes": "全部類型",
+    "stale": "可能過時",
+    "issues": "有問題"
+  },
+  "type": {
+    "user": "使用者",
+    "feedback": "回饋",
+    "project": "專案",
+    "reference": "參考",
+    "other": "其他"
+  },
+  "review": {
+    "button": "讓 AI 審查",
+    "buttonSelected": "讓 AI 審查 {{count}} 個檔案",
+    "buttonSelected_one": "讓 AI 審查 {{count}} 個檔案",
+    "buttonSelected_other": "讓 AI 審查 {{count}} 個檔案",
+    "noClaude": "Claude Code 助理無法使用。",
+    "failed": "無法開始審查對話。",
+    "conversationName": "記憶審查"
+  },
+  "listLabel": "記憶檔案",
+  "summary": "{{count}} 筆記憶 · 索引 {{lines}} 行",
+  "summary_one": "{{count}} 筆記憶 · 索引 {{lines}} 行",
+  "summary_other": "{{count}} 筆記憶 · 索引 {{lines}} 行",
+  "lint": {
+    "duplicate": "重複",
+    "not_in_index": "不在索引中",
+    "missing_file": "檔案遺失",
+    "broken_link": "連結失效",
+    "stale": "可能過時",
+    "missingFiles": "索引中有 {{count}} 個遺失的檔案：{{files}}",
+    "missingFiles_one": "索引中有 {{count}} 個遺失的檔案：{{files}}",
+    "missingFiles_other": "索引中有 {{count}} 個遺失的檔案：{{files}}"
+  },
+  "noMatches": "沒有符合篩選條件的記憶。",
+  "pickOne": "選擇一筆記憶以檢視。",
+  "selectForReview": "選擇 {{name}} 進行 AI 審查",
+  "detail": {
+    "back": "返回列表",
+    "modified": "修改於 {{date}}",
+    "frontmatter": "前置中繼資料",
+    "body": "內容（Markdown）",
+    "links": "連結",
+    "loadFailed": "無法載入此記憶。",
+    "saveFailed": "儲存失敗",
+    "conflict": "此記憶已在期間被修改（可能是代理寫入的）。請重新載入後再編輯。",
+    "deleted": "已刪除 {{file}}",
+    "deletedHint": "其索引行也已刪除。副本會保留 30 天。",
+    "undo": "復原",
+    "restoreFailed": "還原失敗",
+    "deleteFailed": "刪除失敗",
+    "size": "{{count}} 位元組",
+    "size_one": "{{count}} 位元組",
+    "size_other": "{{count}} 位元組"
+  }
+}

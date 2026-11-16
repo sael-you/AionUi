@@ -17,6 +17,7 @@ import {
   System,
   Toolkit,
   Voice,
+  Brain,
 } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
@@ -34,6 +35,7 @@ export const BUILTIN_TAB_IDS = [
   'appearance',
   'webui',
   'voice',
+  'memory',
   'pet',
   'system',
   'archived',
@@ -114,6 +116,7 @@ const SettingsSider: React.FC<{ collapsed?: boolean; tooltipEnabled?: boolean }>
         path: 'webui',
       },
       voice: { id: 'voice', label: t('voice.settings.title'), icon: <Voice />, path: 'voice' },
+      memory: { id: 'memory', label: t('memory.title'), icon: <Brain />, path: 'memory' },
       pet: { id: 'pet', label: t('pet.desktopPet'), icon: <Cat />, path: 'pet' },
       system: { id: 'system', label: t('settings.system'), icon: <System />, path: 'system' },
       archived: {

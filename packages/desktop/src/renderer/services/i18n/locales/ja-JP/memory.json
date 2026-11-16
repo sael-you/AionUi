@@ -1,0 +1,68 @@
+{
+  "title": "メモリー",
+  "pageTitle": "メモリー · {{project}}",
+  "openMemory": "メモリーを確認",
+  "projectPicker": "プロジェクト",
+  "noProjects": "プロジェクトはまだありません。",
+  "loadFailed": "メモリーを読み込めませんでした。",
+  "noMemory": "このプロジェクトの Claude メモリーはまだありません。",
+  "searchPlaceholder": "メモリーを検索",
+  "searchContents": "本文も検索",
+  "filters": {
+    "type": "種類",
+    "allTypes": "すべての種類",
+    "stale": "古い可能性",
+    "issues": "問題あり"
+  },
+  "type": {
+    "user": "ユーザー",
+    "feedback": "フィードバック",
+    "project": "プロジェクト",
+    "reference": "参照",
+    "other": "その他"
+  },
+  "review": {
+    "button": "AI でレビュー",
+    "buttonSelected": "{{count}} 件のファイルを AI でレビュー",
+    "buttonSelected_one": "{{count}} 件のファイルを AI でレビュー",
+    "buttonSelected_other": "{{count}} 件のファイルを AI でレビュー",
+    "noClaude": "Claude Code アシスタントを利用できません。",
+    "failed": "レビューの会話を開始できませんでした。",
+    "conversationName": "メモリーレビュー"
+  },
+  "listLabel": "メモリーファイル",
+  "summary": "{{count}} 件のメモリー · インデックス {{lines}} 行",
+  "summary_one": "{{count}} 件のメモリー · インデックス {{lines}} 行",
+  "summary_other": "{{count}} 件のメモリー · インデックス {{lines}} 行",
+  "lint": {
+    "duplicate": "重複",
+    "not_in_index": "インデックスにない",
+    "missing_file": "ファイルがない",
+    "broken_link": "リンク切れ",
+    "stale": "古い可能性",
+    "missingFiles": "インデックスに存在しないファイルが {{count}} 件あります：{{files}}",
+    "missingFiles_one": "インデックスに存在しないファイルが {{count}} 件あります：{{files}}",
+    "missingFiles_other": "インデックスに存在しないファイルが {{count}} 件あります：{{files}}"
+  },
+  "noMatches": "条件に一致するメモリーはありません。",
+  "pickOne": "メモリーを選択して表示します。",
+  "selectForReview": "{{name}} を AI レビューに含める",
+  "detail": {
+    "back": "一覧に戻る",
+    "modified": "更新 {{date}}",
+    "frontmatter": "フロントマター",
+    "body": "本文（Markdown）",
+    "links": "リンク",
+    "loadFailed": "このメモリーを読み込めませんでした。",
+    "saveFailed": "保存に失敗しました",
+    "conflict": "このメモリーはその間に変更されました（エージェントが書き込んだ可能性があります）。再読み込みしてから編集してください。",
+    "deleted": "{{file}} を削除しました",
+    "deletedHint": "インデックスの行も削除されました。コピーは 30 日間保持されます。",
+    "undo": "元に戻す",
+    "restoreFailed": "復元に失敗しました",
+    "deleteFailed": "削除に失敗しました",
+    "size": "{{count}} バイト",
+    "size_one": "{{count}} バイト",
+    "size_other": "{{count}} バイト"
+  }
+}

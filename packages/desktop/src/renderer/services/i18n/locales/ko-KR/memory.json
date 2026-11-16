@@ -1,0 +1,68 @@
+{
+  "title": "메모리",
+  "pageTitle": "메모리 · {{project}}",
+  "openMemory": "메모리 검토",
+  "projectPicker": "프로젝트",
+  "noProjects": "아직 프로젝트가 없습니다.",
+  "loadFailed": "메모리를 불러올 수 없습니다.",
+  "noMemory": "이 프로젝트에 대한 Claude 메모리가 아직 없습니다.",
+  "searchPlaceholder": "메모리 검색",
+  "searchContents": "내용도 검색",
+  "filters": {
+    "type": "유형",
+    "allTypes": "모든 유형",
+    "stale": "오래되었을 수 있음",
+    "issues": "문제 있음"
+  },
+  "type": {
+    "user": "사용자",
+    "feedback": "피드백",
+    "project": "프로젝트",
+    "reference": "참조",
+    "other": "기타"
+  },
+  "review": {
+    "button": "AI로 검토",
+    "buttonSelected": "파일 {{count}}개를 AI로 검토",
+    "buttonSelected_one": "파일 {{count}}개를 AI로 검토",
+    "buttonSelected_other": "파일 {{count}}개를 AI로 검토",
+    "noClaude": "Claude Code 어시스턴트를 사용할 수 없습니다.",
+    "failed": "검토 대화를 시작할 수 없습니다.",
+    "conversationName": "메모리 검토"
+  },
+  "listLabel": "메모리 파일",
+  "summary": "메모리 {{count}}개 · 인덱스 {{lines}}줄",
+  "summary_one": "메모리 {{count}}개 · 인덱스 {{lines}}줄",
+  "summary_other": "메모리 {{count}}개 · 인덱스 {{lines}}줄",
+  "lint": {
+    "duplicate": "중복",
+    "not_in_index": "인덱스에 없음",
+    "missing_file": "파일 없음",
+    "broken_link": "깨진 링크",
+    "stale": "오래되었을 수 있음",
+    "missingFiles": "인덱스에 없는 파일 {{count}}개가 있습니다: {{files}}",
+    "missingFiles_one": "인덱스에 없는 파일 {{count}}개가 있습니다: {{files}}",
+    "missingFiles_other": "인덱스에 없는 파일 {{count}}개가 있습니다: {{files}}"
+  },
+  "noMatches": "필터와 일치하는 메모리가 없습니다.",
+  "pickOne": "읽을 메모리를 선택하세요.",
+  "selectForReview": "AI 검토에 {{name}} 선택",
+  "detail": {
+    "back": "목록으로 돌아가기",
+    "modified": "수정됨 {{date}}",
+    "frontmatter": "프런트매터",
+    "body": "내용(Markdown)",
+    "links": "링크",
+    "loadFailed": "이 메모리를 불러올 수 없습니다.",
+    "saveFailed": "저장 실패",
+    "conflict": "그 사이에 이 메모리가 변경되었습니다(에이전트가 썼을 수 있음). 다시 불러온 후 편집하세요.",
+    "deleted": "{{file}} 삭제됨",
+    "deletedHint": "인덱스 줄도 삭제되었습니다. 사본은 30일간 보관됩니다.",
+    "undo": "실행 취소",
+    "restoreFailed": "복원 실패",
+    "deleteFailed": "삭제 실패",
+    "size": "{{count}}바이트",
+    "size_one": "{{count}}바이트",
+    "size_other": "{{count}}바이트"
+  }
+}

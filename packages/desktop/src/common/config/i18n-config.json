@@ -37,6 +37,7 @@
     "agent",
     "team",
     "pet",
-    "board"
+    "board",
+    "memory"
   ]
 }

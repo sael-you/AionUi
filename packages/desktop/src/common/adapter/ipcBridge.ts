@@ -114,6 +114,7 @@ import type {
 import type { AgentMetadata } from '@/renderer/utils/model/agentTypes';
 import type { Theme } from '@/common/theme/types';
 import type { AttachFolderRequest, ProjectDetailDto, ProjectEntryDto } from '@/common/types/project';
+import type { MemoryFileResponse, MemoryListResponse, UpdateMemoryFileRequest } from '@/common/types/memory';
 import type {
   BoardAssignRequest,
   BoardAssignResponse,
@@ -636,6 +637,34 @@ export const project = {
   /** DELETE /api/projects/{id}/folders/{pe_id} → 204. Workspace entry is immutable (backend rejects). */
   removeFolder: httpDelete<void, { project_id: string; pe_id: string }>(
     (p) => `/api/projects/${encodeURIComponent(p.project_id)}/folders/${encodeURIComponent(p.pe_id)}`
+  ),
+};
+
+// ---------------------------------------------------------------------------
+// Project memory review (C29 §2): Claude Code's auto-memory files of a project.
+// Writes keep a trash copy server-side; `restore` brings back the newest one.
+// ---------------------------------------------------------------------------
+
+const memoryPath = (projectId: string): string => `/api/projects/${encodeURIComponent(projectId)}/memory`;
+const memoryFilePath = (projectId: string, file: string): string =>
+  `${memoryPath(projectId)}/${encodeURIComponent(file)}`;
+
+export const memory = {
+  /** GET /api/projects/{pid}/memory → files (no bodies), index size, lint. */
+  list: httpGet<MemoryListResponse, { project_id: string }>((p) => memoryPath(p.project_id)),
+  /** GET /api/projects/{pid}/memory/{file} → frontmatter + body + mtime. */
+  get: httpGet<MemoryFileResponse, { project_id: string; file: string }>((p) => memoryFilePath(p.project_id, p.file)),
+  /** PUT /api/projects/{pid}/memory/{file} → 409 when the file changed since `expected_modified`. */
+  update: httpPut<MemoryFileResponse, { project_id: string; file: string } & UpdateMemoryFileRequest>(
+    (p) => memoryFilePath(p.project_id, p.file),
+    ({ project_id: _projectId, file: _file, ...body }) => body
+  ),
+  /** DELETE /api/projects/{pid}/memory/{file} → also drops its `MEMORY.md` line. */
+  remove: httpDelete<void, { project_id: string; file: string }>((p) => memoryFilePath(p.project_id, p.file)),
+  /** POST /api/projects/{pid}/memory/{file}/restore → the newest trash copy is back. */
+  restore: httpPost<MemoryFileResponse, { project_id: string; file: string }>(
+    (p) => `${memoryFilePath(p.project_id, p.file)}/restore`,
+    () => ({})
   ),
 };
 

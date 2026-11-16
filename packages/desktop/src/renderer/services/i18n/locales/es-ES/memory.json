@@ -1,0 +1,68 @@
+{
+  "title": "Memoria",
+  "pageTitle": "Memoria · {{project}}",
+  "openMemory": "Revisar memoria",
+  "projectPicker": "Proyecto",
+  "noProjects": "Aún no hay proyectos.",
+  "loadFailed": "No se pudo cargar la memoria.",
+  "noMemory": "Claude aún no tiene memoria de este proyecto.",
+  "searchPlaceholder": "Buscar recuerdos",
+  "searchContents": "Buscar también en el contenido",
+  "filters": {
+    "type": "Tipo",
+    "allTypes": "Todos los tipos",
+    "stale": "Quizá desactualizada",
+    "issues": "Con problemas"
+  },
+  "type": {
+    "user": "Usuario",
+    "feedback": "Comentarios",
+    "project": "Proyecto",
+    "reference": "Referencia",
+    "other": "Otros"
+  },
+  "review": {
+    "button": "Revisar con IA",
+    "buttonSelected": "Revisar {{count}} archivos con IA",
+    "buttonSelected_one": "Revisar {{count}} archivo con IA",
+    "buttonSelected_other": "Revisar {{count}} archivos con IA",
+    "noClaude": "El asistente Claude Code no está disponible.",
+    "failed": "No se pudo iniciar la conversación de revisión.",
+    "conversationName": "Revisión de memoria"
+  },
+  "listLabel": "Archivos de memoria",
+  "summary": "{{count}} recuerdos · índice {{lines}} líneas",
+  "summary_one": "{{count}} recuerdo · índice {{lines}} líneas",
+  "summary_other": "{{count}} recuerdos · índice {{lines}} líneas",
+  "lint": {
+    "duplicate": "Duplicado",
+    "not_in_index": "Fuera del índice",
+    "missing_file": "Archivo ausente",
+    "broken_link": "Enlace roto",
+    "stale": "Quizá desactualizada",
+    "missingFiles": "El índice nombra {{count}} archivos ausentes: {{files}}",
+    "missingFiles_one": "El índice nombra {{count}} archivo ausente: {{files}}",
+    "missingFiles_other": "El índice nombra {{count}} archivos ausentes: {{files}}"
+  },
+  "noMatches": "Ningún recuerdo coincide con los filtros.",
+  "pickOne": "Selecciona un recuerdo para leerlo.",
+  "selectForReview": "Seleccionar {{name}} para la revisión con IA",
+  "detail": {
+    "back": "Volver a la lista",
+    "modified": "Modificado {{date}}",
+    "frontmatter": "Metadatos",
+    "body": "Contenido (markdown)",
+    "links": "Enlaces",
+    "loadFailed": "No se pudo cargar este recuerdo.",
+    "saveFailed": "Error al guardar",
+    "conflict": "Este recuerdo cambió mientras tanto (puede que lo escribiera el agente). Recarga y edita de nuevo.",
+    "deleted": "{{file}} eliminado",
+    "deletedHint": "Su línea del índice también se eliminó. Se guarda una copia durante 30 días.",
+    "undo": "Deshacer",
+    "restoreFailed": "Error al restaurar",
+    "deleteFailed": "Error al eliminar",
+    "size": "{{count}} bytes",
+    "size_one": "{{count}} byte",
+    "size_other": "{{count}} bytes"
+  }
+}
