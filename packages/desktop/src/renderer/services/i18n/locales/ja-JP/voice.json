@@ -224,6 +224,16 @@
       "needs_approval": "画面での承認が必要です",
       "interrupted": "再起動により中断",
       "turn_failed": "タスクが失敗しました"
-    }
+    },
+    "quotesWaitingHint": "この音声通話では引用を添付できません。入力して送信してください。",
+    "quotesAttached": "引用 {{count}} 件を添付",
+    "quotesAttached_one": "引用 {{count}} 件を添付",
+    "quotesAttached_other": "引用 {{count}} 件を添付",
+    "quotesWaiting": "引用 {{count}} 件が待機中",
+    "quotesWaiting_one": "引用 {{count}} 件が待機中",
+    "quotesWaiting_other": "引用 {{count}} 件が待機中",
+    "quotesTooLarge": "引用 {{count}} 件は音声には長すぎます",
+    "quotesTooLarge_one": "引用 {{count}} 件は音声には長すぎます",
+    "quotesTooLarge_other": "引用 {{count}} 件は音声には長すぎます"
   }
 }

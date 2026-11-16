@@ -224,6 +224,16 @@
       "needs_approval": "需要你在屏幕上批准",
       "interrupted": "因重启而中断",
       "turn_failed": "任务失败"
-    }
+    },
+    "quotesWaitingHint": "此语音通话无法附带引用，请通过输入发送。",
+    "quotesAttached": "已附带 {{count}} 条引用",
+    "quotesAttached_one": "已附带 {{count}} 条引用",
+    "quotesAttached_other": "已附带 {{count}} 条引用",
+    "quotesWaiting": "{{count}} 条引用待发送",
+    "quotesWaiting_one": "{{count}} 条引用待发送",
+    "quotesWaiting_other": "{{count}} 条引用待发送",
+    "quotesTooLarge": "{{count}} 条引用过长，无法用语音发送",
+    "quotesTooLarge_one": "{{count}} 条引用过长，无法用语音发送",
+    "quotesTooLarge_other": "{{count}} 条引用过长，无法用语音发送"
   }
 }

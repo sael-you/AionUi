@@ -224,6 +224,16 @@
       "needs_approval": "Ekranda onayın gerekiyor",
       "interrupted": "Yeniden başlatma nedeniyle kesildi",
       "turn_failed": "Görev başarısız oldu"
-    }
+    },
+    "quotesWaitingHint": "Bu sesli görüşme alıntı alamıyor. Yazarak gönderin.",
+    "quotesAttached": "{{count}} alıntı eklendi",
+    "quotesAttached_one": "{{count}} alıntı eklendi",
+    "quotesAttached_other": "{{count}} alıntı eklendi",
+    "quotesWaiting": "{{count}} alıntı bekliyor",
+    "quotesWaiting_one": "{{count}} alıntı bekliyor",
+    "quotesWaiting_other": "{{count}} alıntı bekliyor",
+    "quotesTooLarge": "{{count}} alıntı ses için çok uzun",
+    "quotesTooLarge_one": "{{count}} alıntı ses için çok uzun",
+    "quotesTooLarge_other": "{{count}} alıntı ses için çok uzun"
   }
 }

@@ -955,5 +955,21 @@
       "label": "委派的工作：{{summary}}"
     },
     "breadcrumb": "對話路徑"
+  },
+  "quoteReply": {
+    "toolbarLabel": "選取內容操作",
+    "dictateReply": "語音回覆",
+    "popoverLabel": "回覆所選內容",
+    "replyPlaceholder": "回覆…",
+    "replyLabel": "你的回覆",
+    "add": "新增",
+    "editTitle": "編輯引用",
+    "remove": "移除",
+    "editLabel": "編輯引用：{{quote}}",
+    "removeLabel": "移除引用：{{quote}}",
+    "withReply": "含回覆",
+    "stackLabel": "{{count}} 則待傳送的引用",
+    "stackLabel_one": "{{count}} 則待傳送的引用",
+    "stackLabel_other": "{{count}} 則待傳送的引用"
   }
 }

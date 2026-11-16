@@ -172,8 +172,22 @@ export type VoiceBudget = {
 // ---------------------------------------------------------------------------
 
 export type ServerFrame =
-  | { name: 'voice.ready'; voiceSessionId: string; engine: string; model: string }
-  | { name: 'voice.state'; voiceSessionId: string | null; state: ServerVoiceState; reason: string | null }
+  /** `attachQuotes`: the backend accepts `voice.attachQuotes` on this call (C32; absent on older cores). */
+  | { name: 'voice.ready'; voiceSessionId: string; engine: string; model: string; attachQuotes?: boolean }
+  | {
+      name: 'voice.state';
+      voiceSessionId: string | null;
+      state: ServerVoiceState;
+      reason: string | null;
+      attachQuotes?: boolean;
+    }
+  /** Ack of `voice.attachQuotes` (C32): `consumed` + `posted` = the quotes went out with an utterance. */
+  | {
+      name: 'voice.quotesAttached';
+      voiceSessionId: string | null;
+      consumed: boolean;
+      reason: VoiceQuotesReason;
+    }
   | { name: 'voice.caption'; voiceSessionId: string | null; role: CaptionRole; text: string; final: boolean }
   | ({ name: 'voice.draftUpdated'; voiceSessionId: string | null } & VoiceDraft)
   | {
@@ -200,6 +214,8 @@ export type ServerFrame =
   | { name: 'voice.error'; voiceSessionId: string | null; code: string; message: string };
 
 export type ServerFrameName = ServerFrame['name'];
+
+export type VoiceQuotesReason = 'posted' | 'too_large' | 'no_call' | 'unsupported_mode' | 'cleared';
 
 // ---------------------------------------------------------------------------
 // Client → server frames
@@ -232,7 +248,9 @@ export type ClientFrame =
   | { name: 'voice.confirmTap'; draftId: string; version: number; hash: string }
   | { name: 'voice.cancelTap'; draftId: string; version: number; hash: string }
   /** Conversation mode "Done": end the utterance now. */
-  | { name: 'voice.commit' };
+  | { name: 'voice.commit' }
+  /** C32: the whole quote stack, prepended to the next posted utterance; `""` clears it. ≤ 8192 bytes. */
+  | { name: 'voice.attachQuotes'; text: string };
 
 // ---------------------------------------------------------------------------
 // REST (snake_case, AionCore convention)

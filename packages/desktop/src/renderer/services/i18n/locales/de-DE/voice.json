@@ -224,6 +224,16 @@
       "needs_approval": "Braucht deine Freigabe am Bildschirm",
       "interrupted": "Durch einen Neustart unterbrochen",
       "turn_failed": "Die Aufgabe ist fehlgeschlagen"
-    }
+    },
+    "quotesWaitingHint": "Dieser Sprachanruf kann keine Zitate mitnehmen. Senden Sie sie per Tastatur.",
+    "quotesAttached": "{{count}} Zitate angehängt",
+    "quotesAttached_one": "{{count}} Zitat angehängt",
+    "quotesAttached_other": "{{count}} Zitate angehängt",
+    "quotesWaiting": "{{count}} Zitate warten",
+    "quotesWaiting_one": "{{count}} Zitat wartet",
+    "quotesWaiting_other": "{{count}} Zitate warten",
+    "quotesTooLarge": "{{count}} Zitate zu lang für Sprache",
+    "quotesTooLarge_one": "{{count}} Zitat zu lang für Sprache",
+    "quotesTooLarge_other": "{{count}} Zitate zu lang für Sprache"
   }
 }

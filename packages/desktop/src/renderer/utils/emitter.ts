@@ -10,12 +10,6 @@ import { useEffect } from 'react';
 import type { FileOrFolderItem } from '@/renderer/utils/file/fileTypes';
 import type { PreviewContentType } from '@/common/types/office/preview';
 
-export type ReplyQuote = {
-  messageId: string;
-  content: string;
-  position: 'left' | 'right' | 'center' | 'pop';
-};
-
 interface EventTypes {
   // The 2nd arg is the target conversation id: only the send box whose
   // conversation matches consumes the event (team renders one send box per
@@ -42,8 +36,6 @@ interface EventTypes {
   ];
   // 填充输入框事件 / Fill sendbox input event
   'sendbox.fill': [string]; // prompt text to fill
-  'sendbox.reply': [ReplyQuote]; // reply/quote a message
-  'sendbox.reply.clear': void; // clear reply quote
   /**
    * Mention a conversation in the send box, target already resolved.
    *

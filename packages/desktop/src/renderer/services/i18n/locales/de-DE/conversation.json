@@ -956,5 +956,21 @@
       "label": "Delegierte Arbeit: {{summary}}"
     },
     "breadcrumb": "Pfad der Unterhaltung"
+  },
+  "quoteReply": {
+    "toolbarLabel": "Aktionen für die Auswahl",
+    "dictateReply": "Per Sprache antworten",
+    "popoverLabel": "Auf die Auswahl antworten",
+    "replyPlaceholder": "Antwort…",
+    "replyLabel": "Ihre Antwort",
+    "add": "Hinzufügen",
+    "editTitle": "Zitat bearbeiten",
+    "remove": "Entfernen",
+    "editLabel": "Zitat bearbeiten: {{quote}}",
+    "removeLabel": "Zitat entfernen: {{quote}}",
+    "withReply": "Mit Antwort",
+    "stackLabel": "{{count}} Zitate zum Senden",
+    "stackLabel_one": "{{count}} Zitat zum Senden",
+    "stackLabel_other": "{{count}} Zitate zum Senden"
   }
 }

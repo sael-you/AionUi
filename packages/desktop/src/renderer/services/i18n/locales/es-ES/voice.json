@@ -226,6 +226,16 @@
       "needs_approval": "Necesita tu aprobación en pantalla",
       "interrupted": "Interrumpida por un reinicio",
       "turn_failed": "La tarea falló"
-    }
+    },
+    "quotesWaitingHint": "Esta llamada de voz no admite citas. Envíalas escribiendo.",
+    "quotesAttached": "{{count}} citas adjuntas",
+    "quotesAttached_one": "{{count}} cita adjunta",
+    "quotesAttached_other": "{{count}} citas adjuntas",
+    "quotesWaiting": "{{count}} citas en espera",
+    "quotesWaiting_one": "{{count}} cita en espera",
+    "quotesWaiting_other": "{{count}} citas en espera",
+    "quotesTooLarge": "{{count}} citas demasiado largas para voz",
+    "quotesTooLarge_one": "{{count}} cita demasiado larga para voz",
+    "quotesTooLarge_other": "{{count}} citas demasiado largas para voz"
   }
 }

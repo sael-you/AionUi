@@ -955,5 +955,21 @@
       "label": "Delegated work: {{summary}}"
     },
     "breadcrumb": "Conversation path"
+  },
+  "quoteReply": {
+    "toolbarLabel": "Selection actions",
+    "dictateReply": "Reply by voice",
+    "popoverLabel": "Reply to the selection",
+    "replyPlaceholder": "Reply…",
+    "replyLabel": "Your reply",
+    "add": "Add",
+    "editTitle": "Edit quote",
+    "remove": "Remove",
+    "editLabel": "Edit quote: {{quote}}",
+    "removeLabel": "Remove quote: {{quote}}",
+    "withReply": "With reply",
+    "stackLabel": "{{count}} quotes to send",
+    "stackLabel_one": "{{count}} quote to send",
+    "stackLabel_other": "{{count}} quotes to send"
   }
 }

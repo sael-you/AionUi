@@ -23,6 +23,7 @@ import type {
   FollowUpStatus,
   ServerFrame,
   ServerVoiceState,
+  VoiceQuotesReason,
 } from './types';
 
 /** Control frame size limit (plan §3.5 "control ≤ 64 KB"). */
@@ -139,6 +140,14 @@ const unwrap = (raw: unknown): { name: string; data: Obj } | null => {
 };
 
 /** Decode one server frame. Returns null for anything unknown, oversized or malformed. */
+const QUOTES_REASONS: ReadonlySet<string> = new Set(['posted', 'too_large', 'no_call', 'unsupported_mode', 'cleared']);
+
+/** `capabilities: { attachQuotes: true }` on the hello reply (C32); anything else = an older backend. */
+const canAttachQuotes = (d: Obj): boolean => {
+  const capabilities = d.capabilities;
+  return typeof capabilities === 'object' && capabilities !== null && (capabilities as Obj).attachQuotes === true;
+};
+
 export function decodeFrame(text: unknown): ServerFrame | null {
   if (typeof text !== 'string' || text.length > MAX_CONTROL_FRAME_BYTES) return null;
   let parsed: unknown;
@@ -155,12 +164,29 @@ export function decodeFrame(text: unknown): ServerFrame | null {
   switch (env.name) {
     case 'voice.ready': {
       if (!voiceSessionId) return null;
-      return { name: env.name, voiceSessionId, engine: str(d.engine) ?? '', model: str(d.model) ?? '' };
+      return {
+        name: env.name,
+        voiceSessionId,
+        engine: str(d.engine) ?? '',
+        model: str(d.model) ?? '',
+        ...(canAttachQuotes(d) ? { attachQuotes: true } : {}),
+      };
     }
     case 'voice.state': {
       const state = str(d.state);
       if (!state || !SERVER_STATES.has(state)) return null;
-      return { name: env.name, voiceSessionId, state: state as ServerVoiceState, reason: str(d.reason) };
+      return {
+        name: env.name,
+        voiceSessionId,
+        state: state as ServerVoiceState,
+        reason: str(d.reason),
+        ...(canAttachQuotes(d) ? { attachQuotes: true } : {}),
+      };
+    }
+    case 'voice.quotesAttached': {
+      const reason = str(d.reason);
+      if (!reason || !QUOTES_REASONS.has(reason)) return null;
+      return { name: env.name, voiceSessionId, consumed: d.consumed === true, reason: reason as VoiceQuotesReason };
     }
     case 'voice.caption': {
       const role = str(d.role);

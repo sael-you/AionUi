@@ -224,6 +224,16 @@
       "needs_approval": "需要你在螢幕上核准",
       "interrupted": "因重新啟動而中斷",
       "turn_failed": "任務失敗"
-    }
+    },
+    "quotesWaitingHint": "此語音通話無法附帶引用，請以輸入方式傳送。",
+    "quotesAttached": "已附帶 {{count}} 則引用",
+    "quotesAttached_one": "已附帶 {{count}} 則引用",
+    "quotesAttached_other": "已附帶 {{count}} 則引用",
+    "quotesWaiting": "{{count}} 則引用待傳送",
+    "quotesWaiting_one": "{{count}} 則引用待傳送",
+    "quotesWaiting_other": "{{count}} 則引用待傳送",
+    "quotesTooLarge": "{{count}} 則引用過長，無法以語音傳送",
+    "quotesTooLarge_one": "{{count}} 則引用過長，無法以語音傳送",
+    "quotesTooLarge_other": "{{count}} 則引用過長，無法以語音傳送"
   }
 }

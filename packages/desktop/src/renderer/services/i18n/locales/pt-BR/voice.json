@@ -226,6 +226,16 @@
       "needs_approval": "Precisa da sua aprovação na tela",
       "interrupted": "Interrompida por uma reinicialização",
       "turn_failed": "A tarefa falhou"
-    }
+    },
+    "quotesWaitingHint": "Esta chamada de voz não aceita citações. Envie-as digitando.",
+    "quotesAttached": "{{count}} citações anexadas",
+    "quotesAttached_one": "{{count}} citação anexada",
+    "quotesAttached_other": "{{count}} citações anexadas",
+    "quotesWaiting": "{{count}} citações aguardando",
+    "quotesWaiting_one": "{{count}} citação aguardando",
+    "quotesWaiting_other": "{{count}} citações aguardando",
+    "quotesTooLarge": "{{count}} citações longas demais para voz",
+    "quotesTooLarge_one": "{{count}} citação longa demais para voz",
+    "quotesTooLarge_other": "{{count}} citações longas demais para voz"
   }
 }

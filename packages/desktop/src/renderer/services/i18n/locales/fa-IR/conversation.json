@@ -955,5 +955,21 @@
       "label": "کارهای واگذارشده: {{summary}}"
     },
     "breadcrumb": "مسیر گفتگو"
+  },
+  "quoteReply": {
+    "toolbarLabel": "کارهای انتخاب",
+    "dictateReply": "پاسخ صوتی",
+    "popoverLabel": "پاسخ به متن انتخاب‌شده",
+    "replyPlaceholder": "پاسخ…",
+    "replyLabel": "پاسخ شما",
+    "add": "افزودن",
+    "editTitle": "ویرایش نقل‌قول",
+    "remove": "حذف",
+    "editLabel": "ویرایش نقل‌قول: {{quote}}",
+    "removeLabel": "حذف نقل‌قول: {{quote}}",
+    "withReply": "با پاسخ",
+    "stackLabel": "{{count}} نقل‌قول برای ارسال",
+    "stackLabel_one": "{{count}} نقل‌قول برای ارسال",
+    "stackLabel_other": "{{count}} نقل‌قول برای ارسال"
   }
 }
