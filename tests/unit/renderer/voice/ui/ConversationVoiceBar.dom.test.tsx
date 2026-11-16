@@ -156,11 +156,22 @@ describe('ConversationVoiceBar', () => {
     expect(screen.getByRole('button', { name: /voice.bar.end/ })).toBeInTheDocument();
   });
 
-  it('after a restart: still armed, says the restart interrupted the task', async () => {
+  it('after a restart: still armed, says voice reconnected unless core reports a cut task', async () => {
     const { f, start } = await setup();
     await start();
     act(() => f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' }));
     expect(bar()).toHaveAttribute('data-state', 'armed');
+    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.restartReconnected');
+    act(() =>
+      f.frame({
+        name: 'voice.followUp',
+        voiceSessionId: null,
+        conversationId: 'c1',
+        status: 'interrupted',
+        line: 'x',
+        clipId: null,
+      })
+    );
     expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.restartInterrupted');
   });
 
@@ -227,7 +238,7 @@ describe('ConversationVoiceBar', () => {
       const { f, start } = await setup();
       await start();
       act(() => f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' }));
-      expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.restartInterrupted');
+      expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.restartReconnected');
       expect(screen.queryByTestId('voice-provider-setup')).toBeNull();
       expect(screen.queryByRole('button', { name: 'voice.providerSetup.actionLabel' })).toBeNull();
     });

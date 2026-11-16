@@ -146,6 +146,7 @@
     "noProvider": "Für dein Konto ist noch kein Sprachanbieter eingerichtet.",
     "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut.",
     "restartInterrupted": "Der Neustart hat die Aufgabe unterbrochen – sag „Hey Jarvis“, um fortzufahren.",
+    "restartReconnected": "Sprachmodus nach einem Neustart wieder verbunden.",
     "conversationIdle": "Zuhören nach 3 stillen Minuten pausiert. Sag „Hey Jarvis“ oder tippe zum Sprechen.",
     "conversationRested": "Voice ruht: Die Antworten des Agenten bleiben im Chat. Sag „Hey Jarvis“ oder tippe, um wieder zu sprechen."
   },

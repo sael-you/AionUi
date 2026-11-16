@@ -457,11 +457,15 @@ export class VoiceController {
         },
         { loadModels: this.wakeEnabled }
       );
-      this.socket = this.fx.createSocket({
-        onOpen: () => this.onSocketOpen(),
-        onClose: () => this.onSocketClose(),
-        onFrame: (frame) => this.onFrame(frame),
-      });
+      this.socket = this.fx.createSocket(
+        {
+          onOpen: () => this.onSocketOpen(),
+          onClose: () => this.onSocketClose(),
+          onFrame: (frame) => this.onFrame(frame),
+        },
+        // Core ends the old conversation binding when the device re-arms as Jarvis.
+        this.store.getSnapshot().voiceMode
+      );
       this.dispatch({ type: 'socketConnecting' });
       this.socket.start();
       const onState = () => this.onContextState();
@@ -786,7 +790,9 @@ export class VoiceController {
       if (call) this.endCall(reason, false);
       this.lostReadyCall = false;
       if (reason === 'restart') {
-        this.store.update({ notice: { code: 'restartInterrupted' } });
+        // Only core knows whether a task was running: its `interrupted` follow-up turns this into
+        // `restartInterrupted`. Until then the call merely came back after the restart.
+        this.store.update({ notice: { code: 'restartReconnected' } });
         this.earcon('needsYou');
       } else {
         this.store.update({ notice: { code: 'conversationIdle' } });
@@ -1108,7 +1114,8 @@ export class VoiceController {
       // A restart cut the running turn: say so (spoken when core sends a clip), stay armed.
       this.store.update({ lastOutcome: { status, line } });
       // One cue only: the bar may already show the restart notice with its tone.
-      const toned = this.store.getSnapshot().notice?.code === 'restartInterrupted';
+      const shown = this.store.getSnapshot().notice?.code;
+      const toned = shown === 'restartInterrupted' || shown === 'restartReconnected';
       this.store.update({ notice: { code: 'restartInterrupted' } });
       if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: toned ? null : 'needsYou', draftLine: false });
       else if (!toned) this.earcon('needsYou');

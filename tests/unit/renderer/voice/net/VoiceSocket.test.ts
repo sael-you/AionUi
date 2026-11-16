@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { VoiceSessionMode } from '@/renderer/voice/core/types';
 import {
   HEARTBEAT_INTERVAL_MS,
   MAX_FRAMES_PER_SECOND,
@@ -37,7 +38,7 @@ class FakeWs implements VoiceWebSocket {
   }
 }
 
-function setup(refresh = vi.fn(async () => true)) {
+function setup(refresh = vi.fn(async () => true), mode?: VoiceSessionMode) {
   const sockets: FakeWs[] = [];
   const listener: VoiceSocketListener = { onOpen: vi.fn(), onClose: vi.fn(), onFrame: vi.fn() };
   const vs = new VoiceSocket({
@@ -52,6 +53,7 @@ function setup(refresh = vi.fn(async () => true)) {
     },
     random: () => 0.5,
     refresh,
+    mode,
   });
   return { vs, sockets, listener, refresh };
 }
@@ -67,6 +69,19 @@ describe('VoiceSocket', () => {
     // The backend's `VoiceHello.device` is a plain string: an object would be refused as INVALID_FRAME.
     expect(sockets[0].frames()[0]).toMatchObject({ name: 'voice.hello', data: { device: 'web-1' } });
     expect(listener.onOpen).toHaveBeenCalled();
+  });
+
+  it('sends the armed mode with hello (core ends an old conversation binding on jarvis)', () => {
+    const { vs, sockets } = setup(undefined, 'jarvis');
+    vs.start();
+    sockets[0].open();
+    vs.bindSession('vs-1');
+    expect(sockets[0].frames()[0]).toMatchObject({ name: 'voice.hello', data: { mode: 'jarvis' } });
+    expect(sockets[0].frames()[1]).toMatchObject({ name: 'voice.hello', data: { mode: 'jarvis' } });
+    const plain = setup();
+    plain.vs.start();
+    plain.sockets[0].open();
+    expect(plain.sockets[0].frames()[0].data).not.toHaveProperty('mode');
   });
 
   it('sends a heartbeat every 10 s', () => {

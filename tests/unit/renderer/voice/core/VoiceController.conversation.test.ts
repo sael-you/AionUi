@@ -381,12 +381,32 @@ describe('conversation voice mode — idle, failures, restart (director decision
     expect(c.store.getSnapshot().followUps).toEqual([]);
   });
 
-  it('a restart (callEnded restart) stays armed and says the task was interrupted', async () => {
+  it('a restart (callEnded restart) stays armed and says voice reconnected (no task cut yet)', async () => {
     const { f, c } = await listening();
     f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' });
     expect(c.state.mode).toBe('armed');
-    expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
+    expect(c.store.getSnapshot().notice?.code).toBe('restartReconnected');
     expect(f.earcons()).toContain('needsYou');
+    // No `interrupted` line from core: the notice never claims a task was cut.
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(c.store.getSnapshot().notice?.code).toBe('restartReconnected');
+  });
+
+  it("a restart followed by core's `interrupted` line switches to the interrupted text", async () => {
+    const { f, c } = await listening();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' });
+    followUp(f, 'interrupted');
+    expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
+  });
+
+  it('the voice socket says which mode the device is armed in (core ends an old binding on jarvis)', async () => {
+    const { f, c } = await conversationArmed();
+    expect(f.fx.createSocket).toHaveBeenLastCalledWith(expect.anything(), 'conversation');
+    // Switching to Jarvis opens a new socket that says so.
+    c.toggle({ mode: 'jarvis' });
+    await flush();
+    expect(f.fx.createSocket).toHaveBeenCalledTimes(2);
+    expect(f.fx.createSocket).toHaveBeenLastCalledWith(expect.anything(), 'jarvis');
   });
 
   it('a restart seen from the socket: it drops, comes back, and the backend no longer knows the call', async () => {
@@ -396,7 +416,7 @@ describe('conversation voice mode — idle, failures, restart (director decision
     f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'armed', reason: null });
     expect(c.state.call).toBeNull();
     expect(c.state.mode).toBe('armed');
-    expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
+    expect(c.store.getSnapshot().notice?.code).toBe('restartReconnected');
   });
 
   it('a network blip whose call comes back (voice.ready) is not a restart', async () => {

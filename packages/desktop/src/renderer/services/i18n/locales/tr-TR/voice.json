@@ -146,6 +146,7 @@
     "noProvider": "Hesabınız için henüz bir ses sağlayıcısı ayarlanmadı.",
     "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin.",
     "restartInterrupted": "Yeniden başlatma görevi yarıda kesti — devam etmek için “Hey Jarvis” deyin.",
+    "restartReconnected": "Ses, yeniden başlatmanın ardından yeniden bağlandı.",
     "conversationIdle": "3 dakika sessizlikten sonra dinleme duraklatıldı. “Hey Jarvis” deyin veya konuşmak için dokunun.",
     "conversationRested": "Ses dinleniyor: ajanın yanıtları sohbette kalır. Yeniden konuşmak için “Hey Jarvis” deyin veya dokunun."
   },

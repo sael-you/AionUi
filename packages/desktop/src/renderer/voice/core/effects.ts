@@ -19,6 +19,7 @@ import { startRealtimeCall, type RealtimeCall, type RealtimeCallOptions } from '
 import { isVoiceMockEnabled, withMockBackend } from '../net/mockBackend';
 import { voiceApi, type VoiceApi } from '../net/voiceApi';
 import { realTimers, VoiceSocket, type Timers, type VoiceSocketListener } from '../net/VoiceSocket';
+import type { VoiceSessionMode } from './types';
 import { VoiceController } from './VoiceController';
 
 export type ClipPlayerLike = {
@@ -51,7 +52,8 @@ export type Effects = {
   createClipPlayer(ctx: AudioContext): ClipPlayerLike;
   openCapture(ctx: AudioContext, options: CaptureOptions): Promise<CaptureGraph>;
   wakeWord: WakeWordLike;
-  createSocket(listener: VoiceSocketListener): VoiceSocketLike;
+  /** `mode`: the mode the device is armed in (sent with every `voice.hello`). */
+  createSocket(listener: VoiceSocketListener, mode?: VoiceSessionMode): VoiceSocketLike;
   startCall(options: StartCallOptions): Promise<RealtimeCall>;
   playEarcon(ctx: AudioContext, name: EarconName): number | null;
   wakeLock: Pick<ScreenWakeLock, 'acquire' | 'release' | 'reacquireIfWanted'>;
@@ -101,8 +103,9 @@ export function createBrowserEffects(): Effects {
     createClipPlayer: (ctx) => new ClipPlayer(ctx),
     openCapture: (ctx, options) => openCapture(ctx, options),
     wakeWord,
-    createSocket: (listener) =>
+    createSocket: (listener, mode) =>
       new VoiceSocket({
+        mode,
         device: { id: deviceId, kind: 'browser', label: navigator.userAgent.slice(0, 120) },
         capabilities: {
           wakeWord: true,
