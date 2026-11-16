@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
@@ -246,7 +248,10 @@ describe('WebUI browser bridge socket', () => {
   });
 });
 
-describe('WebUI bridge: Electron-only providers stay off the socket (TASK-89)', () => {
+/** The adapter's routing tables; the module is already loaded by `loadBrowserAdapter`. */
+const loadTables = async () => import('@/common/adapter/browser');
+
+describe('WebUI bridge: only AionCore-served provider requests go over /ws (TASK-89, TASK-95)', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -254,6 +259,7 @@ describe('WebUI bridge: Electron-only providers stay off the socket (TASK-89)', 
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
   it('answers renderer-log and theme requests locally and never sends them', async () => {
@@ -269,13 +275,78 @@ describe('WebUI bridge: Electron-only providers stay off the socket (TASK-89)', 
     expect(latestSocket().sent).toEqual([]);
   });
 
-  it('still sends every other provider request and realtime frame', async () => {
+  it('resolves every Electron-only provider with its default and sends no frame', async () => {
+    const { bridge } = await loadBrowserAdapter();
+    const { ELECTRON_ONLY_PROVIDER_DEFAULTS } = await loadTables();
+    latestSocket().acceptUpgrade();
+
+    const entries = [...ELECTRON_ONLY_PROVIDER_DEFAULTS];
+    const answers = await Promise.all(entries.map(([key]) => bridge.invoke(key, {})));
+
+    expect(answers).toEqual(entries.map(([, expected]) => expected));
+
+    expect(latestSocket().sent).toEqual([]);
+  });
+
+  it('answers the per-load update and zoom requests the way their callers expect', async () => {
     const { bridge } = await loadBrowserAdapter();
     latestSocket().acceptUpgrade();
 
+    // useFontScale only applies a number; useUpdateNotificationController stops on !res?.success.
+    await expect(bridge.invoke('app.get-zoom-factor')).resolves.toBeUndefined();
+    await expect(bridge.invoke('auto-update.restore-downloaded')).resolves.toEqual({ success: false });
+    await expect(bridge.invoke('update.installer-last-failure.consume')).resolves.toEqual({ success: false });
+
+    expect(latestSocket().sent).toEqual([]);
+  });
+
+  it('hands each caller its own copy of an object or array default', async () => {
+    const { bridge } = await loadBrowserAdapter();
+    latestSocket().acceptUpgrade();
+
+    const first = await bridge.invoke<{ success: boolean }>('update.check');
+    first.success = true;
+    await expect(bridge.invoke('update.check')).resolves.toEqual({ success: false });
+    await expect(bridge.invoke('skills.files.list')).resolves.toEqual([]);
+  });
+
+  it('resolves an unknown provider as unsupported, sends nothing and logs it once', async () => {
+    const debug = vi.spyOn(console, 'debug').mockImplementation(() => {});
+    const { bridge } = await loadBrowserAdapter();
+    const { WEB_UNSUPPORTED_RESULT } = await loadTables();
+    latestSocket().acceptUpgrade();
+
+    await expect(bridge.invoke('future.electron-only')).resolves.toEqual(WEB_UNSUPPORTED_RESULT);
+    await expect(bridge.invoke('future.electron-only')).resolves.toEqual(WEB_UNSUPPORTED_RESULT);
+
+    expect(latestSocket().sent).toEqual([]);
+    expect(debug).toHaveBeenCalledTimes(1);
+    expect(String(debug.mock.calls[0]?.[0])).toContain('future.electron-only');
+  });
+
+  it('still sends allowlisted provider requests and plain realtime frames', async () => {
+    const { bridge } = await loadBrowserAdapter();
+    const { WS_PROVIDER_KEYS } = await loadTables();
+    latestSocket().acceptUpgrade();
+
+    expect([...WS_PROVIDER_KEYS]).toEqual(['show-open']);
     void bridge.invoke('show-open', { properties: ['openFile'] });
     bridge.emit('fs', { jsonrpc: '2.0', id: 1, method: 'fs/subscribe' });
+    bridge.emit('scm', { jsonrpc: '2.0', id: 2, method: 'scm/subscribe' });
 
-    expect(latestSocket().sent.map((frame) => JSON.parse(frame).name)).toEqual(['subscribe-show-open', 'fs']);
+    expect(latestSocket().sent.map((frame) => JSON.parse(frame).name)).toEqual(['subscribe-show-open', 'fs', 'scm']);
+  });
+
+  it('classifies every bridge provider key in ipcBridge.ts', async () => {
+    const { ELECTRON_ONLY_PROVIDER_DEFAULTS, WS_PROVIDER_KEYS } = await loadTables();
+    const source = readFileSync(
+      resolve(__dirname, '../../../packages/desktop/src/common/adapter/ipcBridge.ts'),
+      'utf8'
+    );
+    const keys = [...source.matchAll(/bridge\.buildProvider<[\s\S]*?>\(\s*'([^']+)'/g)].map((match) => match[1]);
+
+    expect(keys.length).toBeGreaterThan(40);
+    const unclassified = keys.filter((key) => !WS_PROVIDER_KEYS.has(key) && !ELECTRON_ONLY_PROVIDER_DEFAULTS.has(key));
+    expect(unclassified).toEqual([]);
   });
 });
