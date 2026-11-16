@@ -255,6 +255,10 @@ describe('ServerBrowserView (C30 panel)', () => {
     await renderView();
     const switcher = screen.getByTestId('server-browser-profile');
     expect(switcher).toHaveTextContent('Main');
+    // The launcher finds the address bar by this marker; it must sit on the <input> itself.
+    expect(screen.getByRole('textbox', { name: 'preview.browser.addressLabel' })).toHaveAttribute(
+      'data-browser-address'
+    );
 
     fireEvent.click(screen.getByRole('combobox', { name: 'preview.serverBrowser.profileLabel' }));
     fireEvent.click(await screen.findByRole('option', { name: /Personal/ }));

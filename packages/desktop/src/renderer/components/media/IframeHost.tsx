@@ -247,6 +247,7 @@ const IframeHost: React.FC<WebviewHostProps> = ({
             onFocus={(e) => e.target.select()}
             placeholder={t('preview.browser.addressPlaceholder')}
             aria-label={t('preview.browser.addressLabel')}
+            data-browser-address=''
             title={navigatedAway ? t('preview.browser.mayHaveNavigated') : undefined}
             className={`flex-1 min-w-0 ${navigatedAway ? 'text-t-tertiary italic' : ''}`}
             aria-describedby={navigatedAway ? 'iframe-host-stale' : undefined}
