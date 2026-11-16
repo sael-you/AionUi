@@ -21,6 +21,7 @@ import {
   BOARD_ERROR_CODES,
   BOARD_LIMITS,
   DEPLOYING_COLUMN,
+  type BoardAgentAccess,
   type BoardCard,
   type BoardCardSummary,
   type BoardColumnInput,
@@ -119,6 +120,8 @@ export type BoardController = {
   moveCard: (cardId: string, toColumn: string, anchor: MoveAnchor, options?: MoveOptions) => Promise<boolean>;
   createCard: (columnKey: string, title: string) => Promise<BoardCard | null>;
   setEnabled: (enabled: boolean) => Promise<boolean>;
+  /** Agent access to the board (TASK-116), merged into the stored settings object. */
+  setAgentAccess: (access: BoardAgentAccess) => Promise<boolean>;
   /** Owner override out of a gate / Deploying (R3): moves to the end of `toColumn` with a recorded reason. */
   forceMove: (cardId: string, toColumn: string, reason: string) => Promise<boolean>;
   /** The project's Board Keeper conversation id, created on first use (D40); null on failure (reported). */
@@ -411,6 +414,29 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
     [projectId, mutate, t]
   );
 
+  const setAgentAccess = useCallback(
+    async (access: BoardAgentAccess): Promise<boolean> => {
+      const settings = snapshotRef.current?.settings;
+      if (!settings) return false;
+      try {
+        // `settings` replaces the stored object on the server: keep every other key.
+        await ipcBridge.board.updateSettings.invoke({
+          project_id: projectId,
+          version: settings.version,
+          settings: { ...settings.settings, agent_access: access },
+        });
+        await mutate();
+        Message.success(t(`board.agentAccess.saved.${access}`));
+        return true;
+      } catch (settingsError) {
+        Notification.error({ title: t('board.errors.saveFailed'), content: t(boardErrorKey(settingsError)) });
+        if (boardErrorCode(settingsError) === BOARD_ERROR_CODES.versionConflict) void mutate();
+        return false;
+      }
+    },
+    [projectId, mutate, t]
+  );
+
   const saveColumns = useCallback(
     async (columns: BoardColumnInput[]): Promise<boolean> => {
       const settings = snapshotRef.current?.settings;
@@ -498,6 +524,7 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
       moveCard,
       createCard,
       setEnabled,
+      setAgentAccess,
       forceMove,
       keeperConversation,
       forceRequest,
@@ -520,6 +547,7 @@ export function useBoard(projectId: string, options: UseBoardOptions = {}): Boar
       moveCard,
       createCard,
       setEnabled,
+      setAgentAccess,
       forceMove,
       keeperConversation,
       forceRequest,

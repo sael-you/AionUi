@@ -184,7 +184,8 @@
     "needsDecision": "Necesita tu decisión",
     "moveLocked": "Decide en la tarjeta para moverla",
     "moveAutomated": "La mueve la automatización del despliegue",
-    "moveTargetAutomated": "{{column}} (solo la automatización de despliegue)"
+    "moveTargetAutomated": "{{column}} (solo la automatización de despliegue)",
+    "openAssigneeConversation": "Abrir la conversación asignada {{name}}"
   },
   "dnd": {
     "roleDescription": "tarjeta movible",
@@ -440,7 +441,12 @@
     "question_added": "{{actor}}: pregunta enviada a {{to}}",
     "question_answered": "{{actor}}: pregunta respondida",
     "board_unarchived": "El tablero se ha reactivado",
-    "other": "{{actor}}: tarjeta modificada ({{kind}})"
+    "other": "{{actor}}: tarjeta modificada ({{kind}})",
+    "gate_crossed": "{{actor}} movió la tarjeta de {{from}} a {{to}} a través de una puerta",
+    "gate_crossed_forced": "{{actor}} forzó la tarjeta de {{from}} a {{to}} a través de una puerta",
+    "approvalNote": "Tu aprobación: «{{note}}»",
+    "approvalNotNeeded": "No hacía falta aprobación: los agentes tenían acceso completo.",
+    "approvalMissing": "No hay nota de aprobación registrada."
   },
   "settings": {
     "title": "Ajustes de columnas",
@@ -466,5 +472,16 @@
     "label": "Progreso",
     "updated": "Actualizado {{age}}",
     "stale": "Sin actualizaciones desde hace más de 24 horas"
+  },
+  "agentAccess": {
+    "title": "Acceso de los agentes al tablero",
+    "full": "Completo",
+    "fullHelp": "Los agentes pueden mover tarjetas por las puertas por su cuenta.",
+    "approval": "Solo con tu aprobación registrada",
+    "approvalHelp": "Un agente solo puede pasar una tarjeta por una puerta con tu nota de aprobación, registrada en el historial de la tarjeta.",
+    "saved": {
+      "full": "Los agentes tienen ahora acceso completo a este tablero.",
+      "approval": "Los agentes necesitan ahora tu aprobación registrada para pasar una puerta."
+    }
   }
 }

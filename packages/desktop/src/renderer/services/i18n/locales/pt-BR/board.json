@@ -184,7 +184,8 @@
     "needsDecision": "Precisa da sua decisão",
     "moveLocked": "Decida no cartão para movê-lo",
     "moveAutomated": "Movido pela automação de implantação",
-    "moveTargetAutomated": "{{column}} (somente a automação de implantação)"
+    "moveTargetAutomated": "{{column}} (somente a automação de implantação)",
+    "openAssigneeConversation": "Abrir a conversa atribuída {{name}}"
   },
   "dnd": {
     "roleDescription": "cartão móvel",
@@ -440,7 +441,12 @@
     "question_added": "{{actor}} fez uma pergunta a {{to}}",
     "question_answered": "{{actor}} respondeu a uma pergunta",
     "board_unarchived": "O quadro foi reativado",
-    "other": "{{actor}} alterou o cartão ({{kind}})"
+    "other": "{{actor}} alterou o cartão ({{kind}})",
+    "gate_crossed": "{{actor}} moveu o cartão de {{from}} para {{to}} por um portão",
+    "gate_crossed_forced": "{{actor}} forçou o cartão de {{from}} para {{to}} por um portão",
+    "approvalNote": "Sua aprovação: “{{note}}”",
+    "approvalNotNeeded": "Nenhuma aprovação necessária: os agentes tinham acesso total.",
+    "approvalMissing": "Nenhuma nota de aprovação registrada."
   },
   "settings": {
     "title": "Configurações de colunas",
@@ -466,5 +472,16 @@
     "label": "Progresso",
     "updated": "Atualizado {{age}}",
     "stale": "Sem atualização há mais de 24 horas"
+  },
+  "agentAccess": {
+    "title": "Acesso dos agentes ao quadro",
+    "full": "Total",
+    "fullHelp": "Os agentes podem mover cartões pelos portões por conta própria.",
+    "approval": "Somente com sua aprovação registrada",
+    "approvalHelp": "Um agente só pode passar um cartão por um portão com sua nota de aprovação, registrada no histórico do cartão.",
+    "saved": {
+      "full": "Os agentes agora têm acesso total a este quadro.",
+      "approval": "Os agentes agora precisam da sua aprovação registrada para passar um portão."
+    }
   }
 }

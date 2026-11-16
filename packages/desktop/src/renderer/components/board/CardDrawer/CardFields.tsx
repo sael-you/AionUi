@@ -23,6 +23,7 @@ import {
 } from '@/common/types/board';
 
 import { BoardSelect } from '../BoardSelect';
+import { AssigneeConversationLink, hasAssigneeConversation } from '../card/AssigneeConversationLink';
 import type { BoardController } from '../hooks/useBoard';
 import type { CardDetailController } from '../hooks/useCardDetail';
 import { assigneeLabel, creatorName, columnName, departmentName, formatBoardTime } from '../utils/boardFormat';
@@ -187,7 +188,11 @@ export const CardFields: React.FC<{
           )}
         </Row>
         <Row label={t('board.drawer.assignee')}>
-          <span className='text-13px text-t-primary'>{assigneeLabel(card, t)}</span>
+          {hasAssigneeConversation(card) ? (
+            <AssigneeConversationLink card={card} size='small' />
+          ) : (
+            <span className='text-13px text-t-primary'>{assigneeLabel(card, t)}</span>
+          )}
         </Row>
         {assigneeSkills.length > 0 && (
           <Row label={t('board.drawer.assigneeSkills')}>

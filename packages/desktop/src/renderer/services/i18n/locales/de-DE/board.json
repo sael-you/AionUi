@@ -179,7 +179,8 @@
     "needsDecision": "Wartet auf deine Entscheidung",
     "moveLocked": "Triff in der Karte eine Entscheidung, um sie zu verschieben",
     "moveAutomated": "Wird von der Rollout-Automatik verschoben",
-    "moveTargetAutomated": "{{column}} (nur Rollout-Automatik)"
+    "moveTargetAutomated": "{{column}} (nur Rollout-Automatik)",
+    "openAssigneeConversation": "Zugewiesene Unterhaltung {{name}} öffnen"
   },
   "dnd": {
     "roleDescription": "verschiebbare Karte",
@@ -435,7 +436,12 @@
     "question_added": "{{actor}}: Frage an {{to}} gestellt",
     "question_answered": "{{actor}}: Frage beantwortet",
     "board_unarchived": "Das Board wurde reaktiviert",
-    "other": "{{actor}}: Karte geändert ({{kind}})"
+    "other": "{{actor}}: Karte geändert ({{kind}})",
+    "gate_crossed": "{{actor}} hat die Karte von {{from}} nach {{to}} durch ein Gate bewegt",
+    "gate_crossed_forced": "{{actor}} hat die Karte von {{from}} nach {{to}} durch ein Gate erzwungen",
+    "approvalNote": "Deine Freigabe: „{{note}}“",
+    "approvalNotNeeded": "Keine Freigabe nötig: Agenten hatten vollen Zugriff.",
+    "approvalMissing": "Keine Freigabenotiz protokolliert."
   },
   "settings": {
     "title": "Spalteneinstellungen",
@@ -461,5 +467,16 @@
     "label": "Fortschritt",
     "updated": "Aktualisiert {{age}}",
     "stale": "Seit über 24 Stunden keine Aktualisierung"
+  },
+  "agentAccess": {
+    "title": "Agentenzugriff auf das Board",
+    "full": "Voll",
+    "fullHelp": "Agenten dürfen Karten selbstständig durch Gates bewegen.",
+    "approval": "Nur mit deiner protokollierten Freigabe",
+    "approvalHelp": "Ein Agent darf eine Karte nur mit deiner Freigabenotiz durch ein Gate bewegen; sie steht im Kartenverlauf.",
+    "saved": {
+      "full": "Agenten haben jetzt vollen Zugriff auf dieses Board.",
+      "approval": "Agenten brauchen jetzt deine protokollierte Freigabe für ein Gate."
+    }
   }
 }

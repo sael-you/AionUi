@@ -179,7 +179,8 @@
     "needsDecision": "결정 필요",
     "moveLocked": "이동하려면 카드에서 결정하세요",
     "moveAutomated": "배포 자동화가 이동합니다",
-    "moveTargetAutomated": "{{column}}(배포 자동화 전용)"
+    "moveTargetAutomated": "{{column}}(배포 자동화 전용)",
+    "openAssigneeConversation": "담당 대화 {{name}} 열기"
   },
   "dnd": {
     "roleDescription": "이동 가능한 카드",
@@ -435,7 +436,12 @@
     "question_added": "{{actor}}: {{to}}에게 질문",
     "question_answered": "{{actor}}: 질문에 답변",
     "board_unarchived": "보드가 다시 활성화됨",
-    "other": "{{actor}}: 카드 변경({{kind}})"
+    "other": "{{actor}}: 카드 변경({{kind}})",
+    "gate_crossed": "{{actor}}님이 카드를 게이트를 통해 {{from}}에서 {{to}}(으)로 옮겼습니다",
+    "gate_crossed_forced": "{{actor}}님이 카드를 게이트를 통해 {{from}}에서 {{to}}(으)로 강제로 옮겼습니다",
+    "approvalNote": "내 승인: “{{note}}”",
+    "approvalNotNeeded": "승인이 필요 없었습니다: 에이전트에게 전체 접근 권한이 있었습니다.",
+    "approvalMissing": "기록된 승인 메모가 없습니다."
   },
   "settings": {
     "title": "열 설정",
@@ -461,5 +467,16 @@
     "label": "진행률",
     "updated": "{{age}} 업데이트됨",
     "stale": "24시간 넘게 업데이트가 없습니다"
+  },
+  "agentAccess": {
+    "title": "보드에 대한 에이전트 접근",
+    "full": "전체",
+    "fullHelp": "에이전트가 스스로 카드를 게이트 너머로 옮길 수 있습니다.",
+    "approval": "기록된 승인이 있을 때만",
+    "approvalHelp": "에이전트는 카드 기록에 남는 승인 메모가 있을 때만 카드를 게이트 너머로 옮길 수 있습니다.",
+    "saved": {
+      "full": "이제 에이전트가 이 보드에 전체 접근 권한을 가집니다.",
+      "approval": "이제 에이전트가 게이트를 통과하려면 기록된 승인이 필요합니다."
+    }
   }
 }

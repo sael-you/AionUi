@@ -179,7 +179,8 @@
     "needsDecision": "待你决定",
     "moveLocked": "请在卡片中做出决定以移动它",
     "moveAutomated": "由自动部署流程移动",
-    "moveTargetAutomated": "{{column}}（仅限部署自动化）"
+    "moveTargetAutomated": "{{column}}（仅限部署自动化）",
+    "openAssigneeConversation": "打开负责的会话 {{name}}"
   },
   "dnd": {
     "roleDescription": "可移动的卡片",
@@ -435,7 +436,12 @@
     "question_added": "{{actor}} 向 {{to}} 提出了一个问题",
     "question_answered": "{{actor}} 回答了一个问题",
     "board_unarchived": "看板已重新激活",
-    "other": "{{actor}} 更改了卡片（{{kind}}）"
+    "other": "{{actor}} 更改了卡片（{{kind}}）",
+    "gate_crossed": "{{actor}} 将卡片从 {{from}} 经关卡移到了 {{to}}",
+    "gate_crossed_forced": "{{actor}} 将卡片从 {{from}} 经关卡强制移到了 {{to}}",
+    "approvalNote": "你的批准：“{{note}}”",
+    "approvalNotNeeded": "无需批准：智能体当时拥有完全权限。",
+    "approvalMissing": "没有记录批准说明。"
   },
   "settings": {
     "title": "列设置",
@@ -461,5 +467,16 @@
     "label": "进度",
     "updated": "{{age}}更新",
     "stale": "超过 24 小时未更新"
+  },
+  "agentAccess": {
+    "title": "智能体对看板的权限",
+    "full": "完全",
+    "fullHelp": "智能体可以自行将卡片推过关卡。",
+    "approval": "仅在你有记录的批准时",
+    "approvalHelp": "智能体只有带着你的批准说明（记录在卡片历史中）才能将卡片推过关卡。",
+    "saved": {
+      "full": "智能体现在拥有此看板的完全权限。",
+      "approval": "智能体现在需要你有记录的批准才能通过关卡。"
+    }
   }
 }

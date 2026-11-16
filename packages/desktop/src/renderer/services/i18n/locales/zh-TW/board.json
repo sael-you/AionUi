@@ -179,7 +179,8 @@
     "needsDecision": "待你決定",
     "moveLocked": "請在卡片中做出決定以移動它",
     "moveAutomated": "由自動部署流程移動",
-    "moveTargetAutomated": "{{column}}（僅限部署自動化）"
+    "moveTargetAutomated": "{{column}}（僅限部署自動化）",
+    "openAssigneeConversation": "開啟負責的對話 {{name}}"
   },
   "dnd": {
     "roleDescription": "可移動的卡片",
@@ -435,7 +436,12 @@
     "question_added": "{{actor}} 向 {{to}} 提出了一個問題",
     "question_answered": "{{actor}} 回覆了一個問題",
     "board_unarchived": "看板已重新啟用",
-    "other": "{{actor}} 變更了卡片（{{kind}}）"
+    "other": "{{actor}} 變更了卡片（{{kind}}）",
+    "gate_crossed": "{{actor}} 將卡片從 {{from}} 經關卡移到了 {{to}}",
+    "gate_crossed_forced": "{{actor}} 將卡片從 {{from}} 經關卡強制移到了 {{to}}",
+    "approvalNote": "你的核准：「{{note}}」",
+    "approvalNotNeeded": "無需核准：智慧代理當時擁有完整權限。",
+    "approvalMissing": "沒有記錄核准說明。"
   },
   "settings": {
     "title": "欄位設定",
@@ -461,5 +467,16 @@
     "label": "進度",
     "updated": "{{age}}更新",
     "stale": "超過 24 小時未更新"
+  },
+  "agentAccess": {
+    "title": "智慧代理對看板的權限",
+    "full": "完整",
+    "fullHelp": "智慧代理可以自行將卡片推過關卡。",
+    "approval": "僅在你有紀錄的核准時",
+    "approvalHelp": "智慧代理只有帶著你的核准說明（記錄在卡片歷史中）才能將卡片推過關卡。",
+    "saved": {
+      "full": "智慧代理現在擁有此看板的完整權限。",
+      "approval": "智慧代理現在需要你有紀錄的核准才能通過關卡。"
+    }
   }
 }
