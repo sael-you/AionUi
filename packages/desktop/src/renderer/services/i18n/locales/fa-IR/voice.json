@@ -181,7 +181,16 @@
     "shortcutReset": "بازنشانی",
     "loadFailed": "تنظیمات صوتی بارگذاری نشد.",
     "saveFailed": "تنظیم ذخیره نشد.",
-    "privacy": "صدا تا شروع تماس روی این دستگاه می‌ماند و هرگز ذخیره نمی‌شود."
+    "privacy": "صدا تا شروع تماس روی این دستگاه می‌ماند و هرگز ذخیره نمی‌شود.",
+    "today": "امروز",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "دست‌کم {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} تماس",
+    "todayCalls_one": "{{count}} تماس",
+    "todayCalls_other": "{{count}} تماس",
+    "todayMinutes": "{{count}} دقیقه",
+    "todayMinutes_one": "{{count}} دقیقه",
+    "todayMinutes_other": "{{count}} دقیقه"
   },
   "slash": {
     "description": "حالت صوتی: با عامل این گفتگو صحبت کنید"

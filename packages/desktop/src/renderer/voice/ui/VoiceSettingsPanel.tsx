@@ -19,6 +19,7 @@ import AionSelect from '@/renderer/components/base/AionSelect';
 import PreferenceRow from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/PreferenceRow';
 import { DEFAULT_VOICE_SHORTCUT, loadVoiceShortcut, saveVoiceShortcut, shortcutFromEvent } from '../core/shortcut';
 import type { VoiceEngineId, VoiceSettings } from '../core/types';
+import type { VoiceTodayStats } from '../core/todayStats';
 import type { VoiceController } from '../core/VoiceController';
 import { useVoiceView } from '../core/voiceStore';
 import BudgetMeter from './BudgetMeter';
@@ -35,12 +36,16 @@ const VoiceSettingsPanel: React.FC<{ controller: VoiceController }> = ({ control
   const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState<keyof VoiceSettings | null>(null);
   const [shortcut, setShortcut] = useState(loadVoiceShortcut);
+  const [today, setToday] = useState<VoiceTodayStats | null>(null);
   const settings = view.settings;
 
   useEffect(() => {
     let alive = true;
     void controller.loadSettings().then((s) => {
       if (alive) setLoadFailed(!s);
+    });
+    void controller.loadTodayStats().then((stats) => {
+      if (alive) setToday(stats);
     });
     return () => {
       alive = false;
@@ -151,6 +156,16 @@ const VoiceSettingsPanel: React.FC<{ controller: VoiceController }> = ({ control
             </Button>
           </div>
         </PreferenceRow>
+        {today && (
+          <PreferenceRow label={t('voice.settings.today')}>
+            <Typography.Text className='text-13px' data-testid='voice-settings-today'>
+              {t(today.truncated ? 'voice.settings.todayUsageAtLeast' : 'voice.settings.todayUsage', {
+                calls: t('voice.settings.todayCalls', { count: today.calls }),
+                minutes: t('voice.settings.todayMinutes', { count: today.minutes }),
+              })}
+            </Typography.Text>
+          </PreferenceRow>
+        )}
         {budget && (
           <div className='py-12px'>
             <BudgetMeter budget={budget} />

@@ -181,7 +181,18 @@
     "shortcutReset": "Réinitialiser",
     "loadFailed": "Impossible de charger les paramètres vocaux.",
     "saveFailed": "Impossible d'enregistrer le paramètre.",
-    "privacy": "L'audio reste sur cet appareil jusqu'au début d'un appel et n'est jamais stocké."
+    "privacy": "L'audio reste sur cet appareil jusqu'au début d'un appel et n'est jamais stocké.",
+    "today": "Aujourd'hui",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "Au moins {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} appels",
+    "todayCalls_one": "{{count}} appel",
+    "todayCalls_many": "{{count}} appels",
+    "todayCalls_other": "{{count}} appels",
+    "todayMinutes": "{{count}} minutes",
+    "todayMinutes_one": "{{count}} minute",
+    "todayMinutes_many": "{{count}} minutes",
+    "todayMinutes_other": "{{count}} minutes"
   },
   "slash": {
     "description": "Mode vocal : parlez à l’agent de cette conversation"

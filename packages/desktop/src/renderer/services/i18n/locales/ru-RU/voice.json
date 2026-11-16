@@ -181,7 +181,20 @@
     "shortcutReset": "Сбросить",
     "loadFailed": "Не удалось загрузить настройки голоса.",
     "saveFailed": "Не удалось сохранить настройку.",
-    "privacy": "Звук остаётся на этом устройстве до начала звонка и никогда не сохраняется."
+    "privacy": "Звук остаётся на этом устройстве до начала звонка и никогда не сохраняется.",
+    "today": "Сегодня",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "Не менее {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} звонка",
+    "todayCalls_one": "{{count}} звонок",
+    "todayCalls_few": "{{count}} звонка",
+    "todayCalls_many": "{{count}} звонков",
+    "todayCalls_other": "{{count}} звонка",
+    "todayMinutes": "{{count}} минуты",
+    "todayMinutes_one": "{{count}} минута",
+    "todayMinutes_few": "{{count}} минуты",
+    "todayMinutes_many": "{{count}} минут",
+    "todayMinutes_other": "{{count}} минуты"
   },
   "slash": {
     "description": "Голосовой режим: говорите с агентом этого разговора"

@@ -181,7 +181,18 @@
     "shortcutReset": "Redefinir",
     "loadFailed": "Não foi possível carregar as configurações de voz.",
     "saveFailed": "Não foi possível salvar a configuração.",
-    "privacy": "O áudio fica neste dispositivo até uma chamada começar e nunca é armazenado."
+    "privacy": "O áudio fica neste dispositivo até uma chamada começar e nunca é armazenado.",
+    "today": "Hoje",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "Pelo menos {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} chamadas",
+    "todayCalls_one": "{{count}} chamada",
+    "todayCalls_many": "{{count}} chamadas",
+    "todayCalls_other": "{{count}} chamadas",
+    "todayMinutes": "{{count}} minutos",
+    "todayMinutes_one": "{{count}} minuto",
+    "todayMinutes_many": "{{count}} minutos",
+    "todayMinutes_other": "{{count}} minutos"
   },
   "slash": {
     "description": "Modo de voz: fale com o agente desta conversa"

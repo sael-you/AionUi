@@ -52,12 +52,13 @@ import {
   type VoiceSettings,
 } from './types';
 import { callEndPolicy } from './endReasons';
+import { todayStats, type VoiceTodayStats } from './todayStats';
 import { MAX_CAPTIONS, MAX_FOLLOW_UPS, VoiceStore } from './voiceStore';
 import { outputLatencyOf } from '../audio/clipPlayer';
 import type { EarconName } from '../audio/earcons';
 import type { SendModeEvent } from '../capture/sendWorklet';
 import type { RealtimeCall } from '../engine/openaiRealtime';
-import { VoiceBusyError, voiceErrorCode } from '../net/voiceApi';
+import { VOICE_SESSIONS_LIMIT, VoiceBusyError, voiceErrorCode } from '../net/voiceApi';
 
 export const SOCKET_DEAD_MAN_MS = 20_000;
 export const READY_TIMEOUT_MS = 10_000;
@@ -87,6 +88,14 @@ export const LISTEN_WINDOW_MS = 15_000;
  * (`BINDING_GRACE`); after it the agent's lines stay text until a wake or tap opens a new call.
  */
 export const BINDING_GRACE_MS = 30 * 60_000;
+/**
+ * `minimax-cascade`: quiet time after the answer's last reply clip before "your turn". The backend
+ * marks no last clip (it says `assistantAudioFinished` when the brain is done, while sentences may
+ * still be in synthesis), so the tone waits until no reply clip played or arrived for this long.
+ */
+export const REPLY_SETTLE_MS = 1200;
+/** `voice.ready` engine of a cascade call (core `minimax_cascade::ENGINE_KIND`). */
+const CASCADE_ENGINE = 'minimax-cascade';
 /** Conversation-mode outcomes of your utterance: the mic goes quiet again. */
 const HOLD_STATUSES: ReadonlySet<FollowUpStatus> = new Set(['sent', 'added', 'queued', 'silenced', 'stopped']);
 /** Conversation-mode turn ends: the mic opens for the follow-up window. */
@@ -188,6 +197,11 @@ export class VoiceController {
   private currentFollowUpReply = false;
   /** `voice.assistantAudioFinished` arrived: the next `listening` state ends the answer, not a barge-in. */
   private answerEndPending = false;
+  /** Engine named by the bound call's `voice.ready`. */
+  private callEngine: string | null = null;
+  /** Cascade answer done on the backend: "your turn" sounds once its reply clips have played. */
+  private yourTurnAfterReplies = false;
+  private replySettleTimer: unknown = null;
   /** Conversation mode: core keeps the binding this long after an idle hang-up. */
   private graceTimer: unknown = null;
   /** Conversation mode: the socket dropped while a ready call was live (a restart if the call is gone). */
@@ -387,6 +401,15 @@ export class VoiceController {
 
   dismissNotice(): void {
     this.store.update({ notice: null });
+  }
+
+  /** Today's calls and minutes for the settings panel; `null` when the list cannot be read. */
+  async loadTodayStats(): Promise<VoiceTodayStats | null> {
+    try {
+      return todayStats(await this.fx.api.listSessions(), this.fx.timers.now(), VOICE_SESSIONS_LIMIT);
+    } catch {
+      return null;
+    }
   }
 
   /** Fetch the settings now (settings page, arm without a cached value). */
@@ -635,6 +658,8 @@ export class VoiceController {
     this.unregisterMedia = null;
     this.capture?.mute();
     this.clearTimer('windowTimer');
+    this.callEngine = null;
+    this.cancelYourTurn();
     if (call) {
       call.close();
       if (notifyBackend) {
@@ -724,6 +749,7 @@ export class VoiceController {
       return;
     switch (frame.name) {
       case 'voice.ready':
+        if (this.machine.call?.voiceSessionId === frame.voiceSessionId) this.callEngine = frame.engine;
         return this.onReady(frame.voiceSessionId);
       case 'voice.state':
         return this.onServerState(frame.state, frame.reason);
@@ -737,6 +763,12 @@ export class VoiceController {
         return this.onReadback(frame.draftId, frame.version, frame.readbackId, frame.url);
       case 'voice.assistantAudioFinished': {
         this.answerEndPending = true;
+        if (this.callEngine === CASCADE_ENGINE) {
+          // The cascade's answer is still being spoken as reply clips: wait for the last one.
+          this.yourTurnAfterReplies = true;
+          this.settleYourTurn();
+          return;
+        }
         const latencyMs = this.ctx ? outputLatencyOf(this.ctx) * 1000 : 0;
         this.fx.timers.setTimeout(() => this.earcon('yourTurn'), latencyMs);
         return;
@@ -806,7 +838,8 @@ export class VoiceController {
         // Only core knows whether a task was running: its `interrupted` follow-up turns this into
         // `restartInterrupted`. Until then the call merely came back after the restart.
         this.store.update({ notice: { code: 'restartReconnected' } });
-        this.earcon('needsYou');
+        // Information, not a call to act: the neutral "back" tone. `interrupted` brings needsYou.
+        this.earcon('back');
       } else {
         this.store.update({ notice: { code: 'conversationIdle' } });
         this.clearTimer('graceTimer');
@@ -1031,6 +1064,7 @@ export class VoiceController {
         this.startAskCall();
       }
       this.flushFollowUps();
+      if (kind === 'followUp') this.settleYourTurn();
     }
   }
 
@@ -1085,7 +1119,11 @@ export class VoiceController {
       // follow-up entry; like Jarvis's own draft lines it never waits for a pending draft.
       if (frame.clipId) {
         this.enqueueClip({ clipId: frame.clipId, urlOrId: frame.clipId, tone: null, draftLine: true, reply: true });
+      } else {
+        // Not voiced (a confirmation phrase, or synthesis failed): shown as Jarvis's caption.
+        this.captionReply(frame.line);
       }
+      this.settleYourTurn();
       return;
     }
     if (
@@ -1144,9 +1182,9 @@ export class VoiceController {
     if (status === 'interrupted') {
       // A restart cut the running turn: say so (spoken when core sends a clip), stay armed.
       this.store.update({ lastOutcome: { status, line } });
-      // One cue only: the bar may already show the restart notice with its tone.
-      const shown = this.store.getSnapshot().notice?.code;
-      const toned = shown === 'restartInterrupted' || shown === 'restartReconnected';
+      // One needs-you cue only: the bar may already show this notice with its tone. The
+      // reconnected notice only had the neutral tone, so the cut task still sounds needsYou.
+      const toned = this.store.getSnapshot().notice?.code === 'restartInterrupted';
       this.store.update({ notice: { code: 'restartInterrupted' } });
       if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: toned ? null : 'needsYou', draftLine: false });
       else if (!toned) this.earcon('needsYou');
@@ -1247,12 +1285,62 @@ export class VoiceController {
     if (this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
   }
 
+  /** A cascade reply clip is being fetched, played or waits in the queue. */
+  private replyInFlight(): boolean {
+    return (
+      (this.currentFollowUpClipId !== null && this.currentFollowUpReply) || this.followUpQueue.some((c) => c.reply)
+    );
+  }
+
+  /**
+   * (Re)start the quiet period after the cascade answer's clips; "your turn" sounds when it ends
+   * with no reply clip in flight. A reply clip that arrives meanwhile restarts it.
+   */
+  private settleYourTurn(): void {
+    this.clearTimer('replySettleTimer');
+    if (!this.yourTurnAfterReplies || this.replyInFlight()) return;
+    this.replySettleTimer = this.fx.timers.setTimeout(() => {
+      this.replySettleTimer = null;
+      if (!this.yourTurnAfterReplies || this.replyInFlight()) return;
+      this.yourTurnAfterReplies = false;
+      this.earcon('yourTurn');
+    }, REPLY_SETTLE_MS);
+  }
+
+  private cancelYourTurn(): void {
+    this.yourTurnAfterReplies = false;
+    this.clearTimer('replySettleTimer');
+  }
+
+  /**
+   * A cascade reply sentence that came without a clip, as Jarvis's caption. It joins the answer's
+   * unfinished caption, which the final assistant transcript replaces; a line that transcript
+   * already holds is not shown twice.
+   */
+  private captionReply(line: string): void {
+    const text = line.trim();
+    if (!text) return;
+    this.store.update((view) => {
+      const captions = view.captions.slice();
+      const last = captions[captions.length - 1];
+      if (last?.role === 'assistant' && last.final && last.text.includes(text)) return {};
+      if (last?.role === 'assistant' && !last.final) {
+        captions[captions.length - 1] = { ...last, text: `${last.text} ${text}` };
+      } else {
+        captions.push({ id: ++this.captionSeq, role: 'assistant', text, final: false });
+      }
+      return { captions: captions.slice(-MAX_CAPTIONS) };
+    });
+  }
+
   /**
    * `minimax-cascade` barge-in: you started to speak, so the answer clip playing now stops and
    * the queued ones are dropped (the backend drops the sentences it has not sent yet). Other
    * follow-ups keep their place.
    */
   private hushReplies(): void {
+    // You are talking: no "your turn" for the answer you cut.
+    this.cancelYourTurn();
     this.followUpQueue = this.followUpQueue.filter((clip) => !clip.reply);
     if (!this.currentFollowUpClipId || !this.currentFollowUpReply) return;
     // A reply still being fetched is dropped too: its epoch no longer matches.
@@ -1392,6 +1480,7 @@ export class VoiceController {
       | 'askHangupTimer'
       | 'windowTimer'
       | 'graceTimer'
+      | 'replySettleTimer'
   ): void {
     const handle = this[key];
     if (handle) this.fx.timers.clearTimeout(handle);

@@ -181,7 +181,16 @@
     "shortcutReset": "リセット",
     "loadFailed": "音声設定を読み込めませんでした。",
     "saveFailed": "設定を保存できませんでした。",
-    "privacy": "音声は通話が始まるまでこのデバイス上にとどまり、保存されることはありません。"
+    "privacy": "音声は通話が始まるまでこのデバイス上にとどまり、保存されることはありません。",
+    "today": "今日",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "少なくとも {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} 件の通話",
+    "todayCalls_one": "{{count}} 件の通話",
+    "todayCalls_other": "{{count}} 件の通話",
+    "todayMinutes": "{{count}} 分",
+    "todayMinutes_one": "{{count}} 分",
+    "todayMinutes_other": "{{count}} 分"
   },
   "slash": {
     "description": "音声モード：この会話のエージェントと話す"

@@ -181,7 +181,16 @@
     "shortcutReset": "Reset",
     "loadFailed": "Voice settings could not be loaded.",
     "saveFailed": "The setting could not be saved.",
-    "privacy": "Audio stays on this device until a call starts and is never stored."
+    "privacy": "Audio stays on this device until a call starts and is never stored.",
+    "today": "Today",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "At least {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} calls",
+    "todayCalls_one": "{{count}} call",
+    "todayCalls_other": "{{count}} calls",
+    "todayMinutes": "{{count}} minutes",
+    "todayMinutes_one": "{{count}} minute",
+    "todayMinutes_other": "{{count}} minutes"
   },
   "slash": {
     "description": "Voice mode: talk with this conversation's agent"

@@ -158,6 +158,39 @@ describe('VoiceOverlay', () => {
     expect(f.fx.api.putSettings).toHaveBeenCalledWith({ car_mode: true });
   });
 
+  describe('today in the settings panel (TASK-37 #5)', () => {
+    it("shows today's calls and minutes next to the budget", async () => {
+      const m = await mount();
+      const now = Date.now();
+      m.f.fx.api.listSessions.mockResolvedValue([
+        {
+          id: 's1',
+          engine: 'openai-realtime',
+          model: 'm',
+          state: 'ended',
+          created_at: now - 1000,
+          ready_at: now - 1000,
+          ended_at: now,
+          cost_usd: 0.2,
+        },
+      ]);
+      fireEvent.click(screen.getByRole('button', { name: 'voice.actions.settings' }));
+      await act(flush);
+      expect(screen.getByText('voice.settings.today')).toBeInTheDocument();
+      expect(screen.getByTestId('voice-settings-today')).toHaveTextContent('voice.settings.todayUsage');
+      expect(screen.getByLabelText('voice.budget.title', { selector: 'section' })).toBeInTheDocument();
+    });
+
+    it('shows no today row when the session list cannot be read', async () => {
+      const m = await mount();
+      m.f.fx.api.listSessions.mockRejectedValue(new Error('offline'));
+      fireEvent.click(screen.getByRole('button', { name: 'voice.actions.settings' }));
+      await act(flush);
+      expect(screen.getByTestId('voice-settings')).toBeInTheDocument();
+      expect(screen.queryByTestId('voice-settings-today')).toBeNull();
+    });
+  });
+
   describe('MiniMax engine (TASK-91)', () => {
     it('offers minimax-cascade as a choice and saves it', async () => {
       const { f } = await mount();

@@ -181,7 +181,16 @@
     "shortcutReset": "重設",
     "loadFailed": "無法載入語音設定。",
     "saveFailed": "無法儲存此設定。",
-    "privacy": "通話開始前，音訊只會保留在此裝置上，且絕不會儲存。"
+    "privacy": "通話開始前，音訊只會保留在此裝置上，且絕不會儲存。",
+    "today": "今天",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "至少 {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} 次通話",
+    "todayCalls_one": "{{count}} 次通話",
+    "todayCalls_other": "{{count}} 次通話",
+    "todayMinutes": "{{count}} 分鐘",
+    "todayMinutes_one": "{{count}} 分鐘",
+    "todayMinutes_other": "{{count}} 分鐘"
   },
   "slash": {
     "description": "語音模式：與此對話的代理對話"

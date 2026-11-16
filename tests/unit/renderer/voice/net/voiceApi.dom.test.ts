@@ -121,6 +121,14 @@ describe('voiceApi', () => {
     expect(s.daily_budget_usd).toBe(5);
   });
 
+  it('reads the session list with a plain GET of /api/voice/sessions (TASK-37 #5)', async () => {
+    const row = { id: 's1', engine: 'openai-realtime', model: 'm', state: 'ended', created_at: 1, cost_usd: 0.1 };
+    const calls = mockFetch([{ status: 200, body: { success: true, data: [row] } }]);
+    await expect(voiceApi.listSessions()).resolves.toEqual([row]);
+    expect(calls[0].url).toMatch(/\/api\/voice\/sessions$/);
+    expect(calls[0].init.method ?? 'GET').toBe('GET');
+  });
+
   it('refuses to fetch a clip from a URL outside /api/voice/readbacks', async () => {
     mockFetch([]);
     await expect(voiceApi.fetchClip('https://evil.example/x')).rejects.toThrow(/refused/);

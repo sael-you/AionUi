@@ -7,7 +7,12 @@ import type { ClipPlayOptions } from '@/renderer/voice/audio/clipPlayer';
 import type { WakeWordEvents } from '@/renderer/voice/capture/wakeWord';
 import type { CaptureOptions } from '@/renderer/voice/capture/micCapture';
 import type { Effects, LifecycleHandlers, StartCallOptions } from '@/renderer/voice/core/effects';
-import { DEFAULT_VOICE_SETTINGS, type ServerFrame, type VoiceSettings } from '@/renderer/voice/core/types';
+import {
+  DEFAULT_VOICE_SETTINGS,
+  type ServerFrame,
+  type VoiceSessionSummary,
+  type VoiceSettings,
+} from '@/renderer/voice/core/types';
 import type { VoiceSocketListener } from '@/renderer/voice/net/VoiceSocket';
 import { realTimers } from '@/renderer/voice/net/VoiceSocket';
 
@@ -76,6 +81,7 @@ export function createFakeEffects(settings: Partial<VoiceSettings> = { enabled: 
       createSession: vi.fn(),
       endSession: vi.fn(async () => undefined),
       fetchClip: vi.fn(async () => new ArrayBuffer(8)),
+      listSessions: vi.fn(async (): Promise<VoiceSessionSummary[]> => []),
     },
     timers: realTimers,
     createAudioContext: vi.fn(() => ctx as unknown as AudioContext),

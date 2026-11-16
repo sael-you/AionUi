@@ -181,7 +181,16 @@
     "shortcutReset": "重置",
     "loadFailed": "无法加载语音设置。",
     "saveFailed": "无法保存该设置。",
-    "privacy": "通话开始前，音频只保留在此设备上，且从不存储。"
+    "privacy": "通话开始前，音频只保留在此设备上，且从不存储。",
+    "today": "今天",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "至少 {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} 次通话",
+    "todayCalls_one": "{{count}} 次通话",
+    "todayCalls_other": "{{count}} 次通话",
+    "todayMinutes": "{{count}} 分钟",
+    "todayMinutes_one": "{{count}} 分钟",
+    "todayMinutes_other": "{{count}} 分钟"
   },
   "slash": {
     "description": "语音模式：与此会话的智能体对话"
