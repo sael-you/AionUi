@@ -407,6 +407,7 @@
     "you": "You",
     "agent": "Agent {{name}}",
     "agentUnknown": "An agent",
+    "conversation": "Conversation {{id}}",
     "system": "Studio supervisor",
     "team": "Team {{name}}"
   },

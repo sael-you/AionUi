@@ -102,6 +102,22 @@ describe('card drawer content', () => {
     expect(activity).toEqual(['Agent coder commented', 'You moved it from Ideas to Triage', 'You created the card']);
   });
 
+  it('names the conversation that created an agent card (TASK-38)', async () => {
+    bridge.getCard.mockResolvedValue(
+      detail1({
+        creator_kind: 'agent',
+        creator_ref: 'assistant:unknown@claude',
+        creator_conversation_id: 'c7fe7b70-1111',
+        creator_name: 'Board Butler',
+      })
+    );
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    await within(dialog).findByText('Board Butler');
+    expect(within(dialog).getByText('Created by').nextElementSibling).toHaveTextContent('Board Butler');
+    expect(dialog.textContent).not.toContain('assistant:unknown');
+  });
+
   it('renders description markdown through the sanitised pipeline (no raw HTML)', async () => {
     renderWithBoard(<BoardPage projectId='p1' />);
     const { dialog } = await openDrawer();

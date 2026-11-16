@@ -47,7 +47,29 @@ export const actorName = (kind: BoardActorKind, ref: string, t: TFunction): stri
   if (kind === 'user') return t('board.actor.you');
   if (kind === 'system') return t('board.actor.system');
   const match = /^assistant:([^@]+)/.exec(ref);
-  return match ? t('board.actor.agent', { name: match[1] }) : t('board.actor.agentUnknown');
+  return match && match[1] !== 'unknown' ? t('board.actor.agent', { name: match[1] }) : t('board.actor.agentUnknown');
+};
+
+/** Characters of a conversation id shown when its name is gone. */
+const SHORT_ID_LENGTH = 8;
+
+/**
+ * Who created a card. Agent cards name the conversation that created them
+ * (plain conversations have no assistant id: `assistant:unknown@…`), then
+ * its short id once the conversation is deleted, then the agent ref.
+ */
+export const creatorName = (
+  card: Pick<BoardCardSummary, 'creator_kind' | 'creator_ref' | 'creator_conversation_id' | 'creator_name'>,
+  t: TFunction
+): string => {
+  if (card.creator_kind === 'agent') {
+    const name = card.creator_name?.trim();
+    if (name) return name;
+    if (card.creator_conversation_id) {
+      return t('board.actor.conversation', { id: card.creator_conversation_id.slice(0, SHORT_ID_LENGTH) });
+    }
+  }
+  return actorName(card.creator_kind, card.creator_ref, t);
 };
 
 /** Assignee line for a card. */

@@ -112,6 +112,7 @@ export type I18nKey =
   | 'board.activity.review_updated'
   | 'board.actor.agent'
   | 'board.actor.agentUnknown'
+  | 'board.actor.conversation'
   | 'board.actor.system'
   | 'board.actor.team'
   | 'board.actor.you'

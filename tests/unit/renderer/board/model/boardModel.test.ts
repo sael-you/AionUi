@@ -15,7 +15,13 @@ import {
   exitRuleMissing,
   isBoardUnavailableError,
 } from '@/renderer/components/board/utils/boardErrors';
-import { actorName, columnName, departmentName, describeEvent } from '@/renderer/components/board/utils/boardFormat';
+import {
+  actorName,
+  columnName,
+  creatorName,
+  departmentName,
+  describeEvent,
+} from '@/renderer/components/board/utils/boardFormat';
 import {
   anchorForSlot,
   applyBoardChange,
@@ -256,6 +262,19 @@ describe('display helpers', () => {
     expect(actorName('system', 'supervisor', t)).toBe('board.actor.system');
     expect(actorName('agent', 'assistant:coder@claude', t)).toBe('board.actor.agent{"name":"coder"}');
     expect(actorName('agent', 'weird', t)).toBe('board.actor.agentUnknown');
+    expect(actorName('agent', 'assistant:unknown@claude', t)).toBe('board.actor.agentUnknown');
+  });
+
+  it('names a card creator by its conversation, then its short id, then the agent ref (TASK-38)', () => {
+    const plain = { creator_kind: 'agent', creator_ref: 'assistant:unknown@claude' } as const;
+    expect(creatorName({ ...plain, creator_name: 'Fix login bug', creator_conversation_id: 'conv-123456789' }, t)).toBe(
+      'Fix login bug'
+    );
+    expect(creatorName({ ...plain, creator_name: '  ', creator_conversation_id: 'abcdef0123456789' }, t)).toBe(
+      'board.actor.conversation{"id":"abcdef01"}'
+    );
+    expect(creatorName(plain, t)).toBe('board.actor.agentUnknown');
+    expect(creatorName(makeCard(1, 'ideas', 1024), t)).toBe('board.actor.you');
   });
 
   it('describes moves with column names and unknown kinds generically', () => {

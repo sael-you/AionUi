@@ -417,6 +417,7 @@
     "you": "Ви",
     "agent": "Агент {{name}}",
     "agentUnknown": "Агент",
+    "conversation": "Розмова {{id}}",
     "system": "Супервізор Studio",
     "team": "Команда {{name}}"
   },

@@ -407,6 +407,7 @@
     "you": "나",
     "agent": "에이전트 {{name}}",
     "agentUnknown": "어떤 에이전트",
+    "conversation": "대화 {{id}}",
     "system": "Studio 감독자",
     "team": "팀 {{name}}"
   },

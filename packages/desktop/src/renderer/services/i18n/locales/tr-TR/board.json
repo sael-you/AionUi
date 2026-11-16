@@ -407,6 +407,7 @@
     "you": "Siz",
     "agent": "Ajan {{name}}",
     "agentUnknown": "Bir ajan",
+    "conversation": "Sohbet {{id}}",
     "system": "Studio denetleyicisi",
     "team": "Takım {{name}}"
   },

@@ -407,6 +407,7 @@
     "you": "あなた",
     "agent": "エージェント {{name}}",
     "agentUnknown": "あるエージェント",
+    "conversation": "会話 {{id}}",
     "system": "Studio スーパーバイザー",
     "team": "チーム {{name}}"
   },
