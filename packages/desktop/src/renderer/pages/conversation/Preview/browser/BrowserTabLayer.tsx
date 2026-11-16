@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import type { PreviewTab, PreviewTabPatch } from '../context/PreviewContext';
 import BrowserViewer from './BrowserViewer';
+import BrowserScopeSelect from './server/BrowserScopeSelect';
+import DeviceBrowserView from './server/DeviceBrowserView';
 import ServerBrowserView from './server/ServerBrowserView';
+import { useBrowserDevices } from './server/useBrowserDevices';
 import { useServerBrowserAvailability } from './server/useServerBrowserAvailability';
 
 export interface BrowserTabLayerProps {
@@ -54,6 +57,10 @@ const BrowserTabLayer: React.FC<BrowserTabLayerProps> = ({ browserTabs, activeTa
   );
 
   const serverBrowser = useServerBrowserAvailability();
+  // The owner's own browsers (C34) join the switcher; picking one shows its live view instead of the stream.
+  const { devices } = useBrowserDevices(serverBrowser.available);
+  const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [lastInstance, setLastInstance] = useState(1);
 
   if (browserTabs.length === 0) return null;
 
@@ -64,7 +71,36 @@ const BrowserTabLayer: React.FC<BrowserTabLayerProps> = ({ browserTabs, activeTa
     const requested = browserTabs.find((tab) => tab.id === activeTabId) ?? browserTabs.at(-1);
     return (
       <div className='relative flex-1 overflow-hidden' style={{ display: isBrowserActive ? undefined : 'none' }}>
-        <ServerBrowserView profiles={serverBrowser.profiles} requestedUrl={requested?.content} />
+        {deviceId ? (
+          <DeviceBrowserView
+            device={devices.find((device) => device.device_id === deviceId)}
+            agentsEnabled={serverBrowser.devicesAgentsEnabled}
+            switcher={
+              <BrowserScopeSelect
+                profiles={serverBrowser.profiles}
+                devices={devices}
+                value={{ kind: 'device', deviceId }}
+                onChange={(scope) => {
+                  if (scope.kind === 'device') {
+                    setDeviceId(scope.deviceId);
+                    return;
+                  }
+                  setLastInstance(scope.instance);
+                  setDeviceId(null);
+                }}
+              />
+            }
+          />
+        ) : (
+          <ServerBrowserView
+            profiles={serverBrowser.profiles}
+            requestedUrl={requested?.content}
+            devices={devices}
+            onSelectDevice={setDeviceId}
+            initialInstance={lastInstance}
+            onInstanceChange={setLastInstance}
+          />
+        )}
       </div>
     );
   }

@@ -26,7 +26,14 @@ export type BrowserErrorCode =
   | 'BROWSER_BUSY'
   | 'BROWSER_PROFILE_NAME_TAKEN'
   | 'BROWSER_INSTANCE_PROTECTED'
-  | 'BROWSER_INSTANCE_NOT_FOUND';
+  | 'BROWSER_INSTANCE_NOT_FOUND'
+  // C34: the owner's own browser through the extension (TASK-125).
+  | 'BROWSER_PAIRING_INVALID'
+  | 'BROWSER_DEVICE_REVOKED'
+  | 'BROWSER_DEVICE_NOT_FOUND'
+  | 'BROWSER_APPROVAL_DENIED'
+  | 'BROWSER_APPROVAL_TIMEOUT'
+  | 'BROWSER_APPROVAL_EXPIRED';
 
 /** Hard upper bound of `max_instances`. */
 export const BROWSER_MAX_INSTANCES_LIMIT = 5;
@@ -94,11 +101,17 @@ export type BrowserSettings = {
   /** 1..=20, default 10, per instance. */
   max_tabs: number;
   instances: BrowserInstanceSettings[];
+  /**
+   * "Agents may use my Mac browser" (C34, default false): agents reach the owner's
+   * paired browsers only when this AND `agents_enabled` are on.
+   */
+  devices_agents_enabled: boolean;
 };
 
 /** `PUT /api/browser/settings`: only the given fields change; `instances` updates only the listed rows. */
 export type BrowserSettingsUpdate = {
   agents_enabled?: boolean;
+  devices_agents_enabled?: boolean;
   max_instances?: number;
   max_tabs?: number;
   instances?: BrowserInstanceUpdate[];
@@ -209,3 +222,58 @@ export type BrowserClientMessage =
   | { type: 'insert_text'; text: string }
   | { type: 'dialog_reply'; tab_id: string; accept: boolean; prompt_text?: string }
   | { type: 'frame_ack'; seq: number };
+
+// ---------------------------------------------------------------------------
+// C34 (TASK-125): the owner's own browser through the AionUi extension.
+// AionCore `aionui-api-types::browser` (BrowserPairingCode, BrowserDevice,
+// BrowserApproval, BrowserApprovalResolved, BrowserDeviceActivity), snake_case.
+// ---------------------------------------------------------------------------
+
+/** `POST /api/browser/devices/pairing-code`: one-time, 5 minutes; a new code replaces the previous one. */
+export type BrowserPairingCode = { code: string; /** Epoch ms. */ expires_at: number };
+
+/** `GET /api/browser/devices` row (never the token). */
+export type BrowserDevice = {
+  device_id: string;
+  name: string;
+  browser: string;
+  created_at: number;
+  last_seen_at?: number;
+  online: boolean;
+  /** The extension's "agents may open new tabs" switch. */
+  new_tabs: boolean;
+  shared_tabs: number;
+};
+
+/** A paused agent action on a high-value origin, waiting for the owner. */
+export type BrowserApproval = {
+  approval_id: string;
+  device_id: string;
+  device_name: string;
+  tab_id: number;
+  origin: string;
+  url: string;
+  method: string;
+  /** The method plus at most 120 characters of the expression / text. */
+  summary: string;
+  requested_at: number;
+  expires_at: number;
+};
+
+/** `POST /api/browser/approvals/{approval_id}` body. */
+export type BrowserApprovalDecision = { approve: boolean };
+
+/** `browser.approvalResolved` event payload. */
+export type BrowserApprovalResolved = { approval_id: string; approved: boolean };
+
+export type BrowserActivityOutcome = 'ok' | 'refused' | 'paused' | 'approved' | 'denied' | 'timeout';
+
+/** `GET /api/browser/devices/{device_id}/activity` row: method names only, never params or results. */
+export type BrowserDeviceActivity = {
+  at: number;
+  conversation_id: string | null;
+  tab_id: number;
+  origin: string;
+  method: string;
+  outcome: BrowserActivityOutcome;
+};

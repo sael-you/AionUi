@@ -20,11 +20,20 @@ export const SERVER_BROWSER_SETTINGS_KEY = 'server-browser.settings';
 
 export type ServerBrowserProfile = Pick<BrowserInstanceSettings, 'instance' | 'name' | 'color' | 'emoji'>;
 
-export const useServerBrowserAvailability = (): { available: boolean; profiles: ServerBrowserProfile[] } => {
+export const useServerBrowserAvailability = (): {
+  available: boolean;
+  profiles: ServerBrowserProfile[];
+  /** "Agents may use my Mac browser" AND "Agents can use the browser" (C34). */
+  devicesAgentsEnabled: boolean;
+} => {
   const web = !isElectronDesktop();
   const { data: status } = useSWR(web ? SERVER_BROWSER_STATUS_KEY : null, () => serverBrowser.getStatus.invoke());
   const { data: settings } = useSWR(web && status?.available ? SERVER_BROWSER_SETTINGS_KEY : null, () =>
     serverBrowser.getSettings.invoke()
   );
-  return { available: Boolean(web && status?.available), profiles: settings?.instances ?? [] };
+  return {
+    available: Boolean(web && status?.available),
+    profiles: settings?.instances ?? [],
+    devicesAgentsEnabled: Boolean(settings?.agents_enabled && settings?.devices_agents_enabled),
+  };
 };

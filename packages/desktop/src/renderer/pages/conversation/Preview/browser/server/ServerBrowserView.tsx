@@ -12,11 +12,11 @@
  * owner's logins, others are separate profiles.
  */
 
-import { Alert, Button, Input, Message, Modal, Select, Spin, Tag, Tooltip } from '@arco-design/web-react';
+import { Alert, Button, Input, Message, Modal, Spin, Tag, Tooltip } from '@arco-design/web-react';
 import { Close, Left, Loading, Plus, Refresh, Right, Robot } from '@icon-park/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { BrowserFrameMeta, BrowserState } from '@/common/types/platform/serverBrowser';
+import type { BrowserDevice, BrowserFrameMeta, BrowserState } from '@/common/types/platform/serverBrowser';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { resolveAddressBarInput } from '../constants';
 import {
@@ -28,7 +28,7 @@ import {
   mouseButtonOf,
   toPagePoint,
 } from './streamProtocol';
-import BrowserProfileLabel from './BrowserProfileLabel';
+import BrowserScopeSelect from './BrowserScopeSelect';
 import type { ServerBrowserProfile } from './useServerBrowserAvailability';
 import { useServerBrowserStream, type FrameDecoder } from './useServerBrowserStream';
 
@@ -57,12 +57,33 @@ type ServerBrowserViewProps = {
   requestedUrl?: string;
   /** Test seam: frame decoder. */
   decodeFrame?: FrameDecoder;
+  /** The owner's own paired browsers (C34), offered in the same switcher. */
+  devices?: BrowserDevice[];
+  onSelectDevice?: (deviceId: string) => void;
+  /** The profile to show first (the one shown before switching to a device). */
+  initialInstance?: number;
+  onInstanceChange?: (instance: number) => void;
 };
 
-const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ profiles, requestedUrl, decodeFrame }) => {
+const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({
+  profiles,
+  requestedUrl,
+  decodeFrame,
+  devices = [],
+  onSelectDevice,
+  initialInstance = 1,
+  onInstanceChange,
+}) => {
   const { t } = useTranslation();
   const isMobile = useLayoutContext()?.isMobile ?? false;
-  const [instance, setInstance] = useState(1);
+  const [instance, setInstanceState] = useState(initialInstance);
+  const setInstance = useCallback(
+    (next: number) => {
+      setInstanceState(next);
+      onInstanceChange?.(next);
+    },
+    [onInstanceChange]
+  );
   // The profile on screen was deleted (Settings → Browser): go back to the first one ("Main").
   useEffect(() => {
     if (profiles.length > 0 && !profiles.some((profile) => profile.instance === instance)) {
@@ -289,26 +310,14 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ profiles, request
             </Tag>
           </Tooltip>
         ) : null}
-        {profiles.length > 0 ? (
-          <Select
-            size='small'
-            className='w-110px md:w-160px flex-shrink-0'
-            value={instance}
-            aria-label={t('preview.serverBrowser.profileLabel')}
-            renderFormat={(_option, value) => {
-              const current = profiles.find((profile) => profile.instance === value);
-              return current ? <BrowserProfileLabel profile={current} /> : null;
-            }}
-            onChange={(value: number) => setInstance(value)}
-            data-testid='server-browser-profile'
-          >
-            {profiles.map((profile) => (
-              <Select.Option key={profile.instance} value={profile.instance}>
-                <BrowserProfileLabel profile={profile} />
-              </Select.Option>
-            ))}
-          </Select>
-        ) : null}
+        <BrowserScopeSelect
+          profiles={profiles}
+          devices={devices}
+          value={{ kind: 'profile', instance }}
+          onChange={(scope) =>
+            scope.kind === 'device' ? onSelectDevice?.(scope.deviceId) : setInstance(scope.instance)
+          }
+        />
       </div>
 
       <div

@@ -16,6 +16,13 @@ body {
 
 .aion-title.arco-typography {
   margin: 0;
+  flex: 1 1 auto;
+}
+
+/* Arco Typography breaks inside words by default; keep words whole in the narrow popup. */
+.aion-popup .arco-typography {
+  word-break: normal;
+  overflow-wrap: anywhere;
 }
 
 .aion-stack {

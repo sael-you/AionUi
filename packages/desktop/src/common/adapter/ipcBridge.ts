@@ -18,8 +18,14 @@ import { bridge } from '@/common/platform/bridge';
 import { buildListTasksPath } from './teamTaskPath';
 import type { OpenDialogOptions } from 'electron';
 import type {
+  BrowserApproval,
+  BrowserApprovalDecision,
+  BrowserApprovalResolved,
+  BrowserDevice,
+  BrowserDeviceActivity,
   BrowserInstanceCreate,
   BrowserInstancePatch,
+  BrowserPairingCode,
   BrowserSettings,
   BrowserSettingsUpdate,
   BrowserStatusResponse,
@@ -979,6 +985,26 @@ export const serverBrowser = {
   deleteInstance: httpDelete<BrowserSettings, { instance: number }>(
     (p) => `/api/browser/instances/${encodeURIComponent(String(p.instance))}`
   ),
+  // C34 (TASK-125): the owner's own browsers through the AionUi extension.
+  /** One-time pairing code (5 min); a new one replaces the previous. */
+  createPairingCode: httpPost<BrowserPairingCode, void>('/api/browser/devices/pairing-code', () => ({})),
+  listDevices: httpGet<BrowserDevice[], void>('/api/browser/devices'),
+  /** Revokes the device and closes its socket; the extension forgets its token. */
+  revokeDevice: httpDelete<void, { device_id: string }>(
+    (p) => `/api/browser/devices/${encodeURIComponent(p.device_id)}`
+  ),
+  deviceActivity: httpGet<BrowserDeviceActivity[], { device_id: string; limit?: number }>(
+    (p) => `/api/browser/devices/${encodeURIComponent(p.device_id)}/activity?limit=${p.limit ?? 50}`
+  ),
+  listApprovals: httpGet<BrowserApproval[], void>('/api/browser/approvals'),
+  /** Approve (that device + tab + origin for 60 s) or deny (that command only). 410 once it is no longer pending. */
+  decideApproval: httpPost<void, { approval_id: string } & BrowserApprovalDecision>(
+    (p) => `/api/browser/approvals/${encodeURIComponent(p.approval_id)}`,
+    (p) => ({ approve: p.approve })
+  ),
+  approvalRequested: wsEmitter<BrowserApproval>('browser.approvalRequested'),
+  approvalResolved: wsEmitter<BrowserApprovalResolved>('browser.approvalResolved'),
+  devicesChanged: wsEmitter<Record<string, never>>('browser.devicesChanged'),
 };
 
 // ---------------------------------------------------------------------------
