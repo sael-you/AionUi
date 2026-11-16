@@ -1,0 +1,70 @@
+name: Gate
+
+# Pre-merge gate on GitHub's free runners (public repo), TASK-110: the same steps as the local ui gate
+# (`just lint-strict`, `fmt-check`, `typecheck`, `i18n-check`, `test`), with vitest sharded over 3 runners.
+# The commands mirror those justfile recipes. Deploys are NOT triggered from here (youssef-build.yml).
+#
+# Third-party actions are pinned by commit SHA (tag in the trailing comment).
+
+on:
+  push:
+    branches: ['train*', 'wip/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUN_VERSION: '1.4.4' # = youssef-build.yml
+  NODE_VERSION: '22'
+
+jobs:
+  checks:
+    name: lint, fmt, typecheck, i18n
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: lint-strict
+        run: bun run lint -- --quiet
+      - name: fmt-check
+        run: bun run format:check
+      - name: typecheck
+        run: bunx tsc --noEmit
+      - name: i18n-check
+        run: |
+          bun run i18n:types
+          node scripts/check-i18n.js
+      - name: i18n types are committed
+        run: git diff --exit-code
+
+  test:
+    name: vitest ${{ matrix.shard }}/3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: vitest shard ${{ matrix.shard }}/3
+        run: bunx vitest run --shard=${{ matrix.shard }}/3
