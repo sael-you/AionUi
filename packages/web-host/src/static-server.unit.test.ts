@@ -493,6 +493,12 @@ describe('peekWsRoute (which request lines are spliced to the backend)', () => {
     expect(peekWsRoute(line('GET /api/browser/wsx HTTP/1.1'))).toBe(false);
     expect(peekWsRoute(line('GET /api/browser/ws/x HTTP/1.1'))).toBe(false);
     expect(peekWsRoute(line('POST /api/browser/ws HTTP/1.1'))).toBe(false);
+    // The owner's own browser via the extension (TASK-125).
+    expect(peekWsRoute(line('GET /api/browser/extension HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/browser/extension?v=1 HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/browser/extensions HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('GET /api/browser/extension/pair HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('POST /api/browser/extension HTTP/1.1'))).toBe(false);
     expect(peekWsRoute(line('GET /api/browser/settings HTTP/1.1'))).toBe(false);
   });
 

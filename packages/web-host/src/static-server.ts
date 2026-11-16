@@ -259,9 +259,11 @@ function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffe
 
 /**
  * Decide routing from the first chunk of an incoming HTTP connection:
- *  - `true`  → `GET /ws[...]`, `GET /api/stt/stream[...]`, `GET /api/voice/ws[...]` or `GET /api/browser/ws[...]`
- *    (HTTP/1.x WebSocket/stream upgrades; `/api/voice/ws` is the voice-mode control channel, `/api/browser/ws` the
- *    server-side in-app browser's screencast and input stream, TASK-111), splice to backend
+ *  - `true`  → `GET /ws[...]`, `GET /api/stt/stream[...]`, `GET /api/voice/ws[...]`, `GET /api/browser/ws[...]` or
+ *    `GET /api/browser/extension[...]` (HTTP/1.x WebSocket/stream upgrades; `/api/voice/ws` is the voice-mode control
+ *    channel, `/api/browser/ws` the server-side in-app browser's screencast and input stream, TASK-111;
+ *    `/api/browser/extension` the owner's own browser via the AionUi extension, TASK-125 — no session cookie, the
+ *    backend authenticates its first frame and Origin), splice to backend
  *  - `false` → any other HTTP method / path, hand to internal HTTP server
  *  - `null`  → need more bytes (no CRLF yet)
  *
@@ -274,7 +276,7 @@ export function peekWsRoute(buf: Buffer): boolean | null {
   const newlineIdx = buf.indexOf(0x0a); // \n
   if (newlineIdx < 0) return null;
   const firstLine = buf.slice(0, newlineIdx).toString('ascii');
-  return /^GET\s+\/(?:ws|api\/stt\/stream|api\/voice\/ws|api\/browser\/ws)(?:\?[^\s]*)?\s+HTTP\/1\.[01]\r?$/.test(
+  return /^GET\s+\/(?:ws|api\/stt\/stream|api\/voice\/ws|api\/browser\/ws|api\/browser\/extension)(?:\?[^\s]*)?\s+HTTP\/1\.[01]\r?$/.test(
     firstLine
   );
 }
