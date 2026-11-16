@@ -1,0 +1,70 @@
+/* Popup layout (C34). Colours come from Arco's variables only. */
+body {
+  margin: 0;
+  background: var(--color-bg-1);
+  color: var(--color-text-1);
+}
+
+.aion-popup {
+  width: 340px;
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.aion-title.arco-typography {
+  margin: 0;
+}
+
+.aion-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aion-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.aion-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-text-2);
+}
+
+.aion-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aion-ellipsis {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aion-small {
+  font-size: 12px;
+}
+
+.aion-divider.arco-divider-horizontal {
+  margin: 4px 0;
+}
+
+.aion-actions {
+  justify-content: flex-start;
+  margin-top: 4px;
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@aionui/browser-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AionUi Browser Bridge: MV3 extension that lets AionUi agents use the tabs the owner shares (C34, TASK-125)",
+  "type": "module",
+  "scripts": {
+    "build": "bun scripts/build.ts"
+  }
+}

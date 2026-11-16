@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "AionUi Browser Bridge",
+  "description": "Lets your AionUi agents use the tabs you share, with your logins. Nothing is shared until you share a tab.",
+  "version": "0.1.0",
+  "minimum_chrome_version": "116",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsg+oHVu+78SbPOUIq3/P9/hFHwlbxLJGPu2+BT4vAO84s4VD0f4lL1NiPvwl2LSUSM1POfXxEBnjimK2W5jN+dJf+NvBu+zDliRVECQ4hsaCJucxZBWpVatgMwqruIf64q3cWk+X1pAwJstbAWQBjt+PzVWCpIzd5e/7hyMMHXpNQPboj1lZ5pJb5f5khxHs5lzPSXPGw4mN55+8IuPw6JnPVV8OmxHIN+xEEQSxC/0GSaU7Yj45uhrT9AIMi7agDW1ecK+I1bXMlZ9DKqI0Mc6qMl5coNdgUeuPkruzWCtNIv7d619yGuBzFv5N0RGAPwF6CV8rgwBRwfJg1nzuCQIDAQAB",
+  "permissions": ["debugger", "tabs", "storage", "alarms"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AionUi",
+    "default_icon": {
+      "128": "icon.png"
+    }
+  },
+  "icons": {
+    "128": "icon.png"
+  }
+}
