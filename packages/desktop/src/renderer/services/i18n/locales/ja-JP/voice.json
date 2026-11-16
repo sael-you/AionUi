@@ -144,6 +144,7 @@
     "callHardCap": "通話が 55 分の上限に達しました。新しい通話は「話す」をタップしてください。",
     "callDropped": "通話が切断されました。「話す」をタップして再試行してください。",
     "noProvider": "お使いのアカウントには音声プロバイダーがまだ設定されていません。",
+    "noMinimaxProvider": "MiniMax エンジンには、思考と音声のために MiniMax プロバイダー（api.minimax.io）が必要です。",
     "rateLimited": "音声リクエストが多すぎます。少し待ってから再試行してください。",
     "restartInterrupted": "再起動によりタスクが中断されました。続けるには「Hey Jarvis」と話しかけてください。",
     "restartReconnected": "再起動後に音声が再接続されました。",
@@ -153,7 +154,8 @@
   "providerSetup": {
     "action": "キーを設定",
     "actionLabel": "設定 → モデル で音声プロバイダーのキーを設定",
-    "hint": "ベース URL https://api.openai.com の OpenAI プロバイダーを追加してください（OpenAI プリセットで動作します）。任意：MiniMax 音声用の MiniMax キー。"
+    "hint": "ベース URL https://api.openai.com の OpenAI プロバイダーを追加してください（OpenAI プリセットで動作します）。任意：MiniMax 音声用の MiniMax キー。",
+    "minimaxHint": "ベース URL が https://api.minimax.io の MiniMax プロバイダーを追加し、OpenAI プロバイダーも残してください。OpenAI が聞き取り、MiniMax が考えて話します。"
   },
   "settings": {
     "title": "音声設定",
@@ -166,6 +168,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "近日対応",
+    "engineHint": {
+      "minimaxCascade": "OpenAI キー（聞き取り）と MiniMax キー（思考と発話）が必要です。"
+    },
     "wakeWord": "ウェイクワード「Hey Jarvis」",
     "wakeWordHint": "このデバイス上でのみ動作します。オフの場合は「話す」をタップして開始します。",
     "carMode": "車載モード",

@@ -144,6 +144,7 @@
     "callHardCap": "통화가 55분 한도에 도달했습니다. 새 통화는 말하기를 탭하세요.",
     "callDropped": "통화가 끊겼습니다. 다시 시도하려면 말하기를 탭하세요.",
     "noProvider": "계정에 아직 음성 제공자가 설정되지 않았습니다.",
+    "noMinimaxProvider": "MiniMax 엔진은 생각과 음성을 위해 MiniMax 공급자(api.minimax.io)가 필요합니다.",
     "rateLimited": "음성 요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
     "restartInterrupted": "재시작으로 작업이 중단되었습니다. 계속하려면 “Hey Jarvis”라고 말하세요.",
     "restartReconnected": "재시작 후 음성이 다시 연결되었습니다.",
@@ -153,7 +154,8 @@
   "providerSetup": {
     "action": "키 설정",
     "actionLabel": "설정 → 모델에서 음성 제공자 키 설정",
-    "hint": "기본 URL이 https://api.openai.com인 OpenAI 제공자를 추가하세요(OpenAI 프리셋 사용 가능). 선택 사항: MiniMax 음성용 MiniMax 키."
+    "hint": "기본 URL이 https://api.openai.com인 OpenAI 제공자를 추가하세요(OpenAI 프리셋 사용 가능). 선택 사항: MiniMax 음성용 MiniMax 키.",
+    "minimaxHint": "기본 URL이 https://api.minimax.io인 MiniMax 공급자를 추가하고 OpenAI 공급자는 그대로 두세요. OpenAI가 듣고, MiniMax가 생각하고 말합니다."
   },
   "settings": {
     "title": "음성 설정",
@@ -166,6 +168,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "추후 제공",
+    "engineHint": {
+      "minimaxCascade": "OpenAI 키(듣기)와 MiniMax 키(생각과 말하기)가 필요합니다."
+    },
     "wakeWord": "호출어 “Hey Jarvis”",
     "wakeWordHint": "이 기기에서만 실행됩니다. 꺼져 있으면 말하기를 탭해 시작하세요.",
     "carMode": "차량 모드",

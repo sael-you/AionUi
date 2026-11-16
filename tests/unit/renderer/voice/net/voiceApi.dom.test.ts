@@ -153,6 +153,7 @@ describe('voiceErrorCode', () => {
       new BackendHttpError({ method: 'POST', path: '/api/voice/sessions', status, body: { success: false, code } });
     expect(voiceErrorCode(err(403, 'VOICE_DISABLED'))).toBe('disabled');
     expect(voiceErrorCode(err(412, 'VOICE_NO_PROVIDER'))).toBe('noProvider');
+    expect(voiceErrorCode(err(412, 'VOICE_NO_MINIMAX_PROVIDER'))).toBe('noMinimaxProvider');
     expect(voiceErrorCode(err(429, 'VOICE_BUDGET_REACHED'))).toBe('budget');
     expect(voiceErrorCode(err(429, 'RATE_LIMITED'))).toBe('rateLimited');
     expect(voiceErrorCode(err(502, 'BAD_GATEWAY'))).toBe('callFailed');

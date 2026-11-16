@@ -122,7 +122,14 @@ const NEEDS_YOU_STATUSES: ReadonlySet<FollowUpStatus> = new Set([
   'interrupted',
 ]);
 
-type QueuedClip = { clipId: string; urlOrId: string; tone: EarconName | null; draftLine: boolean };
+type QueuedClip = {
+  clipId: string;
+  urlOrId: string;
+  tone: EarconName | null;
+  draftLine: boolean;
+  /** A `minimax-cascade` answer sentence (`voice.followUp` status `reply`): cut by a barge-in. */
+  reply?: boolean;
+};
 
 export type ArmOptions = { focusConversationId?: string | null; mode?: VoiceSessionMode };
 
@@ -177,6 +184,10 @@ export class VoiceController {
   private speechEpoch = 0;
   /** The agent clip being fetched or played now. */
   private currentFollowUpClipId: string | null = null;
+  /** The follow-up clip being fetched or played is a cascade answer sentence. */
+  private currentFollowUpReply = false;
+  /** `voice.assistantAudioFinished` arrived: the next `listening` state ends the answer, not a barge-in. */
+  private answerEndPending = false;
   /** Conversation mode: core keeps the binding this long after an idle hang-up. */
   private graceTimer: unknown = null;
   /** Conversation mode: the socket dropped while a ready call was live (a restart if the call is gone). */
@@ -270,6 +281,7 @@ export class VoiceController {
     this.clips?.stop();
     this.followUpQueue = [];
     this.followUpBusy = false;
+    this.answerEndPending = false;
     this.seenClips = [];
     this.askClipId = null;
     this.capture?.stop();
@@ -724,6 +736,7 @@ export class VoiceController {
       case 'voice.readbackReady':
         return this.onReadback(frame.draftId, frame.version, frame.readbackId, frame.url);
       case 'voice.assistantAudioFinished': {
+        this.answerEndPending = true;
         const latencyMs = this.ctx ? outputLatencyOf(this.ctx) * 1000 : 0;
         this.fx.timers.setTimeout(() => this.earcon('yourTurn'), latencyMs);
         return;
@@ -847,6 +860,11 @@ export class VoiceController {
       if (call.phase === 'ready' && reason && LEGACY_END_REASONS.has(reason)) this.onCallEnded(null, reason);
       return;
     }
+    // The backend says `listening` when you start to speak and right after
+    // `voice.assistantAudioFinished`; only the first is a barge-in on the cascade's answer clips.
+    const answerEnded = this.answerEndPending;
+    this.answerEndPending = false;
+    if (state === 'listening' && !answerEnded) this.hushReplies();
     const prev = call.serverState;
     this.dispatch({ type: 'serverState', state });
     if (prev === 'listening' && state === 'thinking') this.earcon('gotIt');
@@ -963,7 +981,8 @@ export class VoiceController {
       if (kind === 'followUp' && epoch !== this.speechEpoch) return;
       if (kind === 'followUp' && this.followUpBlocked(draftLine)) {
         // Clips are single use: keep the fetched audio's slot and retry later (no tone again).
-        this.followUpQueue.unshift({ clipId, urlOrId, tone: null, draftLine });
+        const reply = this.currentFollowUpClipId === clipId && this.currentFollowUpReply;
+        this.followUpQueue.unshift({ clipId, urlOrId, tone: null, draftLine, reply });
         requeued = true;
         return;
       }
@@ -996,7 +1015,10 @@ export class VoiceController {
       if (this.playingKind === kind) this.playingKind = null;
       if (kind === 'followUp') {
         this.followUpBusy = false;
-        if (this.currentFollowUpClipId === clipId) this.currentFollowUpClipId = null;
+        if (this.currentFollowUpClipId === clipId) {
+          this.currentFollowUpClipId = null;
+          this.currentFollowUpReply = false;
+        }
       }
       if (kind === 'followUp' && this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
       if (kind === 'followUp' && !requeued && clipId === this.windowAfterClip?.clipId) {
@@ -1037,6 +1059,7 @@ export class VoiceController {
     this.followUpBusy = true;
     const [next] = this.followUpQueue.splice(index, 1);
     this.currentFollowUpClipId = next.clipId;
+    this.currentFollowUpReply = Boolean(next.reply);
     const endsAt = next.tone ? this.earcon(next.tone) : null;
     const delayMs = endsAt !== null && this.ctx ? Math.max(0, (endsAt - this.ctx.currentTime) * 1000) : 0;
     const epoch = this.speechEpoch;
@@ -1057,6 +1080,14 @@ export class VoiceController {
   }
 
   private onFollowUp(frame: ServerFrame & { name: 'voice.followUp' }): void {
+    if (frame.status === 'reply') {
+      // `minimax-cascade`: one sentence of Jarvis's answer, played in order. No tone and no
+      // follow-up entry; like Jarvis's own draft lines it never waits for a pending draft.
+      if (frame.clipId) {
+        this.enqueueClip({ clipId: frame.clipId, urlOrId: frame.clipId, tone: null, draftLine: true, reply: true });
+      }
+      return;
+    }
     if (
       this.isConversationMode &&
       frame.conversationId === this.store.getSnapshot().focusConversationId &&
@@ -1214,6 +1245,19 @@ export class VoiceController {
     this.windowAfterClip = null;
     if (this.playingKind === 'followUp') this.clips?.stop();
     if (this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
+  }
+
+  /**
+   * `minimax-cascade` barge-in: you started to speak, so the answer clip playing now stops and
+   * the queued ones are dropped (the backend drops the sentences it has not sent yet). Other
+   * follow-ups keep their place.
+   */
+  private hushReplies(): void {
+    this.followUpQueue = this.followUpQueue.filter((clip) => !clip.reply);
+    if (!this.currentFollowUpClipId || !this.currentFollowUpReply) return;
+    // A reply still being fetched is dropped too: its epoch no longer matches.
+    this.speechEpoch++;
+    if (this.playingKind === 'followUp') this.clips?.stop();
   }
 
   /**

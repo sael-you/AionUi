@@ -144,6 +144,7 @@
     "callHardCap": "تماس به سقف ۵۵ دقیقه رسید. برای تماس تازه روی صحبت بزنید.",
     "callDropped": "تماس قطع شد. برای تلاش دوباره روی صحبت بزنید.",
     "noProvider": "هنوز هیچ ارائه‌دهندهٔ صوتی برای حساب شما تنظیم نشده است.",
+    "noMinimaxProvider": "موتور MiniMax برای فکر کردن و صحبت کردن به یک ارائه‌دهنده MiniMax (api.minimax.io) نیاز دارد.",
     "rateLimited": "درخواست‌های صوتی بیش از حد است. کمی صبر کنید و دوباره تلاش کنید.",
     "restartInterrupted": "راه‌اندازی مجدد کار را قطع کرد — برای ادامه بگویید «Hey Jarvis».",
     "restartReconnected": "صدا پس از راه‌اندازی مجدد دوباره وصل شد.",
@@ -153,7 +154,8 @@
   "providerSetup": {
     "action": "تنظیم کلید",
     "actionLabel": "تنظیم کلید ارائه‌دهندهٔ صوتی در تنظیمات ← مدل",
-    "hint": "یک ارائه‌دهندهٔ OpenAI با نشانی پایه https://api.openai.com اضافه کنید (پیش‌تنظیم OpenAI کار می‌کند). اختیاری: کلید MiniMax برای گفتار MiniMax."
+    "hint": "یک ارائه‌دهندهٔ OpenAI با نشانی پایه https://api.openai.com اضافه کنید (پیش‌تنظیم OpenAI کار می‌کند). اختیاری: کلید MiniMax برای گفتار MiniMax.",
+    "minimaxHint": "یک ارائه‌دهنده MiniMax با نشانی پایه https://api.minimax.io اضافه کنید و ارائه‌دهنده OpenAI خود را نگه دارید: OpenAI گوش می‌دهد، MiniMax فکر می‌کند و صحبت می‌کند."
   },
   "settings": {
     "title": "تنظیمات صوتی",
@@ -166,6 +168,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "به‌زودی",
+    "engineHint": {
+      "minimaxCascade": "به یک کلید OpenAI (گوش می‌دهد) و یک کلید MiniMax (فکر می‌کند و صحبت می‌کند) نیاز دارد."
+    },
     "wakeWord": "کلمه بیدارباش «Hey Jarvis»",
     "wakeWordHint": "فقط روی این دستگاه اجرا می‌شود. وقتی خاموش است، برای شروع روی صحبت بزنید.",
     "carMode": "حالت خودرو",

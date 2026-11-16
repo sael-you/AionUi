@@ -30,22 +30,28 @@ const INFO_NOTICES: ReadonlySet<string> = new Set(['busy', 'networkLost', 'callI
 
 /** Notice the backend's 412 / `no_provider` maps to (`voiceErrorCode`); it gets the setup help below. */
 export const NO_PROVIDER_NOTICE = 'noProvider';
+/** Notice of the `minimax-cascade` engine's 412 `VOICE_NO_MINIMAX_PROVIDER`; same setup help, MiniMax hint. */
+export const NO_MINIMAX_PROVIDER_NOTICE = 'noMinimaxProvider';
 
 /** Settings → Model (`components/layout/Router.tsx`): where the voice provider key is added. */
 const MODEL_SETTINGS_PATH = '/settings/model';
 
 /**
  * Help under the "No voice provider" notice (TASK-90): which key voice needs, and "Set up key",
- * which opens Settings → Model. Shared by this panel and the conversation voice bar.
+ * which opens Settings → Model. Shared by this panel and the conversation voice bar. `minimax`:
+ * the MiniMax engine's notice (TASK-91), whose hint names the MiniMax key too.
  */
-export const VoiceProviderSetup: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) => {
+export const VoiceProviderSetup: React.FC<{ onNavigate?: () => void; minimax?: boolean }> = ({
+  onNavigate,
+  minimax = false,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const hintId = useId();
   return (
     <div className={styles.providerSetup} data-testid='voice-provider-setup'>
       <span id={hintId} className={styles.providerSetupHint}>
-        {t('voice.providerSetup.hint')}
+        {t(minimax ? 'voice.providerSetup.minimaxHint' : 'voice.providerSetup.hint')}
       </span>
       <Button
         size='mini'
@@ -178,9 +184,12 @@ const VoiceOverlay: React.FC<VoiceOverlayProps> = ({ controller, isMobile, onOpe
               content={t(`voice.notice.${view.notice.code}`, { message: view.notice.message ?? '' })}
             />
           )}
-          {view.notice?.code === NO_PROVIDER_NOTICE && (
+          {(view.notice?.code === NO_PROVIDER_NOTICE || view.notice?.code === NO_MINIMAX_PROVIDER_NOTICE) && (
             // The phone bottom sheet would cover Settings: close it on the way there.
-            <VoiceProviderSetup onNavigate={isMobile ? () => controller.setOverlayOpen(false) : undefined} />
+            <VoiceProviderSetup
+              minimax={view.notice.code === NO_MINIMAX_PROVIDER_NOTICE}
+              onNavigate={isMobile ? () => controller.setOverlayOpen(false) : undefined}
+            />
           )}
 
           <div className={styles.controls}>

@@ -26,7 +26,7 @@ import BudgetMeter from './BudgetMeter';
 const ENGINES: Array<{ id: VoiceEngineId; labelKey: string; available: boolean }> = [
   { id: 'openai-realtime', labelKey: 'voice.settings.engineName.openaiRealtime', available: true },
   { id: 'openai-relay', labelKey: 'voice.settings.engineName.openaiRelay', available: false },
-  { id: 'minimax-cascade', labelKey: 'voice.settings.engineName.minimaxCascade', available: false },
+  { id: 'minimax-cascade', labelKey: 'voice.settings.engineName.minimaxCascade', available: true },
 ];
 
 const VoiceSettingsPanel: React.FC<{ controller: VoiceController }> = ({ controller }) => {
@@ -90,7 +90,12 @@ const VoiceSettingsPanel: React.FC<{ controller: VoiceController }> = ({ control
             onChange={(v) => save('enabled', v)}
           />
         </PreferenceRow>
-        <PreferenceRow label={t('voice.settings.engine')}>
+        <PreferenceRow
+          label={t('voice.settings.engine')}
+          description={
+            settings?.engine === 'minimax-cascade' ? t('voice.settings.engineHint.minimaxCascade') : undefined
+          }
+        >
           <AionSelect
             aria-label={t('voice.settings.engine')}
             className='min-w-200px'

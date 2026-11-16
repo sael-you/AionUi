@@ -144,6 +144,7 @@
     "callHardCap": "The call reached its 55-minute limit. Tap Talk to start a new one.",
     "callDropped": "The call dropped. Tap Talk to try again.",
     "noProvider": "No voice provider is set up for your account yet.",
+    "noMinimaxProvider": "The MiniMax engine needs a MiniMax provider (api.minimax.io) for its brain and voice.",
     "rateLimited": "Too many voice requests. Wait a moment and try again.",
     "restartInterrupted": "The restart interrupted the task — say “Hey Jarvis” to continue.",
     "restartReconnected": "Voice reconnected after a restart.",
@@ -153,7 +154,8 @@
   "providerSetup": {
     "action": "Set up key",
     "actionLabel": "Set up a voice provider key in Settings → Model",
-    "hint": "Add an OpenAI provider with base URL https://api.openai.com (the OpenAI preset works). Optional: a MiniMax key for MiniMax speech."
+    "hint": "Add an OpenAI provider with base URL https://api.openai.com (the OpenAI preset works). Optional: a MiniMax key for MiniMax speech.",
+    "minimaxHint": "Add a MiniMax provider with base URL https://api.minimax.io and keep your OpenAI provider: OpenAI listens, MiniMax thinks and speaks."
   },
   "settings": {
     "title": "Voice settings",
@@ -166,6 +168,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "available later",
+    "engineHint": {
+      "minimaxCascade": "Needs an OpenAI key (it listens) and a MiniMax key (it thinks and speaks)."
+    },
     "wakeWord": "Wake word “Hey Jarvis”",
     "wakeWordHint": "Runs on this device only. When off, tap Talk to start.",
     "carMode": "Car mode",

@@ -158,6 +158,22 @@ describe('voice protocol — S1b frames as the backend serialises them (aionui-a
     ).toMatchObject({ name: 'voice.followUp', status, clipId: null });
   });
 
+  it('decodes a minimax-cascade reply clip without a conversation (TASK-91)', () => {
+    // The backend sends `conversationId: ""` for an answer sentence.
+    expect(
+      decodeFrame(
+        env('voice.followUp', { voiceSessionId: 'vs1', conversationId: '', status: 'reply', line: 'Hi.', clipId: 'k1' })
+      )
+    ).toMatchObject({ name: 'voice.followUp', status: 'reply', conversationId: '', line: 'Hi.', clipId: 'k1' });
+    expect(decodeFrame(env('voice.followUp', { status: 'reply', line: 'Hi.' }))).toMatchObject({
+      status: 'reply',
+      conversationId: '',
+    });
+    // Every other status still needs its conversation.
+    expect(decodeFrame(env('voice.followUp', { conversationId: '', status: 'says', line: 'x' }))).toBeNull();
+    expect(decodeFrame(env('voice.followUp', { status: 'finished', line: 'x' }))).toBeNull();
+  });
+
   it('decodes the budget warning level and drops unknown levels', () => {
     expect(decodeFrame(env('voice.budget', { usedUsd: 4, limitUsd: 5, warning: '80' }))).toMatchObject({
       warning: '80',

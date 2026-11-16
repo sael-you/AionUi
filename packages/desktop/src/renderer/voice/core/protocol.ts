@@ -79,7 +79,10 @@ const FOLLOW_UP_STATUSES: ReadonlySet<string> = new Set([
   'stopped',
   'silenced',
   'turn_failed',
+  'reply',
 ]);
+/** The only follow-up status that names no conversation (`minimax-cascade` answer clips). */
+const REPLY_STATUS = 'reply';
 const BUDGET_WARNINGS: ReadonlySet<string> = new Set(['80', '100']);
 const DIFF_OPS: Record<string, DraftDiffSegment['op']> = {
   equal: 'equal',
@@ -207,11 +210,12 @@ export function decodeFrame(text: unknown): ServerFrame | null {
     case 'voice.followUp': {
       const conversationId = str(d.conversationId);
       const status = str(d.status);
-      if (!conversationId || !status || !FOLLOW_UP_STATUSES.has(status)) return null;
+      if (!status || !FOLLOW_UP_STATUSES.has(status)) return null;
+      if (!conversationId && status !== REPLY_STATUS) return null;
       return {
         name: env.name,
         voiceSessionId,
-        conversationId,
+        conversationId: conversationId ?? '',
         status: status as FollowUpStatus,
         line: str(d.line) ?? '',
         clipId: str(d.clipId),
