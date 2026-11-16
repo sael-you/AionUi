@@ -18,9 +18,33 @@ import { AudioWorkletUnavailableError } from '@/renderer/services/speech/pcmReco
 import { CAPTURE_PROCESSOR_NAME, CAPTURE_WORKLET_SOURCE } from './captureWorklet';
 import { SEND_PROCESSOR_NAME, SEND_WORKLET_SOURCE, type SendModeEvent } from './sendWorklet';
 
+/**
+ * Microphone processing levels, strongest first (TASK-106). macOS voice-processing echo
+ * cancellation (Chromium's `"all"` / system AEC) can kill the track right after it opened when
+ * the input or output is a virtual, aggregate or multi-output device (e.g. BlackHole); the
+ * controller then re-arms one level lower.
+ * - `all`: `echoCancellation: "all"` + noise suppression + gain control (falls back to `standard`
+ *   constraints when `"all"` is not understood)
+ * - `standard`: `echoCancellation: true` + noise suppression + gain control
+ * - `plain`: `{ audio: true }`, no processing requested
+ */
+export type MicLevel = 'all' | 'standard' | 'plain';
+export const MIC_LEVELS: readonly MicLevel[] = ['all', 'standard', 'plain'];
+
+export function isMicLevel(value: unknown): value is MicLevel {
+  return typeof value === 'string' && (MIC_LEVELS as readonly string[]).includes(value);
+}
+
+/** The next weaker level, or `null` after `plain`. */
+export function nextMicLevel(level: MicLevel): MicLevel | null {
+  return MIC_LEVELS[MIC_LEVELS.indexOf(level) + 1] ?? null;
+}
+
 export type CaptureGraph = {
   /** The only track ever handed to a provider call. */
   outgoingTrack: MediaStreamTrack;
+  /** The level the microphone actually opened at (`all` may fall back to `standard`). */
+  level: MicLevel;
   /** `getSettings()` of the mic track, for diagnostics (EC mode etc.). */
   trackSettings: MediaTrackSettings;
   /** Unmute the outgoing path; with `fromTime` (context clock) replay the ring buffer first. */
@@ -33,27 +57,54 @@ export type CaptureGraph = {
 };
 
 export type CaptureOptions = {
+  /** Processing level to ask for (default `all`). */
+  level?: MicLevel;
   onTrackEnded?: () => void;
   /** Send-worklet mode changes (mute / catch-up / live, with pre-roll lag and jumps). */
   onSendMode?: (event: SendModeEvent) => void;
   getUserMedia?: (constraints: MediaStreamConstraints) => Promise<MediaStream>;
 };
 
-/** Ask for `echoCancellation: "all"` (Chrome ≥ 141 cancels page playback too), fall back to `true`. */
-export async function openMicStream(
-  getUserMedia: (constraints: MediaStreamConstraints) => Promise<MediaStream>
-): Promise<MediaStream> {
+type GetUserMedia = (constraints: MediaStreamConstraints) => Promise<MediaStream>;
+
+/** Open the mic at `level`; resolves with the stream and the level it really opened at. */
+export async function openMicStreamAt(
+  getUserMedia: GetUserMedia,
+  level: MicLevel = 'all'
+): Promise<{ stream: MediaStream; level: MicLevel }> {
   const base = { noiseSuppression: true, autoGainControl: true, channelCount: 1 };
+  const standard = () => getUserMedia({ audio: { ...base, echoCancellation: true }, video: false });
+  if (level === 'plain') return { stream: await getUserMedia({ audio: true, video: false }), level };
+  if (level === 'standard') return { stream: await standard(), level };
+  // `all`: ask for echoCancellation "all" (Chrome ≥ 141 cancels page playback too), fall back to `true`.
   try {
-    return await getUserMedia({
+    const stream = await getUserMedia({
       audio: { ...base, echoCancellation: { ideal: 'all' } as unknown as ConstrainBoolean },
       video: false,
     });
+    return { stream, level: 'all' };
   } catch (error) {
     const name = (error as { name?: string })?.name;
     if (name === 'NotAllowedError' || name === 'SecurityError' || name === 'NotFoundError') throw error;
-    return getUserMedia({ audio: { ...base, echoCancellation: true }, video: false });
+    return { stream: await standard(), level: 'standard' };
   }
+}
+
+export async function openMicStream(getUserMedia: GetUserMedia, level: MicLevel = 'all'): Promise<MediaStream> {
+  return (await openMicStreamAt(getUserMedia, level)).stream;
+}
+
+/** One diagnostic console line per mic event (device label + settings; no secrets in either). */
+function logMic(event: 'open' | 'ended', track: MediaStreamTrack, level: MicLevel): void {
+  let settings = '{}';
+  try {
+    settings = JSON.stringify(track.getSettings?.() ?? {});
+  } catch {
+    // diagnostics only
+  }
+  console.info(
+    `[voice] mic ${event}: level=${level} label=${JSON.stringify(track.label ?? '')} readyState=${track.readyState} settings=${settings}`
+  );
 }
 
 const loadedContexts = new WeakSet<BaseAudioContext>();
@@ -73,12 +124,22 @@ async function loadWorklets(ctx: AudioContext): Promise<void> {
 export async function openCapture(ctx: AudioContext, options: CaptureOptions = {}): Promise<CaptureGraph> {
   if (!ctx.audioWorklet || typeof AudioWorkletNode === 'undefined') throw new AudioWorkletUnavailableError();
   const gum = options.getUserMedia ?? ((c: MediaStreamConstraints) => navigator.mediaDevices.getUserMedia(c));
-  const stream = await openMicStream(gum);
+  const { stream, level } = await openMicStreamAt(gum, options.level ?? 'all');
   const callTrack = stream.getAudioTracks()[0];
   if (!callTrack) {
     stream.getTracks().forEach((t) => t.stop());
     throw new Error('no audio track');
   }
+  logMic('open', callTrack, level);
+  // Listen at once: the track may end while the worklets load (macOS AEC failures end it within
+  // a second). The controller hears about it only once the graph is returned.
+  let graphReturned = false;
+  let endedBeforeReturn = false;
+  callTrack.addEventListener('ended', () => {
+    logMic('ended', callTrack, level);
+    if (graphReturned) options.onTrackEnded?.();
+    else endedBeforeReturn = true;
+  });
   const wakeTrack = callTrack.clone();
   const release = () => {
     callTrack.stop();
@@ -119,12 +180,19 @@ export async function openCapture(ctx: AudioContext, options: CaptureOptions = {
   captureNode.port.postMessage({ port: channel.port1 }, [channel.port1]);
   wakeSource.connect(captureNode);
 
-  callTrack.addEventListener('ended', () => options.onTrackEnded?.());
   const outgoingTrack = destination.stream.getAudioTracks()[0];
   let stopped = false;
+  graphReturned = true;
+  if (endedBeforeReturn || callTrack.readyState === 'ended') {
+    // After the caller stored the graph (it awaits this function first).
+    setTimeout(() => {
+      if (!stopped) options.onTrackEnded?.();
+    }, 0);
+  }
 
   return {
     outgoingTrack,
+    level,
     trackSettings: callTrack.getSettings(),
     setLive: (fromTime) => sendNode.port.postMessage({ cmd: 'live', fromTime }, []),
     mute: () => sendNode.port.postMessage({ cmd: 'mute' }, []),

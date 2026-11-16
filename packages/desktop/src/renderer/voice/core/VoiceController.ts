@@ -56,6 +56,7 @@ import { todayStats, type VoiceTodayStats } from './todayStats';
 import { MAX_CAPTIONS, MAX_FOLLOW_UPS, VoiceStore } from './voiceStore';
 import { outputLatencyOf } from '../audio/clipPlayer';
 import type { EarconName } from '../audio/earcons';
+import { nextMicLevel, type MicLevel } from '../capture/micCapture';
 import type { SendModeEvent } from '../capture/sendWorklet';
 import type { RealtimeCall } from '../engine/openaiRealtime';
 import { VOICE_SESSIONS_LIMIT, VoiceBusyError, voiceErrorCode } from '../net/voiceApi';
@@ -142,6 +143,14 @@ type QueuedClip = {
 
 export type ArmOptions = { focusConversationId?: string | null; mode?: VoiceSessionMode };
 
+/**
+ * A mic track that ends this soon after it opened is a processing failure, not a lost device
+ * (TASK-106: macOS voice-processing AEC with virtual/aggregate devices): re-arm one level lower.
+ */
+export const MIC_EARLY_END_MS = 4000;
+/** Automatic re-arms per user arm (`all` → `standard` → `plain`). */
+export const MAX_MIC_RETRIES = 2;
+
 export class VoiceController {
   readonly store = new VoiceStore();
   private machine: VoiceMachineState = INITIAL_VOICE_STATE;
@@ -176,6 +185,12 @@ export class VoiceController {
   private captionSeq = 0;
   private followUpSeq = 0;
   private armToken = 0;
+  /** Mic level of the current arm, the automatic re-arms left, and when the mic opened. */
+  private micLevel: MicLevel = 'all';
+  private micRetries = 0;
+  private micOpenedAt = 0;
+  private micStableTimer: unknown = null;
+  private lastArmOptions: ArmOptions = {};
   private settingsPromise: Promise<VoiceSettings | null> | null = null;
   private settingsFailedAt: number | null = null;
   /** Conversation mode opens its call as soon as the mic and the socket are up. */
@@ -249,6 +264,15 @@ export class VoiceController {
   /** Arm voice mode. Synchronous part runs in the user gesture. */
   arm(options: ArmOptions = {}): void {
     if (this.machine.mode !== 'off') return;
+    // A user arm starts from the level that last worked here, with the full retry allowance.
+    this.micLevel = this.fx.micLevelStore.get() ?? 'all';
+    this.micRetries = 0;
+    this.armAt(options);
+  }
+
+  private armAt(options: ArmOptions): void {
+    if (this.machine.mode !== 'off') return;
+    this.lastArmOptions = options;
     const settings = this.store.getSnapshot().settings;
     if (settings && !settings.enabled) {
       this.store.update({ overlayOpen: true, notice: { code: 'disabled' } });
@@ -298,6 +322,7 @@ export class VoiceController {
     this.answerEndPending = false;
     this.seenClips = [];
     this.askClipId = null;
+    this.clearTimer('micStableTimer');
     this.capture?.stop();
     this.capture = null;
     this.fx.wakeWord.detach();
@@ -471,7 +496,8 @@ export class VoiceController {
       }
       this.wakeEnabled = settings?.wake_word_enabled !== false;
       const capture = await this.fx.openCapture(ctx, {
-        onTrackEnded: () => this.onTrackEnded(),
+        level: this.micLevel,
+        onTrackEnded: () => this.onTrackEnded(token),
         onSendMode: (event) => this.onSendMode(event),
       });
       if (token !== this.armToken) {
@@ -479,6 +505,14 @@ export class VoiceController {
         return;
       }
       this.capture = capture;
+      this.micLevel = capture.level;
+      this.micOpenedAt = this.fx.timers.now();
+      this.clearTimer('micStableTimer');
+      // The track outlived the early window: this level works in this browser.
+      this.micStableTimer = this.fx.timers.setTimeout(() => {
+        this.micStableTimer = null;
+        if (token === this.armToken && this.capture === capture) this.fx.micLevelStore.set(capture.level);
+      }, MIC_EARLY_END_MS);
       capture.mute();
       this.store.update({ wakeWord: this.wakeEnabled ? 'loading' : 'off' });
       this.fx.wakeWord.start(
@@ -545,8 +579,19 @@ export class VoiceController {
     }
   }
 
-  private onTrackEnded(): void {
-    if (this.machine.mode === 'off') return;
+  private onTrackEnded(token: number): void {
+    if (this.machine.mode === 'off' || token !== this.armToken) return;
+    const early = this.fx.timers.now() - this.micOpenedAt < MIC_EARLY_END_MS;
+    const next = nextMicLevel(this.micLevel);
+    if (early && next && this.micRetries < MAX_MIC_RETRIES) {
+      // Not a lost device: the browser's audio processing failed. Silently re-arm one level lower.
+      this.micRetries++;
+      const options = this.lastArmOptions;
+      this.disarm('error');
+      this.micLevel = next;
+      this.armAt(options);
+      return;
+    }
     this.disarm('error');
     this.store.update({ notice: { code: 'micLost' }, overlayOpen: true });
   }
@@ -1481,6 +1526,7 @@ export class VoiceController {
       | 'windowTimer'
       | 'graceTimer'
       | 'replySettleTimer'
+      | 'micStableTimer'
   ): void {
     const handle = this[key];
     if (handle) this.fx.timers.clearTimeout(handle);

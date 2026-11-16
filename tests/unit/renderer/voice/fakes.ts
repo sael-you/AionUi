@@ -5,7 +5,7 @@
 import { vi } from 'vitest';
 import type { ClipPlayOptions } from '@/renderer/voice/audio/clipPlayer';
 import type { WakeWordEvents } from '@/renderer/voice/capture/wakeWord';
-import type { CaptureOptions } from '@/renderer/voice/capture/micCapture';
+import type { CaptureOptions, MicLevel } from '@/renderer/voice/capture/micCapture';
 import type { Effects, LifecycleHandlers, StartCallOptions } from '@/renderer/voice/core/effects';
 import {
   DEFAULT_VOICE_SETTINGS,
@@ -53,6 +53,9 @@ export function createFakeEffects(settings: Partial<VoiceSettings> = { enabled: 
     lifecycle: null as LifecycleHandlers | null,
     callOptions: null as StartCallOptions | null,
     captureOptions: null as CaptureOptions | null,
+    /** Every level the controller opened the mic at, in order. */
+    captureLevels: [] as MicLevel[],
+    storedMicLevel: null as MicLevel | null,
     online: true,
   };
   const call = { voiceSessionId: 'vs-1', engine: 'openai-realtime', model: 'gpt-realtime-2.1', close: vi.fn() };
@@ -89,8 +92,16 @@ export function createFakeEffects(settings: Partial<VoiceSettings> = { enabled: 
     createClipPlayer: vi.fn(() => clips),
     openCapture: vi.fn(async (_ctx: AudioContext, options: CaptureOptions) => {
       state.captureOptions = options;
-      return capture;
+      const level = options.level ?? 'all';
+      state.captureLevels.push(level);
+      return { ...capture, level };
     }),
+    micLevelStore: {
+      get: vi.fn(() => state.storedMicLevel),
+      set: vi.fn((level: MicLevel) => {
+        state.storedMicLevel = level;
+      }),
+    },
     wakeWord: {
       start: vi.fn((_port: MessagePort, _base: string, events: WakeWordEvents) => {
         state.wakeEvents = events;

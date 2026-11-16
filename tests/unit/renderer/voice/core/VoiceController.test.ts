@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   VoiceController,
+  MIC_EARLY_END_MS,
   SOCKET_DEAD_MAN_MS,
   DRAFT_LINGER_MS,
   REPLY_SETTLE_MS,
@@ -1002,5 +1003,94 @@ describe('VoiceController — S1b: server wake and agent ask', () => {
     expect(f.fx.startCall).toHaveBeenCalledTimes(1);
     expect(c.state.call?.phase).toBe('ready');
     expect(c.store.getSnapshot().asking).toBe(false);
+  });
+});
+
+describe('VoiceController — mic level fallback (TASK-106)', () => {
+  /** The `ended` callback of the most recently opened mic. */
+  const endMic = (f: ReturnType<typeof createFakeEffects>) => {
+    const end = f.state.captureOptions?.onTrackEnded;
+    expect(end).toBeTypeOf('function');
+    end?.();
+  };
+
+  it('an early track end re-arms silently one level lower instead of reporting micLost', async () => {
+    const { f, c } = await armed();
+    expect(f.state.captureLevels).toEqual(['all']);
+    vi.advanceTimersByTime(MIC_EARLY_END_MS - 1000);
+    endMic(f);
+    await flush();
+    expect(f.state.captureLevels).toEqual(['all', 'standard']);
+    expect(c.store.getSnapshot().notice).toBeNull();
+    expect(c.state.mode).not.toBe('off');
+    expect(f.capture.stop).toHaveBeenCalledTimes(1);
+    f.openSocket();
+    expect(c.state.mode).toBe('armed');
+  });
+
+  it('a late track end is a lost microphone, as before', async () => {
+    const { f, c } = await armed();
+    vi.advanceTimersByTime(MIC_EARLY_END_MS + 1);
+    endMic(f);
+    await flush();
+    expect(f.state.captureLevels).toEqual(['all']);
+    expect(c.store.getSnapshot().notice?.code).toBe('micLost');
+    expect(c.state.mode).toBe('off');
+  });
+
+  it('falls back all → standard → plain, then reports micLost (two automatic re-arms per user arm)', async () => {
+    const { f, c } = await armed();
+    endMic(f);
+    await flush();
+    endMic(f);
+    await flush();
+    expect(f.state.captureLevels).toEqual(['all', 'standard', 'plain']);
+    expect(c.store.getSnapshot().notice).toBeNull();
+    endMic(f);
+    await flush();
+    expect(f.state.captureLevels).toEqual(['all', 'standard', 'plain']);
+    expect(c.store.getSnapshot().notice?.code).toBe('micLost');
+    expect(c.state.mode).toBe('off');
+
+    // A new user arm gets the full allowance again.
+    c.arm();
+    await flush();
+    expect(f.state.captureLevels).toHaveLength(4);
+  });
+
+  it('starts from the stored level and remembers a level once it outlived the early window', async () => {
+    const f = createFakeEffects();
+    f.state.storedMicLevel = 'standard';
+    const c = new VoiceController(f.fx);
+    c.arm();
+    await flush();
+    expect(f.state.captureLevels).toEqual(['standard']);
+    endMic(f);
+    await flush();
+    expect(f.state.captureLevels).toEqual(['standard', 'plain']);
+    expect(f.fx.micLevelStore.set).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(MIC_EARLY_END_MS);
+    expect(f.fx.micLevelStore.set).toHaveBeenCalledWith('plain');
+    expect(f.state.storedMicLevel).toBe('plain');
+    // Plain ended early as well: nothing weaker is left.
+    endMic(f);
+    await flush();
+    expect(c.store.getSnapshot().notice?.code).toBe('micLost');
+  });
+
+  it('stores the working level only after the early window and ignores the released mic', async () => {
+    const { f } = await armed();
+    const firstEnd = f.state.captureOptions?.onTrackEnded;
+    vi.advanceTimersByTime(MIC_EARLY_END_MS - 1);
+    expect(f.fx.micLevelStore.set).not.toHaveBeenCalled();
+    endMic(f);
+    await flush();
+    // The stale callback of the released `all` mic changes nothing.
+    firstEnd?.();
+    await flush();
+    expect(f.state.captureLevels).toEqual(['all', 'standard']);
+    vi.advanceTimersByTime(MIC_EARLY_END_MS);
+    expect(f.fx.micLevelStore.set).toHaveBeenCalledTimes(1);
+    expect(f.fx.micLevelStore.set).toHaveBeenCalledWith('standard');
   });
 });

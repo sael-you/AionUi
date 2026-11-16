@@ -13,7 +13,7 @@ import { ClipPlayer, type ClipOutcome, type ClipPlayOptions } from '../audio/cli
 import { playEarcon, type EarconName } from '../audio/earcons';
 import { getVoiceDeviceId, registerMediaSession, ScreenWakeLock, vibrate, type MediaControls } from '../audio/platform';
 import { voiceAssetBase } from '../capture/assets';
-import { openCapture, type CaptureGraph, type CaptureOptions } from '../capture/micCapture';
+import { isMicLevel, openCapture, type CaptureGraph, type CaptureOptions, type MicLevel } from '../capture/micCapture';
 import { WakeWord } from '../capture/wakeWord';
 import { startRealtimeCall, type RealtimeCall, type RealtimeCallOptions } from '../engine/openaiRealtime';
 import { isVoiceMockEnabled, withMockBackend } from '../net/mockBackend';
@@ -51,6 +51,8 @@ export type Effects = {
   createAudioElement(): HTMLAudioElement;
   createClipPlayer(ctx: AudioContext): ClipPlayerLike;
   openCapture(ctx: AudioContext, options: CaptureOptions): Promise<CaptureGraph>;
+  /** The mic level that last worked in this browser (TASK-106). */
+  micLevelStore: { get(): MicLevel | null; set(level: MicLevel): void };
   wakeWord: WakeWordLike;
   /** `mode`: the mode the device is armed in (sent with every `voice.hello`). */
   createSocket(listener: VoiceSocketListener, mode?: VoiceSessionMode): VoiceSocketLike;
@@ -102,6 +104,7 @@ export function createBrowserEffects(): Effects {
     },
     createClipPlayer: (ctx) => new ClipPlayer(ctx),
     openCapture: (ctx, options) => openCapture(ctx, options),
+    micLevelStore: browserMicLevelStore,
     wakeWord,
     createSocket: (listener, mode) =>
       new VoiceSocket({
@@ -126,6 +129,28 @@ export function createBrowserEffects(): Effects {
     assetBase: () => voiceAssetBase(),
   };
 }
+
+/** localStorage key of the mic level that worked in this browser. */
+export const MIC_LEVEL_STORAGE_KEY = 'aionui.voice.micLevel';
+
+/** Per-browser memory of the working mic level; storage failures (private mode) are ignored. */
+export const browserMicLevelStore: Effects['micLevelStore'] = {
+  get: () => {
+    try {
+      const value = window.localStorage.getItem(MIC_LEVEL_STORAGE_KEY);
+      return isMicLevel(value) ? value : null;
+    } catch {
+      return null;
+    }
+  },
+  set: (level) => {
+    try {
+      window.localStorage.setItem(MIC_LEVEL_STORAGE_KEY, level);
+    } catch {
+      // not persisted: the next arm starts from `all` again
+    }
+  },
+};
 
 let instance: VoiceController | null = null;
 
