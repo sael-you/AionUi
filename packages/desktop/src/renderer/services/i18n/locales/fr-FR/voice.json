@@ -146,6 +146,7 @@
     "noProvider": "Aucun fournisseur vocal n’est encore configuré pour votre compte.",
     "rateLimited": "Trop de requêtes vocales. Patientez un instant puis réessayez.",
     "restartInterrupted": "Le redémarrage a interrompu la tâche — dites « Hey Jarvis » pour continuer.",
+    "restartReconnected": "La voix s’est reconnectée après un redémarrage.",
     "conversationIdle": "Écoute en pause après 3 minutes de silence. Dites « Hey Jarvis » ou touchez pour parler.",
     "conversationRested": "La voix est en pause : les réponses de l'agent restent dans le chat. Dites « Hey Jarvis » ou touchez pour reparler."
   },

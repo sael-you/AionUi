@@ -3888,6 +3888,7 @@ export type I18nKey =
   | 'voice.notice.offline'
   | 'voice.notice.rateLimited'
   | 'voice.notice.restartInterrupted'
+  | 'voice.notice.restartReconnected'
   | 'voice.notice.server'
   | 'voice.notice.unauthorized'
   | 'voice.notice.unavailable'

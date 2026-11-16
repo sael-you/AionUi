@@ -146,6 +146,7 @@
     "noProvider": "你的账户尚未配置语音服务提供方。",
     "rateLimited": "语音请求过多。请稍候再试。",
     "restartInterrupted": "重启中断了任务——说“Hey Jarvis”继续。",
+    "restartReconnected": "重启后语音已重新连接。",
     "conversationIdle": "安静 3 分钟后已暂停聆听。说“Hey Jarvis”或点按即可说话。",
     "conversationRested": "语音已休息：智能体的回复会留在聊天中。说“Hey Jarvis”或点按即可再次说话。"
   },

@@ -146,6 +146,7 @@
     "noProvider": "你的帳戶尚未設定語音服務提供者。",
     "rateLimited": "語音請求過多。請稍候再試。",
     "restartInterrupted": "重新啟動中斷了任務——說「Hey Jarvis」繼續。",
+    "restartReconnected": "重新啟動後語音已重新連線。",
     "conversationIdle": "安靜 3 分鐘後已暫停聆聽。說「Hey Jarvis」或點按即可說話。",
     "conversationRested": "語音已休息：代理的回覆會留在聊天中。說「Hey Jarvis」或點按即可再次說話。"
   },

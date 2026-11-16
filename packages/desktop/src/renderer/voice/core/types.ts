@@ -210,7 +210,14 @@ export type ClientCapabilities = {
 
 export type ClientFrame =
   /** `device` is the device id string (the backend logs it; REST `device_id` carries the same id). */
-  | { name: 'voice.hello'; voiceSessionId?: string; device: string; capabilities: ClientCapabilities }
+  /** `mode`: the mode this device is armed in; `jarvis` ends core's old conversation binding (C26). */
+  | {
+      name: 'voice.hello';
+      voiceSessionId?: string;
+      device: string;
+      capabilities: ClientCapabilities;
+      mode?: VoiceSessionMode;
+    }
   | { name: 'voice.heartbeat'; t: number }
   | { name: 'voice.frozen' }
   | { name: 'voice.resumed' }

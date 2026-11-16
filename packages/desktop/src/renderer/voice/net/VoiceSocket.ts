@@ -19,7 +19,7 @@
 import { WS_CLOSE_POLICY_VIOLATION, refreshSession } from '@/common/adapter/sessionRefresh';
 import { getSpeechStreamUrl } from '@/renderer/services/speech/SpeechStreamClient';
 import { decodeFrame, encodeFrame } from '../core/protocol';
-import type { ClientCapabilities, ClientFrame, DeviceInfo, ServerFrame } from '../core/types';
+import type { ClientCapabilities, ClientFrame, DeviceInfo, ServerFrame, VoiceSessionMode } from '../core/types';
 
 export const HEARTBEAT_INTERVAL_MS = 10_000;
 export const RECONNECT_BASE_MS = 500;
@@ -69,6 +69,8 @@ export type VoiceSocketOptions = {
   device: DeviceInfo;
   capabilities: ClientCapabilities;
   listener: VoiceSocketListener;
+  /** The mode this socket's device is armed in, sent with every hello. */
+  mode?: VoiceSessionMode;
   createSocket?: (url: string) => VoiceWebSocket;
   url?: () => string;
   timers?: Timers;
@@ -207,6 +209,7 @@ export class VoiceSocket {
       device: this.options.device.id,
       capabilities: this.options.capabilities,
       ...(this.voiceSessionId ? { voiceSessionId: this.voiceSessionId } : {}),
+      ...(this.options.mode ? { mode: this.options.mode } : {}),
     };
     // Hello bypasses the queue so it is always the first frame after open.
     this.transmit(encodeFrame(hello, null));

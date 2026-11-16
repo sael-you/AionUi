@@ -146,6 +146,7 @@
     "noProvider": "No voice provider is set up for your account yet.",
     "rateLimited": "Too many voice requests. Wait a moment and try again.",
     "restartInterrupted": "The restart interrupted the task — say “Hey Jarvis” to continue.",
+    "restartReconnected": "Voice reconnected after a restart.",
     "conversationIdle": "Listening paused after 3 quiet minutes. Say “Hey Jarvis” or tap to talk.",
     "conversationRested": "Voice is resting: the agent's replies stay in the chat. Say “Hey Jarvis” or tap to talk again."
   },
