@@ -16,6 +16,7 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 vi.mock('@/renderer/hooks/context/LayoutContext', () => ({ useLayoutContext: () => ({ isMobile: false }) }));
+vi.mock('@/renderer/hooks/context/ThemeContext', () => ({ useThemeContext: () => ({ theme: 'light' }) }));
 
 import ServerBrowserView, {
   agentTabToFollow,
@@ -94,8 +95,14 @@ const STATE: BrowserState = {
 
 const decode = vi.fn(async () => ({}) as HTMLImageElement);
 
-const renderView = async (maxInstances = 2) => {
-  const view = render(<ServerBrowserView maxInstances={maxInstances} decodeFrame={decode} />);
+const PROFILES = [
+  { instance: 1, name: 'Main' },
+  { instance: 2, name: 'TB Discord', color: 'blue', emoji: '🎮' },
+  { instance: 4, name: 'Personal' },
+];
+
+const renderView = async (profiles = PROFILES) => {
+  const view = render(<ServerBrowserView profiles={profiles} decodeFrame={decode} />);
   act(() => latest().open());
   return view;
 };
@@ -244,13 +251,27 @@ describe('ServerBrowserView (C30 panel)', () => {
     expect(sentOfType('dialog_reply')).toEqual([{ type: 'dialog_reply', tab_id: 't1', accept: true }]);
   });
 
-  it('switches instance by reconnecting with ?instance=n', async () => {
-    await renderView(3);
-    fireEvent.click(screen.getByRole('combobox', { name: 'preview.serverBrowser.instanceLabel' }));
-    fireEvent.click(await screen.findByRole('option', { name: 'preview.serverBrowser.instanceN|{"n":2}' }));
+  it('shows the current profile and switches profile by reconnecting with its instance (TASK-124)', async () => {
+    await renderView();
+    const switcher = screen.getByTestId('server-browser-profile');
+    expect(switcher).toHaveTextContent('Main');
 
-    await waitFor(() => expect(latest().url).toContain('/api/browser/ws?instance=2'));
+    fireEvent.click(screen.getByRole('combobox', { name: 'preview.serverBrowser.profileLabel' }));
+    fireEvent.click(await screen.findByRole('option', { name: /Personal/ }));
+
+    await waitFor(() => expect(latest().url).toContain('/api/browser/ws?instance=4'));
     expect(FakeWebSocket.instances[0]?.readyState).toBe(FakeWebSocket.CLOSED);
+    expect(screen.getByTestId('server-browser-profile')).toHaveTextContent('Personal');
+  });
+
+  it('goes back to Main when the profile on screen is deleted', async () => {
+    const view = await renderView();
+    fireEvent.click(screen.getByRole('combobox', { name: 'preview.serverBrowser.profileLabel' }));
+    fireEvent.click(await screen.findByRole('option', { name: /TB Discord/ }));
+    await waitFor(() => expect(latest().url).toContain('instance=2'));
+
+    view.rerender(<ServerBrowserView profiles={PROFILES.filter((p) => p.instance !== 2)} decodeFrame={decode} />);
+    await waitFor(() => expect(latest().url).toContain('instance=1'));
   });
 });
 

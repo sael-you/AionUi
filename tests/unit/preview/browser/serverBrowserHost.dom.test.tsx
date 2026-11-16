@@ -23,8 +23,8 @@ vi.mock('@/renderer/pages/conversation/Preview/browser/BrowserViewer', () => ({
   default: ({ url }: { url: string }) => <div data-testid='webview-host'>{url}</div>,
 }));
 vi.mock('@/renderer/pages/conversation/Preview/browser/server/ServerBrowserView', () => ({
-  default: ({ maxInstances, requestedUrl }: { maxInstances: number; requestedUrl?: string }) => (
-    <div data-testid='server-browser-host'>{`${maxInstances}|${requestedUrl}`}</div>
+  default: ({ profiles, requestedUrl }: { profiles: Array<{ name: string }>; requestedUrl?: string }) => (
+    <div data-testid='server-browser-host'>{`${profiles.map((p) => p.name).join(',')}|${requestedUrl}`}</div>
   ),
 }));
 
@@ -47,7 +47,15 @@ describe('browser panel host (C30)', () => {
   beforeEach(() => {
     env.desktop = false;
     env.getStatus.mockResolvedValue({ available: true, instances: [], idle_timeout_secs: 900 });
-    env.getSettings.mockResolvedValue({ agents_enabled: true, max_instances: 3, max_tabs: 10, instances: [] });
+    env.getSettings.mockResolvedValue({
+      agents_enabled: true,
+      max_instances: 3,
+      max_tabs: 10,
+      instances: [
+        { instance: 1, name: 'Main', hide_automation: false },
+        { instance: 2, name: 'TB Discord', hide_automation: false },
+      ],
+    });
   });
 
   afterEach(() => {
@@ -56,7 +64,7 @@ describe('browser panel host (C30)', () => {
 
   it('uses one server browser view in the WebUI when the server browser is available', async () => {
     renderLayer();
-    expect(await screen.findByTestId('server-browser-host')).toHaveTextContent('3|https://example.com');
+    expect(await screen.findByTestId('server-browser-host')).toHaveTextContent('Main,TB Discord|https://example.com');
     expect(screen.queryByTestId('webview-host')).toBeNull();
   });
 

@@ -197,9 +197,6 @@
     "dialogTitle": "Sayfa soruyor",
     "fileUploadUnsupported": "Sunucu tarayıcısından dosya yükleme henüz desteklenmiyor.",
     "googleRejected": "Google bu tarayıcıda oturum açmayı reddediyor, bu yüzden Google hesapları şimdilik desteklenmiyor.",
-    "instanceLabel": "Tarayıcı",
-    "instanceMain": "Tarayıcı 1 (oturumlarınız)",
-    "instanceN": "Tarayıcı {{n}}",
     "start": "Tarayıcıyı başlat",
     "surfaceLabel": "Sunucu tarayıcısı sayfası. Fare ve klavyeyi orada kullanmak için tıklayın.",
     "surfaceRole": "uzak tarayıcı",
@@ -227,6 +224,7 @@
       "running": "Çalışıyor",
       "stopped": "Tarayıcı durduruldu.",
       "error": "Tarayıcı bir hatayla durdu."
-    }
+    },
+    "profileLabel": "Tarayıcı profili"
   }
 }

@@ -197,9 +197,6 @@
     "dialogTitle": "La page demande",
     "fileUploadUnsupported": "L’envoi de fichiers depuis le navigateur du serveur n’est pas encore pris en charge.",
     "googleRejected": "Google refuse la connexion dans ce navigateur : les comptes Google ne sont donc pas pris en charge ici pour l’instant.",
-    "instanceLabel": "Navigateur",
-    "instanceMain": "Navigateur 1 (vos connexions)",
-    "instanceN": "Navigateur {{n}}",
     "start": "Démarrer le navigateur",
     "surfaceLabel": "Page du navigateur du serveur. Cliquez pour y utiliser la souris et le clavier.",
     "surfaceRole": "navigateur distant",
@@ -227,6 +224,7 @@
       "running": "En cours",
       "stopped": "Le navigateur est arrêté.",
       "error": "Le navigateur s’est arrêté sur une erreur."
-    }
+    },
+    "profileLabel": "Profil du navigateur"
   }
 }

@@ -13,6 +13,7 @@
  */
 
 import { Alert, Button, Message, Modal, Select, Switch, Tag } from '@arco-design/web-react';
+import { Plus } from '@icon-park/react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
@@ -21,6 +22,7 @@ import { serverBrowser } from '@/common/adapter/ipcBridge';
 import {
   BROWSER_MAX_INSTANCES_LIMIT,
   BROWSER_MAX_TABS_LIMIT,
+  type BrowserInstanceSettings,
   type BrowserSettings,
   type BrowserSettingsUpdate,
   type BrowserStatusResponse,
@@ -30,6 +32,11 @@ import {
   SERVER_BROWSER_STATUS_KEY,
 } from '@/renderer/pages/conversation/Preview/browser/server/useServerBrowserAvailability';
 import { errorKey } from '@/renderer/pages/conversation/Preview/browser/server/streamProtocol';
+import BrowserProfileLabel from '@/renderer/pages/conversation/Preview/browser/server/BrowserProfileLabel';
+import BrowserProfileModal, {
+  profileFields,
+  type BrowserProfileDraft,
+} from '@/renderer/pages/conversation/Preview/browser/server/BrowserProfileModal';
 import PreferenceRow from './PreferenceRow';
 
 const range = (max: number) => Array.from({ length: max }, (_, index) => index + 1);
@@ -45,12 +52,25 @@ const ServerBrowserSettings: React.FC = () => {
   );
   const [saving, setSaving] = useState(false);
   const [busyInstance, setBusyInstance] = useState<number | null>(null);
+  const [profileTarget, setProfileTarget] = useState<BrowserInstanceSettings | 'new' | null>(null);
 
   const describeError = (error: unknown): string => {
     if (isBackendHttpError(error) && error.code === 'BROWSER_SETTING_OUT_OF_RANGE') {
       return t('settings.serverBrowser.errors.outOfRange');
     }
     if (isBackendHttpError(error) && error.code === 'BROWSER_BUSY') return t('settings.serverBrowser.errors.busy');
+    if (isBackendHttpError(error) && error.code === 'BROWSER_PROFILE_NAME_TAKEN') {
+      return t('settings.serverBrowser.errors.nameTaken');
+    }
+    if (isBackendHttpError(error) && error.code === 'BROWSER_INSTANCE_LIMIT') {
+      return t('settings.serverBrowser.errors.profileLimit');
+    }
+    if (isBackendHttpError(error) && error.code === 'BROWSER_INSTANCE_PROTECTED') {
+      return t('settings.serverBrowser.errors.protected');
+    }
+    if (isBackendHttpError(error) && error.code === 'BROWSER_INSTANCE_NOT_FOUND') {
+      return t('settings.serverBrowser.errors.notFound');
+    }
     return t('settings.serverBrowser.errors.generic');
   };
 
@@ -68,18 +88,51 @@ const ServerBrowserSettings: React.FC = () => {
     }
   };
 
-  const changeMaxInstances = (next: number) => {
-    const stopped = (status?.instances ?? []).filter((row) => row.instance > next && row.running);
-    if (stopped.length === 0) {
-      void save({ max_instances: next });
-      return;
+  /** Profile writes return the whole settings (TASK-124). */
+  const profileWrite = async (write: () => Promise<BrowserSettings>, success: string): Promise<boolean> => {
+    setSaving(true);
+    try {
+      const next = await write();
+      await mutate(SERVER_BROWSER_SETTINGS_KEY, next, { revalidate: false });
+      await mutate(SERVER_BROWSER_STATUS_KEY);
+      Message.success(success);
+      return true;
+    } catch (error) {
+      Message.error(describeError(error));
+      return false;
+    } finally {
+      setSaving(false);
     }
+  };
+
+  const saveProfile = async (draft: BrowserProfileDraft) => {
+    const target = profileTarget;
+    if (!target) return;
+    const done =
+      target === 'new'
+        ? await profileWrite(
+            () => serverBrowser.createInstance.invoke(profileFields(draft, false)),
+            t('settings.serverBrowser.profile.added')
+          )
+        : await profileWrite(
+            () => serverBrowser.updateInstance.invoke({ instance: target.instance, data: profileFields(draft, true) }),
+            t('settings.serverBrowser.saved')
+          );
+    if (done) setProfileTarget(null);
+  };
+
+  const confirmDelete = (profile: BrowserInstanceSettings) => {
     modal.confirm?.({
-      title: t('settings.serverBrowser.lowerInstancesTitle'),
-      content: t('settings.serverBrowser.lowerInstancesContent', { count: stopped.length }),
-      okText: t('common.confirm'),
+      title: t('settings.serverBrowser.profile.deleteTitle', { name: profile.name }),
+      content: t('settings.serverBrowser.profile.deleteContent'),
+      okText: t('common.delete'),
       cancelText: t('common.cancel'),
-      onOk: () => save({ max_instances: next }),
+      okButtonProps: { status: 'danger' },
+      onOk: () =>
+        profileWrite(
+          () => serverBrowser.deleteInstance.invoke({ instance: profile.instance }),
+          t('settings.serverBrowser.profile.deleted', { name: profile.name })
+        ),
     });
   };
 
@@ -177,10 +230,11 @@ const ServerBrowserSettings: React.FC = () => {
               value={settings.max_instances}
               disabled={saving}
               aria-label={t('settings.serverBrowser.maxInstancesLabel')}
-              onChange={(value: number) => changeMaxInstances(value)}
+              onChange={(value: number) => void save({ max_instances: value })}
             >
               {range(BROWSER_MAX_INSTANCES_LIMIT).map((value) => (
-                <Select.Option key={value} value={value}>
+                // Never below the existing profiles: delete one first (the server refuses it too).
+                <Select.Option key={value} value={value} disabled={value < settings.instances.length}>
                   {value}
                 </Select.Option>
               ))}
@@ -206,16 +260,31 @@ const ServerBrowserSettings: React.FC = () => {
             </Select>
           </PreferenceRow>
 
+          <div className='flex flex-wrap items-center gap-8px mt-12px mb-8px'>
+            <h4 className='m-0 text-13px font-medium text-t-primary'>{t('settings.serverBrowser.instancesLabel')}</h4>
+            <Button
+              size='small'
+              type='outline'
+              icon={<Plus theme='outline' size={12} />}
+              className='ms-auto'
+              disabled={saving || settings.instances.length >= settings.max_instances}
+              title={
+                settings.instances.length >= settings.max_instances
+                  ? t('settings.serverBrowser.errors.profileLimit')
+                  : undefined
+              }
+              onClick={() => setProfileTarget('new')}
+            >
+              {t('settings.serverBrowser.profile.add')}
+            </Button>
+          </div>
           <ul
-            className='m-0 mt-8px p-0 list-none flex flex-col gap-8px'
+            className='m-0 p-0 list-none flex flex-col gap-8px'
             aria-label={t('settings.serverBrowser.instancesLabel')}
           >
             {settings.instances.map((row) => {
               const live = status?.instances.find((entry) => entry.instance === row.instance);
-              const name =
-                row.instance === 1
-                  ? t('settings.serverBrowser.instanceMain')
-                  : t('settings.serverBrowser.instanceN', { n: row.instance });
+              const name = row.name;
               const pendingRestart = Boolean(live?.running && live.hide_automation_active !== row.hide_automation);
               return (
                 <li
@@ -224,7 +293,10 @@ const ServerBrowserSettings: React.FC = () => {
                   data-testid='server-browser-instance'
                 >
                   <div className='flex flex-wrap items-center gap-8px'>
-                    <span className='text-13px font-medium text-t-primary'>{name}</span>
+                    <BrowserProfileLabel profile={row} className='text-13px font-medium text-t-primary' />
+                    {row.instance === 1 ? (
+                      <Tag size='small'>{t('settings.serverBrowser.profile.panelDefault')}</Tag>
+                    ) : null}
                     <Tag size='small' color={live?.running ? 'green' : 'gray'}>
                       {live?.running
                         ? t('settings.serverBrowser.running', { count: live.tabs })
@@ -235,7 +307,14 @@ const ServerBrowserSettings: React.FC = () => {
                         {t('settings.serverBrowser.agentActive')}
                       </Tag>
                     ) : null}
-                    <div className='ms-auto flex items-center gap-6px'>
+                    <div className='ms-auto flex flex-wrap items-center gap-6px'>
+                      <Button
+                        size='mini'
+                        aria-label={t('settings.serverBrowser.profile.editLabel', { name })}
+                        onClick={() => setProfileTarget(row)}
+                      >
+                        {t('common.edit')}
+                      </Button>
                       <Button
                         size='mini'
                         disabled={!live?.running}
@@ -254,6 +333,18 @@ const ServerBrowserSettings: React.FC = () => {
                       >
                         {t('common.clear')}
                       </Button>
+                      {row.instance === 1 ? null : (
+                        <Button
+                          size='mini'
+                          status='danger'
+                          type='outline'
+                          disabled={saving}
+                          aria-label={t('settings.serverBrowser.profile.deleteLabel', { name })}
+                          onClick={() => confirmDelete(row)}
+                        >
+                          {t('common.delete')}
+                        </Button>
+                      )}
                     </div>
                   </div>
                   <PreferenceRow
@@ -279,6 +370,12 @@ const ServerBrowserSettings: React.FC = () => {
           </ul>
         </>
       ) : null}
+      <BrowserProfileModal
+        target={profileTarget}
+        saving={saving}
+        onSave={(draft) => void saveProfile(draft)}
+        onClose={() => setProfileTarget(null)}
+      />
     </section>
   );
 };

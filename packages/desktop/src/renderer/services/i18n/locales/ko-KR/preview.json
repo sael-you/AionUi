@@ -197,9 +197,6 @@
     "dialogTitle": "페이지의 질문",
     "fileUploadUnsupported": "서버 브라우저에서의 파일 업로드는 아직 지원되지 않습니다.",
     "googleRejected": "Google이 이 브라우저에서의 로그인을 거부하므로 지금은 Google 계정을 지원하지 않습니다.",
-    "instanceLabel": "브라우저",
-    "instanceMain": "브라우저 1(내 로그인)",
-    "instanceN": "브라우저 {{n}}",
     "start": "브라우저 시작",
     "surfaceLabel": "서버 브라우저 페이지입니다. 클릭하면 마우스와 키보드로 조작할 수 있습니다.",
     "surfaceRole": "원격 브라우저",
@@ -227,6 +224,7 @@
       "running": "실행 중",
       "stopped": "브라우저가 중지되었습니다.",
       "error": "브라우저가 오류로 중지되었습니다."
-    }
+    },
+    "profileLabel": "브라우저 프로필"
   }
 }

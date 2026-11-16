@@ -197,9 +197,6 @@
     "dialogTitle": "The page asks",
     "fileUploadUnsupported": "Uploading files from the server browser is not supported yet.",
     "googleRejected": "Google refuses sign-in in this browser, so Google accounts are not supported here for now.",
-    "instanceLabel": "Browser",
-    "instanceMain": "Browser 1 (your logins)",
-    "instanceN": "Browser {{n}}",
     "start": "Start browser",
     "surfaceLabel": "Server browser page. Click it to use your mouse and keyboard there.",
     "surfaceRole": "remote browser",
@@ -227,6 +224,7 @@
       "running": "Running",
       "stopped": "The browser is stopped.",
       "error": "The browser stopped with an error."
-    }
+    },
+    "profileLabel": "Browser profile"
   }
 }

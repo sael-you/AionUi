@@ -12,16 +12,19 @@
 
 import useSWR from 'swr';
 import { serverBrowser } from '@/common/adapter/ipcBridge';
+import type { BrowserInstanceSettings } from '@/common/types/platform/serverBrowser';
 import { isElectronDesktop } from '@/renderer/utils/platform';
 
 export const SERVER_BROWSER_STATUS_KEY = 'server-browser.status';
 export const SERVER_BROWSER_SETTINGS_KEY = 'server-browser.settings';
 
-export const useServerBrowserAvailability = (): { available: boolean; maxInstances: number } => {
+export type ServerBrowserProfile = Pick<BrowserInstanceSettings, 'instance' | 'name' | 'color' | 'emoji'>;
+
+export const useServerBrowserAvailability = (): { available: boolean; profiles: ServerBrowserProfile[] } => {
   const web = !isElectronDesktop();
   const { data: status } = useSWR(web ? SERVER_BROWSER_STATUS_KEY : null, () => serverBrowser.getStatus.invoke());
   const { data: settings } = useSWR(web && status?.available ? SERVER_BROWSER_SETTINGS_KEY : null, () =>
     serverBrowser.getSettings.invoke()
   );
-  return { available: Boolean(web && status?.available), maxInstances: settings?.max_instances ?? 1 };
+  return { available: Boolean(web && status?.available), profiles: settings?.instances ?? [] };
 };

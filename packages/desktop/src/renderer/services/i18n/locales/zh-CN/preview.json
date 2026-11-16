@@ -197,9 +197,6 @@
     "dialogTitle": "页面询问",
     "fileUploadUnsupported": "暂不支持从服务器浏览器上传文件。",
     "googleRejected": "Google 拒绝在此浏览器中登录，因此暂不支持 Google 账号。",
-    "instanceLabel": "浏览器",
-    "instanceMain": "浏览器 1（你的登录）",
-    "instanceN": "浏览器 {{n}}",
     "start": "启动浏览器",
     "surfaceLabel": "服务器浏览器页面。点击后即可在其中使用鼠标和键盘。",
     "surfaceRole": "远程浏览器",
@@ -227,6 +224,7 @@
       "running": "运行中",
       "stopped": "浏览器已停止。",
       "error": "浏览器因错误而停止。"
-    }
+    },
+    "profileLabel": "浏览器配置"
   }
 }

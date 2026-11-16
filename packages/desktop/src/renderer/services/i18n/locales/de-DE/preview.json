@@ -197,9 +197,6 @@
     "dialogTitle": "Die Seite fragt",
     "fileUploadUnsupported": "Datei-Uploads aus dem Server-Browser werden noch nicht unterstützt.",
     "googleRejected": "Google lehnt die Anmeldung in diesem Browser ab, daher werden Google-Konten hier vorerst nicht unterstützt.",
-    "instanceLabel": "Browser",
-    "instanceMain": "Browser 1 (Ihre Anmeldungen)",
-    "instanceN": "Browser {{n}}",
     "start": "Browser starten",
     "surfaceLabel": "Seite des Server-Browsers. Klicken, um dort Maus und Tastatur zu nutzen.",
     "surfaceRole": "Remote-Browser",
@@ -227,6 +224,7 @@
       "running": "Läuft",
       "stopped": "Der Browser ist gestoppt.",
       "error": "Der Browser wurde mit einem Fehler beendet."
-    }
+    },
+    "profileLabel": "Browserprofil"
   }
 }

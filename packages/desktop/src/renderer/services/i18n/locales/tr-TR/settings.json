@@ -1544,13 +1544,11 @@
     "unavailable": "Sunucu tarayıcısı kullanılamıyor: {{reason}}",
     "agentsLabel": "Ajanlar tarayıcıyı kullanabilir",
     "agentsDesc": "Sohbetlerinizdeki ajanlar bu tarayıcılarda sekme açabilir, gezinebilir, tıklayabilir, yazabilir ve sayfa betikleri çalıştırabilir. Tarayıcı güvenlik kurallarına uyarlar: gönderme, silme, ödeme veya ayar değiştirme sizin onayınızı gerektirir.",
-    "maxInstancesLabel": "Tarayıcılar",
-    "maxInstancesDesc": "Her biri kendi profiline sahip ayrı Chrome'lar. Tarayıcı 1, paneldeki ve oturumlarınızın olduğu tarayıcıdır.",
+    "maxInstancesLabel": "En fazla profil",
+    "maxInstancesDesc": "Her profil, kendi oturumları olan ayrı bir Chrome'dur. \"Main\" panelin varsayılanıdır.",
     "maxTabsLabel": "Tarayıcı başına sekme",
     "maxTabsDesc": "Siz ve ajanlar her tarayıcıda en fazla bu kadar sekme açabilirsiniz.",
-    "instancesLabel": "Tarayıcılar",
-    "instanceMain": "Tarayıcı 1 (panel, oturumlarınız)",
-    "instanceN": "Tarayıcı {{n}}",
+    "instancesLabel": "Tarayıcı profilleri",
     "notRunning": "Durduruldu",
     "agentActive": "Ajan etkin",
     "stop": "Durdur",
@@ -1564,18 +1562,39 @@
     "hideAutomationWarning": "Siteler bu tarayıcının yazılımla kontrol edildiğine dair standart işareti artık görmeyecek. Birçok site koşullarında hesapların otomatik kullanımını yasaklar ve bazıları yine de algılar: bu hesaplardaki risk sizindir. Google oturum açma bu tarayıcıyı reddetmeye devam eder. Tarayıcının bir sonraki başlangıcında geçerli olur.",
     "hideAutomationConfirmOk": "Gizle",
     "appliesNextStart": "Değişikliği uygulamak için bu tarayıcıyı durdurup paneli yeniden açın.",
-    "lowerInstancesTitle": "Tarayıcı sayısı azaltılsın mı?",
     "saved": "Kaydedildi",
     "errors": {
       "generic": "Ayar kaydedilemedi. Tekrar deneyin.",
       "outOfRange": "Bu değer aralık dışında.",
-      "busy": "Bu tarayıcı meşgul. Birazdan tekrar deneyin."
+      "busy": "Bu tarayıcı meşgul. Birazdan tekrar deneyin.",
+      "nameTaken": "Başka bir profil bu adı zaten kullanıyor.",
+      "profileLimit": "En fazla profil sayısına ulaştınız. Sınırı artırın ya da birini silin.",
+      "protected": "Main profili silinemez. Yeniden adlandırabilir veya verilerini temizleyebilirsiniz.",
+      "notFound": "Bu profil artık yok. Liste yenilendi."
     },
     "running": "Çalışıyor · {{count}} sekme",
     "running_one": "Çalışıyor · {{count}} sekme",
     "running_other": "Çalışıyor · {{count}} sekme",
-    "lowerInstancesContent": "Yeni sınırın üzerindeki {{count}} çalışan tarayıcı durdurulacak.",
-    "lowerInstancesContent_one": "Yeni sınırın üzerindeki {{count}} çalışan tarayıcı durdurulacak.",
-    "lowerInstancesContent_other": "Yeni sınırın üzerindeki {{count}} çalışan tarayıcı durdurulacak."
+    "profile": {
+      "add": "Profil ekle",
+      "addTitle": "Tarayıcı profili ekle",
+      "editTitle": "Tarayıcı profilini düzenle",
+      "name": "Ad",
+      "namePlaceholder": "ör. TB Discord",
+      "color": "Renk",
+      "noColor": "Yok",
+      "emoji": "Emoji",
+      "added": "Profil eklendi",
+      "deleteTitle": "\"{{name}}\" profili silinsin mi?",
+      "deleteContent": "Profil durdurulur ve tarama verileri silinir: bu profildeki tüm sitelerden çıkış yaparsınız. Diğer profiller etkilenmez. Geri alınamaz.",
+      "deleted": "\"{{name}}\" profili silindi",
+      "editLabel": "{{name}} düzenle",
+      "deleteLabel": "{{name}} sil",
+      "panelDefault": "Panel varsayılanı",
+      "errors": {
+        "nameTooLong": "En fazla {{max}} karakter.",
+        "emojiTooLong": "Emoji çok uzun."
+      }
+    }
   }
 }

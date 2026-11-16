@@ -197,9 +197,6 @@
     "dialogTitle": "頁面詢問",
     "fileUploadUnsupported": "暫不支援從伺服器瀏覽器上傳檔案。",
     "googleRejected": "Google 拒絕在此瀏覽器中登入，因此暫不支援 Google 帳號。",
-    "instanceLabel": "瀏覽器",
-    "instanceMain": "瀏覽器 1（你的登入）",
-    "instanceN": "瀏覽器 {{n}}",
     "start": "啟動瀏覽器",
     "surfaceLabel": "伺服器瀏覽器頁面。點一下即可在其中使用滑鼠與鍵盤。",
     "surfaceRole": "遠端瀏覽器",
@@ -227,6 +224,7 @@
       "running": "執行中",
       "stopped": "瀏覽器已停止。",
       "error": "瀏覽器因錯誤而停止。"
-    }
+    },
+    "profileLabel": "瀏覽器設定檔"
   }
 }

@@ -197,9 +197,6 @@
     "dialogTitle": "ページからの確認",
     "fileUploadUnsupported": "サーバーブラウザーからのファイルアップロードにはまだ対応していません。",
     "googleRejected": "Google はこのブラウザーでのログインを拒否するため、現在 Google アカウントには対応していません。",
-    "instanceLabel": "ブラウザー",
-    "instanceMain": "ブラウザー 1（あなたのログイン）",
-    "instanceN": "ブラウザー {{n}}",
     "start": "ブラウザーを起動",
     "surfaceLabel": "サーバーブラウザーのページ。クリックするとマウスとキーボードで操作できます。",
     "surfaceRole": "リモートブラウザー",
@@ -227,6 +224,7 @@
       "running": "実行中",
       "stopped": "ブラウザーは停止しています。",
       "error": "ブラウザーがエラーで停止しました。"
-    }
+    },
+    "profileLabel": "ブラウザープロファイル"
   }
 }

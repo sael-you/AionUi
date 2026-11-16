@@ -28,6 +28,8 @@ import {
   mouseButtonOf,
   toPagePoint,
 } from './streamProtocol';
+import BrowserProfileLabel from './BrowserProfileLabel';
+import type { ServerBrowserProfile } from './useServerBrowserAvailability';
 import { useServerBrowserStream, type FrameDecoder } from './useServerBrowserStream';
 
 /** After the owner picks or opens a tab, the panel does not jump to the agent's tab for this long. */
@@ -49,18 +51,24 @@ export const agentTabToFollow = (
 };
 
 type ServerBrowserViewProps = {
-  /** Instances the owner allows (settings `max_instances`). */
-  maxInstances: number;
+  /** The owner's browser profiles (TASK-124); instance 1 "Main" always exists. */
+  profiles: ServerBrowserProfile[];
   /** An address the preview tab asked for (opened from a link); opened in a new tab once. */
   requestedUrl?: string;
   /** Test seam: frame decoder. */
   decodeFrame?: FrameDecoder;
 };
 
-const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ maxInstances, requestedUrl, decodeFrame }) => {
+const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ profiles, requestedUrl, decodeFrame }) => {
   const { t } = useTranslation();
   const isMobile = useLayoutContext()?.isMobile ?? false;
   const [instance, setInstance] = useState(1);
+  // The profile on screen was deleted (Settings → Browser): go back to the first one ("Main").
+  useEffect(() => {
+    if (profiles.length > 0 && !profiles.some((profile) => profile.instance === instance)) {
+      setInstance(profiles[0]?.instance ?? 1);
+    }
+  }, [profiles, instance]);
   const surfaceRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const metaRef = useRef<BrowserFrameMeta | null>(null);
@@ -281,19 +289,22 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ maxInstances, req
             </Tag>
           </Tooltip>
         ) : null}
-        {maxInstances > 1 ? (
+        {profiles.length > 0 ? (
           <Select
             size='small'
-            className='w-140px flex-shrink-0'
+            className='w-110px md:w-160px flex-shrink-0'
             value={instance}
-            aria-label={t('preview.serverBrowser.instanceLabel')}
+            aria-label={t('preview.serverBrowser.profileLabel')}
+            renderFormat={(_option, value) => {
+              const current = profiles.find((profile) => profile.instance === value);
+              return current ? <BrowserProfileLabel profile={current} /> : null;
+            }}
             onChange={(value: number) => setInstance(value)}
+            data-testid='server-browser-profile'
           >
-            {Array.from({ length: maxInstances }, (_, index) => index + 1).map((number) => (
-              <Select.Option key={number} value={number}>
-                {number === 1
-                  ? t('preview.serverBrowser.instanceMain')
-                  : t('preview.serverBrowser.instanceN', { n: number })}
+            {profiles.map((profile) => (
+              <Select.Option key={profile.instance} value={profile.instance}>
+                <BrowserProfileLabel profile={profile} />
               </Select.Option>
             ))}
           </Select>

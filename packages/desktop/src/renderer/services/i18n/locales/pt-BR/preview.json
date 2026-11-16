@@ -197,9 +197,6 @@
     "dialogTitle": "A página pergunta",
     "fileUploadUnsupported": "Ainda não é possível enviar arquivos pelo navegador do servidor.",
     "googleRejected": "O Google recusa o login neste navegador, então contas Google ainda não são suportadas aqui.",
-    "instanceLabel": "Navegador",
-    "instanceMain": "Navegador 1 (seus logins)",
-    "instanceN": "Navegador {{n}}",
     "start": "Iniciar navegador",
     "surfaceLabel": "Página do navegador do servidor. Clique para usar o mouse e o teclado nela.",
     "surfaceRole": "navegador remoto",
@@ -227,6 +224,7 @@
       "running": "Em execução",
       "stopped": "O navegador está parado.",
       "error": "O navegador parou com um erro."
-    }
+    },
+    "profileLabel": "Perfil do navegador"
   }
 }

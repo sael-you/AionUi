@@ -64,7 +64,7 @@ const BrowserTabLayer: React.FC<BrowserTabLayerProps> = ({ browserTabs, activeTa
     const requested = browserTabs.find((tab) => tab.id === activeTabId) ?? browserTabs.at(-1);
     return (
       <div className='relative flex-1 overflow-hidden' style={{ display: isBrowserActive ? undefined : 'none' }}>
-        <ServerBrowserView maxInstances={serverBrowser.maxInstances} requestedUrl={requested?.content} />
+        <ServerBrowserView profiles={serverBrowser.profiles} requestedUrl={requested?.content} />
       </div>
     );
   }

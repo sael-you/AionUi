@@ -1545,13 +1545,11 @@
     "unavailable": "服务器浏览器不可用：{{reason}}",
     "agentsLabel": "代理可以使用浏览器",
     "agentsDesc": "你对话中的代理可以在这些浏览器中打开标签页、导航、点击、输入和运行页面脚本。它们遵守浏览器安全规则：任何发送、删除、付款或更改设置的操作都需要你的同意。",
-    "maxInstancesLabel": "浏览器",
-    "maxInstancesDesc": "独立的 Chrome，各自拥有自己的配置文件。浏览器 1 是面板中的浏览器，带有你的登录。",
+    "maxInstancesLabel": "配置数量上限",
+    "maxInstancesDesc": "每个配置都是独立的 Chrome，拥有各自的登录状态。“Main”是面板的默认配置。",
     "maxTabsLabel": "每个浏览器的标签页",
     "maxTabsDesc": "你和代理在每个浏览器中最多可打开这么多标签页。",
-    "instancesLabel": "浏览器",
-    "instanceMain": "浏览器 1（面板，你的登录）",
-    "instanceN": "浏览器 {{n}}",
+    "instancesLabel": "浏览器配置",
     "notRunning": "已停止",
     "agentActive": "代理活动中",
     "stop": "停止",
@@ -1565,18 +1563,39 @@
     "hideAutomationWarning": "网站将不再看到此浏览器由软件控制的标准标识。许多网站在条款中禁止自动使用账号，部分网站仍能检测到：这些账号的风险由你承担。Google 登录仍会拒绝此浏览器。在浏览器下次启动时生效。",
     "hideAutomationConfirmOk": "隐藏",
     "appliesNextStart": "停止此浏览器并重新打开面板以应用更改。",
-    "lowerInstancesTitle": "减少浏览器数量？",
     "saved": "已保存",
     "errors": {
       "generic": "设置未能保存，请重试。",
       "outOfRange": "该值超出范围。",
-      "busy": "该浏览器正忙，请稍后再试。"
+      "busy": "该浏览器正忙，请稍后再试。",
+      "nameTaken": "已有其他配置使用此名称。",
+      "profileLimit": "已达到配置数量上限。请调高上限或删除一个配置。",
+      "protected": "Main 配置无法删除。你可以重命名或清除其数据。",
+      "notFound": "此配置已不存在，列表已刷新。"
     },
     "running": "运行中 · {{count}} 个标签页",
     "running_one": "运行中 · {{count}} 个标签页",
     "running_other": "运行中 · {{count}} 个标签页",
-    "lowerInstancesContent": "超出新上限的 {{count}} 个运行中的浏览器将被停止。",
-    "lowerInstancesContent_one": "超出新上限的 {{count}} 个运行中的浏览器将被停止。",
-    "lowerInstancesContent_other": "超出新上限的 {{count}} 个运行中的浏览器将被停止。"
+    "profile": {
+      "add": "添加配置",
+      "addTitle": "添加浏览器配置",
+      "editTitle": "编辑浏览器配置",
+      "name": "名称",
+      "namePlaceholder": "例如 TB Discord",
+      "color": "颜色",
+      "noColor": "无",
+      "emoji": "表情",
+      "added": "已添加配置",
+      "deleteTitle": "删除配置“{{name}}”？",
+      "deleteContent": "这会停止该配置并删除其浏览数据：你将退出此配置中所有网站的登录。其他配置不受影响。此操作无法撤销。",
+      "deleted": "已删除配置“{{name}}”",
+      "editLabel": "编辑 {{name}}",
+      "deleteLabel": "删除 {{name}}",
+      "panelDefault": "面板默认",
+      "errors": {
+        "nameTooLong": "最多 {{max}} 个字符。",
+        "emojiTooLong": "表情过长。"
+      }
+    }
   }
 }

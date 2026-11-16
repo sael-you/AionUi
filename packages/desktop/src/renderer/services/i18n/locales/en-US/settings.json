@@ -1544,13 +1544,11 @@
     "unavailable": "The server browser is not available: {{reason}}",
     "agentsLabel": "Agents can use the browser",
     "agentsDesc": "Agents in your conversations can open tabs, navigate, click, type and run page scripts in these browsers. They follow the browser-safety rules: anything that sends, deletes, pays or changes settings needs your OK.",
-    "maxInstancesLabel": "Browsers",
-    "maxInstancesDesc": "Separate Chromes, each with its own profile. Browser 1 is the one in the panel, with your logins.",
+    "maxInstancesLabel": "Max profiles",
+    "maxInstancesDesc": "Each profile is a separate Chrome with its own sign-ins. \"Main\" is the panel default.",
     "maxTabsLabel": "Tabs per browser",
     "maxTabsDesc": "You and agents can open up to this many tabs in each browser.",
-    "instancesLabel": "Browsers",
-    "instanceMain": "Browser 1 (panel, your logins)",
-    "instanceN": "Browser {{n}}",
+    "instancesLabel": "Browser profiles",
     "notRunning": "Stopped",
     "agentActive": "Agent active",
     "stop": "Stop",
@@ -1564,18 +1562,39 @@
     "hideAutomationWarning": "Sites will no longer see the standard sign that this browser is controlled by software. Many sites forbid automated use of accounts in their terms, and some still detect it: the risk to these accounts is yours. Google sign-in still refuses this browser. Takes effect at the browser's next start.",
     "hideAutomationConfirmOk": "Hide it",
     "appliesNextStart": "Stop this browser and open the panel again to apply the change.",
-    "lowerInstancesTitle": "Lower the number of browsers?",
     "saved": "Saved",
     "errors": {
       "generic": "The setting could not be saved. Try again.",
       "outOfRange": "That value is out of range.",
-      "busy": "That browser is busy. Try again in a moment."
+      "busy": "That browser is busy. Try again in a moment.",
+      "nameTaken": "Another profile already has this name.",
+      "profileLimit": "You have reached the maximum number of profiles. Raise Max profiles or delete one.",
+      "protected": "The Main profile cannot be deleted. You can rename it or clear its data.",
+      "notFound": "This profile no longer exists. The list has been refreshed."
     },
     "running": "Running · {{count}} tabs",
     "running_one": "Running · {{count}} tab",
     "running_other": "Running · {{count}} tabs",
-    "lowerInstancesContent": "{{count}} running browsers above the new limit will be stopped.",
-    "lowerInstancesContent_one": "{{count}} running browser above the new limit will be stopped.",
-    "lowerInstancesContent_other": "{{count}} running browsers above the new limit will be stopped."
+    "profile": {
+      "add": "Add profile",
+      "addTitle": "Add browser profile",
+      "editTitle": "Edit browser profile",
+      "name": "Name",
+      "namePlaceholder": "e.g. TB Discord",
+      "color": "Colour",
+      "noColor": "None",
+      "emoji": "Emoji",
+      "added": "Profile added",
+      "deleteTitle": "Delete profile \"{{name}}\"?",
+      "deleteContent": "This stops it and deletes its browsing data: you are signed out of every site in this profile. The other profiles are not touched. This cannot be undone.",
+      "deleted": "Profile \"{{name}}\" deleted",
+      "editLabel": "Edit {{name}}",
+      "deleteLabel": "Delete {{name}}",
+      "panelDefault": "Panel default",
+      "errors": {
+        "nameTooLong": "At most {{max}} characters.",
+        "emojiTooLong": "The emoji is too long."
+      }
+    }
   }
 }

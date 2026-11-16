@@ -17,7 +17,13 @@ import type { AcpSlashCommandApiItem } from '@/common/chat/slash/types';
 import { bridge } from '@/common/platform/bridge';
 import { buildListTasksPath } from './teamTaskPath';
 import type { OpenDialogOptions } from 'electron';
-import type { BrowserSettings, BrowserSettingsUpdate, BrowserStatusResponse } from '../types/platform/serverBrowser';
+import type {
+  BrowserInstanceCreate,
+  BrowserInstancePatch,
+  BrowserSettings,
+  BrowserSettingsUpdate,
+  BrowserStatusResponse,
+} from '../types/platform/serverBrowser';
 import type {
   AttachKitItemRequest,
   CreateKitRequest,
@@ -962,6 +968,16 @@ export const serverBrowser = {
   stopInstance: httpPost<BrowserStatusResponse, { instance: number }>(
     (p) => `/api/browser/instances/${encodeURIComponent(String(p.instance))}/stop`,
     () => ({})
+  ),
+  /** New profile (TASK-124): its own Chrome user-data dir, the lowest free instance number. */
+  createInstance: httpPost<BrowserSettings, BrowserInstanceCreate>('/api/browser/instances'),
+  updateInstance: httpPatch<BrowserSettings, { instance: number; data: BrowserInstancePatch }>(
+    (p) => `/api/browser/instances/${encodeURIComponent(String(p.instance))}`,
+    (p) => p.data
+  ),
+  /** Stops the profile and wipes ONLY its profile dir; instance 1 is refused (BROWSER_INSTANCE_PROTECTED). */
+  deleteInstance: httpDelete<BrowserSettings, { instance: number }>(
+    (p) => `/api/browser/instances/${encodeURIComponent(String(p.instance))}`
   ),
 };
 

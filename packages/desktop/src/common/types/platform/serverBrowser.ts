@@ -23,25 +23,73 @@ export type BrowserErrorCode =
   | 'BROWSER_SETTING_OUT_OF_RANGE'
   | 'BROWSER_TAB_NOT_FOUND'
   | 'BROWSER_BAD_MESSAGE'
-  | 'BROWSER_BUSY';
+  | 'BROWSER_BUSY'
+  | 'BROWSER_PROFILE_NAME_TAKEN'
+  | 'BROWSER_INSTANCE_PROTECTED'
+  | 'BROWSER_INSTANCE_NOT_FOUND';
 
 /** Hard upper bound of `max_instances`. */
 export const BROWSER_MAX_INSTANCES_LIMIT = 5;
 /** Hard upper bound of `max_tabs`. */
 export const BROWSER_MAX_TABS_LIMIT = 20;
 
-/** Per instance; a change applies at the instance's next start. */
+/** Palette ids a browser profile may use (the project colour palette, TASK-124). */
+export const BROWSER_PROFILE_COLORS = [
+  'red',
+  'orange',
+  'amber',
+  'lime',
+  'green',
+  'teal',
+  'cyan',
+  'blue',
+  'indigo',
+  'violet',
+  'pink',
+  'slate',
+] as const;
+
+/** Profile name length (trimmed), as the server checks it. */
+export const BROWSER_PROFILE_NAME_MAX = 40;
+
+/**
+ * One browser profile = one instance with its own Chrome user-data dir (TASK-124).
+ * `instances` lists the EXISTING profiles; instance 1 ("Main", the panel's default
+ * with the owner's logins) always exists and cannot be deleted.
+ */
 export type BrowserInstanceSettings = {
   instance: number;
-  /** "Hide that the browser is automated" (default false). */
+  /** 1..=40 chars, unique per user (case-insensitive). */
+  name: string;
+  /** Palette id ({@link BROWSER_PROFILE_COLORS}); absent = neutral. */
+  color?: string;
+  emoji?: string;
+  /** "Hide that the browser is automated" (default false); applies at the next start. */
   hide_automation: boolean;
 };
+
+/** Optional profile fields; `""` for `color`/`emoji` clears them, absent = unchanged. */
+export type BrowserInstanceFields = {
+  name?: string;
+  color?: string;
+  emoji?: string;
+  hide_automation?: boolean;
+};
+
+/** A row of `PUT /api/browser/settings` `instances` (existing instances only). */
+export type BrowserInstanceUpdate = BrowserInstanceFields & { instance: number };
+
+/** `POST /api/browser/instances`: lowest free instance number; 409 BROWSER_INSTANCE_LIMIT when full. */
+export type BrowserInstanceCreate = BrowserInstanceFields & { name: string };
+
+/** `PATCH /api/browser/instances/{n}`. */
+export type BrowserInstancePatch = BrowserInstanceFields;
 
 /** `GET /api/browser/settings` and the answer of `PUT`. */
 export type BrowserSettings = {
   /** "Agents can use the browser" (default true). */
   agents_enabled: boolean;
-  /** 1..=5, default 3. Instance 1 is the panel's, with the owner's logins. */
+  /** Cap on the number of profiles, 1..=5 (default 3); never below the current count. */
   max_instances: number;
   /** 1..=20, default 10, per instance. */
   max_tabs: number;
@@ -53,11 +101,14 @@ export type BrowserSettingsUpdate = {
   agents_enabled?: boolean;
   max_instances?: number;
   max_tabs?: number;
-  instances?: BrowserInstanceSettings[];
+  instances?: BrowserInstanceUpdate[];
 };
 
 export type BrowserInstanceStatus = {
   instance: number;
+  name: string;
+  color?: string;
+  emoji?: string;
   running: boolean;
   tabs: number;
   agent_active: boolean;

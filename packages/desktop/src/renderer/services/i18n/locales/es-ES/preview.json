@@ -197,9 +197,6 @@
     "dialogTitle": "La página pregunta",
     "fileUploadUnsupported": "Aún no se pueden subir archivos desde el navegador del servidor.",
     "googleRejected": "Google rechaza el inicio de sesión en este navegador, así que por ahora no se admiten cuentas de Google aquí.",
-    "instanceLabel": "Navegador",
-    "instanceMain": "Navegador 1 (tus sesiones)",
-    "instanceN": "Navegador {{n}}",
     "start": "Iniciar navegador",
     "surfaceLabel": "Página del navegador del servidor. Haz clic para usar ahí el ratón y el teclado.",
     "surfaceRole": "navegador remoto",
@@ -227,6 +224,7 @@
       "running": "En marcha",
       "stopped": "El navegador está detenido.",
       "error": "El navegador se detuvo con un error."
-    }
+    },
+    "profileLabel": "Perfil del navegador"
   }
 }

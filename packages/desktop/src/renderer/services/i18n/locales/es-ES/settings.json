@@ -1544,13 +1544,11 @@
     "unavailable": "El navegador del servidor no está disponible: {{reason}}",
     "agentsLabel": "Los agentes pueden usar el navegador",
     "agentsDesc": "Los agentes de tus conversaciones pueden abrir pestañas, navegar, hacer clic, escribir y ejecutar scripts de página en estos navegadores. Siguen las reglas de seguridad del navegador: enviar, borrar, pagar o cambiar ajustes necesita tu OK.",
-    "maxInstancesLabel": "Navegadores",
-    "maxInstancesDesc": "Chromes separados, cada uno con su propio perfil. El navegador 1 es el del panel, con tus sesiones.",
+    "maxInstancesLabel": "Máximo de perfiles",
+    "maxInstancesDesc": "Cada perfil es un Chrome independiente con sus propios inicios de sesión. «Main» es el predeterminado del panel.",
     "maxTabsLabel": "Pestañas por navegador",
     "maxTabsDesc": "Tú y los agentes podéis abrir hasta este número de pestañas en cada navegador.",
-    "instancesLabel": "Navegadores",
-    "instanceMain": "Navegador 1 (panel, tus sesiones)",
-    "instanceN": "Navegador {{n}}",
+    "instancesLabel": "Perfiles del navegador",
     "notRunning": "Detenido",
     "agentActive": "Agente activo",
     "stop": "Detener",
@@ -1564,18 +1562,39 @@
     "hideAutomationWarning": "Los sitios dejarán de ver la señal estándar de que este navegador está controlado por software. Muchos sitios prohíben en sus condiciones el uso automatizado de cuentas, y algunos aún lo detectan: el riesgo para esas cuentas es tuyo. El inicio de sesión de Google sigue rechazando este navegador. Se aplica en el próximo inicio del navegador.",
     "hideAutomationConfirmOk": "Ocultar",
     "appliesNextStart": "Detén este navegador y vuelve a abrir el panel para aplicar el cambio.",
-    "lowerInstancesTitle": "¿Reducir el número de navegadores?",
     "saved": "Guardado",
     "errors": {
       "generic": "No se pudo guardar el ajuste. Inténtalo de nuevo.",
       "outOfRange": "Ese valor está fuera de rango.",
-      "busy": "Ese navegador está ocupado. Vuelve a intentarlo en un momento."
+      "busy": "Ese navegador está ocupado. Vuelve a intentarlo en un momento.",
+      "nameTaken": "Otro perfil ya tiene ese nombre.",
+      "profileLimit": "Has llegado al máximo de perfiles. Sube el límite o elimina uno.",
+      "protected": "El perfil Main no se puede eliminar. Puedes renombrarlo o borrar sus datos.",
+      "notFound": "Este perfil ya no existe. Se ha actualizado la lista."
     },
     "running": "En marcha · {{count}} pestañas",
     "running_one": "En marcha · {{count}} pestaña",
     "running_other": "En marcha · {{count}} pestañas",
-    "lowerInstancesContent": "Se detendrán {{count}} navegadores en marcha por encima del nuevo límite.",
-    "lowerInstancesContent_one": "Se detendrá {{count}} navegador en marcha por encima del nuevo límite.",
-    "lowerInstancesContent_other": "Se detendrán {{count}} navegadores en marcha por encima del nuevo límite."
+    "profile": {
+      "add": "Añadir perfil",
+      "addTitle": "Añadir perfil del navegador",
+      "editTitle": "Editar perfil del navegador",
+      "name": "Nombre",
+      "namePlaceholder": "p. ej. TB Discord",
+      "color": "Color",
+      "noColor": "Ninguno",
+      "emoji": "Emoji",
+      "added": "Perfil añadido",
+      "deleteTitle": "¿Eliminar el perfil «{{name}}»?",
+      "deleteContent": "Se detiene y se borran sus datos de navegación: cierras sesión en todos los sitios de este perfil. Los demás perfiles no cambian. No se puede deshacer.",
+      "deleted": "Perfil «{{name}}» eliminado",
+      "editLabel": "Editar {{name}}",
+      "deleteLabel": "Eliminar {{name}}",
+      "panelDefault": "Predeterminado del panel",
+      "errors": {
+        "nameTooLong": "Como máximo {{max}} caracteres.",
+        "emojiTooLong": "El emoji es demasiado largo."
+      }
+    }
   }
 }
