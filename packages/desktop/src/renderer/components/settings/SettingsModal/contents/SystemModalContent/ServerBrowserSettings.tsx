@@ -220,7 +220,7 @@ const ServerBrowserSettings: React.FC = () => {
               return (
                 <li
                   key={row.instance}
-                  className='flex flex-col gap-6px rd-12px border border-border-2 px-12px py-10px'
+                  className='flex flex-col gap-6px rd-12px border border-3 px-12px py-10px'
                   data-testid='server-browser-instance'
                 >
                   <div className='flex flex-wrap items-center gap-8px'>

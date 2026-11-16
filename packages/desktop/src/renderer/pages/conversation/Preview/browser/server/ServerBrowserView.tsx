@@ -223,8 +223,8 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ maxInstances, req
   const googleRejected = Boolean(activeTab && isGoogleSignInRejected(activeTab.url));
 
   return (
-    <div className='flex flex-col h-full min-h-0 bg-bg-1' data-testid='server-browser'>
-      <div className='flex items-center gap-6px h-40px px-10px bg-bg-2 border-b border-border-1 flex-shrink-0'>
+    <div className='flex flex-col h-full min-h-0 bg-1' data-testid='server-browser'>
+      <div className='flex items-center gap-6px h-40px px-10px bg-2 border-b border-3 flex-shrink-0'>
         <Button
           size='small'
           icon={<Left theme='outline' size={16} className='rtl:rotate-180' />}
@@ -303,7 +303,7 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ maxInstances, req
       <div
         role='tablist'
         aria-label={t('preview.serverBrowser.tabsLabel')}
-        className='flex items-center gap-4px px-8px py-4px bg-bg-2 border-b border-border-1 overflow-x-auto flex-shrink-0'
+        className='flex items-center gap-4px px-8px py-4px bg-2 border-b border-3 overflow-x-auto flex-shrink-0'
       >
         {(state?.tabs ?? []).map((tab) => (
           <span
@@ -374,7 +374,7 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ maxInstances, req
       >
         <canvas ref={canvasRef} className='absolute inset-0 w-full h-full' aria-hidden />
         {status !== 'running' ? (
-          <div className='absolute inset-0 flex flex-col items-center justify-center gap-10px bg-bg-1' role='status'>
+          <div className='absolute inset-0 flex flex-col items-center justify-center gap-10px bg-1' role='status'>
             {status === 'starting' ? <Spin /> : null}
             <span className='text-13px text-t-secondary'>
               {state?.error_code
@@ -391,7 +391,7 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ maxInstances, req
       </div>
 
       {isMobile ? (
-        <div className='flex items-center gap-6px px-8px py-6px bg-bg-2 border-t border-border-1 flex-shrink-0'>
+        <div className='flex items-center gap-6px px-8px py-6px bg-2 border-t border-3 flex-shrink-0'>
           <Input
             size='small'
             className='flex-1 min-w-0'
