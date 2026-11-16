@@ -987,5 +987,23 @@
       "label": "Делегированная работа: {{summary}}"
     },
     "breadcrumb": "Путь беседы"
+  },
+  "quoteReply": {
+    "toolbarLabel": "Действия с выделением",
+    "dictateReply": "Ответить голосом",
+    "popoverLabel": "Ответить на выделенное",
+    "replyPlaceholder": "Ответ…",
+    "replyLabel": "Ваш ответ",
+    "add": "Добавить",
+    "editTitle": "Изменить цитату",
+    "remove": "Удалить",
+    "editLabel": "Изменить цитату: {{quote}}",
+    "removeLabel": "Удалить цитату: {{quote}}",
+    "withReply": "С ответом",
+    "stackLabel": "{{count}} цитаты к отправке",
+    "stackLabel_one": "{{count}} цитата к отправке",
+    "stackLabel_few": "{{count}} цитаты к отправке",
+    "stackLabel_many": "{{count}} цитат к отправке",
+    "stackLabel_other": "{{count}} цитаты к отправке"
   }
 }

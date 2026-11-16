@@ -36,7 +36,7 @@ import { applyMentionInsertion, insertMentionAtCaret } from '@/renderer/utils/ch
 import { reconcileSessionRefs } from './sessionMentionReconcile';
 import { getLastAssistantText } from '@/renderer/utils/chat/getLastAssistantText';
 import { formatRelativeTime } from '@/renderer/utils/chat/relativeTime';
-import { emitter, type ReplyQuote, useAddEventListener } from '@/renderer/utils/emitter';
+import { emitter, useAddEventListener } from '@/renderer/utils/emitter';
 import { mergeFileSelectionItems, type FileSelectionItem } from '@/renderer/utils/file/fileSelection';
 import type { FileOrFolderItem } from '@/renderer/utils/file/fileTypes';
 import { filterWorkspaceMentionItems, workspaceMentionItemFromListing } from '@/renderer/utils/file/workspaceMentions';
@@ -47,7 +47,7 @@ import { blurActiveElement, shouldBlockMobileInputFocus } from '@/renderer/utils
 import { isPlatformPrimaryModifier } from '@/renderer/utils/ui/keyboardShortcuts';
 import { isMacOS } from '@/renderer/utils/platform';
 import { Button, Input, Message, Tag, Tooltip } from '@arco-design/web-react';
-import { CloseSmall, Plus, Quote } from '@icon-park/react';
+import { CloseSmall, Plus } from '@icon-park/react';
 import { chatFileRefKey } from '@/common/types/chatFile';
 import type { SlashCommandItem } from '@/common/chat/slash/types';
 import { buildSkillSlashCommands, mergeSlashCommands } from '@/common/chat/slash/mergeSlashCommands';
@@ -66,6 +66,8 @@ import { useAbortUploadsOnConversationChange } from '@renderer/hooks/file/useAbo
 import UploadProgressBar from '@renderer/components/media/UploadProgressBar';
 import { allSupportedExts } from '@renderer/services/FileService';
 import SpeechInputButton from '@/renderer/components/chat/SpeechInputButton';
+import QuoteStack from './QuoteStack';
+import { composeQuotedMessage, useQuoteStack } from './quoteStack';
 import {
   buildVoiceSlashCommand,
   ConversationVoiceBar,
@@ -370,7 +372,6 @@ const SendBox: React.FC<{
   const messageList = useMessageList();
   const [historyNavigationIndex, setHistoryNavigationIndex] = useState<number | null>(null);
   const historyDraftRef = useRef<string | null>(null);
-  const [replyQuote, setReplyQuote] = useState<ReplyQuote | null>(null);
   const [caretPosition, setCaretPosition] = useState(0);
   const [prefillFocusRequest, setPrefillFocusRequest] = useState<{
     requestId: number;
@@ -396,9 +397,8 @@ const SendBox: React.FC<{
   const fetchedAtFileSessionKeyRef = useRef<string | null>(null);
   const highlightScrollRef = useRef<HTMLDivElement>(null);
 
-  // Listen for reply events from message actions
-  useAddEventListener('sendbox.reply', (quote) => setReplyQuote(quote), []);
-  useAddEventListener('sendbox.reply.clear', () => setReplyQuote(null), []);
+  // Quotes selected in this conversation's messages (C32), stacked until they are sent.
+  const quoteStack = useQuoteStack(conversationContext?.conversation_id);
 
   // 集成预览面板的"添加到聊天"功能 / Integrate preview panel's "Add to chat" functionality
   const { setSendBoxHandler, domSnippets, removeDomSnippet, clearDomSnippets } = usePreviewContext();
@@ -1590,7 +1590,7 @@ const SendBox: React.FC<{
       message.warning(t('messages.conversationInProgress'));
       return;
     }
-    if (!input.trim() && domSnippets.length === 0) {
+    if (!input.trim() && domSnippets.length === 0 && quoteStack.items.length === 0) {
       return;
     }
     console.info('[sendbox]', {
@@ -1605,36 +1605,30 @@ const SendBox: React.FC<{
     historyDraftRef.current = null;
     setHistoryNavigationIndex(null);
 
-    // 构建消息内容 / Build message content
-    let finalMessage = input;
-
-    // Prepend reply quote as blockquote
-    if (replyQuote) {
-      const quotedLines = replyQuote.content
-        .split('\n')
-        .map((line) => `> ${line}`)
-        .join('\n');
-      finalMessage = `${quotedLines}\n\n${finalMessage}`;
-    }
+    // 构建消息内容 / Build message content: stacked quotes and replies first (C32), then the text.
+    const sentQuotes = quoteStack.items;
+    let finalMessage = composeQuotedMessage(sentQuotes, input);
 
     // 如果有 DOM 片段，附加完整 HTML / If has DOM snippets, append full HTML
     if (domSnippets.length > 0) {
       const snippetsHtml = domSnippets
         .map((s) => `\n\n---\nDOM Snippet (${s.tag}):\n\`\`\`html\n${s.html}\n\`\`\``)
         .join('');
-      finalMessage = input + snippetsHtml;
+      finalMessage = finalMessage + snippetsHtml;
     }
 
     // 立即清空输入框，避免异步 onSend 完成后覆盖用户新输入
     // Clear input immediately to prevent async onSend completion from overwriting new user input
     setInput('');
     clearDomSnippets();
-    setReplyQuote(null);
+    quoteStack.clear();
 
     onSend(finalMessage)
       .then((result) => {
         if (result === false) {
-          setInput(finalMessage);
+          // Not sent: give the text and the quotes back as they were.
+          setInput(input);
+          if (sentQuotes.length > 0) quoteStack.replace(sentQuotes);
         }
       })
       .catch(() => {})
@@ -1676,7 +1670,9 @@ const SendBox: React.FC<{
   );
   const { handleLiveTranscript } = useLiveTranscriptInsertion(speechDispatch.dispatch);
 
-  const hasDraftToSend = input.trim().length > 0 || domSnippets.length > 0;
+  const hasTextDraft = input.trim().length > 0 || domSnippets.length > 0;
+  /** Quotes alone (empty composer) can be sent (C32); the draft box keeps text only. */
+  const hasDraftToSend = hasTextDraft || quoteStack.items.length > 0;
 
   const addToDraftLabel = t('conversation.commandQueue.addToQueue', { defaultValue: 'Save to Draft box' });
   const sendNowLabel = t('conversation.commandQueue.sendNow', { defaultValue: 'Send now' });
@@ -1693,7 +1689,7 @@ const SendBox: React.FC<{
   };
 
   const handleAddToDraftClick = () => {
-    if (disabled || addToDraftDisabled || isUploading || !hasDraftToSend || !onAddToDraft) return;
+    if (disabled || addToDraftDisabled || isUploading || !hasTextDraft || !onAddToDraft) return;
     onAddToDraft();
   };
 
@@ -1714,7 +1710,7 @@ const SendBox: React.FC<{
   };
 
   const isSendActionDisabled = disabled || sendDisabled || isUploading || !hasDraftToSend;
-  const isDraftActionDisabled = disabled || addToDraftDisabled || isUploading || !hasDraftToSend || !onAddToDraft;
+  const isDraftActionDisabled = disabled || addToDraftDisabled || isUploading || !hasTextDraft || !onAddToDraft;
   const hasDraftAction = Boolean(onAddToDraft);
   const sendButtonShapeStyle: React.CSSProperties = {
     width: 32,
@@ -2069,24 +2065,8 @@ const SendBox: React.FC<{
         <div style={{ width: '100%' }}>
           {prefix}
           {context}
-          {/* Reply quote preview */}
-          {replyQuote && (
-            <div className='flex items-start gap-10px mb-8px px-12px py-10px rd-10px bg-fill-1 b-1 b-solid b-border-2'>
-              <div className='flex-shrink-0 mt-2px' style={{ lineHeight: 0 }}>
-                <Quote theme='filled' size='16' fill='rgb(var(--primary-6))' />
-              </div>
-              <div className='flex-1 min-w-0 text-13px text-t-primary line-clamp-3 lh-20px whitespace-pre-wrap break-all'>
-                {replyQuote.content}
-              </div>
-              <div
-                className='flex-shrink-0 mt-2px p-2px rd-full cursor-pointer hover:bg-fill-3 transition-colors'
-                onClick={() => setReplyQuote(null)}
-                style={{ lineHeight: 0 }}
-              >
-                <CloseSmall theme='outline' size='14' />
-              </div>
-            </div>
-          )}
+          {/* Stacked quote replies (C32) */}
+          <QuoteStack stack={quoteStack} />
           {/* DOM 片段标签 / DOM snippet tags */}
           {domSnippets.length > 0 && (
             <div className='flex flex-wrap gap-6px mb-8px'>

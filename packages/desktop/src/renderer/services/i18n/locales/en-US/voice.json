@@ -224,6 +224,16 @@
       "needs_approval": "Needs your approval on screen",
       "interrupted": "Interrupted by a restart",
       "turn_failed": "The task failed"
-    }
+    },
+    "quotesWaitingHint": "This voice call can't take quotes. Send them by typing.",
+    "quotesAttached": "{{count}} quotes attached",
+    "quotesAttached_one": "{{count}} quote attached",
+    "quotesAttached_other": "{{count}} quotes attached",
+    "quotesWaiting": "{{count}} quotes waiting",
+    "quotesWaiting_one": "{{count}} quote waiting",
+    "quotesWaiting_other": "{{count}} quotes waiting",
+    "quotesTooLarge": "{{count}} quotes too long for voice",
+    "quotesTooLarge_one": "{{count}} quote too long for voice",
+    "quotesTooLarge_other": "{{count}} quotes too long for voice"
   }
 }

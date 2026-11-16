@@ -955,5 +955,21 @@
       "label": "위임한 작업: {{summary}}"
     },
     "breadcrumb": "대화 경로"
+  },
+  "quoteReply": {
+    "toolbarLabel": "선택 영역 작업",
+    "dictateReply": "음성으로 답장",
+    "popoverLabel": "선택한 부분에 답장",
+    "replyPlaceholder": "답장…",
+    "replyLabel": "내 답장",
+    "add": "추가",
+    "editTitle": "인용 편집",
+    "remove": "제거",
+    "editLabel": "인용 편집: {{quote}}",
+    "removeLabel": "인용 제거: {{quote}}",
+    "withReply": "답장 있음",
+    "stackLabel": "보낼 인용 {{count}}개",
+    "stackLabel_one": "보낼 인용 {{count}}개",
+    "stackLabel_other": "보낼 인용 {{count}}개"
   }
 }

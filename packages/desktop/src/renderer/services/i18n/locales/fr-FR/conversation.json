@@ -955,5 +955,21 @@
       "label": "Travail délégué : {{summary}}"
     },
     "breadcrumb": "Chemin de la conversation"
+  },
+  "quoteReply": {
+    "toolbarLabel": "Actions sur la sélection",
+    "dictateReply": "Répondre à la voix",
+    "popoverLabel": "Répondre à la sélection",
+    "replyPlaceholder": "Réponse…",
+    "replyLabel": "Votre réponse",
+    "add": "Ajouter",
+    "editTitle": "Modifier la citation",
+    "remove": "Retirer",
+    "editLabel": "Modifier la citation : {{quote}}",
+    "removeLabel": "Retirer la citation : {{quote}}",
+    "withReply": "Avec réponse",
+    "stackLabel": "{{count}} citations à envoyer",
+    "stackLabel_one": "{{count}} citation à envoyer",
+    "stackLabel_other": "{{count}} citations à envoyer"
   }
 }

@@ -214,6 +214,9 @@ export class VoiceController {
   private answerEndPending = false;
   /** Engine named by the bound call's `voice.ready`. */
   private callEngine: string | null = null;
+  /** C32: the bound call's backend accepts `voice.attachQuotes`. */
+  private quotesSupported = false;
+  private quotesAckSeq = 0;
   /** Cascade answer done on the backend: "your turn" sounds once its reply clips have played. */
   private yourTurnAfterReplies = false;
   private replySettleTimer: unknown = null;
@@ -256,6 +259,20 @@ export class VoiceController {
   }
 
   /** Conversation mode "Done": end your utterance now instead of waiting for the pause. */
+  /**
+   * C32: send the whole quote stack for the next utterance of this conversation-mode call
+   * (`""` clears it). Only when the backend advertised `attachQuotes`; `false` = not sent.
+   */
+  attachQuotes(text: string): boolean {
+    if (!this.quotesSupported || !this.isConversationMode || this.machine.call?.phase !== 'ready') return false;
+    return this.socket?.send({ name: 'voice.attachQuotes', text }) ?? false;
+  }
+
+  private setQuotesSupported(supported: boolean): void {
+    this.quotesSupported = supported;
+    this.store.update({ quotesSupported: supported });
+  }
+
   commitUtterance(): void {
     if (!this.isConversationMode || this.machine.call?.phase !== 'ready' || this.machine.held) return;
     this.socket?.send({ name: 'voice.commit' });
@@ -695,6 +712,7 @@ export class VoiceController {
 
   /** Close the call locally; optionally tell the backend to hang up the provider call. */
   private endCall(reason: string, notifyBackend: boolean, resumeOf: string | null = null): void {
+    if (this.quotesSupported) this.setQuotesSupported(false);
     const call = this.call;
     this.call = null;
     this.clearTimer('readyTimer');
@@ -796,10 +814,18 @@ export class VoiceController {
       return;
     switch (frame.name) {
       case 'voice.ready':
-        if (this.machine.call?.voiceSessionId === frame.voiceSessionId) this.callEngine = frame.engine;
+        if (this.machine.call?.voiceSessionId === frame.voiceSessionId) {
+          this.callEngine = frame.engine;
+          this.setQuotesSupported(frame.attachQuotes === true);
+        }
         return this.onReady(frame.voiceSessionId);
       case 'voice.state':
+        if (frame.state === 'armed') this.setQuotesSupported(frame.attachQuotes === true);
         return this.onServerState(frame.state, frame.reason);
+      case 'voice.quotesAttached':
+        this.quotesAckSeq += 1;
+        this.store.update({ quotesAck: { seq: this.quotesAckSeq, consumed: frame.consumed, reason: frame.reason } });
+        return;
       case 'voice.callEnded':
         return this.onCallEnded(frame.voiceSessionId, frame.reason);
       case 'voice.caption':

@@ -5,16 +5,36 @@
  */
 
 import type { TMessage } from '@/common/chat/chatLib';
-import { emitter } from '@/renderer/utils/emitter';
+import ReplyPopover, { type ReplyPopoverAnchor } from '@/renderer/components/chat/SendBox/ReplyPopover';
+import { useQuoteStack, type QuotePosition } from '@/renderer/components/chat/SendBox/quoteStack';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useOptionalPreviewContext } from '@/renderer/pages/conversation/Preview/context/PreviewContext';
 import { openExternalUrl } from '@/renderer/utils/platform';
 import { resolveSelectionHttpUrl } from '@/renderer/utils/url';
-import { Browser, Earth, Quote } from '@icon-park/react';
-import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@arco-design/web-react';
+import { Browser, Earth, Quote, Voice } from '@icon-park/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ReplyPos = { top: number; left: number; text: string; msgId: string; msgPos: string; url: string | null };
+type ReplyPos = {
+  top: number;
+  left: number;
+  /** Selection edges, to anchor the reply popover. */
+  selectionTop: number;
+  selectionBottom: number;
+  text: string;
+  msgId: string;
+  msgPos: QuotePosition;
+  url: string | null;
+};
+
+type PopoverState = {
+  anchor: ReplyPopoverAnchor;
+  text: string;
+  msgId: string;
+  msgPos: QuotePosition;
+  dictate: boolean;
+};
 
 /**
  * Get the current selection, checking Shadow DOM roots if needed.
@@ -77,58 +97,95 @@ function findMessageElement(sel: Selection): Element | null {
 }
 
 const BUTTON_HEIGHT = 32;
+const POPOVER_ESTIMATED_HEIGHT = 170;
+/** Touch: wait for the selection handles to settle before showing the toolbar. */
+const TOUCH_SETTLE_MS = 350;
 
+/** Selections in the composer, the quote stack/popover/modal or any editable never open the toolbar. */
+const isInQuoteUiOrEditable = (node: Node | null): boolean => {
+  const el = node instanceof Element ? node : (node?.parentElement ?? null);
+  return Boolean(el?.closest('[data-quote-ui], textarea, input, [contenteditable="true"]'));
+};
+
+/** Toolbar buttons must not take focus away from (and collapse) the selection. */
+const keepSelection = (event: React.MouseEvent) => event.preventDefault();
+
+const isEditableTarget = (target: EventTarget | null): boolean =>
+  target instanceof Element && Boolean(target.closest('textarea, input, select, [contenteditable="true"]'));
+
+/**
+ * The selection toolbar of the message list (C32): Reply and dictated reply on any
+ * selected message text (Shadow DOM aware), plus the URL actions for a selected
+ * link. Reply opens a popover whose result goes onto the conversation's quote
+ * stack. Keyboard: R or Ctrl/Cmd+Shift+R while the toolbar shows. Touch: the
+ * toolbar appears below the selection, clear of the native selection menu.
+ */
 const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) => {
   const { t } = useTranslation();
   const layout = useLayoutContext();
   const preview = useOptionalPreviewContext();
   const isMobile = layout?.isMobile ?? false;
   const [pos, setPos] = useState<ReplyPos | null>(null);
+  const [popover, setPopover] = useState<PopoverState | null>(null);
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
   const buttonRef = useRef<HTMLDivElement>(null);
+  const quoteStack = useQuoteStack(messages[0]?.conversation_id);
+
+  const readSelection = useCallback((target: EventTarget | null, touch: boolean): ReplyPos | null => {
+    const sel = getEffectiveSelection(target);
+    if (!sel || sel.isCollapsed) return null;
+    const text = sel.toString().trim();
+    if (!text || isInQuoteUiOrEditable(sel.anchorNode)) return null;
+
+    const msgEl = findMessageElement(sel);
+    if (!msgEl) return null;
+
+    const msgId = msgEl.id.slice('message-'.length);
+    const msg = messagesRef.current.find((m) => m.id === msgId);
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+
+    // Mouse: above the selection (below when too close to the top). Touch: always below,
+    // because the native selection menu sits above it.
+    const above = rect.top - BUTTON_HEIGHT - 8;
+    const below = rect.bottom + (touch ? 16 : 8);
+    const top = !touch && above >= 0 ? above : Math.min(below, window.innerHeight - BUTTON_HEIGHT - 8);
+
+    return {
+      top,
+      left: Math.max(60, Math.min(rect.left + rect.width / 2, window.innerWidth - 60)),
+      selectionTop: rect.top,
+      selectionBottom: rect.bottom,
+      text,
+      msgId,
+      msgPos: (msg?.position ?? 'left') as QuotePosition,
+      // Resolve here while the live Selection (with its anchor/focus nodes) exists.
+      url: resolveSelectionHttpUrl(text, sel.anchorNode, sel.focusNode),
+    };
+  }, []);
 
   useEffect(() => {
-    // Disable on mobile — conflicts with native text selection menu
-    if (isMobile) return;
-
     let mounted = true;
     let scrollTimer: ReturnType<typeof setTimeout> | null = null;
+    let touchTimer: ReturnType<typeof setTimeout> | null = null;
 
     const onMouseUp = (e: MouseEvent) => {
-      // Skip if mouseup is on the reply button itself
       if (buttonRef.current?.contains(e.target as Node)) return;
-
       window.setTimeout(() => {
         if (!mounted) return;
-
-        const sel = getEffectiveSelection(e.target);
-        if (!sel || sel.isCollapsed) return;
-        const text = sel.toString().trim();
-        if (!text) return;
-
-        const msgEl = findMessageElement(sel);
-        if (!msgEl) return;
-
-        const msgId = msgEl.id.slice('message-'.length);
-        const msg = messagesRef.current.find((m) => m.id === msgId);
-        const rect = sel.getRangeAt(0).getBoundingClientRect();
-
-        // Place above selection; if too close to top, place below
-        const above = rect.top - BUTTON_HEIGHT - 8;
-        const below = rect.bottom + 8;
-        const top = above >= 0 ? above : below;
-
-        setPos({
-          top,
-          left: Math.max(60, Math.min(rect.left + rect.width / 2, window.innerWidth - 60)),
-          text,
-          msgId,
-          msgPos: msg?.position ?? 'left',
-          // Resolve here while the live Selection (with its anchor/focus nodes) exists.
-          url: resolveSelectionHttpUrl(text, sel.anchorNode, sel.focusNode),
-        });
+        const next = readSelection(e.target, false);
+        if (next) setPos(next);
       }, 20);
+    };
+
+    // Touch (390 px): long-press selections fire no mouseup; follow the selection instead.
+    const onSelectionChange = () => {
+      if (touchTimer) clearTimeout(touchTimer);
+      touchTimer = setTimeout(() => {
+        if (!mounted) return;
+        const sel = document.getSelection();
+        setPos(readSelection(sel?.anchorNode ?? null, true));
+      }, TOUCH_SETTLE_MS);
     };
 
     const onMouseDown = (e: MouseEvent) => {
@@ -143,88 +200,136 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
       scrollTimer = setTimeout(() => setPos(null), 100);
     };
 
-    document.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('mousedown', onMouseDown);
+    if (isMobile) {
+      document.addEventListener('selectionchange', onSelectionChange);
+    } else {
+      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mousedown', onMouseDown);
+    }
     document.addEventListener('scroll', onScroll, true);
     return () => {
       mounted = false;
       if (scrollTimer) clearTimeout(scrollTimer);
+      if (touchTimer) clearTimeout(touchTimer);
+      document.removeEventListener('selectionchange', onSelectionChange);
       document.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('scroll', onScroll, true);
     };
-  }, [isMobile]);
+  }, [isMobile, readSelection]);
 
-  if (!pos) return null;
+  const openPopover = useCallback((from: ReplyPos, dictate: boolean) => {
+    const spaceBelow = window.innerHeight - from.selectionBottom;
+    const top =
+      spaceBelow > POPOVER_ESTIMATED_HEIGHT + 16
+        ? from.selectionBottom + 8
+        : Math.max(8, from.selectionTop - POPOVER_ESTIMATED_HEIGHT - 8);
+    setPopover({ anchor: { top, left: from.left }, text: from.text, msgId: from.msgId, msgPos: from.msgPos, dictate });
+    setPos(null);
+  }, []);
 
-  // Resolved http(s) URL for the selection (single URL text, or a link anchor);
-  // when present, offer extra open actions.
-  const url = pos.url;
+  // Keyboard: R or Ctrl/Cmd+Shift+R replies to the selection while the toolbar shows.
+  useEffect(() => {
+    if (!pos) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isEditableTarget(event.target)) return;
+      const plainR =
+        event.key.toLowerCase() === 'r' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey;
+      const shortcut = event.key.toLowerCase() === 'r' && (event.ctrlKey || event.metaKey) && event.shiftKey;
+      if (!plainR && !shortcut) return;
+      event.preventDefault();
+      openPopover(pos, false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [pos, openPopover]);
 
   const dismiss = () => {
     setPos(null);
     window.getSelection()?.removeAllRanges();
   };
 
-  const itemClassName =
-    'flex items-center gap-4px px-8px py-4px rd-6px cursor-pointer transition-colors whitespace-nowrap hover:bg-[var(--brand-hover)]';
+  const popoverNode = popover ? (
+    <ReplyPopover
+      anchor={popover.anchor}
+      quote={popover.text}
+      autoDictate={popover.dictate}
+      onAdd={(reply) => {
+        quoteStack.add({ messageId: popover.msgId, position: popover.msgPos, content: popover.text, reply });
+        setPopover(null);
+        window.getSelection()?.removeAllRanges();
+      }}
+      onClose={() => setPopover(null)}
+    />
+  ) : null;
+
+  if (!pos) return popoverNode;
+
+  // Resolved http(s) URL for the selection (single URL text, or a link anchor);
+  // when present, offer extra open actions.
+  const url = pos.url;
 
   return (
-    <div
-      ref={buttonRef}
-      className='fixed z-9999 flex items-center gap-2px px-4px py-4px rd-8px select-none'
-      style={{
-        top: pos.top,
-        left: pos.left,
-        transform: 'translateX(-50%)',
-        background: 'var(--brand-light)',
-        border: '1px solid var(--brand-hover)',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
-        color: 'var(--brand)',
-      }}
-    >
+    <>
+      {popoverNode}
       <div
-        className={itemClassName}
-        onMouseDown={(e) => {
-          e.preventDefault();
-          emitter.emit('sendbox.reply', {
-            messageId: pos.msgId,
-            content: pos.text,
-            position: pos.msgPos as 'left' | 'right' | 'center' | 'pop',
-          });
-          dismiss();
-        }}
+        ref={buttonRef}
+        role='toolbar'
+        aria-label={t('conversation.quoteReply.toolbarLabel')}
+        className='fixed z-9999 flex items-center gap-2px px-4px py-4px rd-8px select-none bg-base border border-solid border-3 shadow-md'
+        style={{ top: pos.top, left: pos.left, transform: 'translateX(-50%)' }}
+        data-testid='selection-toolbar'
+        data-quote-ui
       >
-        <Quote theme='outline' size='14' fill='currentColor' />
-        <span className='text-12px font-medium'>{t('common.reply', { defaultValue: 'Reply' })}</span>
+        <Button
+          type='text'
+          size='mini'
+          icon={<Quote theme='outline' size='14' />}
+          aria-keyshortcuts='R Control+Shift+R Meta+Shift+R'
+          onMouseDown={keepSelection}
+          onClick={() => openPopover(pos, false)}
+        >
+          {t('common.reply', { defaultValue: 'Reply' })}
+        </Button>
+        <Button
+          type='text'
+          size='mini'
+          icon={<Voice theme='outline' size='14' />}
+          aria-label={t('conversation.quoteReply.dictateReply')}
+          title={t('conversation.quoteReply.dictateReply')}
+          onMouseDown={keepSelection}
+          onClick={() => openPopover(pos, true)}
+        />
+        {url && preview && (
+          <Button
+            type='text'
+            size='mini'
+            icon={<Browser theme='outline' size='14' />}
+            onMouseDown={keepSelection}
+            onClick={() => {
+              preview.openBrowserTab(url);
+              dismiss();
+            }}
+          >
+            {t('common.openInBuiltinBrowser')}
+          </Button>
+        )}
+        {url && (
+          <Button
+            type='text'
+            size='mini'
+            icon={<Earth theme='outline' size='14' />}
+            onMouseDown={keepSelection}
+            onClick={() => {
+              void openExternalUrl(url).catch(console.error);
+              dismiss();
+            }}
+          >
+            {t('common.openInSystemBrowser')}
+          </Button>
+        )}
       </div>
-      {url && preview && (
-        <div
-          className={itemClassName}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            preview.openBrowserTab(url);
-            dismiss();
-          }}
-        >
-          <Browser theme='outline' size='14' fill='currentColor' />
-          <span className='text-12px font-medium'>{t('common.openInBuiltinBrowser')}</span>
-        </div>
-      )}
-      {url && (
-        <div
-          className={itemClassName}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            void openExternalUrl(url).catch(console.error);
-            dismiss();
-          }}
-        >
-          <Earth theme='outline' size='14' fill='currentColor' />
-          <span className='text-12px font-medium'>{t('common.openInSystemBrowser')}</span>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 

@@ -224,6 +224,16 @@
       "needs_approval": "به تأیید شما روی صفحه نیاز دارد",
       "interrupted": "با راه‌اندازی مجدد قطع شد",
       "turn_failed": "کار ناموفق بود"
-    }
+    },
+    "quotesWaitingHint": "این تماس صوتی نقل‌قول نمی‌پذیرد. آن‌ها را با تایپ ارسال کنید.",
+    "quotesAttached": "{{count}} نقل‌قول پیوست شد",
+    "quotesAttached_one": "{{count}} نقل‌قول پیوست شد",
+    "quotesAttached_other": "{{count}} نقل‌قول پیوست شد",
+    "quotesWaiting": "{{count}} نقل‌قول در انتظار",
+    "quotesWaiting_one": "{{count}} نقل‌قول در انتظار",
+    "quotesWaiting_other": "{{count}} نقل‌قول در انتظار",
+    "quotesTooLarge": "{{count}} نقل‌قول برای صدا خیلی طولانی است",
+    "quotesTooLarge_one": "{{count}} نقل‌قول برای صدا خیلی طولانی است",
+    "quotesTooLarge_other": "{{count}} نقل‌قول برای صدا خیلی طولانی است"
   }
 }

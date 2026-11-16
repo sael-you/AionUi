@@ -957,5 +957,21 @@
       "label": "Devredilen işler: {{summary}}"
     },
     "breadcrumb": "Konuşma yolu"
+  },
+  "quoteReply": {
+    "toolbarLabel": "Seçim işlemleri",
+    "dictateReply": "Sesle yanıtla",
+    "popoverLabel": "Seçime yanıt ver",
+    "replyPlaceholder": "Yanıt…",
+    "replyLabel": "Yanıtınız",
+    "add": "Ekle",
+    "editTitle": "Alıntıyı düzenle",
+    "remove": "Kaldır",
+    "editLabel": "Alıntıyı düzenle: {{quote}}",
+    "removeLabel": "Alıntıyı kaldır: {{quote}}",
+    "withReply": "Yanıtlı",
+    "stackLabel": "Gönderilecek {{count}} alıntı",
+    "stackLabel_one": "Gönderilecek {{count}} alıntı",
+    "stackLabel_other": "Gönderilecek {{count}} alıntı"
   }
 }

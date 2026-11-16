@@ -228,6 +228,22 @@
       "needs_approval": "Нужно ваше подтверждение на экране",
       "interrupted": "Прервано перезапуском",
       "turn_failed": "Задача не выполнена"
-    }
+    },
+    "quotesWaitingHint": "Этот голосовой звонок не принимает цитаты. Отправьте их текстом.",
+    "quotesAttached": "Прикреплено {{count}} цитаты",
+    "quotesAttached_one": "Прикреплена {{count}} цитата",
+    "quotesAttached_few": "Прикреплены {{count}} цитаты",
+    "quotesAttached_many": "Прикреплено {{count}} цитат",
+    "quotesAttached_other": "Прикреплено {{count}} цитаты",
+    "quotesWaiting": "{{count}} цитаты ждут",
+    "quotesWaiting_one": "{{count}} цитата ждёт",
+    "quotesWaiting_few": "{{count}} цитаты ждут",
+    "quotesWaiting_many": "{{count}} цитат ждут",
+    "quotesWaiting_other": "{{count}} цитаты ждут",
+    "quotesTooLarge": "{{count}} цитаты слишком длинные для голоса",
+    "quotesTooLarge_one": "{{count}} цитата слишком длинная для голоса",
+    "quotesTooLarge_few": "{{count}} цитаты слишком длинные для голоса",
+    "quotesTooLarge_many": "{{count}} цитат слишком длинные для голоса",
+    "quotesTooLarge_other": "{{count}} цитаты слишком длинные для голоса"
   }
 }

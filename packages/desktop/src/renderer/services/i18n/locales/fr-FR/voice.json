@@ -226,6 +226,16 @@
       "needs_approval": "Votre approbation est requise à l’écran",
       "interrupted": "Interrompue par un redémarrage",
       "turn_failed": "La tâche a échoué"
-    }
+    },
+    "quotesWaitingHint": "Cet appel vocal ne peut pas joindre de citations. Envoyez-les en tapant.",
+    "quotesAttached": "{{count}} citations jointes",
+    "quotesAttached_one": "{{count}} citation jointe",
+    "quotesAttached_other": "{{count}} citations jointes",
+    "quotesWaiting": "{{count}} citations en attente",
+    "quotesWaiting_one": "{{count}} citation en attente",
+    "quotesWaiting_other": "{{count}} citations en attente",
+    "quotesTooLarge": "{{count}} citations trop longues pour la voix",
+    "quotesTooLarge_one": "{{count}} citation trop longue pour la voix",
+    "quotesTooLarge_other": "{{count}} citations trop longues pour la voix"
   }
 }

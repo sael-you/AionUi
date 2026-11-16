@@ -228,6 +228,22 @@
       "needs_approval": "Потрібне ваше підтвердження на екрані",
       "interrupted": "Перервано перезапуском",
       "turn_failed": "Завдання не виконано"
-    }
+    },
+    "quotesWaitingHint": "Цей голосовий дзвінок не приймає цитат. Надішліть їх текстом.",
+    "quotesAttached": "Додано {{count}} цитати",
+    "quotesAttached_one": "Додано {{count}} цитату",
+    "quotesAttached_few": "Додано {{count}} цитати",
+    "quotesAttached_many": "Додано {{count}} цитат",
+    "quotesAttached_other": "Додано {{count}} цитати",
+    "quotesWaiting": "{{count}} цитати чекають",
+    "quotesWaiting_one": "{{count}} цитата чекає",
+    "quotesWaiting_few": "{{count}} цитати чекають",
+    "quotesWaiting_many": "{{count}} цитат чекають",
+    "quotesWaiting_other": "{{count}} цитати чекають",
+    "quotesTooLarge": "{{count}} цитати задовгі для голосу",
+    "quotesTooLarge_one": "{{count}} цитата задовга для голосу",
+    "quotesTooLarge_few": "{{count}} цитати задовгі для голосу",
+    "quotesTooLarge_many": "{{count}} цитат задовгі для голосу",
+    "quotesTooLarge_other": "{{count}} цитати задовгі для голосу"
   }
 }

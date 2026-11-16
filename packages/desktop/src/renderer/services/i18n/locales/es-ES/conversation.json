@@ -956,5 +956,21 @@
       "label": "Trabajo delegado: {{summary}}"
     },
     "breadcrumb": "Ruta de la conversación"
+  },
+  "quoteReply": {
+    "toolbarLabel": "Acciones de la selección",
+    "dictateReply": "Responder por voz",
+    "popoverLabel": "Responder a la selección",
+    "replyPlaceholder": "Respuesta…",
+    "replyLabel": "Tu respuesta",
+    "add": "Añadir",
+    "editTitle": "Editar cita",
+    "remove": "Quitar",
+    "editLabel": "Editar cita: {{quote}}",
+    "removeLabel": "Quitar cita: {{quote}}",
+    "withReply": "Con respuesta",
+    "stackLabel": "{{count}} citas por enviar",
+    "stackLabel_one": "{{count}} cita por enviar",
+    "stackLabel_other": "{{count}} citas por enviar"
   }
 }

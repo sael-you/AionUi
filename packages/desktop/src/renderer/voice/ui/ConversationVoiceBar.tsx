@@ -11,9 +11,9 @@
  * the mic opens; your words are added to the running turn).
  */
 
-import { Button } from '@arco-design/web-react';
+import { Button, Tag } from '@arco-design/web-react';
 import { CloseSmall, PauseOne } from '@icon-park/react';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getVoiceController } from '../core/effects';
 import type { VoiceController } from '../core/VoiceController';
@@ -21,6 +21,7 @@ import { useVoiceView, type VoiceView } from '../core/voiceStore';
 import VoiceOrbGlyph from './VoiceOrbGlyph';
 import { NO_PROVIDER_NOTICE, VoiceProviderSetup } from './VoiceOverlay';
 import styles from './voice.module.css';
+import { formatQuoteItems, useQuoteStack } from '@/renderer/components/chat/SendBox/quoteStack';
 
 export type ConversationVoiceBarProps = {
   conversationId: string;
@@ -55,6 +56,59 @@ const ORB_OF: Record<VoiceBarState, React.ComponentProps<typeof VoiceOrbGlyph>['
   offline: 'offline',
 };
 
+/**
+ * C32: the conversation's stacked quotes ride with the next spoken message. While a
+ * conversation-mode call of this conversation is ready and its backend advertised
+ * `attachQuotes`, the whole stack is sent on every change (`""` once it empties); the
+ * stack clears only when the backend confirms the quotes were posted.
+ */
+const useVoiceQuotes = (
+  controller: VoiceController,
+  view: VoiceView,
+  conversationId: string,
+  active: boolean
+): { count: number; attached: boolean; tooLarge: boolean } => {
+  const stack = useQuoteStack(conversationId);
+  const text = formatQuoteItems(stack.items);
+  const live = active && view.quotesSupported && view.machine.call?.phase === 'ready';
+  const sentRef = useRef(false);
+  const [accepted, setAccepted] = useState(false);
+  const [tooLarge, setTooLarge] = useState(false);
+
+  useEffect(() => {
+    if (!live) {
+      setAccepted(false);
+      return;
+    }
+    if (text) {
+      setTooLarge(false);
+      setAccepted(controller.attachQuotes(text));
+      sentRef.current = true;
+    } else if (sentRef.current) {
+      controller.attachQuotes('');
+      sentRef.current = false;
+      setAccepted(false);
+    }
+  }, [live, text, controller]);
+
+  const ack = view.quotesAck;
+  const { clear } = stack;
+  useEffect(() => {
+    if (!ack || !active) return;
+    if (ack.consumed && ack.reason === 'posted') {
+      sentRef.current = false;
+      clear();
+    } else if (ack.reason === 'too_large') {
+      setTooLarge(true);
+      setAccepted(false);
+    } else if (ack.reason !== 'cleared') {
+      setAccepted(false);
+    }
+  }, [ack, active, clear]);
+
+  return { count: stack.items.length, attached: live && accepted && !tooLarge, tooLarge };
+};
+
 const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
   conversationId,
   running,
@@ -66,6 +120,7 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
   const view = useVoiceView(controller.store);
   const active =
     view.machine.mode !== 'off' && view.voiceMode === 'conversation' && view.focusConversationId === conversationId;
+  const quotes = useVoiceQuotes(controller, view, conversationId, active);
   if (!active) return null;
 
   const state = voiceBarState(view, running);
@@ -112,6 +167,20 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
           <span className={styles.voiceBarNotice}>{notice}</span>
         ) : (
           <>
+            {quotes.count > 0 && (
+              <Tag
+                size='small'
+                color={quotes.attached ? 'arcoblue' : 'orange'}
+                data-testid='voice-bar-quotes'
+                title={quotes.attached ? undefined : t('voice.bar.quotesWaitingHint')}
+              >
+                {quotes.tooLarge
+                  ? t('voice.bar.quotesTooLarge', { count: quotes.count })
+                  : quotes.attached
+                    ? t('voice.bar.quotesAttached', { count: quotes.count })
+                    : t('voice.bar.quotesWaiting', { count: quotes.count })}
+              </Tag>
+            )}
             {outcome && <span className={styles.voiceBarOutcome}>{outcome}</span>}
             {lastCaption && <span data-testid='voice-bar-transcript'>{lastCaption.text}</span>}
           </>

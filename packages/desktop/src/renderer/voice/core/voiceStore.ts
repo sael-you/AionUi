@@ -21,6 +21,7 @@ import type {
   VoiceFollowUp,
   VoiceSessionMode,
   VoiceSettings,
+  VoiceQuotesReason,
 } from './types';
 
 export const MAX_CAPTIONS = 30;
@@ -64,6 +65,10 @@ export type VoiceView = {
   agentSpeaking: boolean;
   /** Conversation mode: what happened to your last utterance (voice bar). */
   lastOutcome: { status: FollowUpStatus; line: string } | null;
+  /** C32: the live call accepts stacked quotes with the next utterance. */
+  quotesSupported: boolean;
+  /** C32: last `voice.quotesAttached` ack; `seq` changes on every ack. */
+  quotesAck: { seq: number; consumed: boolean; reason: VoiceQuotesReason } | null;
 };
 
 export const INITIAL_VIEW: VoiceView = {
@@ -90,6 +95,8 @@ export const INITIAL_VIEW: VoiceView = {
   voiceMode: 'jarvis',
   agentSpeaking: false,
   lastOutcome: null,
+  quotesSupported: false,
+  quotesAck: null,
 };
 
 export class VoiceStore {

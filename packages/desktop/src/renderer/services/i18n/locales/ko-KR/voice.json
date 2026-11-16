@@ -224,6 +224,16 @@
       "needs_approval": "화면에서 승인이 필요합니다",
       "interrupted": "재시작으로 중단됨",
       "turn_failed": "작업이 실패했습니다"
-    }
+    },
+    "quotesWaitingHint": "이 음성 통화에는 인용을 첨부할 수 없습니다. 입력해서 보내세요.",
+    "quotesAttached": "인용 {{count}}개 첨부됨",
+    "quotesAttached_one": "인용 {{count}}개 첨부됨",
+    "quotesAttached_other": "인용 {{count}}개 첨부됨",
+    "quotesWaiting": "인용 {{count}}개 대기 중",
+    "quotesWaiting_one": "인용 {{count}}개 대기 중",
+    "quotesWaiting_other": "인용 {{count}}개 대기 중",
+    "quotesTooLarge": "인용 {{count}}개가 음성으로 보내기에 너무 깁니다",
+    "quotesTooLarge_one": "인용 {{count}}개가 음성으로 보내기에 너무 깁니다",
+    "quotesTooLarge_other": "인용 {{count}}개가 음성으로 보내기에 너무 깁니다"
   }
 }
