@@ -9,7 +9,14 @@
 import { Button, Drawer } from '@arco-design/web-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ProjectChip, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import styles from './Library.module.css';
+
+/** The scope's name in the main header: the project chip in its sidebar colour, or a plain label (Global). */
+export const LibraryScopeName: React.FC<{ workspace?: string; label: string }> = ({ workspace, label }) => {
+  const theme = useProjectTheme(workspace);
+  return theme ? <ProjectChip project={theme} /> : <span>{label}</span>;
+};
 
 /** "Nothing here yet — browse the Library": one line and one clear action. */
 export const LibraryEmpty: React.FC<{ text: string; actionLabel?: string; onAction?: () => void }> = ({

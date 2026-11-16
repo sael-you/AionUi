@@ -1510,5 +1510,32 @@
     },
     "openPage": "Abrir página completa",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "Servidores MCP que pueden usar tus agentes y dónde está activo cada uno.",
+    "tabMarket": "Mercado",
+    "tabKits": "Kits",
+    "needsKey": "Necesita clave",
+    "noKey": "Sin clave",
+    "added": "Añadido",
+    "viaKit": "Mediante {{name}}",
+    "attachElsewhere": "Vincular a…",
+    "detachTitle": "¿Quitar {{name}} de {{scope}}?",
+    "detachBody": "Las conversaciones de {{scope}} dejan de recibir {{name}}. La instancia y sus claves se conservan.",
+    "group": {
+      "attached": "Vinculado a {{scope}}",
+      "unassigned": "Sin vincular",
+      "custom": "Tus servidores",
+      "extensions": "De extensiones"
+    },
+    "unassignedHint": "Vincúlalos a Global o a un proyecto para usarlos.",
+    "nothingAttached": "Aún no hay nada vinculado a {{scope}}.",
+    "browseMarket": "Explorar el mercado",
+    "filter": {
+      "all": "Todos",
+      "official": "Oficiales",
+      "community": "Comunidad",
+      "custom": "Propios"
+    }
   }
 }

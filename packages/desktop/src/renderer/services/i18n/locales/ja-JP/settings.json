@@ -1512,5 +1512,32 @@
     },
     "openPage": "ページ全体を開く",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "エージェントが使える MCP サーバーと、それぞれが有効な場所。",
+    "tabMarket": "マーケット",
+    "tabKits": "キット",
+    "needsKey": "キーが必要",
+    "noKey": "キー不要",
+    "added": "追加済み",
+    "viaKit": "{{name}} 経由",
+    "attachElsewhere": "接続先…",
+    "detachTitle": "{{name}} を {{scope}} から外しますか?",
+    "detachBody": "{{scope}} の会話は {{name}} を受け取らなくなります。インスタンスとキーは残ります。",
+    "group": {
+      "attached": "{{scope}} に接続済み",
+      "unassigned": "どこにも接続されていない",
+      "custom": "自分のサーバー",
+      "extensions": "拡張機能から"
+    },
+    "unassignedHint": "使うにはグローバルかプロジェクトに接続してください。",
+    "nothingAttached": "{{scope}} にはまだ何も接続されていません。",
+    "browseMarket": "マーケットを見る",
+    "filter": {
+      "all": "すべて",
+      "official": "公式",
+      "community": "コミュニティ",
+      "custom": "カスタム"
+    }
   }
 }

@@ -13,13 +13,33 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import type { McpMarketTemplate } from '@/common/config/storage';
 
-const state = vi.hoisted(() => ({ market: {} as Record<string, unknown> }));
+const state = vi.hoisted(() => ({
+  market: {} as Record<string, unknown>,
+  kits: [] as unknown[],
+  kitAttachments: [] as unknown[],
+  effective: null as unknown,
+  origin: null as string | null,
+}));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options && 'keys' in options ? `${key}:${String(options.keys)}` : key,
   }),
+}));
+
+vi.mock('@/renderer/hooks/mcp/market/useKits', () => ({
+  useKitList: () => ({ kits: state.kits ?? [] }),
+  useKitAttachments: () => ({ attachments: state.kitAttachments ?? [] }),
+  useKitEffective: () => ({ effective: state.effective ?? null, isLoading: false, reload: vi.fn() }),
+}));
+
+vi.mock('@/renderer/pages/settings/ToolsSettings/kits/KitsSection', () => ({
+  default: () => <div data-testid='kits-section-stub' />,
+}));
+
+vi.mock('@/renderer/components/settings/SettingsModal/library/useOriginProjectId', () => ({
+  useOriginProjectId: () => state.origin ?? null,
 }));
 
 vi.mock('@/renderer/hooks/mcp/market/useMcpMarket', () => ({
@@ -146,86 +166,100 @@ beforeEach(() => {
 
 afterEach(() => cleanup());
 
-const entry = (id: string) =>
-  screen.getAllByTestId('mcp-market-template').find((n) => n.getAttribute('data-template-id') === id)!;
+const sections = () => screen.getAllByTestId('library-section');
+const card = (id: string) =>
+  screen.getAllByTestId('library-card').find((n) => n.getAttribute('data-card-id') === id) as HTMLElement;
+const openDrawer = async (id: string) => {
+  fireEvent.click(within(card(id)).getByTestId('library-card-open'));
+  return screen.findByTestId('mcp-template-drawer');
+};
 
-describe('MCP library browse', () => {
-  it('groups the templates by category, in catalogue order', () => {
+describe('MCP market tab (C33)', () => {
+  it('groups the templates by category, in catalogue order, as compact cards', () => {
     renderView();
-    const sections = screen.getAllByTestId('mcp-market-category');
-    expect(sections.map((s) => s.querySelector('h4')?.textContent)).toEqual([
-      'mcp.market.library.category.developer',
-      'mcp.market.library.category.email',
-      'mcp.market.library.category.research',
-    ]);
-    expect(within(sections[0]).getAllByTestId('mcp-market-template')).toHaveLength(3);
+    expect(screen.getByTestId('library-tab-market')).toHaveAttribute('aria-selected', 'true');
+    expect(sections().map((s) => s.getAttribute('data-section-key'))).toEqual(['developer', 'email', 'research']);
+    expect(within(sections()[0]).getAllByTestId('library-card')).toHaveLength(3);
+    // The card keeps one key chip; keys, read-only and mode details live in the drawer.
+    expect(within(card('supabase')).getByTestId('mcp-template-key-chip')).toHaveTextContent(
+      'settings.toolsLibrary.needsKey'
+    );
+    expect(within(card('deepwiki')).getByTestId('mcp-template-key-chip')).toHaveTextContent(
+      'settings.toolsLibrary.noKey'
+    );
+    expect(within(card('supabase')).queryByTestId('mcp-market-template-enforcement')).toBeNull();
   });
 
   it('shows loading, then the catalogue error with a retry instead of the library', () => {
     state.market = { ...state.market, loading: true };
     const first = renderView();
     expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
-    expect(screen.queryByTestId('mcp-market-category')).toBeNull();
+    expect(screen.queryByTestId('library-section')).toBeNull();
     first.unmount();
 
     state.market = { ...state.market, loading: false, templates: [], templatesError: new Error('down') };
     renderView();
-    expect(screen.queryByTestId('mcp-market-category-filter')).toBeNull();
+    expect(screen.queryByTestId('library-section')).toBeNull();
     fireEvent.click(screen.getByText('mcp.market.actions.retry'));
     expect(state.market.reload).toHaveBeenCalled();
-
-    // Back with templates: the library (category filter) is there.
-    cleanup();
-    state.market = { ...state.market, templates, templatesError: null };
-    renderView();
-    expect(screen.getByTestId('mcp-market-category-filter')).toBeInTheDocument();
   });
 
-  it('shows which keys are needed, how read-only is enforced, the mode and the badges', () => {
+  it('the drawer shows which keys are needed, how read-only is enforced, the mode and the badges', async () => {
     renderView();
-    expect(within(entry('supabase')).getByTestId('mcp-market-template-keys')).toHaveTextContent(
+    let drawer = await openDrawer('supabase');
+    expect(within(drawer).getByTestId('mcp-market-template-keys')).toHaveTextContent(
       'mcp.market.library.needsKey:SUPABASE_ACCESS_TOKEN'
     );
-    expect(within(entry('deepwiki')).getByTestId('mcp-market-template-keys')).toHaveTextContent(
-      'mcp.market.library.noKey'
-    );
-    expect(within(entry('supabase')).getByTestId('mcp-market-template-enforcement')).toHaveTextContent(
+    expect(within(drawer).getByTestId('mcp-market-template-enforcement')).toHaveTextContent(
       'mcp.market.library.enforcement.server'
     );
-    expect(within(entry('chrome-devtools')).getByTestId('mcp-market-template-enforcement')).toHaveTextContent(
+    expect(within(drawer).getByTestId('mcp-market-template-mode')).toHaveTextContent('mcp.market.library.modeFull');
+    cleanup();
+    renderView();
+    drawer = await openDrawer('deepwiki');
+    expect(within(drawer).getByTestId('mcp-market-template-keys')).toHaveTextContent('mcp.market.library.noKey');
+    expect(within(drawer).getByTestId('mcp-market-template-mode')).toHaveTextContent('mcp.market.library.modeReadOnly');
+    cleanup();
+    renderView();
+    drawer = await openDrawer('chrome-devtools');
+    expect(within(drawer).getByTestId('mcp-market-template-enforcement')).toHaveTextContent(
       'mcp.market.library.enforcement.proxy'
     );
-    expect(within(entry('brevo')).getByTestId('mcp-market-template-enforcement')).toHaveTextContent(
+    cleanup();
+    renderView();
+    drawer = await openDrawer('brevo');
+    expect(within(drawer).getByTestId('mcp-market-template-enforcement')).toHaveTextContent(
       'mcp.market.library.enforcement.none'
     );
-    expect(within(entry('supabase')).getByTestId('mcp-market-template-mode')).toHaveTextContent(
-      'mcp.market.library.modeFull'
-    );
-    expect(within(entry('deepwiki')).getByTestId('mcp-market-template-mode')).toHaveTextContent(
-      'mcp.market.library.modeReadOnly'
-    );
-    expect(within(entry('supabase')).getByText('mcp.market.library.official')).toBeInTheDocument();
-    expect(within(entry('reddit')).getByText('mcp.market.library.community')).toBeInTheDocument();
-    expect(within(entry('reddit')).getByText('mcp.market.library.optional')).toBeInTheDocument();
+    cleanup();
+    renderView();
+    expect(within(card('supabase')).getByText('mcp.market.library.official')).toBeInTheDocument();
+    expect(within(card('reddit')).getByText('mcp.market.library.community')).toBeInTheDocument();
+    drawer = await openDrawer('reddit');
+    expect(within(drawer).getByText('mcp.market.library.optional')).toBeInTheDocument();
   });
 
-  it('filters by category and by search, with a no-match state', () => {
+  it('filters by category (rail), source and search, with a no-match state', () => {
     renderView();
-    fireEvent.change(screen.getByTestId('mcp-market-category-filter'), { target: { value: 'email' } });
-    expect(screen.getAllByTestId('mcp-market-template').map((n) => n.getAttribute('data-template-id'))).toEqual([
-      'brevo',
-    ]);
-    fireEvent.change(screen.getByTestId('mcp-market-category-filter'), { target: { value: 'all' } });
+    fireEvent.click(
+      screen.getAllByTestId('library-rail-category').find((b) => b.getAttribute('data-key') === 'email') as HTMLElement
+    );
+    expect(screen.getAllByTestId('library-card').map((n) => n.getAttribute('data-card-id'))).toEqual(['brevo']);
+    fireEvent.click(
+      screen.getAllByTestId('library-rail-category').find((b) => b.getAttribute('data-key') === 'all') as HTMLElement
+    );
+    fireEvent.click(within(screen.getByTestId('library-sources')).getByText('settings.toolsLibrary.filter.community'));
+    expect(screen.getAllByTestId('library-card').map((n) => n.getAttribute('data-card-id'))).toEqual(['reddit']);
+    fireEvent.click(within(screen.getByTestId('library-sources')).getByText('settings.toolsLibrary.filter.all'));
     fireEvent.change(screen.getByPlaceholderText('mcp.market.search'), { target: { value: 'nothing-like-this' } });
-    expect(screen.queryAllByTestId('mcp-market-template')).toHaveLength(0);
-    expect(screen.getByText('mcp.market.library.noMatch')).toBeInTheDocument();
+    expect(screen.queryAllByTestId('library-card')).toHaveLength(0);
+    expect(screen.getByText('settings.library.noMatch')).toBeInTheDocument();
   });
 
   it('Add opens the add-from-template flow with full tools selected', () => {
     renderView();
-    fireEvent.click(within(entry('supabase')).getByText('mcp.market.actions.add'));
+    fireEvent.click(within(card('supabase')).getByTestId('mcp-template-add'));
     const modal = screen.getByTestId('mcp-market-create');
-    expect(modal).toBeInTheDocument();
     expect(within(modal).getByTestId('mcp-market-create-mode')).toHaveTextContent('mcp.market.create.fullToolsNote');
     const write = within(modal).getByDisplayValue('write') as HTMLInputElement;
     expect(write.checked).toBe(true);

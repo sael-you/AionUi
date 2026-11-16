@@ -11,7 +11,6 @@ import type { KitAttachmentResponse, KitEffectiveItem, KitResponse } from '@/com
 import {
   buildActiveGroups,
   buildSkillCategories,
-  conversationIdOfPath,
   planSkillToggle,
   resolveSkills,
   scopeOwnCount,
@@ -19,6 +18,7 @@ import {
   suggestedForProject,
   type LibrarySkill,
 } from '@/renderer/pages/settings/SkillsSettings/skillLibraryModel';
+import { conversationIdOfPath } from '@/renderer/components/settings/SettingsModal/library/useOriginProjectId';
 
 const kit = (over: Partial<KitResponse>): KitResponse => ({
   id: 'k',

@@ -1512,5 +1512,32 @@
     },
     "openPage": "전체 페이지 열기",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "에이전트가 쓸 수 있는 MCP 서버와 각 서버가 켜진 위치.",
+    "tabMarket": "마켓",
+    "tabKits": "키트",
+    "needsKey": "키 필요",
+    "noKey": "키 불필요",
+    "added": "추가됨",
+    "viaKit": "{{name}} 경유",
+    "attachElsewhere": "연결 대상…",
+    "detachTitle": "{{scope}}에서 {{name}}을(를) 제거할까요?",
+    "detachBody": "{{scope}}의 대화는 더 이상 {{name}}을(를) 받지 않습니다. 인스턴스와 키는 유지됩니다.",
+    "group": {
+      "attached": "{{scope}}에 연결됨",
+      "unassigned": "어디에도 연결되지 않음",
+      "custom": "내 서버",
+      "extensions": "확장 프로그램에서"
+    },
+    "unassignedHint": "사용하려면 전역 또는 프로젝트에 연결하세요.",
+    "nothingAttached": "아직 {{scope}}에 연결된 것이 없습니다.",
+    "browseMarket": "마켓 둘러보기",
+    "filter": {
+      "all": "전체",
+      "official": "공식",
+      "community": "커뮤니티",
+      "custom": "사용자 지정"
+    }
   }
 }

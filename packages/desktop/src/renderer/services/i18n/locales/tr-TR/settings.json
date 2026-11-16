@@ -1510,5 +1510,32 @@
     },
     "openPage": "Tam sayfayı aç",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "Ajanlarınızın kullanabileceği MCP sunucuları ve her birinin nerede açık olduğu.",
+    "tabMarket": "Pazar",
+    "tabKits": "Kitler",
+    "needsKey": "Anahtar gerekli",
+    "noKey": "Anahtar gerekmez",
+    "added": "Eklendi",
+    "viaKit": "{{name}} üzerinden",
+    "attachElsewhere": "Şuraya bağla…",
+    "detachTitle": "{{name}}, {{scope}} kapsamından kaldırılsın mı?",
+    "detachBody": "{{scope}} içindeki sohbetler artık {{name}} almaz. Örnek ve anahtarları kalır.",
+    "group": {
+      "attached": "{{scope}} kapsamına bağlı",
+      "unassigned": "Hiçbir yere bağlı değil",
+      "custom": "Kendi sunucularınız",
+      "extensions": "Uzantılardan"
+    },
+    "unassignedHint": "Kullanmak için Genel'e veya bir projeye bağlayın.",
+    "nothingAttached": "{{scope}} kapsamına henüz bir şey bağlanmadı.",
+    "browseMarket": "Pazara göz at",
+    "filter": {
+      "all": "Tümü",
+      "official": "Resmi",
+      "community": "Topluluk",
+      "custom": "Özel"
+    }
   }
 }

@@ -1510,5 +1510,32 @@
     },
     "openPage": "باز کردن صفحهٔ کامل",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "سرورهای MCP قابل استفاده برای عامل‌ها و اینکه هر کدام کجا روشن است.",
+    "tabMarket": "بازار",
+    "tabKits": "کیت‌ها",
+    "needsKey": "کلید لازم است",
+    "noKey": "بدون کلید",
+    "added": "افزوده شد",
+    "viaKit": "از طریق {{name}}",
+    "attachElsewhere": "اتصال به…",
+    "detachTitle": "{{name}} از {{scope}} برداشته شود؟",
+    "detachBody": "گفت‌وگوهای {{scope}} دیگر {{name}} را نمی‌گیرند. نمونه و کلیدهایش باقی می‌مانند.",
+    "group": {
+      "attached": "متصل به {{scope}}",
+      "unassigned": "به جایی متصل نیست",
+      "custom": "سرورهای شما",
+      "extensions": "از افزونه‌ها"
+    },
+    "unassignedHint": "برای استفاده آن‌ها را به سراسری یا یک پروژه متصل کنید.",
+    "nothingAttached": "هنوز چیزی به {{scope}} متصل نیست.",
+    "browseMarket": "دیدن بازار",
+    "filter": {
+      "all": "همه",
+      "official": "رسمی",
+      "community": "انجمن",
+      "custom": "سفارشی"
+    }
   }
 }

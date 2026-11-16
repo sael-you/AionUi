@@ -1510,5 +1510,32 @@
     },
     "openPage": "Ganze Seite öffnen",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "MCP-Server für deine Agenten – und wo jeder aktiv ist.",
+    "tabMarket": "Marktplatz",
+    "tabKits": "Kits",
+    "needsKey": "Schlüssel nötig",
+    "noKey": "Kein Schlüssel nötig",
+    "added": "Hinzugefügt",
+    "viaKit": "Über {{name}}",
+    "attachElsewhere": "Zuweisen an…",
+    "detachTitle": "{{name}} aus {{scope}} entfernen?",
+    "detachBody": "Unterhaltungen in {{scope}} erhalten {{name}} nicht mehr. Die Instanz und ihre Schlüssel bleiben.",
+    "group": {
+      "attached": "Zugewiesen an {{scope}}",
+      "unassigned": "Nirgends zugewiesen",
+      "custom": "Eigene Server",
+      "extensions": "Aus Erweiterungen"
+    },
+    "unassignedHint": "Weise sie Global oder einem Projekt zu, um sie zu nutzen.",
+    "nothingAttached": "{{scope}} ist noch nichts zugewiesen.",
+    "browseMarket": "Marktplatz öffnen",
+    "filter": {
+      "all": "Alle",
+      "official": "Offiziell",
+      "community": "Community",
+      "custom": "Eigene"
+    }
   }
 }

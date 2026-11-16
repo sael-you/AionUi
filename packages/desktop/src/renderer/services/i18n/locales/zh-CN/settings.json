@@ -1511,5 +1511,32 @@
     },
     "openPage": "打开完整页面",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "智能体可用的 MCP 服务器，以及每个服务器在哪里启用。",
+    "tabMarket": "市场",
+    "tabKits": "套件",
+    "needsKey": "需要密钥",
+    "noKey": "无需密钥",
+    "added": "已添加",
+    "viaKit": "通过 {{name}}",
+    "attachElsewhere": "连接到…",
+    "detachTitle": "从 {{scope}} 移除 {{name}}？",
+    "detachBody": "{{scope}} 中的会话将不再获得 {{name}}。实例及其密钥会保留。",
+    "group": {
+      "attached": "已连接到 {{scope}}",
+      "unassigned": "未连接到任何地方",
+      "custom": "你的服务器",
+      "extensions": "来自扩展"
+    },
+    "unassignedHint": "连接到全局或某个项目后才能使用。",
+    "nothingAttached": "{{scope}} 还没有连接任何内容。",
+    "browseMarket": "浏览市场",
+    "filter": {
+      "all": "全部",
+      "official": "官方",
+      "community": "社区",
+      "custom": "自定义"
+    }
   }
 }

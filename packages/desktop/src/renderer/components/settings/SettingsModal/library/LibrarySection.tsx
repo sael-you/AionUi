@@ -30,6 +30,8 @@ export type LibrarySectionProps = {
   visual?: CategoryVisualId | null;
   actions?: React.ReactNode;
   defaultExpanded?: boolean;
+  /** `list` for full-width rows (e.g. the editable custom MCP servers) instead of the card grid. */
+  layout?: 'grid' | 'list';
   children: React.ReactNode;
 };
 
@@ -60,6 +62,7 @@ const LibrarySection: React.FC<LibrarySectionProps> = ({
   visual,
   actions,
   defaultExpanded = true,
+  layout = 'grid',
   children,
 }) => {
   const { t } = useTranslation();
@@ -97,7 +100,11 @@ const LibrarySection: React.FC<LibrarySectionProps> = ({
       {hint ? <p className={styles.sectionHint}>{hint}</p> : null}
       <div id={bodyId} hidden={!expanded}>
         {expanded ? (
-          <div className={styles.grid} onKeyDown={onGridKeyDown} data-testid='library-grid'>
+          <div
+            className={layout === 'list' ? styles.list : styles.grid}
+            onKeyDown={onGridKeyDown}
+            data-testid='library-grid'
+          >
             {children}
           </div>
         ) : null}

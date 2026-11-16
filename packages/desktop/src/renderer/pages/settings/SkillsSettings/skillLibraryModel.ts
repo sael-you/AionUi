@@ -383,9 +383,3 @@ export const kitAttachmentIn = (
       row.item_ref === kitId &&
       row.op === 'add'
   );
-
-/** The conversation id in an app route (`/conversation/<id>…`), else null. */
-export const conversationIdOfPath = (path: string | null | undefined): string | null => {
-  const match = /^\/conversation\/([^/?#]+)/.exec(path ?? '');
-  return match ? decodeURIComponent(match[1]) : null;
-};

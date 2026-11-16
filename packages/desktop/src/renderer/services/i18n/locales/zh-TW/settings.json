@@ -1512,5 +1512,32 @@
     },
     "openPage": "開啟完整頁面",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "智慧代理可用的 MCP 伺服器，以及每個伺服器在哪裡啟用。",
+    "tabMarket": "市集",
+    "tabKits": "套件",
+    "needsKey": "需要金鑰",
+    "noKey": "無需金鑰",
+    "added": "已新增",
+    "viaKit": "透過 {{name}}",
+    "attachElsewhere": "連接到…",
+    "detachTitle": "從 {{scope}} 移除 {{name}}？",
+    "detachBody": "{{scope}} 中的對話將不再取得 {{name}}。實例及其金鑰會保留。",
+    "group": {
+      "attached": "已連接到 {{scope}}",
+      "unassigned": "未連接到任何地方",
+      "custom": "你的伺服器",
+      "extensions": "來自擴充功能"
+    },
+    "unassignedHint": "連接到全域或某個專案後才能使用。",
+    "nothingAttached": "{{scope}} 尚未連接任何內容。",
+    "browseMarket": "瀏覽市集",
+    "filter": {
+      "all": "全部",
+      "official": "官方",
+      "community": "社群",
+      "custom": "自訂"
+    }
   }
 }

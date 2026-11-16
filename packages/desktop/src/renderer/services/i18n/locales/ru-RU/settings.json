@@ -1540,5 +1540,32 @@
     },
     "openPage": "Открыть страницу",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "MCP-серверы для ваших агентов и где каждый из них включён.",
+    "tabMarket": "Каталог",
+    "tabKits": "Наборы",
+    "needsKey": "Нужен ключ",
+    "noKey": "Ключ не нужен",
+    "added": "Добавлен",
+    "viaKit": "Через {{name}}",
+    "attachElsewhere": "Подключить к…",
+    "detachTitle": "Убрать {{name}} из {{scope}}?",
+    "detachBody": "Беседы в {{scope}} перестанут получать {{name}}. Экземпляр и его ключи останутся.",
+    "group": {
+      "attached": "Подключено к {{scope}}",
+      "unassigned": "Нигде не подключено",
+      "custom": "Ваши серверы",
+      "extensions": "Из расширений"
+    },
+    "unassignedHint": "Подключите их к глобальной области или проекту, чтобы использовать.",
+    "nothingAttached": "К {{scope}} пока ничего не подключено.",
+    "browseMarket": "Открыть каталог",
+    "filter": {
+      "all": "Все",
+      "official": "Официальные",
+      "community": "Сообщество",
+      "custom": "Свои"
+    }
   }
 }

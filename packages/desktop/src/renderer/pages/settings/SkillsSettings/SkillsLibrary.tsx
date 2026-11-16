@@ -37,8 +37,10 @@ import {
   LibraryBatchBar,
   LibraryDrawer,
   LibraryEmpty,
+  LibraryScopeName,
 } from '@/renderer/components/settings/SettingsModal/library/LibraryParts';
 import LibrarySection from '@/renderer/components/settings/SettingsModal/library/LibrarySection';
+import { useOriginProjectId } from '@/renderer/components/settings/SettingsModal/library/useOriginProjectId';
 import {
   ALL_CATEGORY_KEY,
   GLOBAL_SCOPE_KEY,
@@ -48,12 +50,10 @@ import {
   splitRailScopes,
   type RailCategory,
 } from '@/renderer/components/settings/SettingsModal/library/libraryModel';
-import { ProjectChip, useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import { describeKitError, kitFormFromKit } from '@/renderer/hooks/mcp/market/kitModel';
 import { GLOBAL_KIT_KEY } from '@/renderer/hooks/mcp/market/kitGroups';
 import { useKitActions, useKitAttachments, useKitEffective, useKitList } from '@/renderer/hooks/mcp/market/useKits';
 import { useStandardProjects } from '@/renderer/pages/conversation/GroupedHistory/hooks/useStandardProjects';
-import { getConversationOrNull } from '@/renderer/pages/conversation/utils/conversationCache';
 import KitEditModal from '../ToolsSettings/kits/KitEditModal';
 import SkillFileBrowser from './SkillFileBrowser';
 import SkillUsedByStack, { getAssistantsUsingSkill } from './SkillUsedByStack';
@@ -62,7 +62,6 @@ import {
   attachKitRequest,
   buildActiveGroups,
   buildSkillCategories,
-  conversationIdOfPath,
   isAlwaysOn,
   kitAttachmentIn,
   planSkillToggle,
@@ -101,29 +100,6 @@ export type SkillsLibraryProps = {
 type SkillsTab = 'active' | 'library';
 
 const ALL_ATTACHMENTS = {};
-const LAST_PATH_KEY = 'aion:last-non-settings-path';
-
-const readLastPath = (): string | null => {
-  try {
-    return sessionStorage.getItem(LAST_PATH_KEY);
-  } catch {
-    return null;
-  }
-};
-
-/** The project of the conversation the settings were opened from (null while unknown or none). */
-const useOriginProjectId = (explicit: string | null): string | null => {
-  const conversationId = explicit ? null : conversationIdOfPath(readLastPath());
-  const { data } = useSWR(conversationId ? `conversation/${conversationId}` : null, () =>
-    getConversationOrNull(conversationId ?? '')
-  );
-  return explicit ?? data?.project_id ?? null;
-};
-
-const ScopeName: React.FC<{ workspace?: string; label: string }> = ({ workspace, label }) => {
-  const theme = useProjectTheme(workspace);
-  return theme ? <ProjectChip project={theme} /> : <span>{label}</span>;
-};
 
 const categoryVisual = (category: SkillCategory): CategoryVisualId | null => {
   if (category.kind === 'project') return 'project';
@@ -842,7 +818,7 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
           selectedCategory: category,
           onCategory: setCategory,
         }}
-        scopeTitle={<ScopeName workspace={scopeProject?.workspace} label={scopeLabel} />}
+        scopeTitle={<LibraryScopeName workspace={scopeProject?.workspace} label={scopeLabel} />}
         summary={effective.isLoading ? undefined : summaryText}
         tabs={[
           { key: 'active', label: t('settings.library.tabActive'), count: summary.active },

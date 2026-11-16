@@ -1510,5 +1510,32 @@
     },
     "openPage": "Ouvrir la page complète",
     "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "Les serveurs MCP utilisables par vos agents, et où chacun est actif.",
+    "tabMarket": "Catalogue",
+    "tabKits": "Kits",
+    "needsKey": "Clé requise",
+    "noKey": "Aucune clé",
+    "added": "Ajouté",
+    "viaKit": "Via {{name}}",
+    "attachElsewhere": "Rattacher à…",
+    "detachTitle": "Retirer {{name}} de {{scope}} ?",
+    "detachBody": "Les conversations de {{scope}} ne reçoivent plus {{name}}. L’instance et ses clés sont conservées.",
+    "group": {
+      "attached": "Rattachés à {{scope}}",
+      "unassigned": "Rattachés nulle part",
+      "custom": "Vos serveurs",
+      "extensions": "Depuis les extensions"
+    },
+    "unassignedHint": "Rattachez-les à Global ou à un projet pour les utiliser.",
+    "nothingAttached": "Rien n’est encore rattaché à {{scope}}.",
+    "browseMarket": "Parcourir le catalogue",
+    "filter": {
+      "all": "Tous",
+      "official": "Officiels",
+      "community": "Communauté",
+      "custom": "Personnalisés"
+    }
   }
 }

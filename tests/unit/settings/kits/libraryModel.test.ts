@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/** Shared library layout model (C33, TASK-119): rail scopes, grid keys, tones, search. */
+/** Library layout models (C33, TASK-119): rail scopes, grid keys, tones, search; the Tools (MCP) library model. */
 
 import { describe, expect, it } from 'vitest';
 import {
@@ -16,6 +16,15 @@ import {
   projectScopeKey,
   splitRailScopes,
 } from '@/renderer/components/settings/SettingsModal/library/libraryModel';
+import type { KitEffectiveItem, McpMarketAssignment, McpMarketInstance } from '@/common/config/storage';
+import {
+  assignmentsIn,
+  buildMcpActiveGroups,
+  kitInstancesOfProject,
+  mcpSource,
+  projectMcpCount,
+} from '@/renderer/hooks/mcp/market/mcpLibraryModel';
+import { KIT_PLATFORM, attachmentRow, instance } from './kitFixtures';
 
 const global = { key: 'global', label: 'Global', count: 5 };
 const project = (id: string, count: number) => ({ key: projectScopeKey(id), label: id, count });
@@ -74,5 +83,91 @@ describe('tones and search', () => {
     expect(matchesQuery('SEO', 'seo-audit', undefined)).toBe(true);
     expect(matchesQuery('', 'x')).toBe(true);
     expect(matchesQuery('zzz', 'abc', 'def')).toBe(false);
+  });
+});
+
+const assignment = (instanceId: string, projectId?: string, cli = 'claude'): McpMarketAssignment => ({
+  id: `as-${instanceId}-${projectId ?? 'g'}-${cli}`,
+  instance_id: instanceId,
+  instance_name: instanceId,
+  project_id: projectId,
+  cli,
+  created_at: 1,
+});
+
+const INSTANCES: McpMarketInstance[] = [
+  instance({ id: 'i-ctx', name: 'context7' }),
+  instance({ id: 'i-sb', name: 'supabase' }),
+  instance({ id: 'i-lone', name: 'lonely' }),
+  instance({ id: 'i-kit', name: 'kit-only' }),
+];
+
+const viaKit = (id: string, level: 'global' | 'project'): KitEffectiveItem => ({
+  kind: 'mcp',
+  item_ref: id,
+  included: true,
+  provenance: { level, op: 'add', kit_id: 'kit-1', kit_name: 'Platform Dev' },
+});
+
+describe('MCP library: source', () => {
+  it('official / community by the template flag, custom without a catalogue template', () => {
+    expect(mcpSource({ official: true })).toBe('official');
+    expect(mcpSource({ official: false })).toBe('community');
+    expect(mcpSource(undefined)).toBe('custom');
+  });
+});
+
+describe('MCP library: scope membership', () => {
+  const assignments = [assignment('i-ctx'), assignment('i-sb', 'p1'), assignment('i-sb', 'p1', 'codex')];
+
+  it('assignments in a scope: Global has no project, a project matches its id', () => {
+    expect(assignmentsIn(assignments, 'i-ctx', null).map((a) => a.id)).toEqual(['as-i-ctx-g-claude']);
+    expect(assignmentsIn(assignments, 'i-sb', 'p1')).toHaveLength(2);
+    expect(assignmentsIn(assignments, 'i-sb', null)).toHaveLength(0);
+  });
+
+  it("a project's kit instances (project kit + kits attached at project level) count on the rail", () => {
+    const kits = [
+      KIT_PLATFORM,
+      { ...KIT_PLATFORM, id: 'kit-p', project_id: 'p2', mcps: [{ instance_id: 'i-kit', instance_name: 'kit-only' }] },
+    ];
+    const attachments = [attachmentRow({ level: 'project', target_id: 'p1', item_ref: 'kit-1' })];
+    expect([...kitInstancesOfProject(kits, attachments, 'p1')].toSorted()).toEqual(['inst-ctx', 'inst-gone']);
+    expect([...kitInstancesOfProject(kits, attachments, 'p2')]).toEqual(['i-kit']);
+    expect(projectMcpCount(assignments, kits, attachments, 'p1')).toBe(3);
+    expect(projectMcpCount(assignments, kits, [], 'p-none')).toBe(0);
+  });
+});
+
+describe('MCP library: Active groups', () => {
+  const assignments = [assignment('i-ctx'), assignment('i-sb', 'p1')];
+
+  it('Global: attached here, each kit, then the instances attached nowhere', () => {
+    const groups = buildMcpActiveGroups({
+      instances: INSTANCES,
+      assignments,
+      effective: [viaKit('i-kit', 'global')],
+      projectId: null,
+    });
+    expect(groups.map((g) => [g.key, g.instanceIds])).toEqual([
+      ['attached', ['i-ctx']],
+      ['kit:kit-1', ['i-kit']],
+      ['unassigned', ['i-lone']],
+    ]);
+    expect(groups[1].kitName).toBe('Platform Dev');
+  });
+
+  it('a project: attached here, its kits, then From Global (not repeated when attached here too)', () => {
+    const groups = buildMcpActiveGroups({
+      instances: INSTANCES,
+      assignments: [...assignments, assignment('i-sb')],
+      effective: [viaKit('i-kit', 'project'), viaKit('i-sb', 'project'), viaKit('i-ctx', 'global')],
+      projectId: 'p1',
+    });
+    expect(groups.map((g) => [g.key, g.instanceIds])).toEqual([
+      ['attached', ['i-sb']],
+      ['kit:kit-1', ['i-kit']],
+      ['fromGlobal', ['i-ctx']],
+    ]);
   });
 });
