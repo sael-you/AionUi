@@ -149,7 +149,7 @@
       "problemsTitle": "Rule problems",
       "enforcement": "Enforced by: {{value}}",
       "approvalRecorded": "Owner approval recorded",
-      "writeNote": "Write tier: it can change data outside this machine. Claude only, and every tool call asks first."
+      "writeNote": "Write: full tools on every attached CLI; it can change data, money, ads, email or public posts outside this machine. No automatic confirmation: agents must get the owner's typed OK for each production change (rule)."
     },
     "secret": {
       "set": "Set",
@@ -182,7 +182,6 @@
       "environmentPlaceholder": "Choose an environment",
       "tier": "Tier",
       "readTierNote": "Read: changes nothing outside this machine. Tools stay blocked until you allow them after a connection test.",
-      "writeTierNote": "Write: can change production data, money, ads, email or public posts. Claude only; production write MCPs stay dormant until the owner's written approval is recorded.",
       "clis": "CLIs",
       "plainEnv": "Settings",
       "secrets": "Secrets",
@@ -190,7 +189,7 @@
       "dormantUntilComplete": "It stays dormant until these are filled in: {{keys}}",
       "startsDormant": "New MCPs start dormant. Activate one when its values are set and the connection test passes.",
       "secretsNotSaved": "{{name}} was created, but these secrets were not saved: {{keys}}. Set them in the instance drawer.",
-      "fullToolsNote": "Full tools (read + write), the default. What agents may do comes from skills and rules; a write to production data, payments, ads or email still needs the owner's written OK for that change.",
+      "fullToolsNote": "Full tools (read + write), the default. What agents may do comes from skills and rules. No automatic confirmation: agents must get the owner's typed OK for each production change (rule).",
       "patternProblem": "{{key}} does not have the expected format."
     },
     "attach": {
@@ -223,12 +222,7 @@
       "title": "Activate {{name}}?",
       "body": "Active MCPs are started for the projects, assistants and CLIs they are attached to.",
       "missing": "Fill in the required values first: {{keys}}",
-      "productionWrite": "This is a production write MCP. It stays dormant until the owner's written approval of the exact change is recorded.",
-      "approvalLabel": "Approval reference",
-      "approvalHelp": "written owner approval of the exact change",
-      "approvalFormat": "Format: OA-<yyyymmdd>-<slug>",
-      "approvalRequired": "The approval reference is required.",
-      "approvalInvalid": "Use the format OA-<yyyymmdd>-<slug>, for example a date and a short lowercase name."
+      "productionWrite": "No automatic confirmation: agents must get the owner's typed OK for each production change (rule)."
     },
     "confirm": {
       "revoke": {

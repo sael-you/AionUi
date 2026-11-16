@@ -18,14 +18,14 @@ import {
   instanceMatches,
   instanceNameProblem,
   isMaskedValueError,
-  isValidApprovalRef,
-  needsApprovalRef,
+  isProductionWrite,
   summarizeAttachments,
   missingSecretKeysOf,
   pendingTemplateSecretKeys,
   templateUpdate,
   withoutMarketRows,
   allowedClis,
+  templateClisForTier,
 } from '@/renderer/hooks/mcp/market/marketModel';
 
 const inst = (name: string, extra: Partial<McpMarketInstance> = {}): McpMarketInstance => ({
@@ -163,28 +163,23 @@ describe('rules explained client-side', () => {
     expect(instanceNameProblem('tb_x')).toBe('pattern');
     expect(instanceNameProblem('a-very-long-instance-name-x')).toBe('tooLong');
     expect(instanceNameProblem('aionui-team')).toBe('reserved');
-    expect(instanceNameProblem('github-x')).toBe('notInMarket');
+    expect(instanceNameProblem('serena-x')).toBe('notInMarket');
+    // G2: GitHub and Chrome DevTools are in the market.
+    expect(instanceNameProblem('github-x')).toBeNull();
+    expect(instanceNameProblem('chrome-devtools')).toBeNull();
     expect(instanceNameProblem('tb-x', ['tb-x'])).toBe('taken');
   });
 
-  it('accepts only OA-<yyyymmdd>-<slug> approval references', () => {
-    expect(isValidApprovalRef('OA-20261115-paddle-prod')).toBe(true);
-    expect(isValidApprovalRef('OA-2026111-paddle')).toBe(false);
-    expect(isValidApprovalRef('OA-20261115-')).toBe(false);
-    expect(isValidApprovalRef('OA-20261115-Paddle')).toBe(false);
-    expect(isValidApprovalRef('ok')).toBe(false);
-    expect(isValidApprovalRef('')).toBe(false);
+  it('flags production write instances (D50: a rule, not a gate)', () => {
+    expect(isProductionWrite({ tier: 'write', environment: 'production' })).toBe(true);
+    expect(isProductionWrite({ tier: 'write', environment: 'sandbox' })).toBe(false);
+    expect(isProductionWrite({ tier: 'read', environment: 'production' })).toBe(false);
   });
 
-  it('requires an approval reference for production write instances only', () => {
-    expect(needsApprovalRef({ tier: 'write', environment: 'production' })).toBe(true);
-    expect(needsApprovalRef({ tier: 'write', environment: 'sandbox' })).toBe(false);
-    expect(needsApprovalRef({ tier: 'read', environment: 'production' })).toBe(false);
-  });
-
-  it('limits write instances to Claude and to non-global scopes', () => {
-    expect(allowedClis(inst('tb-w', { tier: 'write' }))).toEqual(['claude']);
+  it('runs write instances on every CLI (D50) but never globally', () => {
+    expect(allowedClis(inst('tb-w', { tier: 'write' }))).toEqual(['claude', 'codex', 'gemini']);
     expect(allowedClis(inst('tb-r', { clis: ['gemini', 'claude'] }))).toEqual(['claude', 'gemini']);
+    expect(templateClisForTier({ clis: ['claude', 'codex'] }, 'write')).toEqual(['claude', 'codex']);
     expect(globalBlockReason(inst('context7'))).toBeNull();
     expect(globalBlockReason(inst('context7', { tier: 'write' }))).toBe('write');
     expect(globalBlockReason(inst('tb-x'))).toBe('notGlobal');

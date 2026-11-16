@@ -40,15 +40,12 @@ const RESERVED_NAMES = new Set(['aionui-team', 'aionui']);
 const NOT_IN_MARKET = [
   'playwright',
   'mcp-playwright',
-  'chrome-devtools',
-  'github',
   'codex-cli',
   'gemini-cli',
   'sequential-thinking',
   'serena',
   'openai-image',
 ];
-const APPROVAL_REF_PATTERN = /^OA-\d{8}-[a-z0-9]+(-[a-z0-9]+)*$/;
 
 type TFn = (key: string, options?: Record<string, unknown>) => string;
 
@@ -69,23 +66,20 @@ export const instanceNameProblem = (name: string, takenNames: readonly string[] 
   return null;
 };
 
-/** Owner approval record id: `OA-<yyyymmdd>-<slug>` (AionCore `is_valid_approval_ref`). */
-export const isValidApprovalRef = (value: string): boolean => APPROVAL_REF_PATTERN.test(value);
-
-/** Production write instances stay dormant until the owner's written approval is recorded (owner decision 3). */
-export const needsApprovalRef = (instance: Pick<McpMarketInstance, 'tier' | 'environment'>): boolean =>
+/** D50: a production write instance runs without automatic confirmation; the owner's typed OK per change is the rule. */
+export const isProductionWrite = (instance: Pick<McpMarketInstance, 'tier' | 'environment'>): boolean =>
   instance.tier === 'write' && instance.environment === 'production';
 
 /** A value the user pasted from a masked response: it has to be re-entered. */
 export const isMaskedValue = (value: string): boolean => value.includes(MCP_MASK);
 
-/** CLIs an instance may be delivered to: its own list; write instances are Claude-only (R3). */
+/** CLIs an instance may be delivered to: its own list (D50: write runs on every CLI). */
 export const allowedClis = (instance: Pick<McpMarketInstance, 'clis' | 'tier'>): string[] =>
-  MCP_MARKET_CLIS.filter((cli) => instance.clis.includes(cli) && (instance.tier !== 'write' || cli === 'claude'));
+  MCP_MARKET_CLIS.filter((cli) => instance.clis.includes(cli));
 
-/** CLIs a template offers for a tier (write = Claude only). */
-export const templateClisForTier = (template: Pick<McpMarketTemplate, 'clis'>, tier: string): string[] =>
-  MCP_MARKET_CLIS.filter((cli) => template.clis.includes(cli) && (tier !== 'write' || cli === 'claude'));
+/** CLIs a template offers for a tier (D50: the same for read and write). */
+export const templateClisForTier = (template: Pick<McpMarketTemplate, 'clis'>, _tier: string): string[] =>
+  MCP_MARKET_CLIS.filter((cli) => template.clis.includes(cli));
 
 /** Why an instance cannot be global, or `null` when it can (R2, R3). */
 export const globalBlockReason = (instance: Pick<McpMarketInstance, 'name' | 'tier'>): 'write' | 'notGlobal' | null => {

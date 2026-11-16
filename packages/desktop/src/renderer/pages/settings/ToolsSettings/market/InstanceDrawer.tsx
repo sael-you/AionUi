@@ -512,8 +512,8 @@ const InstanceDrawer: React.FC<InstanceDrawerProps> = ({
         <ActivateModal
           instance={instance}
           onCancel={() => setActivating(false)}
-          onConfirm={async (approvalRef) => {
-            await market.activate(instance.id, approvalRef);
+          onConfirm={async () => {
+            await market.activate(instance.id);
             setActivating(false);
           }}
         />

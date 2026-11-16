@@ -149,7 +149,7 @@
       "problemsTitle": "规则问题",
       "enforcement": "执行方：{{value}}",
       "approvalRecorded": "已记录所有者批准",
-      "writeNote": "写入级别：可更改本机以外的数据。仅限 Claude，且每次工具调用都会先询问。"
+      "writeNote": "写入：在所有已附加的 CLI 上提供全部工具；可更改本机之外的数据、资金、广告、邮件或公开帖子。 没有自动确认：智能体对每项生产变更都必须获得所有者的书面（键入）同意（规则）。"
     },
     "secret": {
       "set": "已设置",
@@ -182,7 +182,6 @@
       "environmentPlaceholder": "选择环境",
       "tier": "级别",
       "readTierNote": "只读：不会更改本机以外的任何内容。在连接测试后您允许之前，工具保持阻止状态。",
-      "writeTierNote": "写入：可更改生产数据、资金、广告、电子邮件或公开发布的内容。仅限 Claude；在记录所有者的书面批准之前，生产环境写入 MCP 保持休眠。",
       "clis": "CLI",
       "plainEnv": "设置",
       "secrets": "密钥",
@@ -190,7 +189,7 @@
       "dormantUntilComplete": "在填写以下各项之前保持休眠：{{keys}}",
       "startsDormant": "新 MCP 以休眠状态启动。设置好值并通过连接测试后即可启用。",
       "secretsNotSaved": "{{name}} 已创建，但以下密钥未保存：{{keys}}。请在实例面板中设置。",
-      "fullToolsNote": "全部工具（读 + 写）为默认设置。智能体可执行的操作由技能和规则决定；对生产数据、支付、广告或邮件的写入仍需所有者对该变更的书面同意。",
+      "fullToolsNote": "全部工具（读 + 写）为默认设置。智能体可执行的操作由技能和规则决定。没有自动确认：智能体对每项生产变更都必须获得所有者的书面（键入）同意（规则）。",
       "patternProblem": "{{key}} 的格式不正确。"
     },
     "attach": {
@@ -223,12 +222,7 @@
       "title": "启用 {{name}}？",
       "body": "已启用的 MCP 会为其挂载的项目、助手和 CLI 启动。",
       "missing": "请先填写必填值：{{keys}}",
-      "productionWrite": "这是生产环境写入 MCP。在记录所有者对具体变更的书面批准之前，它将保持休眠。",
-      "approvalLabel": "批准编号",
-      "approvalHelp": "所有者对具体变更的书面批准",
-      "approvalFormat": "格式：OA-<yyyymmdd>-<slug>",
-      "approvalRequired": "必须填写批准编号。",
-      "approvalInvalid": "请使用 OA-<yyyymmdd>-<slug> 格式，例如日期加简短的小写名称。"
+      "productionWrite": "没有自动确认：智能体对每项生产变更都必须获得所有者的书面（键入）同意（规则）。"
     },
     "confirm": {
       "revoke": {

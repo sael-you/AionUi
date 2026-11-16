@@ -252,12 +252,11 @@ const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
               label={t('mcp.market.create.tier')}
               hint={
                 tier === 'write' ? (
-                  <div className='flex flex-col gap-6px'>
-                    <span className='text-12px text-t-secondary' data-testid='mcp-market-create-mode'>
-                      {t('mcp.market.create.fullToolsNote')}
-                    </span>
-                    <Alert type='warning' content={t('mcp.market.create.writeTierNote')} />
-                  </div>
+                  <Alert
+                    type='warning'
+                    content={t('mcp.market.create.fullToolsNote')}
+                    data-testid='mcp-market-create-mode'
+                  />
                 ) : (
                   <span className='text-12px text-t-secondary' data-testid='mcp-market-create-mode'>
                     {t('mcp.market.create.readTierNote')}{' '}
