@@ -47,6 +47,94 @@ function isUnrecoverableRealtimeError(payload: unknown): boolean {
   return getRealtimeErrorData(payload)?.recoverable === false;
 }
 
+/**
+ * Provider keys AionCore serves over /ws. AionCore routes only `pong`,
+ * `subscribe-show-open`, `fs` and `scm` (crates/aionui-realtime/src/handler.rs,
+ * aionui-app router/{fs,scm}_monitor.rs); `fs` and `scm` are plain frames sent
+ * by httpBridge's `wsSend`, not provider requests.
+ */
+export const WS_PROVIDER_KEYS: ReadonlySet<string> = new Set(['show-open']);
+
+/**
+ * What a provider that is not available in the WebUI resolves with when it is
+ * missing from {@link ELECTRON_ONLY_PROVIDER_DEFAULTS}: the failure shape of
+ * `IBridgeResponse`, without `msg`, so callers fall back to their own
+ * translated error text.
+ */
+export const WEB_UNSUPPORTED_RESULT = Object.freeze({ success: false, unsupportedInWeb: true });
+
+/** `IBridgeResponse` failure without `msg`: callers show their own translated text. */
+const BRIDGE_FAILURE = Object.freeze({ success: false });
+
+/**
+ * Providers only the Electron main process serves (`ipcBridge.ts`, built with
+ * `bridge.buildProvider`), with the answer the WebUI gives instead (TASK-89,
+ * TASK-95). Sent over /ws, AionCore answered each with `realtime.error
+ * REALTIME_UNSUPPORTED_MESSAGE` and the invoke never resolved (one leaked
+ * listener per call). Each value is the one its renderer callers already treat
+ * as "not available": `false`/`null`/`''`, an unsuccessful `IBridgeResponse`,
+ * or `undefined` for writes and for reads whose caller keeps its own default.
+ */
+export const ELECTRON_ONLY_PROVIDER_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string, unknown>([
+  // application
+  ['restart-app', Object.freeze({ restarted: false, manualRestartRequired: false })],
+  ['open-dev-tools', false],
+  ['is-dev-tools-opened', false],
+  ['app.get-path', ''],
+  ['update-system-info', undefined],
+  // useFontScale keeps its own default when the factor is not a number.
+  ['app.get-zoom-factor', undefined],
+  ['app.set-zoom-factor', undefined],
+  ['app.get-cdp-status', BRIDGE_FAILURE],
+  ['app.update-cdp-config', BRIDGE_FAILURE],
+  ['app.clear-browser-data', BRIDGE_FAILURE],
+  ['app.report-browser-webcontents-id', BRIDGE_FAILURE],
+  ['app.get-start-on-boot-status', BRIDGE_FAILURE],
+  ['app.set-start-on-boot', BRIDGE_FAILURE],
+  ['app.get-gpu-status', BRIDGE_FAILURE],
+  ['app.set-gpu-override', BRIDGE_FAILURE],
+  ['app.write-renderer-log', undefined],
+  // update / autoUpdate (no desktop updater in the WebUI)
+  ['update.check', BRIDGE_FAILURE],
+  ['update.installer-last-failure.consume', BRIDGE_FAILURE],
+  ['update.download', BRIDGE_FAILURE],
+  ['update.download.cancel', BRIDGE_FAILURE],
+  ['auto-update.check', BRIDGE_FAILURE],
+  ['auto-update.restore-downloaded', BRIDGE_FAILURE],
+  ['auto-update.download', BRIDGE_FAILURE],
+  ['auto-update.download.cancel', BRIDGE_FAILURE],
+  ['auto-update.quit-and-install', undefined],
+  // skill files: the WebUI uses /api/fs/* instead (ipcBridge `fs`)
+  ['skills.files.list', Object.freeze([])],
+  ['skills.files.read', ''],
+  // window controls
+  ['window-controls:minimize', undefined],
+  ['window-controls:maximize', undefined],
+  ['window-controls:unmaximize', undefined],
+  ['window-controls:close', undefined],
+  ['window-controls:is-maximized', false],
+  // theme: no cached custom CSS (as before TASK-89)
+  ['theme:set-active', undefined],
+  ['theme:request-current', null],
+  // system settings: the main-process defaults (process/bridge/systemSettingsBridge.ts)
+  ['system-settings:get-close-to-tray', false],
+  ['system-settings:set-close-to-tray', undefined],
+  ['system-settings:get-pet-enabled', false],
+  ['system-settings:set-pet-enabled', undefined],
+  ['system-settings:get-pet-size', 280],
+  ['system-settings:set-pet-size', undefined],
+  ['system-settings:get-pet-dnd', false],
+  ['system-settings:set-pet-dnd', undefined],
+  ['system-settings:get-pet-confirm-enabled', true],
+  ['system-settings:set-pet-confirm-enabled', undefined],
+  // notification: the WebUI notifies through the browser Notification API
+  ['notification.show', undefined],
+  // desktop WebUI server lifecycle (callers treat null as "no status")
+  ['webui.get-status', null],
+  ['webui.start', null],
+  ['webui.stop', undefined],
+]);
+
 const win = window as CustomWindow;
 
 /**
@@ -272,32 +360,37 @@ if (win.electronAPI) {
     }
   };
 
-  /**
-   * Providers only the Electron main process serves (TASK-89), with the answer
-   * the WebUI gives instead. Over this socket nothing serves them: AionCore
-   * routes only its own realtime names and answered every such request with
-   * `realtime.error REALTIME_UNSUPPORTED_MESSAGE`, while the invoke never
-   * resolved (one leaked listener per call). The sidebar logs every generating
-   * transition and every Markdown view asks for the custom theme CSS, so an
-   * open conversation flooded /ws. They are answered here and never sent.
-   */
-  const ELECTRON_MAIN_ONLY_PROVIDERS = new Map<string, unknown>([
-    ['app.write-renderer-log', undefined],
-    ['theme:request-current', null],
-  ]);
   const PROVIDER_REQUEST_PREFIX = 'subscribe-';
+  const loggedUnsupportedKeys = new Set<string>();
 
-  /** Answers an Electron-only provider request locally; `true` when `name` is one. */
+  /**
+   * Answers a provider request (`subscribe-<key>`) that AionCore does not serve,
+   * without sending it. Returns `true` when the request was answered here.
+   * Allowlisted keys and every non-provider frame (realtime names, callbacks)
+   * return `false` and go over the socket unchanged.
+   */
   const answerLocally = (name: string, data: unknown): boolean => {
     if (!name.startsWith(PROVIDER_REQUEST_PREFIX)) {
       return false;
     }
     const key = name.slice(PROVIDER_REQUEST_PREFIX.length);
-    if (!ELECTRON_MAIN_ONLY_PROVIDERS.has(key)) {
+    if (WS_PROVIDER_KEYS.has(key)) {
       return false;
     }
+    let value: unknown;
+    if (ELECTRON_ONLY_PROVIDER_DEFAULTS.has(key)) {
+      value = ELECTRON_ONLY_PROVIDER_DEFAULTS.get(key);
+    } else {
+      value = WEB_UNSUPPORTED_RESULT;
+      if (!loggedUnsupportedKeys.has(key)) {
+        loggedUnsupportedKeys.add(key);
+        console.debug(`[bridge] "${key}" is not available in the WebUI; answered as unsupported`);
+      }
+    }
     if (isRecord(data) && typeof data.id === 'string') {
-      emitterRef?.emit(`subscribe.callback-${key}${data.id}`, ELECTRON_MAIN_ONLY_PROVIDERS.get(key));
+      // A fresh copy per answer, like a deserialised reply: callers own their result.
+      const answer = Array.isArray(value) ? [...value] : isRecord(value) ? { ...value } : value;
+      emitterRef?.emit(`subscribe.callback-${key}${data.id}`, answer);
     }
     return true;
   };
