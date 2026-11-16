@@ -38,7 +38,7 @@ const ReplyPopover: React.FC<ReplyPopoverProps> = ({ anchor, quote, autoDictate,
     <div
       role='dialog'
       aria-label={t('conversation.quoteReply.popoverLabel')}
-      className='fixed z-9999 flex flex-col gap-8px p-10px rd-10px bg-bg-2 border border-border-2 shadow-lg'
+      className='fixed z-9999 flex flex-col gap-8px p-10px rd-10px bg-base border border-solid border-3 shadow-lg'
       style={{ top: anchor.top, left, width }}
       data-testid='quote-reply-popover'
       data-quote-ui

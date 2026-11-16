@@ -276,7 +276,7 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
         ref={buttonRef}
         role='toolbar'
         aria-label={t('conversation.quoteReply.toolbarLabel')}
-        className='fixed z-9999 flex items-center gap-2px px-4px py-4px rd-8px select-none bg-bg-2 border border-border-2 shadow-md'
+        className='fixed z-9999 flex items-center gap-2px px-4px py-4px rd-8px select-none bg-base border border-solid border-3 shadow-md'
         style={{ top: pos.top, left: pos.left, transform: 'translateX(-50%)' }}
         data-testid='selection-toolbar'
         data-quote-ui
