@@ -226,5 +226,43 @@
       "error": "浏览器因错误而停止。"
     },
     "profileLabel": "浏览器配置"
+  },
+  "browserDevices": {
+    "activity": "智能体最近的操作",
+    "agentsOff": "智能体暂时无法使用此浏览器：请在 设置 → 浏览器 中打开“允许智能体使用我的 Mac 浏览器”。",
+    "approval": {
+      "allow": "允许 60 秒",
+      "allowed": "已允许 60 秒。",
+      "countdown_one": "{{count}} 秒内不回应将被拒绝",
+      "countdown_other": "{{count}} 秒内不回应将被拒绝",
+      "denied": "已拒绝。",
+      "deny": "拒绝",
+      "expired": "该请求已过期。",
+      "failed": "无法发送你的回应，请重试。",
+      "title": "智能体想在 {{origin}} 上执行操作",
+      "where": "在你的浏览器“{{device}}”中："
+    },
+    "browser": "浏览器",
+    "gone": "此浏览器已不再配对，请选择其他浏览器。",
+    "groupLabel": "你的浏览器",
+    "lastSeen": "最近在线",
+    "live": "在你的浏览器中实时进行",
+    "liveHint": "“{{name}}”运行在你的电脑上：请在那里查看。智能体只能看到你在 AionUi 扩展中共享的标签页。",
+    "newTabs": "允许智能体打开新标签页",
+    "no": "否",
+    "noActivity": "还没有智能体操作。",
+    "offline": "离线",
+    "offlineLong": "离线 — 打开浏览器即可重新连接",
+    "online": "在线",
+    "sharedTabs": "已共享的标签页",
+    "yes": "是",
+    "outcome": {
+      "ok": "完成",
+      "refused": "已拒绝",
+      "paused": "已暂停",
+      "approved": "已允许",
+      "denied": "已拒绝",
+      "timeout": "已超时"
+    }
   }
 }

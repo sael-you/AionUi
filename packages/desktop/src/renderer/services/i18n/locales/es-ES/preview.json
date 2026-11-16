@@ -226,5 +226,43 @@
       "error": "El navegador se detuvo con un error."
     },
     "profileLabel": "Perfil del navegador"
+  },
+  "browserDevices": {
+    "activity": "Acciones recientes de los agentes",
+    "agentsOff": "Los agentes aún no pueden usar este navegador: activa «Los agentes pueden usar el navegador de mi Mac» en Configuración → Navegador.",
+    "approval": {
+      "allow": "Permitir 60 s",
+      "allowed": "Permitido durante 60 segundos.",
+      "countdown_one": "Se rechazará en {{count}} segundo si no respondes",
+      "countdown_other": "Se rechazará en {{count}} segundos si no respondes",
+      "denied": "Denegado.",
+      "deny": "Denegar",
+      "expired": "Esta solicitud ya había caducado.",
+      "failed": "No se pudo enviar tu respuesta. Inténtalo de nuevo.",
+      "title": "Un agente quiere actuar en {{origin}}",
+      "where": "En tu navegador «{{device}}»:"
+    },
+    "browser": "Navegador",
+    "gone": "Este navegador ya no está vinculado. Elige otro.",
+    "groupLabel": "Tus navegadores",
+    "lastSeen": "Visto por última vez",
+    "live": "En directo en tu navegador",
+    "liveHint": "«{{name}}» se ejecuta en tu ordenador: míralo allí. Los agentes solo ven las pestañas que compartes en la extensión de AionUi.",
+    "newTabs": "Los agentes pueden abrir pestañas nuevas",
+    "no": "No",
+    "noActivity": "Aún no hay acciones de agentes.",
+    "offline": "sin conexión",
+    "offlineLong": "Sin conexión: abre el navegador para reconectar",
+    "online": "en línea",
+    "sharedTabs": "Pestañas compartidas",
+    "yes": "Sí",
+    "outcome": {
+      "ok": "hecho",
+      "refused": "rechazado",
+      "paused": "en pausa",
+      "approved": "permitido",
+      "denied": "denegado",
+      "timeout": "caducado"
+    }
   }
 }

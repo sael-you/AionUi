@@ -226,5 +226,43 @@
       "error": "O navegador parou com um erro."
     },
     "profileLabel": "Perfil do navegador"
+  },
+  "browserDevices": {
+    "activity": "Ações recentes dos agentes",
+    "agentsOff": "Os agentes ainda não podem usar este navegador: ative “Agentes podem usar o navegador do meu Mac” em Configurações → Navegador.",
+    "approval": {
+      "allow": "Permitir por 60 s",
+      "allowed": "Permitido por 60 segundos.",
+      "countdown_one": "Recusado em {{count}} segundo se você não responder",
+      "countdown_other": "Recusado em {{count}} segundos se você não responder",
+      "denied": "Negado.",
+      "deny": "Negar",
+      "expired": "Este pedido já tinha expirado.",
+      "failed": "Não foi possível enviar sua resposta. Tente de novo.",
+      "title": "Um agente quer agir em {{origin}}",
+      "where": "No seu navegador “{{device}}”:"
+    },
+    "browser": "Navegador",
+    "gone": "Este navegador não está mais pareado. Escolha outro.",
+    "groupLabel": "Seus navegadores",
+    "lastSeen": "Visto por último",
+    "live": "Ao vivo no seu navegador",
+    "liveHint": "“{{name}}” roda no seu computador: acompanhe por lá. Os agentes só veem as abas que você compartilha na extensão do AionUi.",
+    "newTabs": "Agentes podem abrir novas abas",
+    "no": "Não",
+    "noActivity": "Nenhuma ação de agente ainda.",
+    "offline": "offline",
+    "offlineLong": "Offline — abra o navegador para reconectar",
+    "online": "online",
+    "sharedTabs": "Abas compartilhadas",
+    "yes": "Sim",
+    "outcome": {
+      "ok": "feito",
+      "refused": "recusado",
+      "paused": "em pausa",
+      "approved": "permitido",
+      "denied": "negado",
+      "timeout": "expirado"
+    }
   }
 }

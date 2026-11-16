@@ -1596,5 +1596,38 @@
         "emojiTooLong": "L’emoji est trop long."
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "Les agents peuvent piloter les onglets que vous partagez depuis l’extension AionUi Browser Bridge. La connexion Google, Gmail, les banques et les pages de paiement vous demandent toujours d’abord.",
+    "agentsLabel": "Les agents peuvent utiliser le navigateur de mon Mac",
+    "description": "Utilisez votre propre Chrome ou Arc avec vos connexions : installez l’extension AionUi Browser Bridge, associez-la ici, puis partagez des onglets depuis l’extension.",
+    "lastSeen": "vu {{time}}",
+    "needsAgentsOn": "Activez aussi « Les agents peuvent utiliser le navigateur » ci-dessus, sinon les agents ne l’atteignent pas.",
+    "none": "Aucun navigateur associé pour l’instant.",
+    "pair": {
+      "codeLabel": "Code d’association",
+      "copied": "Code copié.",
+      "copy": "Copier le code",
+      "copyFailed": "Impossible de copier le code.",
+      "done": "« {{name}} » est associé.",
+      "expired": "Le code a expiré.",
+      "expiresIn": "Expire dans {{time}}",
+      "failed": "Impossible de créer un code d’association.",
+      "renew": "Nouveau code",
+      "stepAddress": "Comme adresse, saisissez",
+      "stepCode": "Puis saisissez ce code et cliquez sur Associer :",
+      "stepOpen": "Dans Chrome ou Arc, cliquez sur l’icône d’AionUi Browser Bridge.",
+      "title": "Associer un navigateur"
+    },
+    "pairButton": "Associer un navigateur Mac",
+    "revoke": "Révoquer",
+    "revokeContent": "Les agents perdent l’accès immédiatement et l’extension devra être associée à nouveau.",
+    "revokeFailed": "Impossible de révoquer le navigateur.",
+    "revokeLabel": "Révoquer {{name}}",
+    "revokeTitle": "Révoquer « {{name}} » ?",
+    "revoked": "« {{name}} » a été révoqué.",
+    "sharedTabs_one": "{{count}} onglet partagé",
+    "sharedTabs_other": "{{count}} onglets partagés",
+    "title": "Votre propre navigateur"
   }
 }

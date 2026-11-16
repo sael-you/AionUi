@@ -1596,5 +1596,38 @@
         "emojiTooLong": "El emoji es demasiado largo."
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "Los agentes pueden controlar las pestañas que compartes desde la extensión AionUi Browser Bridge. El inicio de sesión de Google, Gmail, bancos y páginas de pago siempre te preguntan antes.",
+    "agentsLabel": "Los agentes pueden usar el navegador de mi Mac",
+    "description": "Usa tu propio Chrome o Arc con tus sesiones: instala la extensión AionUi Browser Bridge, vincúlala aquí y comparte pestañas desde la extensión.",
+    "lastSeen": "visto {{time}}",
+    "needsAgentsOn": "Activa también «Los agentes pueden usar el navegador» arriba; si no, los agentes no llegan a él.",
+    "none": "Aún no hay ningún navegador vinculado.",
+    "pair": {
+      "codeLabel": "Código de vinculación",
+      "copied": "Código copiado.",
+      "copy": "Copiar el código",
+      "copyFailed": "No se pudo copiar el código.",
+      "done": "«{{name}}» está vinculado.",
+      "expired": "El código caducó.",
+      "expiresIn": "Caduca en {{time}}",
+      "failed": "No se pudo crear un código de vinculación.",
+      "renew": "Código nuevo",
+      "stepAddress": "Como dirección, escribe",
+      "stepCode": "Después escribe este código y pulsa Vincular:",
+      "stepOpen": "En Chrome o Arc, haz clic en el icono de AionUi Browser Bridge.",
+      "title": "Vincular un navegador"
+    },
+    "pairButton": "Vincular un navegador del Mac",
+    "revoke": "Revocar",
+    "revokeContent": "Los agentes pierden el acceso al instante y habrá que vincular la extensión de nuevo.",
+    "revokeFailed": "No se pudo revocar el navegador.",
+    "revokeLabel": "Revocar {{name}}",
+    "revokeTitle": "¿Revocar «{{name}}»?",
+    "revoked": "«{{name}}» se ha revocado.",
+    "sharedTabs_one": "{{count}} pestaña compartida",
+    "sharedTabs_other": "{{count}} pestañas compartidas",
+    "title": "Tu propio navegador"
   }
 }

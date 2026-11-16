@@ -1597,5 +1597,38 @@
         "emojiTooLong": "表情过长。"
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "智能体可以操作你通过 AionUi Browser Bridge 扩展共享的标签页。Google 登录、Gmail、银行和支付页面总会先征求你的同意。",
+    "agentsLabel": "允许智能体使用我的 Mac 浏览器",
+    "description": "使用你自己已登录的 Chrome 或 Arc：安装 AionUi Browser Bridge 扩展，在这里配对，然后在扩展中共享标签页。",
+    "lastSeen": "最近在线 {{time}}",
+    "needsAgentsOn": "还需在上方打开“允许智能体使用浏览器”，否则智能体无法访问。",
+    "none": "还没有配对的浏览器。",
+    "pair": {
+      "codeLabel": "配对代码",
+      "copied": "已复制代码。",
+      "copy": "复制代码",
+      "copyFailed": "无法复制代码。",
+      "done": "“{{name}}”已配对。",
+      "expired": "代码已过期。",
+      "expiresIn": "{{time}} 后过期",
+      "failed": "无法创建配对代码。",
+      "renew": "新代码",
+      "stepAddress": "地址填写",
+      "stepCode": "然后输入此代码并点击配对：",
+      "stepOpen": "在 Chrome 或 Arc 中点击 AionUi Browser Bridge 图标。",
+      "title": "配对浏览器"
+    },
+    "pairButton": "配对 Mac 浏览器",
+    "revoke": "撤销",
+    "revokeContent": "智能体会立即失去访问权限，扩展需要重新配对。",
+    "revokeFailed": "无法撤销此浏览器。",
+    "revokeLabel": "撤销 {{name}}",
+    "revokeTitle": "撤销“{{name}}”？",
+    "revoked": "已撤销“{{name}}”。",
+    "sharedTabs_one": "{{count}} 个共享标签页",
+    "sharedTabs_other": "{{count}} 个共享标签页",
+    "title": "你自己的浏览器"
   }
 }

@@ -226,5 +226,43 @@
       "error": "Tarayıcı bir hatayla durdu."
     },
     "profileLabel": "Tarayıcı profili"
+  },
+  "browserDevices": {
+    "activity": "Son ajan işlemleri",
+    "agentsOff": "Ajanlar bu tarayıcıyı henüz kullanamaz: Ayarlar → Tarayıcı’da “Ajanlar Mac tarayıcımı kullanabilir”i açın.",
+    "approval": {
+      "allow": "60 sn izin ver",
+      "allowed": "60 saniyeliğine izin verildi.",
+      "countdown_one": "Yanıt vermezseniz {{count}} saniye içinde reddedilir",
+      "countdown_other": "Yanıt vermezseniz {{count}} saniye içinde reddedilir",
+      "denied": "Reddedildi.",
+      "deny": "Reddet",
+      "expired": "Bu isteğin süresi zaten dolmuştu.",
+      "failed": "Yanıtınız gönderilemedi. Tekrar deneyin.",
+      "title": "Bir ajan {{origin}} üzerinde işlem yapmak istiyor",
+      "where": "“{{device}}” tarayıcınızda:"
+    },
+    "browser": "Tarayıcı",
+    "gone": "Bu tarayıcı artık eşli değil. Başka birini seçin.",
+    "groupLabel": "Tarayıcılarınız",
+    "lastSeen": "Son görülme",
+    "live": "Tarayıcınızda canlı",
+    "liveHint": "“{{name}}” bilgisayarınızda çalışıyor: oradan izleyin. Ajanlar yalnızca AionUi uzantısında paylaştığınız sekmeleri görür.",
+    "newTabs": "Ajanlar yeni sekme açabilir",
+    "no": "Hayır",
+    "noActivity": "Henüz ajan işlemi yok.",
+    "offline": "çevrimdışı",
+    "offlineLong": "Çevrimdışı — yeniden bağlanmak için tarayıcıyı açın",
+    "online": "çevrimiçi",
+    "sharedTabs": "Paylaşılan sekmeler",
+    "yes": "Evet",
+    "outcome": {
+      "ok": "tamam",
+      "refused": "reddedildi",
+      "paused": "duraklatıldı",
+      "approved": "izin verildi",
+      "denied": "reddedildi",
+      "timeout": "zaman aşımı"
+    }
   }
 }

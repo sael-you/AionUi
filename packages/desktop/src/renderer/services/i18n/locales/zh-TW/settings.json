@@ -1598,5 +1598,38 @@
         "emojiTooLong": "表情過長。"
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "智慧代理可以操作你透過 AionUi Browser Bridge 擴充功能共用的分頁。Google 登入、Gmail、銀行與付款頁面一律先徵求你的同意。",
+    "agentsLabel": "允許智慧代理使用我的 Mac 瀏覽器",
+    "description": "使用你自己已登入的 Chrome 或 Arc：安裝 AionUi Browser Bridge 擴充功能，在這裡配對，然後在擴充功能中共用分頁。",
+    "lastSeen": "最近上線 {{time}}",
+    "needsAgentsOn": "還需在上方開啟「允許智慧代理使用瀏覽器」，否則智慧代理無法存取。",
+    "none": "還沒有配對的瀏覽器。",
+    "pair": {
+      "codeLabel": "配對代碼",
+      "copied": "已複製代碼。",
+      "copy": "複製代碼",
+      "copyFailed": "無法複製代碼。",
+      "done": "「{{name}}」已配對。",
+      "expired": "代碼已過期。",
+      "expiresIn": "{{time}} 後過期",
+      "failed": "無法建立配對代碼。",
+      "renew": "新代碼",
+      "stepAddress": "位址輸入",
+      "stepCode": "然後輸入此代碼並按配對：",
+      "stepOpen": "在 Chrome 或 Arc 中點擊 AionUi Browser Bridge 圖示。",
+      "title": "配對瀏覽器"
+    },
+    "pairButton": "配對 Mac 瀏覽器",
+    "revoke": "撤銷",
+    "revokeContent": "智慧代理會立即失去存取權，擴充功能需要重新配對。",
+    "revokeFailed": "無法撤銷此瀏覽器。",
+    "revokeLabel": "撤銷 {{name}}",
+    "revokeTitle": "撤銷「{{name}}」？",
+    "revoked": "已撤銷「{{name}}」。",
+    "sharedTabs_one": "{{count}} 個共用分頁",
+    "sharedTabs_other": "{{count}} 個共用分頁",
+    "title": "你自己的瀏覽器"
   }
 }

@@ -226,5 +226,43 @@
       "error": "Le navigateur s’est arrêté sur une erreur."
     },
     "profileLabel": "Profil du navigateur"
+  },
+  "browserDevices": {
+    "activity": "Actions récentes des agents",
+    "agentsOff": "Les agents ne peuvent pas encore utiliser ce navigateur : activez « Les agents peuvent utiliser le navigateur de mon Mac » dans Paramètres → Navigateur.",
+    "approval": {
+      "allow": "Autoriser 60 s",
+      "allowed": "Autorisé pendant 60 secondes.",
+      "countdown_one": "Refusé dans {{count}} seconde sans réponse",
+      "countdown_other": "Refusé dans {{count}} secondes sans réponse",
+      "denied": "Refusé.",
+      "deny": "Refuser",
+      "expired": "Cette demande avait déjà expiré.",
+      "failed": "Impossible d’envoyer votre réponse. Réessayez.",
+      "title": "Un agent veut agir sur {{origin}}",
+      "where": "Dans votre navigateur « {{device}} » :"
+    },
+    "browser": "Navigateur",
+    "gone": "Ce navigateur n’est plus associé. Choisissez-en un autre.",
+    "groupLabel": "Vos navigateurs",
+    "lastSeen": "Vu pour la dernière fois",
+    "live": "En direct dans votre navigateur",
+    "liveHint": "« {{name}} » tourne sur votre ordinateur : suivez-le là-bas. Les agents ne voient que les onglets que vous partagez dans l’extension AionUi.",
+    "newTabs": "Les agents peuvent ouvrir de nouveaux onglets",
+    "no": "Non",
+    "noActivity": "Aucune action d’agent pour l’instant.",
+    "offline": "hors ligne",
+    "offlineLong": "Hors ligne — ouvrez le navigateur pour vous reconnecter",
+    "online": "en ligne",
+    "sharedTabs": "Onglets partagés",
+    "yes": "Oui",
+    "outcome": {
+      "ok": "fait",
+      "refused": "refusé",
+      "paused": "en pause",
+      "approved": "autorisé",
+      "denied": "refusé",
+      "timeout": "expiré"
+    }
   }
 }

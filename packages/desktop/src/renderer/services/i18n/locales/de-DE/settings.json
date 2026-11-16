@@ -1596,5 +1596,38 @@
         "emojiTooLong": "Das Emoji ist zu lang."
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "Agenten können die Tabs steuern, die du über die Erweiterung AionUi Browser Bridge teilst. Google-Anmeldung, Gmail, Banken und Bezahlseiten fragen dich immer zuerst.",
+    "agentsLabel": "Agenten dürfen meinen Mac-Browser nutzen",
+    "description": "Nutze dein eigenes Chrome oder Arc mit deinen Anmeldungen: Installiere die Erweiterung AionUi Browser Bridge, kopple sie hier und teile dann Tabs aus der Erweiterung.",
+    "lastSeen": "zuletzt gesehen {{time}}",
+    "needsAgentsOn": "Schalte oben auch „Agenten können den Browser nutzen“ ein, sonst erreichen Agenten ihn nicht.",
+    "none": "Noch kein Browser gekoppelt.",
+    "pair": {
+      "codeLabel": "Kopplungscode",
+      "copied": "Code kopiert.",
+      "copy": "Code kopieren",
+      "copyFailed": "Der Code konnte nicht kopiert werden.",
+      "done": "„{{name}}“ ist gekoppelt.",
+      "expired": "Der Code ist abgelaufen.",
+      "expiresIn": "Läuft ab in {{time}}",
+      "failed": "Kopplungscode konnte nicht erstellt werden.",
+      "renew": "Neuer Code",
+      "stepAddress": "Gib als Adresse ein",
+      "stepCode": "Gib dann diesen Code ein und klicke auf Koppeln:",
+      "stepOpen": "Klicke in Chrome oder Arc auf das Symbol von AionUi Browser Bridge.",
+      "title": "Browser koppeln"
+    },
+    "pairButton": "Mac-Browser koppeln",
+    "revoke": "Widerrufen",
+    "revokeContent": "Agenten verlieren sofort den Zugriff, und die Erweiterung muss neu gekoppelt werden.",
+    "revokeFailed": "Der Browser konnte nicht widerrufen werden.",
+    "revokeLabel": "{{name}} widerrufen",
+    "revokeTitle": "„{{name}}“ widerrufen?",
+    "revoked": "„{{name}}“ wurde widerrufen.",
+    "sharedTabs_one": "{{count}} geteilter Tab",
+    "sharedTabs_other": "{{count}} geteilte Tabs",
+    "title": "Dein eigener Browser"
   }
 }

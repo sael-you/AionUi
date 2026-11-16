@@ -1598,5 +1598,38 @@
         "emojiTooLong": "絵文字が長すぎます。"
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "エージェントは AionUi Browser Bridge 拡張機能で共有したタブを操作できます。Google ログイン、Gmail、銀行、支払いページでは必ず先に確認します。",
+    "agentsLabel": "エージェントが Mac のブラウザを使える",
+    "description": "ログイン済みの自分の Chrome や Arc を使えます。AionUi Browser Bridge 拡張機能をインストールし、ここでペアリングしてから拡張機能でタブを共有してください。",
+    "lastSeen": "最終接続 {{time}}",
+    "needsAgentsOn": "上の「エージェントがブラウザを使える」もオンにしてください。オフのままではエージェントが届きません。",
+    "none": "ペアリング済みのブラウザはまだありません。",
+    "pair": {
+      "codeLabel": "ペアリングコード",
+      "copied": "コードをコピーしました。",
+      "copy": "コードをコピー",
+      "copyFailed": "コードをコピーできませんでした。",
+      "done": "「{{name}}」をペアリングしました。",
+      "expired": "コードの有効期限が切れました。",
+      "expiresIn": "残り {{time}}",
+      "failed": "ペアリングコードを作成できませんでした。",
+      "renew": "新しいコード",
+      "stepAddress": "アドレスとして次を入力",
+      "stepCode": "次にこのコードを入力して「ペアリング」を押します:",
+      "stepOpen": "Chrome または Arc で AionUi Browser Bridge のアイコンをクリックします。",
+      "title": "ブラウザをペアリング"
+    },
+    "pairButton": "Mac のブラウザをペアリング",
+    "revoke": "取り消す",
+    "revokeContent": "エージェントはすぐにアクセスできなくなり、拡張機能は再度ペアリングが必要です。",
+    "revokeFailed": "ブラウザを取り消せませんでした。",
+    "revokeLabel": "{{name}} を取り消す",
+    "revokeTitle": "「{{name}}」を取り消しますか?",
+    "revoked": "「{{name}}」を取り消しました。",
+    "sharedTabs_one": "共有中のタブ {{count}} 件",
+    "sharedTabs_other": "共有中のタブ {{count}} 件",
+    "title": "あなた自身のブラウザ"
   }
 }

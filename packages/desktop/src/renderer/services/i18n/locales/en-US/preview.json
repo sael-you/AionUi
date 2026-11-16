@@ -226,5 +226,43 @@
       "error": "The browser stopped with an error."
     },
     "profileLabel": "Browser profile"
+  },
+  "browserDevices": {
+    "activity": "Recent agent actions",
+    "agentsOff": "Agents can't use this browser yet: turn on “Agents may use my Mac browser” in Settings → Browser.",
+    "approval": {
+      "allow": "Allow for 60 s",
+      "allowed": "Allowed for 60 seconds.",
+      "countdown_one": "Refused in {{count}} second unless you answer",
+      "countdown_other": "Refused in {{count}} seconds unless you answer",
+      "denied": "Denied.",
+      "deny": "Deny",
+      "expired": "This request had already expired.",
+      "failed": "Could not send your answer. Try again.",
+      "title": "An agent wants to act on {{origin}}",
+      "where": "In your browser “{{device}}”:"
+    },
+    "browser": "Browser",
+    "gone": "This browser is no longer paired. Pick another one.",
+    "groupLabel": "Your browsers",
+    "lastSeen": "Last seen",
+    "live": "Live in your browser",
+    "liveHint": "“{{name}}” runs on your computer: watch it there. Agents only see the tabs you share in the AionUi extension.",
+    "newTabs": "Agents may open new tabs",
+    "no": "No",
+    "noActivity": "No agent actions yet.",
+    "offline": "offline",
+    "offlineLong": "Offline — open the browser to reconnect",
+    "online": "online",
+    "sharedTabs": "Shared tabs",
+    "yes": "Yes",
+    "outcome": {
+      "ok": "done",
+      "refused": "refused",
+      "paused": "paused",
+      "approved": "approved",
+      "denied": "denied",
+      "timeout": "timed out"
+    }
   }
 }

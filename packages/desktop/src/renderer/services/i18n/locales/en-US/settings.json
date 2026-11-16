@@ -1596,5 +1596,38 @@
         "emojiTooLong": "The emoji is too long."
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "Agents can drive the tabs you share from the AionUi Browser Bridge extension. Google sign-in, Gmail, banks and payment pages always ask you first.",
+    "agentsLabel": "Agents may use my Mac browser",
+    "description": "Use your own Chrome or Arc with your logins: install the AionUi Browser Bridge extension, pair it here, then share tabs from the extension.",
+    "lastSeen": "last seen {{time}}",
+    "needsAgentsOn": "Also turn on “Agents can use the browser” above, or agents won't reach it.",
+    "none": "No browser paired yet.",
+    "pair": {
+      "codeLabel": "Pairing code",
+      "copied": "Code copied.",
+      "copy": "Copy the code",
+      "copyFailed": "Could not copy the code.",
+      "done": "“{{name}}” is paired.",
+      "expired": "The code expired.",
+      "expiresIn": "Expires in {{time}}",
+      "failed": "Could not create a pairing code.",
+      "renew": "New code",
+      "stepAddress": "As the address, type",
+      "stepCode": "Then type this code and press Pair:",
+      "stepOpen": "In Chrome or Arc, click the AionUi Browser Bridge icon.",
+      "title": "Pair a browser"
+    },
+    "pairButton": "Pair a Mac browser",
+    "revoke": "Revoke",
+    "revokeContent": "Agents lose access right away and the extension has to be paired again.",
+    "revokeFailed": "Could not revoke the browser.",
+    "revokeLabel": "Revoke {{name}}",
+    "revokeTitle": "Revoke “{{name}}”?",
+    "revoked": "“{{name}}” was revoked.",
+    "sharedTabs_one": "{{count}} shared tab",
+    "sharedTabs_other": "{{count}} shared tabs",
+    "title": "Your own browser"
   }
 }

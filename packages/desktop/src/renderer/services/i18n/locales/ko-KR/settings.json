@@ -1598,5 +1598,38 @@
         "emojiTooLong": "이모지가 너무 깁니다."
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "에이전트는 AionUi Browser Bridge 확장 프로그램에서 공유한 탭을 조작할 수 있습니다. Google 로그인, Gmail, 은행, 결제 페이지에서는 항상 먼저 묻습니다.",
+    "agentsLabel": "에이전트가 내 Mac 브라우저 사용 가능",
+    "description": "로그인된 내 Chrome이나 Arc를 사용하세요. AionUi Browser Bridge 확장 프로그램을 설치하고 여기서 페어링한 뒤 확장 프로그램에서 탭을 공유하세요.",
+    "lastSeen": "마지막 접속 {{time}}",
+    "needsAgentsOn": "위의 “에이전트가 브라우저 사용 가능”도 켜야 에이전트가 접근할 수 있습니다.",
+    "none": "아직 페어링된 브라우저가 없습니다.",
+    "pair": {
+      "codeLabel": "페어링 코드",
+      "copied": "코드를 복사했습니다.",
+      "copy": "코드 복사",
+      "copyFailed": "코드를 복사하지 못했습니다.",
+      "done": "“{{name}}”을(를) 페어링했습니다.",
+      "expired": "코드가 만료되었습니다.",
+      "expiresIn": "{{time}} 후 만료",
+      "failed": "페어링 코드를 만들지 못했습니다.",
+      "renew": "새 코드",
+      "stepAddress": "주소로 다음을 입력",
+      "stepCode": "그다음 이 코드를 입력하고 페어링을 누르세요:",
+      "stepOpen": "Chrome 또는 Arc에서 AionUi Browser Bridge 아이콘을 클릭하세요.",
+      "title": "브라우저 페어링"
+    },
+    "pairButton": "Mac 브라우저 페어링",
+    "revoke": "해제",
+    "revokeContent": "에이전트는 즉시 접근 권한을 잃고 확장 프로그램을 다시 페어링해야 합니다.",
+    "revokeFailed": "브라우저를 해제하지 못했습니다.",
+    "revokeLabel": "{{name}} 해제",
+    "revokeTitle": "“{{name}}”을(를) 해제할까요?",
+    "revoked": "“{{name}}”을(를) 해제했습니다.",
+    "sharedTabs_one": "공유 중인 탭 {{count}}개",
+    "sharedTabs_other": "공유 중인 탭 {{count}}개",
+    "title": "내 브라우저"
   }
 }

@@ -1596,5 +1596,38 @@
         "emojiTooLong": "Emoji çok uzun."
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "Ajanlar, AionUi Browser Bridge uzantısından paylaştığınız sekmeleri kullanabilir. Google girişi, Gmail, bankalar ve ödeme sayfaları her zaman önce size sorar.",
+    "agentsLabel": "Ajanlar Mac tarayıcımı kullanabilir",
+    "description": "Kendi Chrome veya Arc’ınızı oturumlarınızla kullanın: AionUi Browser Bridge uzantısını kurun, burada eşleyin, sonra sekmeleri uzantıdan paylaşın.",
+    "lastSeen": "son görülme {{time}}",
+    "needsAgentsOn": "Yukarıdaki “Ajanlar tarayıcıyı kullanabilir”i de açın; yoksa ajanlar ona ulaşamaz.",
+    "none": "Henüz eşlenmiş tarayıcı yok.",
+    "pair": {
+      "codeLabel": "Eşleme kodu",
+      "copied": "Kod kopyalandı.",
+      "copy": "Kodu kopyala",
+      "copyFailed": "Kod kopyalanamadı.",
+      "done": "“{{name}}” eşlendi.",
+      "expired": "Kodun süresi doldu.",
+      "expiresIn": "{{time}} içinde sona erer",
+      "failed": "Eşleme kodu oluşturulamadı.",
+      "renew": "Yeni kod",
+      "stepAddress": "Adres olarak şunu yazın",
+      "stepCode": "Sonra bu kodu yazıp Eşle’ye basın:",
+      "stepOpen": "Chrome veya Arc’ta AionUi Browser Bridge simgesine tıklayın.",
+      "title": "Tarayıcı eşle"
+    },
+    "pairButton": "Mac tarayıcısını eşle",
+    "revoke": "İptal et",
+    "revokeContent": "Ajanlar erişimi hemen kaybeder ve uzantının yeniden eşlenmesi gerekir.",
+    "revokeFailed": "Tarayıcı iptal edilemedi.",
+    "revokeLabel": "{{name}} erişimini iptal et",
+    "revokeTitle": "“{{name}}” iptal edilsin mi?",
+    "revoked": "“{{name}}” iptal edildi.",
+    "sharedTabs_one": "{{count}} paylaşılan sekme",
+    "sharedTabs_other": "{{count}} paylaşılan sekme",
+    "title": "Kendi tarayıcınız"
   }
 }

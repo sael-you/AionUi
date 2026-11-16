@@ -226,5 +226,43 @@
       "error": "Der Browser wurde mit einem Fehler beendet."
     },
     "profileLabel": "Browserprofil"
+  },
+  "browserDevices": {
+    "activity": "Letzte Aktionen der Agenten",
+    "agentsOff": "Agenten können diesen Browser noch nicht nutzen: Schalte „Agenten dürfen meinen Mac-Browser nutzen“ unter Einstellungen → Browser ein.",
+    "approval": {
+      "allow": "60 s erlauben",
+      "allowed": "Für 60 Sekunden erlaubt.",
+      "countdown_one": "Abgelehnt in {{count}} Sekunde, wenn du nicht antwortest",
+      "countdown_other": "Abgelehnt in {{count}} Sekunden, wenn du nicht antwortest",
+      "denied": "Abgelehnt.",
+      "deny": "Ablehnen",
+      "expired": "Diese Anfrage war bereits abgelaufen.",
+      "failed": "Deine Antwort konnte nicht gesendet werden. Versuch es erneut.",
+      "title": "Ein Agent möchte auf {{origin}} handeln",
+      "where": "In deinem Browser „{{device}}“:"
+    },
+    "browser": "Browser",
+    "gone": "Dieser Browser ist nicht mehr gekoppelt. Wähle einen anderen.",
+    "groupLabel": "Deine Browser",
+    "lastSeen": "Zuletzt gesehen",
+    "live": "Live in deinem Browser",
+    "liveHint": "„{{name}}“ läuft auf deinem Computer: Schau dort zu. Agenten sehen nur die Tabs, die du in der AionUi-Erweiterung teilst.",
+    "newTabs": "Agenten dürfen neue Tabs öffnen",
+    "no": "Nein",
+    "noActivity": "Noch keine Agentenaktionen.",
+    "offline": "offline",
+    "offlineLong": "Offline – öffne den Browser, um neu zu verbinden",
+    "online": "online",
+    "sharedTabs": "Geteilte Tabs",
+    "yes": "Ja",
+    "outcome": {
+      "ok": "erledigt",
+      "refused": "abgelehnt",
+      "paused": "pausiert",
+      "approved": "erlaubt",
+      "denied": "verweigert",
+      "timeout": "Zeit abgelaufen"
+    }
   }
 }

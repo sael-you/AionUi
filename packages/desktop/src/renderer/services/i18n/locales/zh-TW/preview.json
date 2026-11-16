@@ -226,5 +226,43 @@
       "error": "瀏覽器因錯誤而停止。"
     },
     "profileLabel": "瀏覽器設定檔"
+  },
+  "browserDevices": {
+    "activity": "智慧代理最近的操作",
+    "agentsOff": "智慧代理暫時無法使用此瀏覽器：請在 設定 → 瀏覽器 中開啟「允許智慧代理使用我的 Mac 瀏覽器」。",
+    "approval": {
+      "allow": "允許 60 秒",
+      "allowed": "已允許 60 秒。",
+      "countdown_one": "{{count}} 秒內未回應將被拒絕",
+      "countdown_other": "{{count}} 秒內未回應將被拒絕",
+      "denied": "已拒絕。",
+      "deny": "拒絕",
+      "expired": "此請求已過期。",
+      "failed": "無法送出你的回應，請重試。",
+      "title": "智慧代理想在 {{origin}} 上執行操作",
+      "where": "在你的瀏覽器「{{device}}」中："
+    },
+    "browser": "瀏覽器",
+    "gone": "此瀏覽器已不再配對，請選擇其他瀏覽器。",
+    "groupLabel": "你的瀏覽器",
+    "lastSeen": "最近上線",
+    "live": "在你的瀏覽器中即時進行",
+    "liveHint": "「{{name}}」在你的電腦上執行：請在那裡查看。智慧代理只能看到你在 AionUi 擴充功能中共用的分頁。",
+    "newTabs": "允許智慧代理開啟新分頁",
+    "no": "否",
+    "noActivity": "還沒有智慧代理操作。",
+    "offline": "離線",
+    "offlineLong": "離線 — 開啟瀏覽器即可重新連線",
+    "online": "上線",
+    "sharedTabs": "共用中的分頁",
+    "yes": "是",
+    "outcome": {
+      "ok": "完成",
+      "refused": "已拒絕",
+      "paused": "已暫停",
+      "approved": "已允許",
+      "denied": "已拒絕",
+      "timeout": "已逾時"
+    }
   }
 }

@@ -1599,5 +1599,38 @@
         "emojiTooLong": "O emoji é longo demais."
       }
     }
+  },
+  "browserDevices": {
+    "agentsDesc": "Os agentes podem controlar as abas que você compartilha pela extensão AionUi Browser Bridge. Login do Google, Gmail, bancos e páginas de pagamento sempre pedem sua confirmação antes.",
+    "agentsLabel": "Agentes podem usar o navegador do meu Mac",
+    "description": "Use seu próprio Chrome ou Arc com seus logins: instale a extensão AionUi Browser Bridge, pareie aqui e compartilhe abas pela extensão.",
+    "lastSeen": "visto {{time}}",
+    "needsAgentsOn": "Ative também “Agentes podem usar o navegador” acima, senão os agentes não o alcançam.",
+    "none": "Nenhum navegador pareado ainda.",
+    "pair": {
+      "codeLabel": "Código de pareamento",
+      "copied": "Código copiado.",
+      "copy": "Copiar o código",
+      "copyFailed": "Não foi possível copiar o código.",
+      "done": "“{{name}}” está pareado.",
+      "expired": "O código expirou.",
+      "expiresIn": "Expira em {{time}}",
+      "failed": "Não foi possível criar um código de pareamento.",
+      "renew": "Novo código",
+      "stepAddress": "Como endereço, digite",
+      "stepCode": "Depois digite este código e clique em Parear:",
+      "stepOpen": "No Chrome ou Arc, clique no ícone do AionUi Browser Bridge.",
+      "title": "Parear um navegador"
+    },
+    "pairButton": "Parear um navegador do Mac",
+    "revoke": "Revogar",
+    "revokeContent": "Os agentes perdem o acesso na hora e a extensão precisa ser pareada de novo.",
+    "revokeFailed": "Não foi possível revogar o navegador.",
+    "revokeLabel": "Revogar {{name}}",
+    "revokeTitle": "Revogar “{{name}}”?",
+    "revoked": "“{{name}}” foi revogado.",
+    "sharedTabs_one": "{{count}} aba compartilhada",
+    "sharedTabs_other": "{{count}} abas compartilhadas",
+    "title": "Seu próprio navegador"
   }
 }
