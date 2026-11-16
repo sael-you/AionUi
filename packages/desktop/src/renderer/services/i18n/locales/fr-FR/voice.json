@@ -149,6 +149,11 @@
     "conversationIdle": "Écoute en pause après 3 minutes de silence. Dites « Hey Jarvis » ou touchez pour parler.",
     "conversationRested": "La voix est en pause : les réponses de l'agent restent dans le chat. Dites « Hey Jarvis » ou touchez pour reparler."
   },
+  "providerSetup": {
+    "action": "Configurer la clé",
+    "actionLabel": "Configurer une clé de fournisseur vocal dans Paramètres → Modèle",
+    "hint": "Ajoutez un fournisseur OpenAI avec l’URL de base https://api.openai.com (le préréglage OpenAI convient). Facultatif : une clé MiniMax pour la voix MiniMax."
+  },
   "settings": {
     "title": "Paramètres vocaux",
     "enabled": "Mode vocal",

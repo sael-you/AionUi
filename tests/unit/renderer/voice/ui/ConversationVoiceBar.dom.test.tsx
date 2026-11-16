@@ -5,7 +5,9 @@
 
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { BackendHttpError } from '@/common/adapter/httpBridge';
 import { VoiceController } from '@/renderer/voice/core/VoiceController';
 import type { FollowUpStatus } from '@/renderer/voice/core/types';
 import { createFakeEffects, flush } from '../fakes';
@@ -18,6 +20,15 @@ vi.mock('react-i18next', () => ({
 
 import ConversationVoiceBar from '@/renderer/voice/ui/ConversationVoiceBar';
 
+const LocationProbe: React.FC = () => <span data-testid='location'>{useLocation().pathname}</span>;
+
+const RouterWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <MemoryRouter initialEntries={['/conversation/c1']}>
+    {children}
+    <LocationProbe />
+  </MemoryRouter>
+);
+
 async function setup({ running = false, conversationId = 'c1' } = {}) {
   const f = createFakeEffects();
   const controller = new VoiceController(f.fx);
@@ -28,7 +39,8 @@ async function setup({ running = false, conversationId = 'c1' } = {}) {
       running={running}
       onStopTask={onStopTask}
       controller={controller}
-    />
+    />,
+    { wrapper: RouterWrapper }
   );
   const start = async () => {
     act(() => controller.toggle({ focusConversationId: 'c1', mode: 'conversation' }));
@@ -185,5 +197,39 @@ describe('ConversationVoiceBar', () => {
       })
     );
     expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.bar.outcome.turn_failed');
+  });
+
+  describe('"No voice provider" (TASK-90)', () => {
+    it('the call is refused with 412 no_provider: notice, hint and "Set up key" → Settings → Model', async () => {
+      const { f, controller } = await setup();
+      f.fx.startCall.mockRejectedValueOnce(
+        new BackendHttpError({
+          method: 'POST',
+          path: '/api/voice/sessions',
+          status: 412,
+          body: { success: false, code: 'no_provider', error: 'no voice provider' },
+        })
+      );
+      act(() => controller.toggle({ focusConversationId: 'c1', mode: 'conversation' }));
+      await act(flush);
+      act(() => f.openSocket());
+      await act(flush);
+      expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.noProvider');
+      expect(screen.getByText('voice.providerSetup.hint')).toBeInTheDocument();
+      const button = screen.getByRole('button', { name: 'voice.providerSetup.actionLabel' });
+      expect(button).toHaveAccessibleDescription('voice.providerSetup.hint');
+      expect(screen.getByTestId('location')).toHaveTextContent('/conversation/c1');
+      fireEvent.click(button);
+      expect(screen.getByTestId('location')).toHaveTextContent('/settings/model');
+    });
+
+    it('does not appear for other notices', async () => {
+      const { f, start } = await setup();
+      await start();
+      act(() => f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' }));
+      expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.restartInterrupted');
+      expect(screen.queryByTestId('voice-provider-setup')).toBeNull();
+      expect(screen.queryByRole('button', { name: 'voice.providerSetup.actionLabel' })).toBeNull();
+    });
   });
 });

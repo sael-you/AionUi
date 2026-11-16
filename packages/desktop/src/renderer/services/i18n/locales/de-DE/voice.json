@@ -149,6 +149,11 @@
     "conversationIdle": "Zuhören nach 3 stillen Minuten pausiert. Sag „Hey Jarvis“ oder tippe zum Sprechen.",
     "conversationRested": "Voice ruht: Die Antworten des Agenten bleiben im Chat. Sag „Hey Jarvis“ oder tippe, um wieder zu sprechen."
   },
+  "providerSetup": {
+    "action": "Schlüssel einrichten",
+    "actionLabel": "Schlüssel für einen Sprachanbieter unter Einstellungen → Modell einrichten",
+    "hint": "Füge einen OpenAI-Anbieter mit der Basis-URL https://api.openai.com hinzu (die OpenAI-Vorlage passt). Optional: ein MiniMax-Schlüssel für MiniMax-Sprachausgabe."
+  },
   "settings": {
     "title": "Spracheinstellungen",
     "enabled": "Sprachmodus",

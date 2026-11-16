@@ -149,6 +149,11 @@
     "conversationIdle": "3분 동안 조용해서 듣기를 일시 중지했습니다. “Hey Jarvis”라고 말하거나 탭하여 말하세요.",
     "conversationRested": "음성이 쉬는 중입니다. 에이전트의 답변은 채팅에 남습니다. 다시 말하려면 “Hey Jarvis”라고 말하거나 탭하세요."
   },
+  "providerSetup": {
+    "action": "키 설정",
+    "actionLabel": "설정 → 모델에서 음성 제공자 키 설정",
+    "hint": "기본 URL이 https://api.openai.com인 OpenAI 제공자를 추가하세요(OpenAI 프리셋 사용 가능). 선택 사항: MiniMax 음성용 MiniMax 키."
+  },
   "settings": {
     "title": "음성 설정",
     "enabled": "음성 모드",

@@ -149,6 +149,11 @@
     "conversationIdle": "3 dakika sessizlikten sonra dinleme duraklatıldı. “Hey Jarvis” deyin veya konuşmak için dokunun.",
     "conversationRested": "Ses dinleniyor: ajanın yanıtları sohbette kalır. Yeniden konuşmak için “Hey Jarvis” deyin veya dokunun."
   },
+  "providerSetup": {
+    "action": "Anahtarı ayarla",
+    "actionLabel": "Ayarlar → Model bölümünde bir ses sağlayıcısı anahtarı ayarla",
+    "hint": "Temel URL'si https://api.openai.com olan bir OpenAI sağlayıcısı ekleyin (OpenAI ön ayarı çalışır). İsteğe bağlı: MiniMax konuşması için bir MiniMax anahtarı."
+  },
   "settings": {
     "title": "Ses ayarları",
     "enabled": "Ses modu",

@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
+import { BackendHttpError } from '@/common/adapter/httpBridge';
 import { VoiceController } from '@/renderer/voice/core/VoiceController';
 import { createFakeEffects, flush } from '../fakes';
 
@@ -10,11 +12,22 @@ vi.mock('react-i18next', () => ({
 
 import VoiceOverlay from '@/renderer/voice/ui/VoiceOverlay';
 
+const LocationProbe: React.FC = () => <span data-testid='location'>{useLocation().pathname}</span>;
+
+const RouterWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <MemoryRouter initialEntries={['/conversation/c1']}>
+    {children}
+    <LocationProbe />
+  </MemoryRouter>
+);
+
 async function mount(isMobile = false) {
   const f = createFakeEffects();
   const controller = new VoiceController(f.fx);
   const onOpen = vi.fn();
-  render(<VoiceOverlay controller={controller} isMobile={isMobile} onOpenConversation={onOpen} />);
+  render(<VoiceOverlay controller={controller} isMobile={isMobile} onOpenConversation={onOpen} />, {
+    wrapper: RouterWrapper,
+  });
   act(() => controller.arm());
   await act(flush);
   act(() => f.openSocket());
@@ -142,5 +155,59 @@ describe('VoiceOverlay', () => {
     fireEvent.click(screen.getByRole('switch', { name: 'voice.settings.carMode' }));
     await act(flush);
     expect(f.fx.api.putSettings).toHaveBeenCalledWith({ car_mode: true });
+  });
+
+  describe('"No voice provider" (TASK-90)', () => {
+    /** Talk fails the way the backend refuses a call without a provider: 412 `no_provider`. */
+    async function failTalkWithoutProvider(isMobile = false) {
+      const m = await mount(isMobile);
+      m.f.fx.startCall.mockRejectedValueOnce(
+        new BackendHttpError({
+          method: 'POST',
+          path: '/api/voice/sessions',
+          status: 412,
+          body: { success: false, code: 'no_provider', error: 'no voice provider' },
+        })
+      );
+      act(() => m.controller.talk());
+      await act(flush);
+      return m;
+    }
+
+    it('shows the hint and a labelled "Set up key" button under the notice', async () => {
+      await failTalkWithoutProvider();
+      expect(screen.getByText('voice.notice.noProvider')).toBeInTheDocument();
+      expect(screen.getByText('voice.providerSetup.hint')).toBeInTheDocument();
+      const button = screen.getByRole('button', { name: 'voice.providerSetup.actionLabel' });
+      expect(button.tagName).toBe('BUTTON');
+      expect(button).toHaveTextContent('voice.providerSetup.action');
+      expect(button).toHaveAccessibleDescription('voice.providerSetup.hint');
+    });
+
+    it('"Set up key" opens Settings → Model; the desktop panel stays open', async () => {
+      const { controller } = await failTalkWithoutProvider();
+      expect(screen.getByTestId('location')).toHaveTextContent('/conversation/c1');
+      fireEvent.click(screen.getByTestId('voice-provider-setup-button'));
+      expect(screen.getByTestId('location')).toHaveTextContent('/settings/model');
+      expect(controller.store.getSnapshot().overlayOpen).toBe(true);
+    });
+
+    it('on a phone the bottom sheet closes so Settings is visible', async () => {
+      const { controller } = await failTalkWithoutProvider(true);
+      act(() => controller.setOverlayOpen(true));
+      fireEvent.click(screen.getByTestId('voice-provider-setup-button'));
+      expect(screen.getByTestId('location')).toHaveTextContent('/settings/model');
+      expect(controller.store.getSnapshot().overlayOpen).toBe(false);
+    });
+
+    it('does not appear for other notices, and goes away with the notice', async () => {
+      const { f, controller } = await failTalkWithoutProvider();
+      act(() => controller.dismissNotice());
+      expect(screen.queryByTestId('voice-provider-setup')).toBeNull();
+      act(() => f.frame({ name: 'voice.error', voiceSessionId: null, code: 'provider', message: 'x' }));
+      expect(screen.getByText('voice.notice.server')).toBeInTheDocument();
+      expect(screen.queryByTestId('voice-provider-setup')).toBeNull();
+      expect(screen.queryByRole('button', { name: 'voice.providerSetup.actionLabel' })).toBeNull();
+    });
   });
 });

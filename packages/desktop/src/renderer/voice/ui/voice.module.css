@@ -266,6 +266,40 @@
   flex: none;
 }
 
+/* "No voice provider": the setup help takes a second row under the bar (TASK-90). */
+.voiceBarWithHelp {
+  flex-wrap: wrap;
+}
+
+/* Basis 0 keeps the caption from pushing the actions onto the help row (phones stack it below). */
+@media (min-width: 481px) {
+  .voiceBarWithHelp .voiceBarCaption {
+    flex-basis: 0;
+  }
+}
+
+.voiceBarHelp {
+  order: 4;
+  flex-basis: 100%;
+  min-width: 0;
+}
+
+.providerSetup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.providerSetupHint {
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 480px) {
   .voiceBar {
     flex-wrap: wrap;

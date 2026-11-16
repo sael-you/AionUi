@@ -149,6 +149,11 @@
     "conversationIdle": "Listening paused after 3 quiet minutes. Say “Hey Jarvis” or tap to talk.",
     "conversationRested": "Voice is resting: the agent's replies stay in the chat. Say “Hey Jarvis” or tap to talk again."
   },
+  "providerSetup": {
+    "action": "Set up key",
+    "actionLabel": "Set up a voice provider key in Settings → Model",
+    "hint": "Add an OpenAI provider with base URL https://api.openai.com (the OpenAI preset works). Optional: a MiniMax key for MiniMax speech."
+  },
   "settings": {
     "title": "Voice settings",
     "enabled": "Voice mode",

@@ -19,6 +19,7 @@ import { getVoiceController } from '../core/effects';
 import type { VoiceController } from '../core/VoiceController';
 import { useVoiceView, type VoiceView } from '../core/voiceStore';
 import VoiceOrbGlyph from './VoiceOrbGlyph';
+import { NO_PROVIDER_NOTICE, VoiceProviderSetup } from './VoiceOverlay';
 import styles from './voice.module.css';
 
 export type ConversationVoiceBarProps = {
@@ -75,6 +76,7 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
       ? t(`voice.bar.outcome.${view.lastOutcome.status}`, { defaultValue: view.lastOutcome.line })
       : null;
   const notice = view.notice ? t(`voice.notice.${view.notice.code}`, { message: view.notice.message ?? '' }) : null;
+  const needsProvider = view.notice?.code === NO_PROVIDER_NOTICE;
   const stateLabel = t(`voice.bar.state.${state}`);
   const canTalk = state !== 'connecting' && state !== 'offline' && state !== 'listening';
 
@@ -87,7 +89,7 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
 
   return (
     <section
-      className={styles.voiceBar}
+      className={needsProvider ? `${styles.voiceBar} ${styles.voiceBarWithHelp}` : styles.voiceBar}
       aria-label={t('voice.bar.label')}
       data-testid='conversation-voice-bar'
       data-state={state}
@@ -142,6 +144,11 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
           {t('voice.bar.end')}
         </Button>
       </div>
+      {needsProvider && (
+        <div className={styles.voiceBarHelp}>
+          <VoiceProviderSetup />
+        </div>
+      )}
     </section>
   );
 };

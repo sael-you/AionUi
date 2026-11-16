@@ -149,6 +149,11 @@
     "conversationIdle": "安靜 3 分鐘後已暫停聆聽。說「Hey Jarvis」或點按即可說話。",
     "conversationRested": "語音已休息：代理的回覆會留在聊天中。說「Hey Jarvis」或點按即可再次說話。"
   },
+  "providerSetup": {
+    "action": "設定金鑰",
+    "actionLabel": "在 設定 → 模型 中設定語音服務提供者金鑰",
+    "hint": "新增一個基礎 URL 為 https://api.openai.com 的 OpenAI 提供者（OpenAI 預設即可）。選用：用於 MiniMax 語音的 MiniMax 金鑰。"
+  },
   "settings": {
     "title": "語音設定",
     "enabled": "語音模式",

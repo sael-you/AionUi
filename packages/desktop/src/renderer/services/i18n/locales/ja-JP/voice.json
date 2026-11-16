@@ -149,6 +149,11 @@
     "conversationIdle": "3 分間無音だったため聞き取りを一時停止しました。「Hey Jarvis」と言うかタップして話してください。",
     "conversationRested": "音声は休止中です。エージェントの返答はチャットに残ります。もう一度話すには「Hey Jarvis」と言うかタップしてください。"
   },
+  "providerSetup": {
+    "action": "キーを設定",
+    "actionLabel": "設定 → モデル で音声プロバイダーのキーを設定",
+    "hint": "ベース URL https://api.openai.com の OpenAI プロバイダーを追加してください（OpenAI プリセットで動作します）。任意：MiniMax 音声用の MiniMax キー。"
+  },
   "settings": {
     "title": "音声設定",
     "enabled": "音声モード",
