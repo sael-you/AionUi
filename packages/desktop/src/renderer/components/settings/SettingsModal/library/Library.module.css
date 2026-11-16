@@ -239,6 +239,12 @@
   flex-wrap: wrap;
 }
 
+/* The checked chip keeps body-text contrast in light and dark (the brand colour is too dim on dark fills). */
+.sources :global(.arco-radio-button.arco-radio-checked) {
+  color: var(--color-text-1);
+  font-weight: 600;
+}
+
 .panel {
   display: flex;
   flex-direction: column;

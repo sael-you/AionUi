@@ -369,11 +369,15 @@ describe('SkillsHubSettings', () => {
     expect(screen.queryByText('/tmp/user-skills')).not.toBeInTheDocument();
   });
 
-  it('surfaces server-provided size limits in the page description', async () => {
+  it('surfaces server-provided size limits in the import help next to Add Skill', async () => {
     render(<SkillsHubSettings withWrapper={false} />);
 
     await waitFor(() => expect(mocks.getSkillImportLimits).toHaveBeenCalled());
-    expect(await screen.findByText(/12 MB per file and 64 MB per skill/)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByTestId('btn-import-help').getAttribute('aria-label')).toMatch(
+        /12 MB per file and 64 MB per skill/
+      )
+    );
   });
 
   describe('delete and batch delete (library callbacks)', () => {

@@ -1,6 +1,7 @@
 import { ipcBridge } from '@/common';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
-import { Button, Message, Modal } from '@arco-design/web-react';
+import { Button, Message, Modal, Tooltip } from '@arco-design/web-react';
+import { Help } from '@icon-park/react';
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -559,29 +560,26 @@ const SkillsHubSettings: React.FC<SkillsHubSettingsProps> = ({ withWrapper = tru
     </div>
   );
 
+  const importHelp = t('settings.skillsHub.customHint', {
+    maxFileSize:
+      formatBytes(importLimits?.max_file_bytes) ??
+      t('settings.skillsHub.importHelpConfiguredLimit', { defaultValue: 'configured limit' }),
+    maxTotalSize:
+      formatBytes(importLimits?.max_total_bytes) ??
+      t('settings.skillsHub.importHelpConfiguredLimit', { defaultValue: 'configured limit' }),
+    defaultValue:
+      'Import a skill folder, parent folder, or zip; up to {{maxFileSize}} per file and {{maxTotalSize}} per skill; importing the same name overwrites the existing skill.',
+  });
+
   const mainContent = isImportHistoryView ? (
     importHistoryContent
   ) : (
     <SkillsLibrary
       skills={librarySkills}
       loading={loading}
-      description={
-        <>
-          {t('settings.skillsHub.description', {
-            defaultValue: 'Centrally manage AI skill packs — install once, use across all assistants.',
-          })}{' '}
-          {t('settings.skillsHub.customHint', {
-            maxFileSize:
-              formatBytes(importLimits?.max_file_bytes) ??
-              t('settings.skillsHub.importHelpConfiguredLimit', { defaultValue: 'configured limit' }),
-            maxTotalSize:
-              formatBytes(importLimits?.max_total_bytes) ??
-              t('settings.skillsHub.importHelpConfiguredLimit', { defaultValue: 'configured limit' }),
-            defaultValue:
-              'Import a skill folder, parent folder, or zip; up to {{maxFileSize}} per file and {{maxTotalSize}} per skill; importing the same name overwrites the existing skill.',
-          })}
-        </>
-      }
+      description={t('settings.skillsHub.description', {
+        defaultValue: 'Centrally manage AI skill packs — install once, use across all assistants.',
+      })}
       headerActions={
         <>
           <Button
@@ -593,6 +591,15 @@ const SkillsHubSettings: React.FC<SkillsHubSettingsProps> = ({ withWrapper = tru
           >
             {t('settings.skillsHub.importHistoryTitle', { defaultValue: 'Import history' })}
           </Button>
+          <Tooltip content={importHelp} position='bl'>
+            <Button
+              type='text'
+              size='small'
+              icon={<Help theme='outline' size={16} />}
+              aria-label={`${t('settings.skillsHub.importHelpLabel')}: ${importHelp}`}
+              data-testid='btn-import-help'
+            />
+          </Tooltip>
           <TalkToButlerButton
             label={t('settings.skillsHub.addSkill', { defaultValue: 'Add Skill' })}
             chatLabel={t('settings.talkToButler.addViaChat', { defaultValue: 'Add via chat' })}

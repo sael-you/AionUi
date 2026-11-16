@@ -121,7 +121,8 @@
     "noSearchResults": "Nenhuma habilidade correspondente.",
     "customHint": "Importe uma pasta de habilidade, pasta principal ou zip; até {{maxFileSize}} por arquivo e {{maxTotalSize}} por habilidade; importar o mesmo nome substitui a habilidade existente.",
     "officialHint": "Habilidades oficiais incluídas no AionUi — prontas para uso, somente leitura e atualizadas a cada versão.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "Como a importação funciona"
   },
   "authMethod": "Autenticação",
   "geminiApiKey": "Chave de API Gemini",
@@ -1469,7 +1470,8 @@
       "fromGlobal": "De Global",
       "removed": "Desativado aqui",
       "globalKit": "Kit global",
-      "kit": "De kits compartilhados · {{name}}"
+      "kit": "De kits compartilhados · {{name}}",
+      "alwaysOn": "Sempre ativas (integradas)"
     },
     "noProjectKit": "{{name}} ainda não tem kit. Crie um para escolher suas skills e MCPs.",
     "emptyGroup": "Nada aqui ainda.",
@@ -1487,7 +1489,9 @@
       "fromGlobal_other": "{{count}} de Global",
       "kits_one": "{{count}} kit",
       "kits_other": "{{count}} kits"
-    }
+    },
+    "suggestedFor": "Sugeridas para {{name}}",
+    "addAllToProjectKit": "Adicionar todas ao kit do projeto"
   },
   "skillsLibrary": {
     "category": {

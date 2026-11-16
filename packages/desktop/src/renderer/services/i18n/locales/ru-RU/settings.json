@@ -129,7 +129,8 @@
     "noSearchResults": "Нет подходящих навыков.",
     "customHint": "Импортируйте папку навыка, родительскую папку или zip; до {{maxFileSize}} на файл и {{maxTotalSize}} на навык; импорт с тем же именем перезаписывает существующий навык.",
     "officialHint": "Официальные навыки, входящие в состав AionUi, — готовы к использованию, только для чтения и обновляются с каждым релизом.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "Как работает импорт"
   },
   "authMethod": "Аутентификация",
   "geminiApiKey": "API-ключ Gemini",
@@ -1490,7 +1491,8 @@
       "fromGlobal": "Из глобальной области",
       "removed": "Выключено здесь",
       "globalKit": "Глобальный набор",
-      "kit": "Из общих наборов · {{name}}"
+      "kit": "Из общих наборов · {{name}}",
+      "alwaysOn": "Всегда включены (встроенные)"
     },
     "noProjectKit": "У {{name}} пока нет набора. Создайте его, чтобы выбрать навыки и MCP.",
     "emptyGroup": "Пока пусто.",
@@ -1514,7 +1516,9 @@
       "kits_few": "{{count}} набора",
       "kits_many": "{{count}} наборов",
       "kits_other": "{{count}} набора"
-    }
+    },
+    "suggestedFor": "Рекомендуется для {{name}}",
+    "addAllToProjectKit": "Добавить все в набор проекта"
   },
   "skillsLibrary": {
     "category": {

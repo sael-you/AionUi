@@ -139,6 +139,7 @@ const SKILLS: SkillsLibraryProps['skills'] = [
   { name: 'schema', source: 'custom', description: 'Schema markup', location: '/u/schema' },
   { name: 'tb-deploy', source: 'custom', description: 'Deploy TB', location: '/u/tb-deploy' },
   { name: 'notes', source: 'custom', description: 'Notes', location: '/u/notes' },
+  { name: 'tb-lint', source: 'custom', description: 'Lint', location: '/u/tb-lint' },
 ];
 
 const renderLibrary = (over: Partial<SkillsLibraryProps> = {}) => {
@@ -242,7 +243,13 @@ describe('SkillsLibrary (C33)', () => {
     expect(cardNames(section('kit:k6'))).toEqual(['schema', 'seo-audit']);
     expect(cardNames(section('kit:k7'))).toEqual(['schema']);
     expect(cardNames(section('builtin'))).toEqual(['memory']);
-    expect(cardNames(section('other'))).toEqual(['notes', 'tb-deploy']);
+    expect(cardNames(section('other'))).toEqual(['notes', 'tb-deploy', 'tb-lint']);
+    // Source chips stay off the owner's own skills; built-ins say where they come from.
+    const memory = within(section('builtin')).getByTestId('library-card');
+    expect(memory).toHaveTextContent('settings.skillsLibrary.source.official');
+    expect(within(section('other')).getAllByTestId('library-card')[0]).not.toHaveTextContent(
+      'settings.skillsLibrary.source.mine'
+    );
     expect(screen.getByTestId('library-tab-library')).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByTestId('library-panel')).toHaveAttribute('role', 'tabpanel');
   });
@@ -279,6 +286,20 @@ describe('SkillsLibrary (C33)', () => {
     );
     // SEO is already attached here: its header offers to detach instead.
     expect(within(section('kit:k6')).getByTestId('library-category-detach')).toBeInTheDocument();
+  });
+
+  it('a project scope suggests Other skills that name the project; "Add all" puts them in its kit', async () => {
+    renderLibrary({ initialProjectId: 'p-tb' });
+    fireEvent.click(await screen.findByTestId('library-tab-library'));
+    await waitFor(() => expect(sectionKeys()[0]).toBe('suggested'));
+    expect(cardNames(section('suggested'))).toEqual(['tb-lint']);
+    fireEvent.click(within(section('suggested')).getByTestId('library-suggested-add'));
+    await waitFor(() =>
+      expect(api.kits.update.invoke).toHaveBeenCalledWith({
+        id: 'kp',
+        data: { skills: ['tb-deploy', 'tb-lint'], expected_updated_at: 9 },
+      })
+    );
   });
 
   it('turning a skill on in a project with a kit adds it to that kit', async () => {
@@ -322,9 +343,9 @@ describe('SkillsLibrary (C33)', () => {
     within(other)
       .getAllByTestId('library-card-open')
       .forEach((button) => fireEvent.click(button));
-    expect(screen.getByTestId('library-batch-bar')).toHaveTextContent('settings.library.selected|{"count":2}');
+    expect(screen.getByTestId('library-batch-bar')).toHaveTextContent('settings.library.selected|{"count":3}');
     fireEvent.click(screen.getByTestId('library-batch-add'));
-    await waitFor(() => expect(api.kits.attach.invoke).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(api.kits.attach.invoke).toHaveBeenCalledTimes(3));
     expect(api.kits.attach.invoke).toHaveBeenCalledWith({
       level: 'global',
       item_kind: 'skill',

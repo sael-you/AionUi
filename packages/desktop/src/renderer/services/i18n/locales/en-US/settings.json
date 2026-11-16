@@ -121,7 +121,8 @@
     "noSearchResults": "No matching skills.",
     "customHint": "Import a skill folder, parent folder, or zip; up to {{maxFileSize}} per file and {{maxTotalSize}} per skill; importing the same name overwrites the existing skill.",
     "officialHint": "Official skills bundled with AionUi — ready to use out of the box, read-only, and updated with each release.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "How importing works"
   },
   "authMethod": "Authentication",
   "geminiApiKey": "Gemini API Key",
@@ -1466,7 +1467,8 @@
       "fromGlobal": "From Global",
       "removed": "Turned off here",
       "globalKit": "Global kit",
-      "kit": "From shared kits · {{name}}"
+      "kit": "From shared kits · {{name}}",
+      "alwaysOn": "Always on (built-in)"
     },
     "noProjectKit": "{{name}} has no kit yet. Create one to choose its skills and MCPs.",
     "emptyGroup": "Nothing here yet.",
@@ -1484,7 +1486,9 @@
       "fromGlobal_other": "{{count}} from Global",
       "kits_one": "{{count}} kit",
       "kits_other": "{{count}} kits"
-    }
+    },
+    "suggestedFor": "Suggested for {{name}}",
+    "addAllToProjectKit": "Add all to project kit"
   },
   "skillsLibrary": {
     "category": {

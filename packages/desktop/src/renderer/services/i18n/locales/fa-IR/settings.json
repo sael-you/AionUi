@@ -121,7 +121,8 @@
     "noSearchResults": "هیچ مهارت منطبقی وجود ندارد.",
     "customHint": "یک پوشه مهارت، پوشه والد یا zip را وارد کنید؛ حداکثر {{maxFileSize}} برای هر فایل و {{maxTotalSize}} برای هر مهارت؛ وارد کردن نام تکراری مهارت موجود را بازنویسی می‌کند.",
     "officialHint": "مهارت‌های رسمی همراه AionUi — آماده استفاده، فقط‌خواندنی و با هر نسخه به‌روزرسانی می‌شوند.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "نحوهٔ کار وارد کردن"
   },
   "authMethod": "احراز هویت",
   "geminiApiKey": "کلید API جمینای",
@@ -1466,7 +1467,8 @@
       "fromGlobal": "از سراسری",
       "removed": "در اینجا خاموش",
       "globalKit": "کیت سراسری",
-      "kit": "از کیت‌های مشترک · {{name}}"
+      "kit": "از کیت‌های مشترک · {{name}}",
+      "alwaysOn": "همیشه روشن (داخلی)"
     },
     "noProjectKit": "{{name}} هنوز کیت ندارد. برای انتخاب مهارت‌ها و MCPها یک کیت بسازید.",
     "emptyGroup": "هنوز چیزی اینجا نیست.",
@@ -1484,7 +1486,9 @@
       "fromGlobal_other": "{{count}} از سراسری",
       "kits_one": "{{count}} کیت",
       "kits_other": "{{count}} کیت"
-    }
+    },
+    "suggestedFor": "پیشنهادی برای {{name}}",
+    "addAllToProjectKit": "افزودن همه به کیت پروژه"
   },
   "skillsLibrary": {
     "category": {

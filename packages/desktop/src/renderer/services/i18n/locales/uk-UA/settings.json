@@ -129,7 +129,8 @@
     "noSearchResults": "Немає відповідних навичок.",
     "customHint": "Імпортуйте теку навички, батьківську теку або zip; до {{maxFileSize}} на файл і {{maxTotalSize}} на навичку; імпорт з тією самою назвою перезаписує наявну навичку.",
     "officialHint": "Офіційні навички, що постачаються з AionUi, — готові до використання, лише для читання та оновлюються з кожним випуском.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "Як працює імпорт"
   },
   "authMethod": "Автентифікація",
   "geminiApiKey": "API-ключ Gemini",
@@ -1491,7 +1492,8 @@
       "fromGlobal": "З глобальної області",
       "removed": "Вимкнено тут",
       "globalKit": "Глобальний набір",
-      "kit": "Зі спільних наборів · {{name}}"
+      "kit": "Зі спільних наборів · {{name}}",
+      "alwaysOn": "Завжди ввімкнені (вбудовані)"
     },
     "noProjectKit": "{{name}} ще не має набору. Створіть його, щоб вибрати навички та MCP.",
     "emptyGroup": "Поки порожньо.",
@@ -1515,7 +1517,9 @@
       "kits_few": "{{count}} набори",
       "kits_many": "{{count}} наборів",
       "kits_other": "{{count}} набору"
-    }
+    },
+    "suggestedFor": "Рекомендовано для {{name}}",
+    "addAllToProjectKit": "Додати всі до набору проєкту"
   },
   "skillsLibrary": {
     "category": {

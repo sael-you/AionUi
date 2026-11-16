@@ -16,6 +16,7 @@ import {
   resolveSkills,
   scopeOwnCount,
   skillMatchesSource,
+  suggestedForProject,
   type LibrarySkill,
 } from '@/renderer/pages/settings/SkillsSettings/skillLibraryModel';
 
@@ -236,6 +237,20 @@ describe('toggle plan', () => {
         attachments: [row({ id: 'g7', item_ref: 'k7' })],
       })
     ).toEqual([{ type: 'attach', request: { level: 'global', item_kind: 'skill', item_ref: 'schema', op: 'remove' } }]);
+  });
+});
+
+describe('suggested for a project', () => {
+  it('Other skills naming the project (prefix or text) — not the ones already in its kit', () => {
+    const skills: LibrarySkill[] = [
+      ...SKILLS,
+      { name: 'tb-lint', source: 'custom' },
+      { name: 'release-notes', source: 'custom', description: 'Release notes for TB-test builds' },
+      { name: 'tbx', source: 'custom' },
+    ];
+    const categories = buildSkillCategories(skills, KITS, 'p-tb');
+    expect(suggestedForProject(skills, categories, 'TB-test', TB_KIT.skills)).toEqual(['release-notes', 'tb-lint']);
+    expect(suggestedForProject(skills, categories, '', [])).toEqual([]);
   });
 });
 

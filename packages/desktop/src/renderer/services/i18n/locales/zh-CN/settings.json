@@ -121,7 +121,8 @@
     "noSearchResults": "没有匹配的技能。",
     "customHint": "支持技能目录、父目录或 zip 导入；单文件上限 {{maxFileSize}}、单技能上限 {{maxTotalSize}}；同名导入会覆盖现有技能。",
     "officialHint": "AionUi 官方内置的技能，开箱即用、只读，随版本更新维护。",
-    "deleteAffectsNewOnlyHint": "删除仅影响新会话：历史会话中已选用的技能仍可继续使用。"
+    "deleteAffectsNewOnlyHint": "删除仅影响新会话：历史会话中已选用的技能仍可继续使用。",
+    "importHelpLabel": "导入说明"
   },
   "authMethod": "认证",
   "geminiApiKey": "Gemini API 密钥",
@@ -1467,7 +1468,8 @@
       "fromGlobal": "来自全局",
       "removed": "在此停用",
       "globalKit": "全局套件",
-      "kit": "来自共享套件 · {{name}}"
+      "kit": "来自共享套件 · {{name}}",
+      "alwaysOn": "始终启用（内置）"
     },
     "noProjectKit": "{{name}} 还没有套件。创建一个以选择它的技能和 MCP。",
     "emptyGroup": "暂无内容。",
@@ -1485,7 +1487,9 @@
       "fromGlobal_other": "{{count}} 个来自全局",
       "kits_one": "{{count}} 个套件",
       "kits_other": "{{count}} 个套件"
-    }
+    },
+    "suggestedFor": "为 {{name}} 推荐",
+    "addAllToProjectKit": "全部添加到项目套件"
   },
   "skillsLibrary": {
     "category": {

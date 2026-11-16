@@ -116,6 +116,37 @@ export const buildSkillCategories = (
   return out.filter((category) => category.skills.length > 0);
 };
 
+/**
+ * "Suggested for <project>": skills without a category of their own (Other)
+ * that name the project — the project name in the name or description, or
+ * the project's first word as a name prefix (`tb-…` for TB-test). Skills
+ * already in the project kit are left out.
+ */
+export const suggestedForProject = (
+  skills: readonly LibrarySkill[],
+  categories: readonly SkillCategory[],
+  projectName: string,
+  projectKitSkills: readonly string[] = []
+): string[] => {
+  const key = projectName.trim().toLowerCase();
+  if (!key) return [];
+  const prefix = key.split(/[^a-z0-9]+/).find((word) => word.length >= 2);
+  const other = new Set(categories.find((category) => category.kind === 'other')?.skills ?? []);
+  const inKit = new Set(projectKitSkills);
+  return skills
+    .filter((skill) => other.has(skill.name) && !inKit.has(skill.name))
+    .filter((skill) => {
+      const name = skill.name.toLowerCase();
+      return (
+        name.includes(key) ||
+        (skill.description ?? '').toLowerCase().includes(key) ||
+        (prefix !== undefined && name.startsWith(`${prefix}-`))
+      );
+    })
+    .map((skill) => skill.name)
+    .toSorted();
+};
+
 // ---------------------------------------------------------------------------
 // Scope resolution (mirror of the server, for counts and "Used in")
 // ---------------------------------------------------------------------------

@@ -70,6 +70,7 @@ import {
   resolveSkills,
   scopeOwnCount,
   skillMatchesSource,
+  suggestedForProject,
   type ActiveGroup,
   type LibrarySkill,
   type SkillCategory,
@@ -223,10 +224,19 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
     if (skill && isAlwaysOn(skill)) return true;
     return effectiveByName.get(name)?.included === true;
   };
-  const { groups, summary } = useMemo(
+  const { groups, summary: kitSummary } = useMemo(
     () => buildActiveGroups({ effective: effectiveSkills, kits, attachments, projectId }),
     [effectiveSkills, kits, attachments, projectId]
   );
+  // Built-in skills loaded into every conversation, whatever the kits say.
+  const alwaysOnNames = useMemo(
+    () =>
+      skills
+        .filter((skill) => isAlwaysOn(skill) && effectiveByName.get(skill.name)?.included !== true)
+        .map((skill) => skill.name),
+    [skills, effectiveByName]
+  );
+  const summary = { ...kitSummary, active: kitSummary.active + alwaysOnNames.length };
 
   // ---- filters ----
   const visible = useCallback(
@@ -369,7 +379,9 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
     );
 
   // ---- cards ----
-  const sourceChip = (skill: LibrarySkill) => {
+  /** The source chip: always in the drawer; on cards only under "All" and never for the owner's own skills. */
+  const sourceChip = (skill: LibrarySkill, onCard = true) => {
+    if (onCard && source !== 'all') return null;
     if (isAlwaysOn(skill)) {
       return (
         <Tag size='small' color='green' title={t('settings.autoInjectedSkillsHint')}>
@@ -378,6 +390,7 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
       );
     }
     const key = skill.source === 'builtin' ? 'official' : skill.source === 'extension' ? 'imported' : 'mine';
+    if (onCard && key === 'mine') return null;
     return <Tag size='small'>{t(`settings.skillsLibrary.source.${key}`)}</Tag>;
   };
 
@@ -396,7 +409,7 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
         description={skill.description}
         visual={visual.visual}
         visualKey={visual.key}
-        chips={sourceChip(skill)}
+        chips={sourceChip(skill) ?? undefined}
         highlighted={highlighted === name}
         toggle={{
           checked: on,
@@ -550,7 +563,19 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
           )}
         </LibrarySection>
       ))}
-      {groups.length === 0 && !(projectId && !projectKit) ? (
+      {alwaysOnNames.length > 0 ? (
+        <LibrarySection
+          sectionKey='alwaysOn'
+          title={t('settings.library.group.alwaysOn')}
+          count={alwaysOnNames.filter(visible).length}
+          hint={t('settings.autoInjectedSkillsHint')}
+          visual='builtin'
+          defaultExpanded={false}
+        >
+          {cards(alwaysOnNames, noMatch)}
+        </LibrarySection>
+      ) : null}
+      {groups.length === 0 && alwaysOnNames.length === 0 && !(projectId && !projectKit) ? (
         <LibraryEmpty
           text={t('settings.library.emptyActive')}
           actionLabel={t('settings.library.browseLibrary')}
@@ -577,11 +602,30 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
         {t('settings.library.detachKit')}
       </Button>
     ) : (
-      <Button size='mini' type='primary' onClick={() => void attachKit(kit)} data-testid='library-category-add'>
+      <Button size='mini' onClick={() => void attachKit(kit)} data-testid='library-category-add'>
         {t('settings.library.addCategory', { scope: scopeLabel })}
       </Button>
     );
   };
+
+  const suggested = useMemo(
+    () => (projectId ? suggestedForProject(skills, categories, scopeLabel, projectKit?.skills ?? []) : []),
+    [projectId, skills, categories, scopeLabel, projectKit]
+  );
+  const addAllToProjectKit = (names: string[]) =>
+    withBusy(
+      names,
+      async () => {
+        if (!projectId) return;
+        if (projectKit) {
+          await actions.patchKit(projectKit, { skills: [...new Set([...projectKit.skills, ...names])] });
+        } else {
+          await actions.createKit({ ...kitFormFromKit(null), name: scopeLabel, skills: names }, projectId);
+        }
+        await effective.reload?.();
+      },
+      t('settings.library.batchDone', { count: names.length, scope: scopeLabel })
+    );
 
   const searching = query.trim() !== '';
   const results = skills.map((skill) => skill.name).filter(visible);
@@ -591,6 +635,21 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
     </LibrarySection>
   ) : (
     <>
+      {suggested.length > 0 && category === ALL_CATEGORY_KEY ? (
+        <LibrarySection
+          sectionKey='suggested'
+          title={t('settings.library.suggestedFor', { name: scopeLabel })}
+          count={suggested.filter(visible).length}
+          visual='project'
+          actions={
+            <Button size='mini' onClick={() => void addAllToProjectKit(suggested)} data-testid='library-suggested-add'>
+              {t('settings.library.addAllToProjectKit')}
+            </Button>
+          }
+        >
+          {cards(suggested, noMatch)}
+        </LibrarySection>
+      ) : null}
       {categories
         .filter((entry) => category === ALL_CATEGORY_KEY || entry.key === category)
         .map((entry) => (
@@ -652,7 +711,7 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
       {openSkill ? (
         <>
           <div className='flex flex-wrap items-center gap-8px'>
-            {sourceChip(openSkill)}
+            {sourceChip(openSkill, false)}
             {(categoriesOf.get(openSkill.name) ?? []).map((key) => {
               const entry = categories.find((c) => c.key === key);
               return entry ? (
@@ -801,7 +860,7 @@ const SkillsLibrary: React.FC<SkillsLibraryProps> = ({
         sourcesLabel={t('settings.library.sourcesLabel')}
         toolbar={
           batch ? null : (
-            <Button size='small' type='text' onClick={() => setBatch(new Set())} data-testid='library-batch-start'>
+            <Button size='small' onClick={() => setBatch(new Set())} data-testid='library-batch-start'>
               {t('settings.library.select')}
             </Button>
           )
