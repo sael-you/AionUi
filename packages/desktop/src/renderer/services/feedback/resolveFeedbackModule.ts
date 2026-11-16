@@ -22,6 +22,9 @@ const ROUTE_MODULE_MAP: ReadonlyArray<readonly [prefix: string, tag: FeedbackMod
   ['/scheduled', 'scheduled-task'],
   // The project board lives with the project workspace (explorer, Tasks tab).
   ['/board', 'workspace-preview'],
+  // A project's Claude memory review (C29) belongs to the same project surface.
+  ['/memory', 'workspace-preview'],
+  ['/settings/memory', 'workspace-preview'],
   ['/assistants', 'assistant-preset'],
   ['/settings/agent', 'agent-detection'],
   ['/settings/model', 'model-auth'],
