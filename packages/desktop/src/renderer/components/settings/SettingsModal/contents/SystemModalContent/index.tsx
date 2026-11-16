@@ -551,22 +551,25 @@ const SystemModalContent: React.FC = () => {
                 )}
               </Collapse.Item>
             </Collapse>
-            <Form form={form} layout='vertical' className='!mt-32px space-y-16px' onValuesChange={handleValuesChange}>
-              <DirInputItem label={t('settings.workDir')} field='workDir' />
-              <DirInputItem label={t('settings.logDir')} field='logDir' />
-              {error && (
-                <Alert
-                  className='mt-16px'
-                  type='error'
-                  content={
-                    <span>
-                      {typeof error === 'string' ? error : JSON.stringify(error)}
-                      <FeedbackButton module='system-settings' className='ms-6px' />
-                    </span>
-                  }
-                />
-              )}
-            </Form>
+            {/* Work/log directories are written by the Electron main process; the WebUI cannot change them. */}
+            {isDesktop && (
+              <Form form={form} layout='vertical' className='!mt-32px space-y-16px' onValuesChange={handleValuesChange}>
+                <DirInputItem label={t('settings.workDir')} field='workDir' />
+                <DirInputItem label={t('settings.logDir')} field='logDir' />
+                {error && (
+                  <Alert
+                    className='mt-16px'
+                    type='error'
+                    content={
+                      <span>
+                        {typeof error === 'string' ? error : JSON.stringify(error)}
+                        <FeedbackButton module='system-settings' className='ms-6px' />
+                      </span>
+                    }
+                  />
+                )}
+              </Form>
+            )}
           </div>
 
           {/* Voice input (speech-to-text) settings */}

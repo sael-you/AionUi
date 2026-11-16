@@ -24,6 +24,7 @@ const { systemInfoMock, updateSystemInfoMock, restartMock, showOpenMock, message
       setLocal: vi.fn(),
     },
   }));
+const platformMock = vi.hoisted(() => ({ desktop: true }));
 const clientBusinessSettingsMocks = vi.hoisted(() => ({
   getClientBusinessSetting: vi.fn(),
   setClientBusinessSetting: vi.fn(() => Promise.resolve()),
@@ -34,7 +35,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('@/renderer/utils/platform', () => ({
-  isElectronDesktop: () => true,
+  isElectronDesktop: () => platformMock.desktop,
 }));
 
 vi.mock('@/renderer/components/base/AionScrollArea', () => ({
@@ -128,6 +129,7 @@ const renderContent = () =>
 
 describe('SystemModalContent directory settings', () => {
   beforeEach(() => {
+    platformMock.desktop = true;
     cleanup();
     vi.clearAllMocks();
     configServiceMock.get.mockImplementation(() => undefined);
@@ -194,6 +196,17 @@ describe('SystemModalContent directory settings', () => {
     await screen.findByText('permission denied');
     expect(container).toHaveTextContent('/work');
     expect(restartMock).not.toHaveBeenCalled();
+  });
+
+  it('hides the directory form inside the WebUI, where the directories cannot be changed (TASK-95)', async () => {
+    platformMock.desktop = false;
+    renderContent();
+
+    await screen.findByText('LanguageSwitcher');
+    await waitFor(() => expect(systemInfoMock).toHaveBeenCalled());
+    expect(screen.queryByText('settings.workDir')).toBeNull();
+    expect(screen.queryByText('settings.logDir')).toBeNull();
+    expect(updateSystemInfoMock).not.toHaveBeenCalled();
   });
 
   it('opens the directory picker when clicking the work directory field body', async () => {
