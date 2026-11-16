@@ -109,7 +109,11 @@
       "saved_not_started": "Başlamadı",
       "expired": "Süresi doldu",
       "interrupted": "Kesintiye uğradı",
-      "confirm_rejected": "Onaylanmadı"
+      "confirm_rejected": "Onaylanmadı",
+      "added": "Eklendi",
+      "stopped": "Durduruldu",
+      "silenced": "Susturuldu",
+      "turn_failed": "Görev başarısız"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "Arama 55 dakika sınırına ulaştı. Yenisi için Konuş’a dokunun.",
     "callDropped": "Arama düştü. Tekrar denemek için Konuş’a dokunun.",
     "noProvider": "Hesabınız için henüz bir ses sağlayıcısı ayarlanmadı.",
-    "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin."
+    "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin.",
+    "restartInterrupted": "Yeniden başlatma görevi yarıda kesti — devam etmek için “Hey Jarvis” deyin.",
+    "conversationIdle": "3 dakika sessizlikten sonra dinleme duraklatıldı. “Hey Jarvis” deyin veya konuşmak için dokunun.",
+    "conversationRested": "Ses dinleniyor: ajanın yanıtları sohbette kalır. Yeniden konuşmak için “Hey Jarvis” deyin veya dokunun."
+  },
+  "providerSetup": {
+    "action": "Anahtarı ayarla",
+    "actionLabel": "Ayarlar → Model bölümünde bir ses sağlayıcısı anahtarı ayarla",
+    "hint": "Temel URL'si https://api.openai.com olan bir OpenAI sağlayıcısı ekleyin (OpenAI ön ayarı çalışır). İsteğe bağlı: MiniMax konuşması için bir MiniMax anahtarı."
   },
   "settings": {
     "title": "Ses ayarları",
@@ -166,9 +178,37 @@
     "privacy": "Ses, bir arama başlayana kadar bu cihazda kalır ve asla saklanmaz."
   },
   "slash": {
-    "description": "Bu konuşma hakkında Jarvis ile konuşun"
+    "description": "Ses modu: bu sohbetin ajanıyla konuş"
   },
   "composer": {
-    "tooltip": "Bu konuşma için ses modu"
+    "tooltip": "Bu sohbet için ses modu"
+  },
+  "messageChip": "Sesli",
+  "bar": {
+    "label": "Ses modu",
+    "talk": "Konuş veya araya gir",
+    "done": "Bitti",
+    "stopTask": "Görevi durdur",
+    "end": "Sesi kapat",
+    "state": {
+      "connecting": "Bağlanıyor…",
+      "armed": "“Hey Jarvis” de veya dokun",
+      "listening": "Dinliyor",
+      "working": "Çalışıyor",
+      "speaking": "Konuşuyor",
+      "waiting": "Konuşmak için dokun",
+      "offline": "Çevrimdışı"
+    },
+    "outcome": {
+      "sent": "Gönderildi",
+      "added": "Çalışan göreve eklendi",
+      "queued": "Tur bitene kadar sırada",
+      "silenced": "Konuşma durduruldu",
+      "stopped": "Görev durduruldu",
+      "failed": "Gönderilemedi",
+      "needs_approval": "Ekranda onayın gerekiyor",
+      "interrupted": "Yeniden başlatma nedeniyle kesildi",
+      "turn_failed": "Görev başarısız oldu"
+    }
   }
 }

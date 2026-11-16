@@ -1,4 +1,11 @@
 import type { TMessage } from '@/common/chat/chatLib';
+import { AIONUI_VOICE_MARKER } from '@/common/config/constants';
+
+/** A spoken message (C26) recalls as its transcript: the `[[AION_VOICE]]` block is for the agent only. */
+function withoutVoiceBlock(content: string): string {
+  const start = content.indexOf(AIONUI_VOICE_MARKER);
+  return start === -1 ? content : content.slice(0, start).trim();
+}
 
 export function getConversationInputHistory(messages: TMessage[], conversation_id?: string): string[] {
   if (!conversation_id) {
@@ -19,8 +26,8 @@ export function getConversationInputHistory(messages: TMessage[], conversation_i
       continue;
     }
 
-    const content = message.content.content;
-    if (seen.has(content)) {
+    const content = withoutVoiceBlock(message.content.content);
+    if (!content || seen.has(content)) {
       continue;
     }
 

@@ -194,3 +194,124 @@
     transition: none;
   }
 }
+
+/* Conversation voice bar (C26): a slim strip above the composer. */
+.voiceBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-base);
+  border-radius: 12px;
+  background: var(--bg-2);
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.voiceBarState {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  color: var(--text-primary);
+}
+
+/* The chip is a text button: keep the state readable (Arco's text button would tint it). */
+.voiceBar :global(.arco-btn-text).voiceBarState,
+.voiceBar :global(.arco-btn-text).voiceBarState:hover,
+.voiceBar :global(.arco-btn-text).voiceBarState:focus-visible {
+  color: var(--text-primary);
+}
+
+.voiceBarStateText {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.voiceBarCaption {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.voiceBarOutcome {
+  margin-inline-end: 6px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.voiceBarOutcome::after {
+  content: '·';
+  margin-inline-start: 6px;
+  color: var(--text-secondary);
+}
+
+.voiceBarOutcome:last-child::after {
+  content: none;
+}
+
+.voiceBarNotice {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.voiceBarActions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+/* "No voice provider": the setup help takes a second row under the bar (TASK-90). */
+.voiceBarWithHelp {
+  flex-wrap: wrap;
+}
+
+/* Basis 0 keeps the caption from pushing the actions onto the help row (phones stack it below). */
+@media (min-width: 481px) {
+  .voiceBarWithHelp .voiceBarCaption {
+    flex-basis: 0;
+  }
+}
+
+.voiceBarHelp {
+  order: 4;
+  flex-basis: 100%;
+  min-width: 0;
+}
+
+.providerSetup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.providerSetupHint {
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .voiceBar {
+    flex-wrap: wrap;
+  }
+
+  .voiceBarCaption {
+    order: 3;
+    flex-basis: 100%;
+    /* Phones: up to two lines, so a notice ("the restart interrupted the task …") reads in full. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+  }
+}

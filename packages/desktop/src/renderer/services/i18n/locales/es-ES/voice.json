@@ -109,7 +109,11 @@
       "saved_not_started": "No iniciado",
       "expired": "Caducado",
       "interrupted": "Interrumpido",
-      "confirm_rejected": "No confirmado"
+      "confirm_rejected": "No confirmado",
+      "added": "Añadido",
+      "stopped": "Detenido",
+      "silenced": "Silenciado",
+      "turn_failed": "Tarea fallida"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "La llamada llegó al límite de 55 minutos. Toca Hablar para iniciar otra.",
     "callDropped": "La llamada se cortó. Toca Hablar para intentarlo de nuevo.",
     "noProvider": "Aún no hay un proveedor de voz configurado para tu cuenta.",
-    "rateLimited": "Demasiadas solicitudes de voz. Espera un momento e inténtalo de nuevo."
+    "rateLimited": "Demasiadas solicitudes de voz. Espera un momento e inténtalo de nuevo.",
+    "restartInterrupted": "El reinicio interrumpió la tarea: di «Hey Jarvis» para continuar.",
+    "conversationIdle": "Escucha en pausa tras 3 minutos de silencio. Di «Hey Jarvis» o toca para hablar.",
+    "conversationRested": "La voz está en reposo: las respuestas del agente quedan en el chat. Di «Hey Jarvis» o toca para volver a hablar."
+  },
+  "providerSetup": {
+    "action": "Configurar clave",
+    "actionLabel": "Configurar una clave de proveedor de voz en Configuración → Modelo",
+    "hint": "Añade un proveedor OpenAI con la URL base https://api.openai.com (sirve el preajuste de OpenAI). Opcional: una clave de MiniMax para la voz de MiniMax."
   },
   "settings": {
     "title": "Configuración de voz",
@@ -166,9 +178,37 @@
     "privacy": "El audio permanece en este dispositivo hasta que empieza una llamada y nunca se almacena."
   },
   "slash": {
-    "description": "Hablar con Jarvis sobre esta conversación"
+    "description": "Modo de voz: habla con el agente de esta conversación"
   },
   "composer": {
     "tooltip": "Modo de voz para esta conversación"
+  },
+  "messageChip": "Hablado",
+  "bar": {
+    "label": "Modo de voz",
+    "talk": "Hablar o interrumpir",
+    "done": "Listo",
+    "stopTask": "Detener tarea",
+    "end": "Terminar voz",
+    "state": {
+      "connecting": "Conectando…",
+      "armed": "Di «Hey Jarvis» o toca",
+      "listening": "Escuchando",
+      "working": "Trabajando",
+      "speaking": "Hablando",
+      "waiting": "Toca para hablar",
+      "offline": "Sin conexión"
+    },
+    "outcome": {
+      "sent": "Enviado",
+      "added": "Añadido a la tarea en curso",
+      "queued": "En cola hasta que termine el turno",
+      "silenced": "Voz detenida",
+      "stopped": "Tarea detenida",
+      "failed": "No enviado",
+      "needs_approval": "Necesita tu aprobación en pantalla",
+      "interrupted": "Interrumpida por un reinicio",
+      "turn_failed": "La tarea falló"
+    }
   }
 }

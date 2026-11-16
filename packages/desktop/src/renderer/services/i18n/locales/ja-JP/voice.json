@@ -109,7 +109,11 @@
       "saved_not_started": "未開始",
       "expired": "期限切れ",
       "interrupted": "中断",
-      "confirm_rejected": "未確認"
+      "confirm_rejected": "未確認",
+      "added": "追加",
+      "stopped": "停止",
+      "silenced": "消音",
+      "turn_failed": "タスク失敗"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "通話が 55 分の上限に達しました。新しい通話は「話す」をタップしてください。",
     "callDropped": "通話が切断されました。「話す」をタップして再試行してください。",
     "noProvider": "お使いのアカウントには音声プロバイダーがまだ設定されていません。",
-    "rateLimited": "音声リクエストが多すぎます。少し待ってから再試行してください。"
+    "rateLimited": "音声リクエストが多すぎます。少し待ってから再試行してください。",
+    "restartInterrupted": "再起動によりタスクが中断されました。続けるには「Hey Jarvis」と話しかけてください。",
+    "conversationIdle": "3 分間無音だったため聞き取りを一時停止しました。「Hey Jarvis」と言うかタップして話してください。",
+    "conversationRested": "音声は休止中です。エージェントの返答はチャットに残ります。もう一度話すには「Hey Jarvis」と言うかタップしてください。"
+  },
+  "providerSetup": {
+    "action": "キーを設定",
+    "actionLabel": "設定 → モデル で音声プロバイダーのキーを設定",
+    "hint": "ベース URL https://api.openai.com の OpenAI プロバイダーを追加してください（OpenAI プリセットで動作します）。任意：MiniMax 音声用の MiniMax キー。"
   },
   "settings": {
     "title": "音声設定",
@@ -166,9 +178,37 @@
     "privacy": "音声は通話が始まるまでこのデバイス上にとどまり、保存されることはありません。"
   },
   "slash": {
-    "description": "この会話について Jarvis と話す"
+    "description": "音声モード：この会話のエージェントと話す"
   },
   "composer": {
     "tooltip": "この会話の音声モード"
+  },
+  "messageChip": "音声",
+  "bar": {
+    "label": "音声モード",
+    "talk": "話す・割り込む",
+    "done": "完了",
+    "stopTask": "タスクを停止",
+    "end": "音声を終了",
+    "state": {
+      "connecting": "接続中…",
+      "armed": "「Hey Jarvis」と言うかタップ",
+      "listening": "聞き取り中",
+      "working": "作業中",
+      "speaking": "話しています",
+      "waiting": "タップして話す",
+      "offline": "オフライン"
+    },
+    "outcome": {
+      "sent": "送信しました",
+      "added": "実行中のタスクに追加しました",
+      "queued": "ターン終了まで待機中",
+      "silenced": "読み上げを停止しました",
+      "stopped": "タスクを停止しました",
+      "failed": "送信できませんでした",
+      "needs_approval": "画面での承認が必要です",
+      "interrupted": "再起動により中断",
+      "turn_failed": "タスクが失敗しました"
+    }
   }
 }

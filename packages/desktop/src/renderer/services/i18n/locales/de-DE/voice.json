@@ -109,7 +109,11 @@
       "saved_not_started": "Nicht gestartet",
       "expired": "Abgelaufen",
       "interrupted": "Unterbrochen",
-      "confirm_rejected": "Nicht bestätigt"
+      "confirm_rejected": "Nicht bestätigt",
+      "added": "Hinzugefügt",
+      "stopped": "Gestoppt",
+      "silenced": "Stumm",
+      "turn_failed": "Aufgabe fehlgeschlagen"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "Das Gespräch hat das 55-Minuten-Limit erreicht. Tippe auf Sprechen für ein neues.",
     "callDropped": "Das Gespräch ist abgebrochen. Tippe auf Sprechen, um es erneut zu versuchen.",
     "noProvider": "Für dein Konto ist noch kein Sprachanbieter eingerichtet.",
-    "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut."
+    "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut.",
+    "restartInterrupted": "Der Neustart hat die Aufgabe unterbrochen – sag „Hey Jarvis“, um fortzufahren.",
+    "conversationIdle": "Zuhören nach 3 stillen Minuten pausiert. Sag „Hey Jarvis“ oder tippe zum Sprechen.",
+    "conversationRested": "Voice ruht: Die Antworten des Agenten bleiben im Chat. Sag „Hey Jarvis“ oder tippe, um wieder zu sprechen."
+  },
+  "providerSetup": {
+    "action": "Schlüssel einrichten",
+    "actionLabel": "Schlüssel für einen Sprachanbieter unter Einstellungen → Modell einrichten",
+    "hint": "Füge einen OpenAI-Anbieter mit der Basis-URL https://api.openai.com hinzu (die OpenAI-Vorlage passt). Optional: ein MiniMax-Schlüssel für MiniMax-Sprachausgabe."
   },
   "settings": {
     "title": "Spracheinstellungen",
@@ -166,9 +178,37 @@
     "privacy": "Audio bleibt auf diesem Gerät, bis ein Anruf startet, und wird nie gespeichert."
   },
   "slash": {
-    "description": "Mit Jarvis über dieses Gespräch sprechen"
+    "description": "Sprachmodus: mit dem Agenten dieser Unterhaltung sprechen"
   },
   "composer": {
-    "tooltip": "Sprachmodus für dieses Gespräch"
+    "tooltip": "Sprachmodus für diese Unterhaltung"
+  },
+  "messageChip": "Gesprochen",
+  "bar": {
+    "label": "Sprachmodus",
+    "talk": "Sprechen oder unterbrechen",
+    "done": "Fertig",
+    "stopTask": "Aufgabe stoppen",
+    "end": "Sprache beenden",
+    "state": {
+      "connecting": "Verbinden…",
+      "armed": "Sag „Hey Jarvis“ oder tippe",
+      "listening": "Hört zu",
+      "working": "Arbeitet",
+      "speaking": "Spricht",
+      "waiting": "Zum Sprechen tippen",
+      "offline": "Offline"
+    },
+    "outcome": {
+      "sent": "Gesendet",
+      "added": "Zur laufenden Aufgabe hinzugefügt",
+      "queued": "Wartet, bis der Durchlauf endet",
+      "silenced": "Sprachausgabe gestoppt",
+      "stopped": "Aufgabe gestoppt",
+      "failed": "Nicht gesendet",
+      "needs_approval": "Braucht deine Freigabe am Bildschirm",
+      "interrupted": "Durch einen Neustart unterbrochen",
+      "turn_failed": "Die Aufgabe ist fehlgeschlagen"
+    }
   }
 }

@@ -149,6 +149,7 @@ vi.mock('@arco-design/web-react', () => ({
 
 vi.mock('@icon-park/react', () => ({
   Copy: () => <span data-testid='copy-icon' />,
+  Microphone: () => <span data-testid='mic-icon' />,
 }));
 
 vi.mock('react-i18next', () => ({
@@ -817,5 +818,51 @@ describe('MessageText fork entry point', () => {
       expect(forkMocks.navigate).toHaveBeenCalledWith('/conversation/conv-forked');
       expect(forkMocks.ensureRuntime).toHaveBeenCalledWith({ conversation_id: 'conv-forked' });
     });
+  });
+});
+
+const voiceMessage = (position: IMessageText['position'] = 'right'): IMessageText => ({
+  id: 'msg-voice',
+  msg_id: 'msg-voice',
+  conversation_id: 'conv-1',
+  type: 'text',
+  position,
+  createdAt: Date.now(),
+  content: {
+    content: 'also run the tests\n\n[[AION_VOICE]]\nSpoken by the owner via voice.\n[[/AION_VOICE]]',
+  },
+});
+
+describe('MessageText conversation voice mode (C26)', () => {
+  it('hides the [[AION_VOICE]] block and shows a mic chip on a spoken message', () => {
+    render(
+      <ConversationProvider value={{ conversationId: 'conv-1', workspace: '/workspace/demo', type: 'acp' }}>
+        <MessageText message={voiceMessage()} />
+      </ConversationProvider>
+    );
+    expect(screen.getByTestId('message-voice-chip')).toHaveTextContent('voice.messageChip');
+    expect(screen.getByTestId('message-text-content')).toHaveTextContent('also run the tests');
+    expect(screen.queryByText(/AION_VOICE/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Spoken by the owner/)).not.toBeInTheDocument();
+  });
+
+  it('copies the transcript without the block', async () => {
+    render(
+      <ConversationProvider value={{ conversationId: 'conv-1', workspace: '/workspace/demo', type: 'acp' }}>
+        <MessageText message={voiceMessage()} />
+      </ConversationProvider>
+    );
+    fireEvent.click(screen.getByTestId('copy-icon').parentElement as HTMLElement);
+    await waitFor(() => expect(copyText).toHaveBeenCalledWith('also run the tests'));
+  });
+
+  it('a typed message has no mic chip', () => {
+    const typed = { ...voiceMessage(), content: { content: 'typed' } };
+    render(
+      <ConversationProvider value={{ conversationId: 'conv-1', workspace: '/workspace/demo', type: 'acp' }}>
+        <MessageText message={typed} />
+      </ConversationProvider>
+    );
+    expect(screen.queryByTestId('message-voice-chip')).not.toBeInTheDocument();
   });
 });

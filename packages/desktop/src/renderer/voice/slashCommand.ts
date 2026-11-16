@@ -29,13 +29,13 @@ export function buildVoiceSlashCommand(t: (key: string) => string): SlashCommand
   };
 }
 
-/** Toggle voice mode focused on the conversation. Returns true when handled. */
+/** Toggle conversation voice mode (C26) for the conversation. Returns true when handled. */
 export function runVoiceSlashCommand(
   name: string,
   conversationId: string | null | undefined,
   controller: VoiceController = getVoiceController()
 ): boolean {
   if (name !== VOICE_SLASH_COMMAND) return false;
-  controller.toggle({ focusConversationId: conversationId ?? null });
+  controller.toggle({ focusConversationId: conversationId ?? null, mode: conversationId ? 'conversation' : 'jarvis' });
   return true;
 }

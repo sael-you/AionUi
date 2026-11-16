@@ -109,7 +109,11 @@
       "saved_not_started": "未启动",
       "expired": "已过期",
       "interrupted": "已中断",
-      "confirm_rejected": "未确认"
+      "confirm_rejected": "未确认",
+      "added": "已加入",
+      "stopped": "已停止",
+      "silenced": "已静音",
+      "turn_failed": "任务失败"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "通话已达 55 分钟上限。点按“说话”开始新的通话。",
     "callDropped": "通话已中断。点按“说话”重试。",
     "noProvider": "你的账户尚未配置语音服务提供方。",
-    "rateLimited": "语音请求过多。请稍候再试。"
+    "rateLimited": "语音请求过多。请稍候再试。",
+    "restartInterrupted": "重启中断了任务——说“Hey Jarvis”继续。",
+    "conversationIdle": "安静 3 分钟后已暂停聆听。说“Hey Jarvis”或点按即可说话。",
+    "conversationRested": "语音已休息：智能体的回复会留在聊天中。说“Hey Jarvis”或点按即可再次说话。"
+  },
+  "providerSetup": {
+    "action": "设置密钥",
+    "actionLabel": "在 设置 → 模型 中设置语音服务提供方密钥",
+    "hint": "添加一个基础 URL 为 https://api.openai.com 的 OpenAI 提供方（OpenAI 预设即可）。可选：用于 MiniMax 语音的 MiniMax 密钥。"
   },
   "settings": {
     "title": "语音设置",
@@ -166,9 +178,37 @@
     "privacy": "通话开始前，音频只保留在此设备上，且从不存储。"
   },
   "slash": {
-    "description": "与 Jarvis 讨论此会话"
+    "description": "语音模式：与此会话的智能体对话"
   },
   "composer": {
     "tooltip": "此会话的语音模式"
+  },
+  "messageChip": "语音",
+  "bar": {
+    "label": "语音模式",
+    "talk": "说话或打断",
+    "done": "完成",
+    "stopTask": "停止任务",
+    "end": "结束语音",
+    "state": {
+      "connecting": "连接中…",
+      "armed": "说“Hey Jarvis”或轻点",
+      "listening": "正在听",
+      "working": "工作中",
+      "speaking": "正在说",
+      "waiting": "轻点说话",
+      "offline": "离线"
+    },
+    "outcome": {
+      "sent": "已发送",
+      "added": "已加入正在运行的任务",
+      "queued": "排队中，等本轮结束",
+      "silenced": "已停止朗读",
+      "stopped": "任务已停止",
+      "failed": "未发送",
+      "needs_approval": "需要你在屏幕上批准",
+      "interrupted": "因重启而中断",
+      "turn_failed": "任务失败"
+    }
   }
 }

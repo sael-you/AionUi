@@ -46,3 +46,22 @@ describe('in-page mock voice backend (manual checks)', () => {
     expect(c.store.getSnapshot().draft?.state).toBe('cancelled');
   });
 });
+
+describe('in-page mock voice backend — conversation voice mode (C26)', () => {
+  it('walks ready → caption → sent → the agent speaks → finished, for the bound conversation', async () => {
+    const f = createFakeEffects();
+    const c = new VoiceController(withMockBackend(f.fx));
+    c.toggle({ focusConversationId: 'conv-7', mode: 'conversation' });
+    await vi.advanceTimersByTimeAsync(1900);
+    await flush();
+    expect(c.store.getSnapshot().machine.call?.phase).toBe('ready');
+    c.commitUtterance();
+    await vi.advanceTimersByTimeAsync(400);
+    expect(c.store.getSnapshot().lastOutcome?.status).toBe('sent');
+    expect(c.store.getSnapshot().captions.at(-1)?.text).toBe('Also run the unit tests, please');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(f.clips.play).toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(9000);
+    expect(c.state.held).toBe(false);
+  });
+});

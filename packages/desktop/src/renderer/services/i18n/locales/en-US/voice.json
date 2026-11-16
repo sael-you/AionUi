@@ -109,7 +109,11 @@
       "saved_not_started": "Not started",
       "expired": "Expired",
       "interrupted": "Interrupted",
-      "confirm_rejected": "Not confirmed"
+      "confirm_rejected": "Not confirmed",
+      "added": "Added",
+      "stopped": "Stopped",
+      "silenced": "Silenced",
+      "turn_failed": "Task failed"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "The call reached its 55-minute limit. Tap Talk to start a new one.",
     "callDropped": "The call dropped. Tap Talk to try again.",
     "noProvider": "No voice provider is set up for your account yet.",
-    "rateLimited": "Too many voice requests. Wait a moment and try again."
+    "rateLimited": "Too many voice requests. Wait a moment and try again.",
+    "restartInterrupted": "The restart interrupted the task — say “Hey Jarvis” to continue.",
+    "conversationIdle": "Listening paused after 3 quiet minutes. Say “Hey Jarvis” or tap to talk.",
+    "conversationRested": "Voice is resting: the agent's replies stay in the chat. Say “Hey Jarvis” or tap to talk again."
+  },
+  "providerSetup": {
+    "action": "Set up key",
+    "actionLabel": "Set up a voice provider key in Settings → Model",
+    "hint": "Add an OpenAI provider with base URL https://api.openai.com (the OpenAI preset works). Optional: a MiniMax key for MiniMax speech."
   },
   "settings": {
     "title": "Voice settings",
@@ -166,9 +178,37 @@
     "privacy": "Audio stays on this device until a call starts and is never stored."
   },
   "slash": {
-    "description": "Talk to Jarvis about this conversation"
+    "description": "Voice mode: talk with this conversation's agent"
   },
   "composer": {
     "tooltip": "Voice mode for this conversation"
+  },
+  "messageChip": "Spoken",
+  "bar": {
+    "label": "Voice mode",
+    "talk": "Talk or interrupt",
+    "done": "Done",
+    "stopTask": "Stop task",
+    "end": "End voice",
+    "state": {
+      "connecting": "Connecting…",
+      "armed": "Say “Hey Jarvis” or tap",
+      "listening": "Listening",
+      "working": "Working",
+      "speaking": "Speaking",
+      "waiting": "Tap to talk",
+      "offline": "Offline"
+    },
+    "outcome": {
+      "sent": "Sent",
+      "added": "Added to the running task",
+      "queued": "Queued until the turn ends",
+      "silenced": "Speech stopped",
+      "stopped": "Task stopped",
+      "failed": "Not sent",
+      "needs_approval": "Needs your approval on screen",
+      "interrupted": "Interrupted by a restart",
+      "turn_failed": "The task failed"
+    }
   }
 }

@@ -13,6 +13,12 @@
 
 export type VoiceEngineId = 'openai-realtime' | 'openai-relay' | 'minimax-cascade';
 
+/**
+ * `jarvis`: the C9 dispatcher (orb, Alt+J). `conversation` (C26): the call only transcribes; your
+ * words go into the focused conversation and its own agent answers and speaks.
+ */
+export type VoiceSessionMode = 'jarvis' | 'conversation';
+
 /** States the backend reports in `voice.state`. */
 export type ServerVoiceState = 'armed' | 'listening' | 'thinking' | 'speaking' | 'offline';
 
@@ -129,7 +135,15 @@ export type FollowUpStatus =
   | 'saved_not_started'
   | 'expired'
   | 'interrupted'
-  | 'confirm_rejected';
+  | 'confirm_rejected'
+  /** Conversation mode: your words joined the running turn. */
+  | 'added'
+  /** Conversation mode: the running turn was cancelled ("stop the task"). */
+  | 'stopped'
+  /** Conversation mode: a bare "stop" silenced the agent's speech only. */
+  | 'silenced'
+  /** Conversation mode: the bound conversation's turn failed (`failed` = the send failed). */
+  | 'turn_failed';
 
 export type VoiceFollowUp = {
   id: number;
@@ -203,7 +217,9 @@ export type ClientFrame =
   | { name: 'voice.playbackFinished'; readbackId: string; tEnd: number }
   | { name: 'voice.speechOnset'; t: number }
   | { name: 'voice.confirmTap'; draftId: string; version: number; hash: string }
-  | { name: 'voice.cancelTap'; draftId: string; version: number; hash: string };
+  | { name: 'voice.cancelTap'; draftId: string; version: number; hash: string }
+  /** Conversation mode "Done": end the utterance now. */
+  | { name: 'voice.commit' };
 
 // ---------------------------------------------------------------------------
 // REST (snake_case, AionCore convention)
@@ -215,6 +231,8 @@ export type CreateVoiceSessionRequest = {
   device_id: string;
   focus_conversation_id?: string;
   resume_of?: string;
+  /** Omitted for Jarvis (older backends reject unknown fields). */
+  mode?: VoiceSessionMode;
 };
 
 export type CreateVoiceSessionResponse = {

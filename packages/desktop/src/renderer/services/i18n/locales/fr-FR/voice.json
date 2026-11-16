@@ -109,7 +109,11 @@
       "saved_not_started": "Pas démarré",
       "expired": "Expiré",
       "interrupted": "Interrompu",
-      "confirm_rejected": "Non confirmé"
+      "confirm_rejected": "Non confirmé",
+      "added": "Ajouté",
+      "stopped": "Arrêté",
+      "silenced": "Silencieux",
+      "turn_failed": "Tâche échouée"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "L’appel a atteint sa limite de 55 minutes. Touchez Parler pour en lancer un nouveau.",
     "callDropped": "L’appel a été coupé. Touchez Parler pour réessayer.",
     "noProvider": "Aucun fournisseur vocal n’est encore configuré pour votre compte.",
-    "rateLimited": "Trop de requêtes vocales. Patientez un instant puis réessayez."
+    "rateLimited": "Trop de requêtes vocales. Patientez un instant puis réessayez.",
+    "restartInterrupted": "Le redémarrage a interrompu la tâche — dites « Hey Jarvis » pour continuer.",
+    "conversationIdle": "Écoute en pause après 3 minutes de silence. Dites « Hey Jarvis » ou touchez pour parler.",
+    "conversationRested": "La voix est en pause : les réponses de l'agent restent dans le chat. Dites « Hey Jarvis » ou touchez pour reparler."
+  },
+  "providerSetup": {
+    "action": "Configurer la clé",
+    "actionLabel": "Configurer une clé de fournisseur vocal dans Paramètres → Modèle",
+    "hint": "Ajoutez un fournisseur OpenAI avec l’URL de base https://api.openai.com (le préréglage OpenAI convient). Facultatif : une clé MiniMax pour la voix MiniMax."
   },
   "settings": {
     "title": "Paramètres vocaux",
@@ -166,9 +178,37 @@
     "privacy": "L'audio reste sur cet appareil jusqu'au début d'un appel et n'est jamais stocké."
   },
   "slash": {
-    "description": "Parler à Jarvis de cette conversation"
+    "description": "Mode vocal : parlez à l’agent de cette conversation"
   },
   "composer": {
     "tooltip": "Mode vocal pour cette conversation"
+  },
+  "messageChip": "Dicté",
+  "bar": {
+    "label": "Mode vocal",
+    "talk": "Parler ou interrompre",
+    "done": "Terminé",
+    "stopTask": "Arrêter la tâche",
+    "end": "Quitter la voix",
+    "state": {
+      "connecting": "Connexion…",
+      "armed": "Dites « Hey Jarvis » ou touchez",
+      "listening": "Écoute",
+      "working": "Travaille",
+      "speaking": "Parle",
+      "waiting": "Touchez pour parler",
+      "offline": "Hors ligne"
+    },
+    "outcome": {
+      "sent": "Envoyé",
+      "added": "Ajouté à la tâche en cours",
+      "queued": "En attente de la fin du tour",
+      "silenced": "Parole arrêtée",
+      "stopped": "Tâche arrêtée",
+      "failed": "Non envoyé",
+      "needs_approval": "Votre approbation est requise à l’écran",
+      "interrupted": "Interrompue par un redémarrage",
+      "turn_failed": "La tâche a échoué"
+    }
   }
 }

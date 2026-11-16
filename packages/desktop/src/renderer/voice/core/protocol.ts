@@ -75,6 +75,10 @@ const FOLLOW_UP_STATUSES: ReadonlySet<string> = new Set([
   'expired',
   'interrupted',
   'confirm_rejected',
+  'added',
+  'stopped',
+  'silenced',
+  'turn_failed',
 ]);
 const BUDGET_WARNINGS: ReadonlySet<string> = new Set(['80', '100']);
 const DIFF_OPS: Record<string, DraftDiffSegment['op']> = {

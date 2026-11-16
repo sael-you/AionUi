@@ -109,7 +109,11 @@
       "saved_not_started": "시작 안 됨",
       "expired": "만료됨",
       "interrupted": "중단됨",
-      "confirm_rejected": "확인되지 않음"
+      "confirm_rejected": "확인되지 않음",
+      "added": "추가됨",
+      "stopped": "중지됨",
+      "silenced": "음소거",
+      "turn_failed": "작업 실패"
     }
   },
   "budget": {
@@ -140,7 +144,15 @@
     "callHardCap": "통화가 55분 한도에 도달했습니다. 새 통화는 말하기를 탭하세요.",
     "callDropped": "통화가 끊겼습니다. 다시 시도하려면 말하기를 탭하세요.",
     "noProvider": "계정에 아직 음성 제공자가 설정되지 않았습니다.",
-    "rateLimited": "음성 요청이 너무 많습니다. 잠시 후 다시 시도하세요."
+    "rateLimited": "음성 요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
+    "restartInterrupted": "재시작으로 작업이 중단되었습니다. 계속하려면 “Hey Jarvis”라고 말하세요.",
+    "conversationIdle": "3분 동안 조용해서 듣기를 일시 중지했습니다. “Hey Jarvis”라고 말하거나 탭하여 말하세요.",
+    "conversationRested": "음성이 쉬는 중입니다. 에이전트의 답변은 채팅에 남습니다. 다시 말하려면 “Hey Jarvis”라고 말하거나 탭하세요."
+  },
+  "providerSetup": {
+    "action": "키 설정",
+    "actionLabel": "설정 → 모델에서 음성 제공자 키 설정",
+    "hint": "기본 URL이 https://api.openai.com인 OpenAI 제공자를 추가하세요(OpenAI 프리셋 사용 가능). 선택 사항: MiniMax 음성용 MiniMax 키."
   },
   "settings": {
     "title": "음성 설정",
@@ -166,9 +178,37 @@
     "privacy": "오디오는 통화가 시작될 때까지 이 기기에만 머물며 절대 저장되지 않습니다."
   },
   "slash": {
-    "description": "이 대화에 대해 Jarvis와 이야기하기"
+    "description": "음성 모드: 이 대화의 에이전트와 대화"
   },
   "composer": {
     "tooltip": "이 대화의 음성 모드"
+  },
+  "messageChip": "음성",
+  "bar": {
+    "label": "음성 모드",
+    "talk": "말하기 또는 끼어들기",
+    "done": "완료",
+    "stopTask": "작업 중지",
+    "end": "음성 종료",
+    "state": {
+      "connecting": "연결 중…",
+      "armed": "“Hey Jarvis”라고 말하거나 탭",
+      "listening": "듣는 중",
+      "working": "작업 중",
+      "speaking": "말하는 중",
+      "waiting": "탭하여 말하기",
+      "offline": "오프라인"
+    },
+    "outcome": {
+      "sent": "보냄",
+      "added": "실행 중인 작업에 추가됨",
+      "queued": "턴이 끝날 때까지 대기",
+      "silenced": "음성 중지됨",
+      "stopped": "작업 중지됨",
+      "failed": "보내지 못함",
+      "needs_approval": "화면에서 승인이 필요합니다",
+      "interrupted": "재시작으로 중단됨",
+      "turn_failed": "작업이 실패했습니다"
+    }
   }
 }

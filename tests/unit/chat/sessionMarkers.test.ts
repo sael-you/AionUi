@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import {
   parseSessionMessageBlock,
   parseSessionsBlock,
+  parseVoiceBlock,
 } from '@/renderer/pages/conversation/Messages/components/sessionMarkers';
 
 describe('parseSessionsBlock', () => {
@@ -174,5 +175,28 @@ describe('the two markers do not interfere', () => {
     const mentions = parseSessionsBlock(delivered.text);
     expect(mentions.sessions).toEqual([{ name: 'C', id: 'conv_3', workspace: 'same' }]);
     expect(mentions.text).toBe('ask them');
+  });
+});
+
+describe('parseVoiceBlock (C26 conversation voice mode)', () => {
+  const spoken = [
+    'also run the tests please',
+    '',
+    '[[AION_VOICE]]',
+    'Spoken by the owner via voice; may contain mis-hearings.',
+    'Speak with "$AIONUI_HELPER_BIN" voice say only when worth it. mode: desk',
+    '[[/AION_VOICE]]',
+  ].join('\n');
+
+  it('hides the block and marks the message as spoken', () => {
+    expect(parseVoiceBlock(spoken)).toEqual({ text: 'also run the tests please', spoken: true });
+  });
+
+  it('a typed message is untouched', () => {
+    expect(parseVoiceBlock('just typed')).toEqual({ text: 'just typed', spoken: false });
+  });
+
+  it('an unterminated block is shown as typed (never swallows text)', () => {
+    expect(parseVoiceBlock('hello [[AION_VOICE]] rest')).toEqual({ text: 'hello [[AION_VOICE]] rest', spoken: false });
   });
 });

@@ -76,6 +76,18 @@ describe('openai-realtime adapter', () => {
     expect(pc.addTrack.mock.calls[0][0]).toEqual({ id: 'send' });
   });
 
+  it('sends mode only for conversation voice mode (older backends reject unknown fields)', async () => {
+    const conversation = setup();
+    await conversation.start({ focusConversationId: 'c1', mode: 'conversation' });
+    expect(conversation.createSession.mock.calls[0][0]).toMatchObject({
+      mode: 'conversation',
+      focus_conversation_id: 'c1',
+    });
+    const jarvis = setup();
+    await jarvis.start({ mode: 'jarvis' });
+    expect(jarvis.createSession.mock.calls[0][0]).not.toHaveProperty('mode');
+  });
+
   it('passes resume_of on a resume', async () => {
     const { start, createSession } = setup();
     await start({ resumeOf: 'vs-old' });

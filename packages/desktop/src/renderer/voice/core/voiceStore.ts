@@ -12,7 +12,16 @@
 
 import { useSyncExternalStore } from 'react';
 import { INITIAL_VOICE_STATE, orbStateOf, type VoiceMachineState } from './stateMachine';
-import type { OrbState, VoiceBudget, VoiceCaption, VoiceDraft, VoiceFollowUp, VoiceSettings } from './types';
+import type {
+  FollowUpStatus,
+  OrbState,
+  VoiceBudget,
+  VoiceCaption,
+  VoiceDraft,
+  VoiceFollowUp,
+  VoiceSessionMode,
+  VoiceSettings,
+} from './types';
 
 export const MAX_CAPTIONS = 30;
 export const MAX_FOLLOW_UPS = 5;
@@ -49,6 +58,12 @@ export type VoiceView = {
   settingsOpen: boolean;
   focusConversationId: string | null;
   preroll: PrerollStats | null;
+  /** Jarvis (dispatcher) or conversation voice mode bound to `focusConversationId` (C26). */
+  voiceMode: VoiceSessionMode;
+  /** Conversation mode: an agent clip is playing (barge-in stops it). */
+  agentSpeaking: boolean;
+  /** Conversation mode: what happened to your last utterance (voice bar). */
+  lastOutcome: { status: FollowUpStatus; line: string } | null;
 };
 
 export const INITIAL_VIEW: VoiceView = {
@@ -72,6 +87,9 @@ export const INITIAL_VIEW: VoiceView = {
   settingsOpen: false,
   focusConversationId: null,
   preroll: null,
+  voiceMode: 'jarvis',
+  agentSpeaking: false,
+  lastOutcome: null,
 };
 
 export class VoiceStore {
