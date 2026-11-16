@@ -324,3 +324,50 @@ describe('drawer layout', () => {
     expect(dialog.querySelector('.arco-drawer-footer')).toBeNull();
   });
 });
+
+describe('agent access in the drawer (TASK-116)', () => {
+  it('links a card assigned to a conversation to that conversation', async () => {
+    bridge.getCard.mockResolvedValue(
+      detail1({ assignee_kind: 'conversation', assignee_ref: 'conv-42', assignee_name: 'TB deploy run' })
+    );
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    const link = await within(dialog).findByTestId('board-assignee-conversation');
+    expect(link).toHaveTextContent('TB deploy run');
+    expect(link).toHaveAccessibleName('Open the assignee conversation TB deploy run');
+  });
+
+  it('shows the recorded approval note under a gate crossing, or that agents had full access', async () => {
+    bridge.getCard.mockResolvedValue(
+      makeDetail(fullCard(card1), [
+        makeEvent(5, 'gate_crossed', {
+          actor_kind: 'agent',
+          actor_ref: 'assistant:coder@claude',
+          payload: {
+            from: 'decision',
+            to: 'planned',
+            gate: 'decision',
+            agent_access: 'approval',
+            approval: { by: 'owner', via: 'Go ahead, tested on staging', at: 1_700_000_000_000 },
+          },
+        }),
+        makeEvent(4, 'gate_crossed', {
+          actor_kind: 'agent',
+          actor_ref: 'assistant:coder@claude',
+          payload: { from: 'triage', to: 'decision', gate: 'triage', agent_access: 'full', approval: null },
+        }),
+      ])
+    );
+    renderWithBoard(<BoardPage projectId='p1' />);
+    const { dialog } = await openDrawer();
+    const notes = await within(dialog).findAllByTestId('board-activity-approval');
+    expect(notes.map((node) => node.textContent)).toEqual([
+      'Your approval: “Go ahead, tested on staging”',
+      'No approval needed: agents had full access.',
+    ]);
+    const items = within(dialog)
+      .getAllByTestId('board-activity-item')
+      .map((node) => node.textContent);
+    expect(items[0]).toContain('through a gate');
+  });
+});

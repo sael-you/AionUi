@@ -17,10 +17,12 @@ import {
 } from '@/renderer/components/board/utils/boardErrors';
 import {
   actorName,
+  assigneeLabel,
   columnName,
   creatorName,
   departmentName,
   describeEvent,
+  gateApprovalOf,
 } from '@/renderer/components/board/utils/boardFormat';
 import {
   anchorForSlot,
@@ -351,5 +353,43 @@ describe('studio flow helpers', () => {
     expect(
       describeEvent(makeEvent(3, 'question_added', { payload: { to_department: 'owner' } }), columns, t)
     ).toContain('"to":"board.departments.owner"');
+  });
+});
+
+describe('agent access (TASK-116)', () => {
+  const columns = flowColumns();
+  const tt = ((key: string, options?: Record<string, unknown>) =>
+    options ? `${key}${JSON.stringify(options)}` : key) as unknown as TFunction;
+
+  it('names a conversation assignee, falling back to a short id', () => {
+    const card = makeCard(1, 'triage', 1024);
+    expect(
+      assigneeLabel({ ...card, assignee_kind: 'conversation', assignee_ref: 'conv-1', assignee_name: 'Run' }, tt)
+    ).toBe('Run');
+    expect(
+      assigneeLabel(
+        { ...card, assignee_kind: 'conversation', assignee_ref: 'abcdef0123456789', assignee_name: null },
+        tt
+      )
+    ).toBe('board.actor.conversation{"id":"abcdef01"}');
+  });
+
+  it('describes a gate crossing (forced or not) and reads its approval record', () => {
+    const crossed = makeEvent(1, 'gate_crossed', {
+      payload: {
+        from: 'decision',
+        to: 'planned',
+        agent_access: 'approval',
+        approval: { by: 'owner', via: '  ship it  ', at: 5 },
+      },
+    });
+    expect(describeEvent(crossed, columns, tt)).toContain('board.activity.gate_crossed{');
+    expect(gateApprovalOf(crossed)).toEqual({ access: 'approval', note: 'ship it', at: 5 });
+
+    const forced = makeEvent(2, 'gate_crossed', { payload: { from: 'a', to: 'b', forced: true, approval: null } });
+    expect(describeEvent(forced, columns, tt)).toContain('board.activity.gate_crossed_forced');
+    expect(gateApprovalOf(forced)).toEqual({ access: null, note: null, at: null });
+
+    expect(gateApprovalOf(makeEvent(3, 'card_moved'))).toBeNull();
   });
 });

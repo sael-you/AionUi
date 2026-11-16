@@ -296,3 +296,39 @@ describe('column settings dialog', () => {
     expect(bridge.updateColumns).not.toHaveBeenCalled();
   });
 });
+
+describe('agent access to the board (TASK-116)', () => {
+  it('shows the effective access and saves the other one merged into the stored settings', async () => {
+    bridge.get.mockResolvedValue(
+      makeSnapshot({ settings: makeSettings({ agent_access: 'full', settings: { keep_me: 1 } }) })
+    );
+    bridge.updateSettings.mockResolvedValue(makeSettings({ agent_access: 'approval' }));
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'Column settings' }));
+
+    const section = await screen.findByTestId('board-agent-access');
+    expect(within(section).getByRole('heading', { name: 'Agent access to the board' })).toBeInTheDocument();
+    const full = within(section).getByRole('radio', { name: /^Full/ });
+    const approval = within(section).getByRole('radio', { name: /Only with your recorded approval/ });
+    expect(full).toBeChecked();
+    expect(approval).not.toBeChecked();
+
+    fireEvent.click(approval);
+    await waitFor(() =>
+      expect(bridge.updateSettings).toHaveBeenCalledWith({
+        project_id: 'p1',
+        version: 3,
+        settings: { keep_me: 1, agent_access: 'approval' },
+      })
+    );
+    // The column draft is not saved by this change.
+    expect(bridge.updateColumns).not.toHaveBeenCalled();
+  });
+
+  it('is hidden on a server that does not report agent access yet', async () => {
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'Column settings' }));
+    await screen.findByRole('textbox', { name: 'Triage · Name' });
+    expect(screen.queryByTestId('board-agent-access')).not.toBeInTheDocument();
+  });
+});
