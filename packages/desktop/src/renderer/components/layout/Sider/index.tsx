@@ -21,6 +21,7 @@ import {
   SiderNavItem,
 } from './SiderNav';
 import SiderFooter from './SiderFooter';
+import { useInAppBrowserLauncher } from '@renderer/pages/conversation/Preview/browser/useInAppBrowserLauncher';
 import TeamSiderSection from './TeamSiderSection';
 import siderStyles from './Sider.module.css';
 import type { TChatConversation } from '@/common/config/storage';
@@ -43,6 +44,7 @@ export const SIDER_SCROLL_STORAGE_KEY = 'aionui_sider_scroll_top';
 
 const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
   const { t } = useTranslation();
+  const browserLauncher = useInAppBrowserLauncher();
   const layout = useLayoutContext();
   const isMobile = layout?.isMobile ?? false;
   const location = useLocation();
@@ -370,6 +372,8 @@ const Sider: React.FC<SiderProps> = ({ onSessionClick, collapsed = false }) => {
         onThemeToggle={handleQuickThemeToggle}
         showLogout={showLogout}
         onLogoutClick={handleLogout}
+        onBrowserClick={browserLauncher.open}
+        browserAvailable={browserLauncher.available}
       />
     </div>
   );

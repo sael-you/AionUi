@@ -68,6 +68,8 @@ vi.mock('@renderer/hooks/ui/useConversationShortcuts', () => ({
 vi.mock('@renderer/utils/platform', () => ({ isElectronDesktop: platformMocks.isElectronDesktopMock }));
 vi.mock('@renderer/pages/conversation/Preview/context/PreviewContext', () => ({
   usePreviewContext: () => ({ closePreview: () => {} }),
+  // TASK-124: the browser shortcut asks for the preview host; none in this test.
+  useOptionalPreviewContext: () => null,
 }));
 
 import Layout from '@renderer/components/layout/Layout';

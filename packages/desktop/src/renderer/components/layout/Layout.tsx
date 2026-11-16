@@ -28,6 +28,7 @@ import { useProjectPanelCollapse } from '@renderer/hooks/ui/useProjectPanelColla
 import { dispatchWorkspaceToggleEvent } from '@renderer/utils/workspace/workspaceEvents';
 import { MIN_PREVIEW_PANEL_PX } from '@renderer/pages/conversation/utils/layoutCalc';
 import { PreviewPanel } from '@renderer/pages/conversation/Preview';
+import { useInAppBrowserShortcut } from '@renderer/pages/conversation/Preview/browser/useInAppBrowserLauncher';
 import { LayoutContext } from '@renderer/hooks/context/LayoutContext';
 import { NavigationHistoryProvider } from '@renderer/hooks/context/NavigationHistoryContext';
 import { useDeepLink } from '@renderer/hooks/system/useDeepLink';
@@ -138,6 +139,7 @@ const Layout: React.FC<{
     setCollapsed((previous) => !previous);
   }, []);
   useConversationShortcuts({ navigate, toggleSider });
+  useInAppBrowserShortcut();
   // Expose navigate to code running outside the Router tree (e.g. the globally
   // mounted FeedbackReportModal's "via chat" action).
   useEffect(() => {

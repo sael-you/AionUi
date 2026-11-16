@@ -164,7 +164,9 @@
     "devicesOn": "已允许此页面使用麦克风和摄像头",
     "insecureUrl": "此页面使用 http，无法在 https 应用中显示。请在新标签页中打开。",
     "dismissHint": "隐藏此提示",
-    "navigatedChip": "已跳转"
+    "navigatedChip": "已跳转",
+    "openBrowser": "浏览器（Ctrl/Cmd+Shift+B）",
+    "openBrowserNeedsConversation": "打开一个会话后即可使用浏览器"
   },
   "saveConflict": "保存失败：该文件在你打开后已被改动。可重新加载查看其他改动——你的编辑仍在，尚未保存。",
   "persistQuotaExceeded": "本地存储已满，无法再记住该项目打开的标签页。请关闭一些标签页或清理站点数据。",

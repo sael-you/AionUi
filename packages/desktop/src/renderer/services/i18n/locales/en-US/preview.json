@@ -164,7 +164,9 @@
     "devicesOn": "Microphone and camera allowed for this page",
     "insecureUrl": "This page uses http and can't be shown inside the https app. Open it in a new tab.",
     "dismissHint": "Hide this note",
-    "navigatedChip": "moved on"
+    "navigatedChip": "moved on",
+    "openBrowser": "Browser (Ctrl/Cmd+Shift+B)",
+    "openBrowserNeedsConversation": "Open a conversation to use the browser"
   },
   "saveConflict": "Could not save: this file changed on disk since you opened it. Reload to see the other changes — your edits are still here, unsaved.",
   "persistQuotaExceeded": "Local storage is full, so open tabs can no longer be remembered for this project. Close some tabs or clear site data.",

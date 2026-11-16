@@ -1,6 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { ArrowCircleLeft, ArrowLeft, ArrowRight, ExpandLeft, ExpandRight, Peoples, Search } from '@icon-park/react';
+import { Button, Tooltip } from '@arco-design/web-react';
+import {
+  ArrowCircleLeft,
+  ArrowLeft,
+  ArrowRight,
+  Browser,
+  ExpandLeft,
+  ExpandRight,
+  Peoples,
+  Search,
+} from '@icon-park/react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -19,6 +29,7 @@ import { resolveFeedbackModule } from '@/renderer/services/feedback/resolveFeedb
 import { isElectronDesktop, isMacOS } from '@/renderer/utils/platform';
 import { IS_DISCONTINUED_BUILD } from '@/renderer/utils/discontinuedBuild';
 import MigrationInviteCapsule from './MigrationInviteCapsule';
+import { useInAppBrowserLauncher } from '@renderer/pages/conversation/Preview/browser/useInAppBrowserLauncher';
 import {
   ProjectLabel,
   projectSurfaceClasses,
@@ -147,6 +158,8 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
     ? t('common.expandMore', { defaultValue: 'Expand workspace' })
     : t('common.collapse', { defaultValue: 'Collapse workspace' });
   const backToChatTooltip = t('common.back', { defaultValue: 'Back to Chat' });
+  const browserLauncher = useInAppBrowserLauncher();
+  const browserTooltip = t('preview.browser.openBrowser');
   const feedbackTooltip = t('conversation.welcome.quickActionFeedback', { defaultValue: 'Report Issue' });
   const isSettingsRoute = location.pathname.startsWith('/settings');
   const iconSize = 18;
@@ -439,6 +452,19 @@ const Titlebar: React.FC<TitlebarProps> = ({ workspaceAvailable }) => {
         >
           <FeedbackIcon size={iconSize} strokeWidth={desktopIconStroke} />
         </button>
+        {browserLauncher.available && (
+          <Tooltip content={browserTooltip} mini>
+            <Button
+              type='text'
+              className={classNames('app-titlebar__button', layout?.isMobile && 'app-titlebar__button--mobile')}
+              icon={<Browser theme='outline' size={iconSize} fill='currentColor' />}
+              aria-label={browserTooltip}
+              aria-keyshortcuts='Control+Shift+B Meta+Shift+B'
+              onClick={browserLauncher.open}
+              data-testid='titlebar-browser-button'
+            />
+          </Tooltip>
+        )}
         {showWorkspaceButton && (
           <button
             type='button'

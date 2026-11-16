@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Menu, Tooltip } from '@arco-design/web-react';
-import { ArrowCircleLeft, Logout, Moon, MoreOne, SettingTwo, SunOne } from '@icon-park/react';
+import { ArrowCircleLeft, Browser, Logout, Moon, MoreOne, SettingTwo, SunOne } from '@icon-park/react';
 import classNames from 'classnames';
 import type { SiderTooltipProps } from '@renderer/utils/ui/siderTooltip';
 import styles from './Sider.module.css';
@@ -24,6 +24,9 @@ interface SiderFooterProps {
   onThemeToggle: () => void;
   showLogout?: boolean;
   onLogoutClick?: () => void;
+  /** Open the in-app browser (TASK-124); `browserAvailable` = a conversation is open to host it. */
+  onBrowserClick?: () => void;
+  browserAvailable?: boolean;
 }
 
 /**
@@ -42,6 +45,8 @@ const SiderFooter: React.FC<SiderFooterProps> = ({
   onThemeToggle,
   showLogout = false,
   onLogoutClick,
+  onBrowserClick,
+  browserAvailable = false,
 }) => {
   const { t } = useTranslation();
   const [menuVisible, setMenuVisible] = useState(false);
@@ -57,6 +62,7 @@ const SiderFooter: React.FC<SiderFooterProps> = ({
         if (key === 'settings') onSettingsClick();
         else if (key === 'theme') onThemeToggle();
         else if (key === 'logout') onLogoutClick?.();
+        else if (key === 'browser') onBrowserClick?.();
       }}
     >
       <Menu.Item key='settings'>
@@ -65,6 +71,21 @@ const SiderFooter: React.FC<SiderFooterProps> = ({
           {primaryLabel}
         </span>
       </Menu.Item>
+      {onBrowserClick && (
+        <Menu.Item key='browser' disabled={!browserAvailable} data-testid='sider-browser'>
+          <span className='flex flex-col'>
+            <span className='flex items-center gap-8px'>
+              <Browser theme='outline' size='14' />
+              {t('preview.browser.openBrowser')}
+            </span>
+            {!browserAvailable && (
+              <span className='text-11px text-t-tertiary ps-22px'>
+                {t('preview.browser.openBrowserNeedsConversation')}
+              </span>
+            )}
+          </span>
+        </Menu.Item>
+      )}
       <Menu.Item key='theme' data-testid='theme-toggle'>
         <span className='flex items-center gap-8px'>
           {theme === 'dark' ? <SunOne theme='outline' size='14' /> : <Moon theme='outline' size='14' />}

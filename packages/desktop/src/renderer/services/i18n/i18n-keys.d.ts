@@ -2278,6 +2278,8 @@ export type I18nKey =
   | 'preview.browser.mayHaveNavigated'
   | 'preview.browser.navigatedChip'
   | 'preview.browser.newTab'
+  | 'preview.browser.openBrowser'
+  | 'preview.browser.openBrowserNeedsConversation'
   | 'preview.browser.openInNewTab'
   | 'preview.browser.tabLimitReached'
   | 'preview.browser.unsupportedUrl'

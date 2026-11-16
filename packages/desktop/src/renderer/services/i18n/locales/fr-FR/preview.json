@@ -164,7 +164,9 @@
     "devicesOn": "Micro et caméra autorisés pour cette page",
     "insecureUrl": "Cette page utilise http et ne peut pas s'afficher dans l'application https. Ouvrez-la dans un nouvel onglet.",
     "dismissHint": "Masquer cette note",
-    "navigatedChip": "a changé"
+    "navigatedChip": "a changé",
+    "openBrowser": "Navigateur (Ctrl/Cmd+Maj+B)",
+    "openBrowserNeedsConversation": "Ouvrez une conversation pour utiliser le navigateur"
   },
   "saveConflict": "Échec de l'enregistrement : ce fichier a changé sur le disque depuis que vous l'avez ouvert. Rechargez pour voir les autres modifications — vos modifications sont toujours là, non enregistrées.",
   "persistQuotaExceeded": "Le stockage local est plein : les onglets ouverts de ce projet ne peuvent plus être mémorisés. Fermez des onglets ou effacez les données du site.",

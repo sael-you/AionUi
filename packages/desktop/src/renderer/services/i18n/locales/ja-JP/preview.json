@@ -164,7 +164,9 @@
     "devicesOn": "このページでマイクとカメラを許可済み",
     "insecureUrl": "このページは http のため、https のアプリ内には表示できません。新しいタブで開いてください。",
     "dismissHint": "この注意を非表示",
-    "navigatedChip": "移動済み"
+    "navigatedChip": "移動済み",
+    "openBrowser": "ブラウザー（Ctrl/Cmd+Shift+B）",
+    "openBrowserNeedsConversation": "ブラウザーを使うには会話を開いてください"
   },
   "saveConflict": "保存できませんでした：このファイルは開いた後に変更されています。再読み込みで他の変更を確認できます——あなたの編集は未保存のまま残っています。",
   "persistQuotaExceeded": "ローカルストレージが満杯のため、このプロジェクトで開いているタブを記憶できません。タブを閉じるか、サイトデータを消去してください。",
