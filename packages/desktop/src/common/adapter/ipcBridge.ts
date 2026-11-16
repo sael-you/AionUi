@@ -18,10 +18,17 @@ import { bridge } from '@/common/platform/bridge';
 import { buildListTasksPath } from './teamTaskPath';
 import type { OpenDialogOptions } from 'electron';
 import type {
+  AttachKitItemRequest,
+  CreateKitRequest,
   ICssTheme,
   IMcpServer,
   IProvider,
   ISessionMcpServer,
+  KitAttachmentResponse,
+  KitAttachmentsQuery,
+  KitEffectiveQuery,
+  KitEffectiveSetResponse,
+  KitResponse,
   McpMarketAssignment,
   McpMarketCreateAssignmentRequest,
   McpMarketCreateInstanceRequest,
@@ -34,6 +41,7 @@ import type {
   TChatConversation,
   TConversationRuntimeSummary,
   TProviderWithModel,
+  UpdateKitRequest,
 } from '../config/storage';
 import type {
   Assistant,
@@ -1481,6 +1489,45 @@ export const mcpService = {
       (p) => `/api/mcp/market/assignments/${encodeURIComponent(p.id)}`
     ),
   },
+};
+
+/** Builds `?a=1&b=2` from the defined, non-empty values (empty string when none). */
+const kitQueryString = (params: Record<string, string | undefined>): string => {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) search.set(key, value);
+  }
+  const text = search.toString();
+  return text ? `?${text}` : '';
+};
+
+// ---------------------------------------------------------------------------
+// Kits (C27): bundles of library skills + MCP market instances, attached with
+// add/remove at global/project/assistant/conversation (AionCore `/api/kits`).
+// ---------------------------------------------------------------------------
+
+export const kits = {
+  list: httpGet<KitResponse[], void>('/api/kits'),
+  get: httpGet<KitResponse, { id: string }>((p) => `/api/kits/${encodeURIComponent(p.id)}`),
+  create: httpPost<KitResponse, CreateKitRequest>('/api/kits'),
+  update: httpPut<KitResponse, { id: string; data: UpdateKitRequest }>(
+    (p) => `/api/kits/${encodeURIComponent(p.id)}`,
+    (p) => p.data
+  ),
+  remove: httpDelete<void, { id: string }>((p) => `/api/kits/${encodeURIComponent(p.id)}`),
+  listAttachments: httpGet<KitAttachmentResponse[], KitAttachmentsQuery>(
+    (p) => `/api/kits/attachments${kitQueryString({ level: p?.level, target_id: p?.target_id })}`
+  ),
+  attach: httpPost<KitAttachmentResponse, AttachKitItemRequest>('/api/kits/attachments'),
+  detach: httpDelete<void, { id: string }>((p) => `/api/kits/attachments/${encodeURIComponent(p.id)}`),
+  effective: httpGet<KitEffectiveSetResponse, KitEffectiveQuery>(
+    (p) =>
+      `/api/kits/effective${kitQueryString({
+        conversation_id: p.conversation_id,
+        project_id: p.project_id,
+        assistant_id: p.assistant_id,
+      })}`
+  ),
 };
 
 export const openclawConversation = {
