@@ -4,13 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * D50: activating a production write MCP is not gated on an approval
- * reference; the modal states the rule (the owner's typed OK per change).
+ * reference; the modal states that the agent asks before every call (TASK-97).
  */
 
 import React from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { McpMarketInstance } from '@/common/config/storage';
+import i18nConfig from '@/common/config/i18n-config.json';
+import enMcp from '@/renderer/services/i18n/locales/en-US/mcp.json';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -71,6 +73,22 @@ describe('ActivateModal', () => {
     expect(okButton()).not.toBeDisabled();
     fireEvent.click(okButton());
     await waitFor(() => expect(onConfirm).toHaveBeenCalled());
+  });
+
+  it('says a production write asks before every call, in every copy and locale (TASK-97)', async () => {
+    const { activate, create, instance: drawer } = enMcp.market;
+    for (const text of [activate.productionWrite, create.fullToolsNote, drawer.writeNote]) {
+      expect(text).toContain('the agent asks you before every call to this server, on every CLI');
+      expect(text).not.toMatch(/automatic confirmation/i);
+    }
+    for (const lang of i18nConfig.supportedLanguages) {
+      const { market } = (await import(`@/renderer/services/i18n/locales/${lang}/mcp.json`)).default as typeof enMcp;
+      for (const text of [market.create.fullToolsNote, market.instance.writeNote]) {
+        expect(text, lang).toContain(market.activate.productionWrite);
+      }
+      // The new sentence names the CLIs it applies to; the old "no automatic confirmation" one did not.
+      expect(market.activate.productionWrite, lang).toContain('CLI');
+    }
   });
 
   it('shows no production rule for a non-production write or a read instance', () => {

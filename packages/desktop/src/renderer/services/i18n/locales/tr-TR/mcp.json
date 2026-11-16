@@ -149,7 +149,7 @@
       "problemsTitle": "Kural sorunları",
       "enforcement": "Uygulayan: {{value}}",
       "approvalRecorded": "Sahip onayı kaydedildi",
-      "writeNote": "Yazma: bağlı her CLI'da tüm araçlar; bu makinenin dışındaki verileri, parayı, reklamları, e-postaları veya herkese açık gönderileri değiştirebilir. Otomatik onay yok: ajanlar her üretim değişikliği için sahibin yazılı (yazarak verilen) onayını almalıdır (kural)."
+      "writeNote": "Yazma: bağlı her CLI'da tüm araçlar; bu makinenin dışındaki verileri, parayı, reklamları, e-postaları veya herkese açık gönderileri değiştirebilir. Üretimde yazma: ajan, her CLI'da bu sunucuya yapılan her çağrıdan önce size sorar."
     },
     "secret": {
       "set": "Ayarlandı",
@@ -189,7 +189,7 @@
       "dormantUntilComplete": "Şunlar doldurulana kadar uykuda kalır: {{keys}}",
       "startsDormant": "Yeni MCP'ler uykuda başlar. Değerleri ayarlanıp bağlantı testi geçtiğinde etkinleştirin.",
       "secretsNotSaved": "{{name}} oluşturuldu ancak şu gizli değerler kaydedilmedi: {{keys}}. Bunları örnek panelinde ayarlayın.",
-      "fullToolsNote": "Varsayılan: tüm araçlar (okuma + yazma). Ajanların ne yapabileceğini beceriler ve kurallar belirler. Otomatik onay yok: ajanlar her üretim değişikliği için sahibin yazılı (yazarak verilen) onayını almalıdır (kural).",
+      "fullToolsNote": "Varsayılan: tüm araçlar (okuma + yazma). Ajanların ne yapabileceğini beceriler ve kurallar belirler. Üretimde yazma: ajan, her CLI'da bu sunucuya yapılan her çağrıdan önce size sorar.",
       "patternProblem": "{{key}} beklenen biçimde değil."
     },
     "attach": {
@@ -222,7 +222,7 @@
       "title": "{{name}} etkinleştirilsin mi?",
       "body": "Etkin MCP'ler, bağlı oldukları projeler, asistanlar ve CLI'ler için başlatılır.",
       "missing": "Önce zorunlu değerleri doldurun: {{keys}}",
-      "productionWrite": "Otomatik onay yok: ajanlar her üretim değişikliği için sahibin yazılı (yazarak verilen) onayını almalıdır (kural)."
+      "productionWrite": "Üretimde yazma: ajan, her CLI'da bu sunucuya yapılan her çağrıdan önce size sorar."
     },
     "confirm": {
       "revoke": {

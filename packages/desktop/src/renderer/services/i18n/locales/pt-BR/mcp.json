@@ -149,7 +149,7 @@
       "problemsTitle": "Problemas de regras",
       "enforcement": "Aplicado por: {{value}}",
       "approvalRecorded": "Aprovação do proprietário registrada",
-      "writeNote": "Escrita: todas as ferramentas em cada CLI anexado; pode alterar dados, dinheiro, anúncios, e-mails ou posts públicos fora desta máquina. Sem confirmação automática: os agentes precisam do OK digitado do dono para cada mudança em produção (regra)."
+      "writeNote": "Escrita: todas as ferramentas em cada CLI anexado; pode alterar dados, dinheiro, anúncios, e-mails ou posts públicos fora desta máquina. Escrita em produção: o agente pergunta a você antes de cada chamada a este servidor, em cada CLI."
     },
     "secret": {
       "set": "Definido",
@@ -189,7 +189,7 @@
       "dormantUntilComplete": "Permanece inativo até que estes campos sejam preenchidos: {{keys}}",
       "startsDormant": "Novos MCPs começam inativos. Ative um quando seus valores estiverem definidos e o teste de conexão for aprovado.",
       "secretsNotSaved": "{{name}} foi criado, mas estes segredos não foram salvos: {{keys}}. Defina-os no painel da instância.",
-      "fullToolsNote": "Todas as ferramentas (leitura + escrita) é o padrão. O que os agentes podem fazer vem de skills e regras. Sem confirmação automática: os agentes precisam do OK digitado do dono para cada mudança em produção (regra).",
+      "fullToolsNote": "Todas as ferramentas (leitura + escrita) é o padrão. O que os agentes podem fazer vem de skills e regras. Escrita em produção: o agente pergunta a você antes de cada chamada a este servidor, em cada CLI.",
       "patternProblem": "{{key}} não está no formato esperado."
     },
     "attach": {
@@ -222,7 +222,7 @@
       "title": "Ativar {{name}}?",
       "body": "MCPs ativos são iniciados para os projetos, assistentes e CLIs aos quais estão anexados.",
       "missing": "Preencha primeiro os valores obrigatórios: {{keys}}",
-      "productionWrite": "Sem confirmação automática: os agentes precisam do OK digitado do dono para cada mudança em produção (regra)."
+      "productionWrite": "Escrita em produção: o agente pergunta a você antes de cada chamada a este servidor, em cada CLI."
     },
     "confirm": {
       "revoke": {

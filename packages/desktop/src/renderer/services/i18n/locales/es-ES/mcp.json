@@ -149,7 +149,7 @@
       "problemsTitle": "Problemas de reglas",
       "enforcement": "Aplicado por: {{value}}",
       "approvalRecorded": "Aprobación del propietario registrada",
-      "writeNote": "Escritura: todas las herramientas en cada CLI adjunta; puede cambiar datos, dinero, anuncios, correos o publicaciones públicas fuera de esta máquina. Sin confirmación automática: los agentes necesitan el OK escrito del propietario para cada cambio en producción (regla)."
+      "writeNote": "Escritura: todas las herramientas en cada CLI adjunta; puede cambiar datos, dinero, anuncios, correos o publicaciones públicas fuera de esta máquina. Escritura en producción: el agente te pregunta antes de cada llamada a este servidor, en cada CLI."
     },
     "secret": {
       "set": "Definido",
@@ -189,7 +189,7 @@
       "dormantUntilComplete": "Permanece inactivo hasta que se rellenen estos campos: {{keys}}",
       "startsDormant": "Los MCP nuevos empiezan inactivos. Activa uno cuando sus valores estén definidos y la prueba de conexión sea correcta.",
       "secretsNotSaved": "Se creó {{name}}, pero estos secretos no se guardaron: {{keys}}. Configúralos en el panel de la instancia.",
-      "fullToolsNote": "Por defecto, todas las herramientas (lectura + escritura). Lo que pueden hacer los agentes lo deciden las skills y las reglas. Sin confirmación automática: los agentes necesitan el OK escrito del propietario para cada cambio en producción (regla).",
+      "fullToolsNote": "Por defecto, todas las herramientas (lectura + escritura). Lo que pueden hacer los agentes lo deciden las skills y las reglas. Escritura en producción: el agente te pregunta antes de cada llamada a este servidor, en cada CLI.",
       "patternProblem": "{{key}} no tiene el formato esperado."
     },
     "attach": {
@@ -222,7 +222,7 @@
       "title": "¿Activar {{name}}?",
       "body": "Los MCP activos se inician para los proyectos, asistentes y CLI a los que están vinculados.",
       "missing": "Rellena primero los valores obligatorios: {{keys}}",
-      "productionWrite": "Sin confirmación automática: los agentes necesitan el OK escrito del propietario para cada cambio en producción (regla)."
+      "productionWrite": "Escritura en producción: el agente te pregunta antes de cada llamada a este servidor, en cada CLI."
     },
     "confirm": {
       "revoke": {

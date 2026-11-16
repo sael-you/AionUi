@@ -6,8 +6,8 @@
 
 /**
  * Confirmation for activating a market instance. D50: a production write
- * instance is not gated on a recorded approval; the modal states the rule
- * instead (no automatic confirmation, the owner's typed OK per change).
+ * instance is not gated on a recorded approval; the modal states instead that
+ * the agent asks the owner before every call to it, on every CLI (TASK-97).
  */
 
 import { Alert, Modal } from '@arco-design/web-react';
