@@ -144,6 +144,7 @@
     "callHardCap": "La llamada llegó al límite de 55 minutos. Toca Hablar para iniciar otra.",
     "callDropped": "La llamada se cortó. Toca Hablar para intentarlo de nuevo.",
     "noProvider": "Aún no hay un proveedor de voz configurado para tu cuenta.",
+    "noMinimaxProvider": "El motor MiniMax necesita un proveedor MiniMax (api.minimax.io) para pensar y hablar.",
     "rateLimited": "Demasiadas solicitudes de voz. Espera un momento e inténtalo de nuevo.",
     "restartInterrupted": "El reinicio interrumpió la tarea: di «Hey Jarvis» para continuar.",
     "conversationIdle": "Escucha en pausa tras 3 minutos de silencio. Di «Hey Jarvis» o toca para hablar.",
@@ -152,7 +153,8 @@
   "providerSetup": {
     "action": "Configurar clave",
     "actionLabel": "Configurar una clave de proveedor de voz en Configuración → Modelo",
-    "hint": "Añade un proveedor OpenAI con la URL base https://api.openai.com (sirve el preajuste de OpenAI). Opcional: una clave de MiniMax para la voz de MiniMax."
+    "hint": "Añade un proveedor OpenAI con la URL base https://api.openai.com (sirve el preajuste de OpenAI). Opcional: una clave de MiniMax para la voz de MiniMax.",
+    "minimaxHint": "Añade un proveedor MiniMax con la URL base https://api.minimax.io y conserva tu proveedor OpenAI: OpenAI escucha, MiniMax piensa y habla."
   },
   "settings": {
     "title": "Configuración de voz",
@@ -165,6 +167,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "disponible más adelante",
+    "engineHint": {
+      "minimaxCascade": "Necesita una clave de OpenAI (escucha) y una clave de MiniMax (piensa y habla)."
+    },
     "wakeWord": "Palabra de activación «Hey Jarvis»",
     "wakeWordHint": "Solo funciona en este dispositivo. Si está desactivada, toca Hablar para empezar.",
     "carMode": "Modo coche",

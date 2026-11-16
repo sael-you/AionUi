@@ -144,6 +144,7 @@
     "callHardCap": "Das Gespräch hat das 55-Minuten-Limit erreicht. Tippe auf Sprechen für ein neues.",
     "callDropped": "Das Gespräch ist abgebrochen. Tippe auf Sprechen, um es erneut zu versuchen.",
     "noProvider": "Für dein Konto ist noch kein Sprachanbieter eingerichtet.",
+    "noMinimaxProvider": "Die MiniMax-Engine braucht einen MiniMax-Anbieter (api.minimax.io) für Denken und Stimme.",
     "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut.",
     "restartInterrupted": "Der Neustart hat die Aufgabe unterbrochen – sag „Hey Jarvis“, um fortzufahren.",
     "conversationIdle": "Zuhören nach 3 stillen Minuten pausiert. Sag „Hey Jarvis“ oder tippe zum Sprechen.",
@@ -152,7 +153,8 @@
   "providerSetup": {
     "action": "Schlüssel einrichten",
     "actionLabel": "Schlüssel für einen Sprachanbieter unter Einstellungen → Modell einrichten",
-    "hint": "Füge einen OpenAI-Anbieter mit der Basis-URL https://api.openai.com hinzu (die OpenAI-Vorlage passt). Optional: ein MiniMax-Schlüssel für MiniMax-Sprachausgabe."
+    "hint": "Füge einen OpenAI-Anbieter mit der Basis-URL https://api.openai.com hinzu (die OpenAI-Vorlage passt). Optional: ein MiniMax-Schlüssel für MiniMax-Sprachausgabe.",
+    "minimaxHint": "Füge einen MiniMax-Anbieter mit der Basis-URL https://api.minimax.io hinzu und behalte deinen OpenAI-Anbieter: OpenAI hört zu, MiniMax denkt und spricht."
   },
   "settings": {
     "title": "Spracheinstellungen",
@@ -165,6 +167,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "später verfügbar",
+    "engineHint": {
+      "minimaxCascade": "Braucht einen OpenAI-Schlüssel (hört zu) und einen MiniMax-Schlüssel (denkt und spricht)."
+    },
     "wakeWord": "Aktivierungswort „Hey Jarvis“",
     "wakeWordHint": "Läuft nur auf diesem Gerät. Wenn aus, tippe zum Starten auf Sprechen.",
     "carMode": "Automodus",

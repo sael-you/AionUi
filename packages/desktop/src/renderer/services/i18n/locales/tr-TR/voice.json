@@ -144,6 +144,7 @@
     "callHardCap": "Arama 55 dakika sınırına ulaştı. Yenisi için Konuş’a dokunun.",
     "callDropped": "Arama düştü. Tekrar denemek için Konuş’a dokunun.",
     "noProvider": "Hesabınız için henüz bir ses sağlayıcısı ayarlanmadı.",
+    "noMinimaxProvider": "MiniMax motoru, düşünmek ve konuşmak için bir MiniMax sağlayıcısına (api.minimax.io) ihtiyaç duyar.",
     "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin.",
     "restartInterrupted": "Yeniden başlatma görevi yarıda kesti — devam etmek için “Hey Jarvis” deyin.",
     "conversationIdle": "3 dakika sessizlikten sonra dinleme duraklatıldı. “Hey Jarvis” deyin veya konuşmak için dokunun.",
@@ -152,7 +153,8 @@
   "providerSetup": {
     "action": "Anahtarı ayarla",
     "actionLabel": "Ayarlar → Model bölümünde bir ses sağlayıcısı anahtarı ayarla",
-    "hint": "Temel URL'si https://api.openai.com olan bir OpenAI sağlayıcısı ekleyin (OpenAI ön ayarı çalışır). İsteğe bağlı: MiniMax konuşması için bir MiniMax anahtarı."
+    "hint": "Temel URL'si https://api.openai.com olan bir OpenAI sağlayıcısı ekleyin (OpenAI ön ayarı çalışır). İsteğe bağlı: MiniMax konuşması için bir MiniMax anahtarı.",
+    "minimaxHint": "Temel URL'si https://api.minimax.io olan bir MiniMax sağlayıcısı ekleyin ve OpenAI sağlayıcınızı koruyun: OpenAI dinler, MiniMax düşünür ve konuşur."
   },
   "settings": {
     "title": "Ses ayarları",
@@ -165,6 +167,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "yakında",
+    "engineHint": {
+      "minimaxCascade": "Bir OpenAI anahtarı (dinler) ve bir MiniMax anahtarı (düşünür ve konuşur) gerekir."
+    },
     "wakeWord": "Uyandırma kelimesi “Hey Jarvis”",
     "wakeWordHint": "Yalnızca bu cihazda çalışır. Kapalıyken başlatmak için Konuş'a dokunun.",
     "carMode": "Araç modu",

@@ -3,6 +3,7 @@ import React from 'react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { BackendHttpError } from '@/common/adapter/httpBridge';
+import type { VoiceSettings } from '@/renderer/voice/core/types';
 import { VoiceController } from '@/renderer/voice/core/VoiceController';
 import { createFakeEffects, flush } from '../fakes';
 
@@ -21,8 +22,8 @@ const RouterWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   </MemoryRouter>
 );
 
-async function mount(isMobile = false) {
-  const f = createFakeEffects();
+async function mount(isMobile = false, settings?: Partial<VoiceSettings>) {
+  const f = createFakeEffects(settings);
   const controller = new VoiceController(f.fx);
   const onOpen = vi.fn();
   render(<VoiceOverlay controller={controller} isMobile={isMobile} onOpenConversation={onOpen} />, {
@@ -155,6 +156,48 @@ describe('VoiceOverlay', () => {
     fireEvent.click(screen.getByRole('switch', { name: 'voice.settings.carMode' }));
     await act(flush);
     expect(f.fx.api.putSettings).toHaveBeenCalledWith({ car_mode: true });
+  });
+
+  describe('MiniMax engine (TASK-91)', () => {
+    it('offers minimax-cascade as a choice and saves it', async () => {
+      const { f } = await mount();
+      fireEvent.click(screen.getByRole('button', { name: 'voice.actions.settings' }));
+      await act(flush);
+      expect(screen.queryByText('voice.settings.engineHint.minimaxCascade')).toBeNull();
+      fireEvent.click(screen.getByRole('combobox', { name: 'voice.settings.engine' }));
+      const option = await screen.findByRole('option', { name: 'voice.settings.engineName.minimaxCascade' });
+      expect(option).not.toHaveAttribute('aria-disabled', 'true');
+      expect(option).not.toHaveTextContent('voice.settings.engineLater');
+      fireEvent.click(option);
+      await act(flush);
+      expect(f.fx.api.putSettings).toHaveBeenCalledWith({ engine: 'minimax-cascade' });
+    });
+
+    it('says which two keys the MiniMax engine needs once it is chosen', async () => {
+      await mount(false, { enabled: true, engine: 'minimax-cascade' });
+      fireEvent.click(screen.getByRole('button', { name: 'voice.actions.settings' }));
+      await act(flush);
+      expect(screen.getByText('voice.settings.engineHint.minimaxCascade')).toBeInTheDocument();
+    });
+
+    it('a 412 VOICE_NO_MINIMAX_PROVIDER shows its notice with the MiniMax hint and "Set up key"', async () => {
+      const m = await mount();
+      m.f.fx.startCall.mockRejectedValueOnce(
+        new BackendHttpError({
+          method: 'POST',
+          path: '/api/voice/sessions',
+          status: 412,
+          body: { success: false, code: 'VOICE_NO_MINIMAX_PROVIDER', error: 'no MiniMax provider' },
+        })
+      );
+      act(() => m.controller.talk());
+      await act(flush);
+      expect(screen.getByText('voice.notice.noMinimaxProvider')).toBeInTheDocument();
+      expect(screen.getByText('voice.providerSetup.minimaxHint')).toBeInTheDocument();
+      expect(screen.queryByText('voice.providerSetup.hint')).toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: 'voice.providerSetup.actionLabel' }));
+      expect(screen.getByTestId('location')).toHaveTextContent('/settings/model');
+    });
   });
 
   describe('"No voice provider" (TASK-90)', () => {

@@ -34,6 +34,8 @@ export function voiceErrorCode(error: unknown): string {
     const code = error.code || error.backendMessage;
     if (/disabled|kill/i.test(code)) return 'disabled';
     if (/budget/i.test(code) || error.status === 402) return 'budget';
+    // The MiniMax engine's own 412 (`VOICE_NO_MINIMAX_PROVIDER`) names the key it misses.
+    if (/no_minimax_provider/i.test(code)) return 'noMinimaxProvider';
     if (error.status === 412 || /no_provider/i.test(code)) return 'noProvider';
     if (error.status === 429) return 'rateLimited';
     if (error.status === 502) return 'callFailed';

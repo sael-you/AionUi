@@ -144,6 +144,7 @@
     "callHardCap": "通话已达 55 分钟上限。点按“说话”开始新的通话。",
     "callDropped": "通话已中断。点按“说话”重试。",
     "noProvider": "你的账户尚未配置语音服务提供方。",
+    "noMinimaxProvider": "MiniMax 引擎需要一个 MiniMax 提供商（api.minimax.io）来思考和发声。",
     "rateLimited": "语音请求过多。请稍候再试。",
     "restartInterrupted": "重启中断了任务——说“Hey Jarvis”继续。",
     "conversationIdle": "安静 3 分钟后已暂停聆听。说“Hey Jarvis”或点按即可说话。",
@@ -152,7 +153,8 @@
   "providerSetup": {
     "action": "设置密钥",
     "actionLabel": "在 设置 → 模型 中设置语音服务提供方密钥",
-    "hint": "添加一个基础 URL 为 https://api.openai.com 的 OpenAI 提供方（OpenAI 预设即可）。可选：用于 MiniMax 语音的 MiniMax 密钥。"
+    "hint": "添加一个基础 URL 为 https://api.openai.com 的 OpenAI 提供方（OpenAI 预设即可）。可选：用于 MiniMax 语音的 MiniMax 密钥。",
+    "minimaxHint": "添加一个基础 URL 为 https://api.minimax.io 的 MiniMax 提供商，并保留你的 OpenAI 提供商：OpenAI 负责听，MiniMax 负责思考和说话。"
   },
   "settings": {
     "title": "语音设置",
@@ -165,6 +167,9 @@
       "minimaxCascade": "MiniMax cascade"
     },
     "engineLater": "即将推出",
+    "engineHint": {
+      "minimaxCascade": "需要一个 OpenAI 密钥（负责听）和一个 MiniMax 密钥（负责思考和说话）。"
+    },
     "wakeWord": "唤醒词“Hey Jarvis”",
     "wakeWordHint": "仅在此设备上运行。关闭后请点按“说话”开始。",
     "carMode": "车载模式",
