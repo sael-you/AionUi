@@ -149,7 +149,7 @@
       "problemsTitle": "Problemas de regras",
       "enforcement": "Aplicado por: {{value}}",
       "approvalRecorded": "Aprovação do proprietário registrada",
-      "writeNote": "Nível de escrita: pode alterar dados fora desta máquina. Somente Claude, e cada chamada de ferramenta pede confirmação antes."
+      "writeNote": "Escrita: todas as ferramentas em cada CLI anexado; pode alterar dados, dinheiro, anúncios, e-mails ou posts públicos fora desta máquina. Sem confirmação automática: os agentes precisam do OK digitado do dono para cada mudança em produção (regra)."
     },
     "secret": {
       "set": "Definido",
@@ -182,7 +182,6 @@
       "environmentPlaceholder": "Escolha um ambiente",
       "tier": "Nível",
       "readTierNote": "Leitura: não altera nada fora desta máquina. As ferramentas permanecem bloqueadas até que você as permita após um teste de conexão.",
-      "writeTierNote": "Escrita: pode alterar dados de produção, dinheiro, anúncios, e-mails ou publicações públicas. Somente Claude; MCPs de escrita em produção permanecem inativos até que a aprovação por escrito do proprietário seja registrada.",
       "clis": "CLIs",
       "plainEnv": "Configurações",
       "secrets": "Segredos",
@@ -190,7 +189,7 @@
       "dormantUntilComplete": "Permanece inativo até que estes campos sejam preenchidos: {{keys}}",
       "startsDormant": "Novos MCPs começam inativos. Ative um quando seus valores estiverem definidos e o teste de conexão for aprovado.",
       "secretsNotSaved": "{{name}} foi criado, mas estes segredos não foram salvos: {{keys}}. Defina-os no painel da instância.",
-      "fullToolsNote": "Todas as ferramentas (leitura + escrita) é o padrão. O que os agentes podem fazer vem de skills e regras; uma escrita em dados de produção, pagamentos, anúncios ou e-mail ainda precisa do OK por escrito do dono para essa mudança.",
+      "fullToolsNote": "Todas as ferramentas (leitura + escrita) é o padrão. O que os agentes podem fazer vem de skills e regras. Sem confirmação automática: os agentes precisam do OK digitado do dono para cada mudança em produção (regra).",
       "patternProblem": "{{key}} não está no formato esperado."
     },
     "attach": {
@@ -223,12 +222,7 @@
       "title": "Ativar {{name}}?",
       "body": "MCPs ativos são iniciados para os projetos, assistentes e CLIs aos quais estão anexados.",
       "missing": "Preencha primeiro os valores obrigatórios: {{keys}}",
-      "productionWrite": "Este é um MCP de escrita em produção. Ele permanece inativo até que a aprovação por escrito do proprietário para a alteração exata seja registrada.",
-      "approvalLabel": "Referência de aprovação",
-      "approvalHelp": "aprovação por escrito do proprietário para a alteração exata",
-      "approvalFormat": "Formato: OA-<yyyymmdd>-<slug>",
-      "approvalRequired": "A referência de aprovação é obrigatória.",
-      "approvalInvalid": "Use o formato OA-<yyyymmdd>-<slug>, por exemplo uma data e um nome curto em minúsculas."
+      "productionWrite": "Sem confirmação automática: os agentes precisam do OK digitado do dono para cada mudança em produção (regra)."
     },
     "confirm": {
       "revoke": {

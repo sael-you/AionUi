@@ -149,7 +149,7 @@
       "problemsTitle": "Regelprobleme",
       "enforcement": "Durchgesetzt von: {{value}}",
       "approvalRecorded": "Freigabe des Eigentümers erfasst",
-      "writeNote": "Schreibstufe: kann Daten außerhalb dieses Rechners ändern. Nur Claude, und jeder Tool-Aufruf fragt vorher nach."
+      "writeNote": "Schreiben: alle Tools in jeder angehängten CLI; kann Daten, Geld, Werbung, E-Mails oder öffentliche Beiträge außerhalb dieses Rechners ändern. Keine automatische Bestätigung: Agenten brauchen für jede Produktionsänderung das getippte OK des Eigentümers (Regel)."
     },
     "secret": {
       "set": "Festgelegt",
@@ -182,7 +182,6 @@
       "environmentPlaceholder": "Umgebung auswählen",
       "tier": "Stufe",
       "readTierNote": "Lesen: ändert nichts außerhalb dieses Rechners. Tools bleiben blockiert, bis Sie sie nach einem Verbindungstest erlauben.",
-      "writeTierNote": "Schreiben: kann Produktionsdaten, Geld, Anzeigen, E-Mails oder öffentliche Beiträge ändern. Nur Claude; Produktions-MCPs mit Schreibzugriff bleiben ruhend, bis die schriftliche Freigabe des Eigentümers erfasst ist.",
       "clis": "CLIs",
       "plainEnv": "Einstellungen",
       "secrets": "Geheimnisse",
@@ -190,7 +189,7 @@
       "dormantUntilComplete": "Bleibt ruhend, bis diese Felder ausgefüllt sind: {{keys}}",
       "startsDormant": "Neue MCPs starten ruhend. Aktivieren Sie ein MCP, wenn seine Werte festgelegt sind und der Verbindungstest erfolgreich ist.",
       "secretsNotSaved": "{{name}} wurde erstellt, aber diese Geheimnisse wurden nicht gespeichert: {{keys}}. Lege sie im Instanzbereich fest.",
-      "fullToolsNote": "Standard sind alle Tools (lesen + schreiben). Was Agenten dürfen, bestimmen Skills und Regeln; ein Schreibzugriff auf Produktionsdaten, Zahlungen, Werbung oder E-Mail braucht weiterhin die schriftliche Zustimmung des Eigentümers für genau diese Änderung.",
+      "fullToolsNote": "Standard sind alle Tools (lesen + schreiben). Was Agenten dürfen, bestimmen Skills und Regeln. Keine automatische Bestätigung: Agenten brauchen für jede Produktionsänderung das getippte OK des Eigentümers (Regel).",
       "patternProblem": "{{key}} hat nicht das erwartete Format."
     },
     "attach": {
@@ -223,12 +222,7 @@
       "title": "{{name}} aktivieren?",
       "body": "Aktive MCPs werden für die Projekte, Assistenten und CLIs gestartet, an die sie angebunden sind.",
       "missing": "Füllen Sie zuerst die Pflichtwerte aus: {{keys}}",
-      "productionWrite": "Dies ist ein Produktions-MCP mit Schreibzugriff. Es bleibt ruhend, bis die schriftliche Freigabe des Eigentümers für genau diese Änderung erfasst ist.",
-      "approvalLabel": "Freigabereferenz",
-      "approvalHelp": "schriftliche Freigabe des Eigentümers für genau diese Änderung",
-      "approvalFormat": "Format: OA-<yyyymmdd>-<slug>",
-      "approvalRequired": "Die Freigabereferenz ist erforderlich.",
-      "approvalInvalid": "Verwenden Sie das Format OA-<yyyymmdd>-<slug>, zum Beispiel ein Datum und einen kurzen Namen in Kleinbuchstaben."
+      "productionWrite": "Keine automatische Bestätigung: Agenten brauchen für jede Produktionsänderung das getippte OK des Eigentümers (Regel)."
     },
     "confirm": {
       "revoke": {

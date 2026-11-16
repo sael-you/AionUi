@@ -3,8 +3,8 @@
  * Copyright 2025 AionUi (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  *
- * Activating a production write MCP needs the owner's approval reference
- * (OA-<yyyymmdd>-<slug>): a required field that never defaults.
+ * D50: activating a production write MCP is not gated on an approval
+ * reference; the modal states the rule (the owner's typed OK per change).
  */
 
 import React from 'react';
@@ -60,43 +60,22 @@ beforeAll(() => {
 afterEach(() => cleanup());
 
 const okButton = () => screen.getByText('mcp.market.actions.activate').closest('button') as HTMLButtonElement;
-const approvalInput = () => document.getElementById('mcp-market-approval-ref') as HTMLInputElement | null;
+const approvalInput = () => document.getElementById('mcp-market-approval-ref');
 
 describe('ActivateModal', () => {
-  it('shows a required, empty approval field with the owner-approval help for production write', () => {
-    // Even with a recorded approval on the row, the field starts empty.
-    render(
-      <ActivateModal instance={instance({ approval_ref: 'OA-20261101-old' })} onCancel={vi.fn()} onConfirm={vi.fn()} />
-    );
-    const input = approvalInput();
-    expect(input).not.toBeNull();
-    expect(input!.value).toBe('');
-    expect(input!.getAttribute('aria-required')).toBe('true');
-    expect(screen.getByText(/mcp\.market\.activate\.approvalHelp/)).toBeInTheDocument();
-    expect(okButton()).toBeDisabled();
-  });
-
-  it('keeps Activate disabled for a malformed reference and sends a valid one', async () => {
+  it('activates a production write MCP without an approval field and states the rule', async () => {
     const onConfirm = vi.fn(() => Promise.resolve());
     render(<ActivateModal instance={instance()} onCancel={vi.fn()} onConfirm={onConfirm} />);
-
-    fireEvent.change(approvalInput()!, { target: { value: 'approved' } });
-    fireEvent.blur(approvalInput()!);
-    expect(okButton()).toBeDisabled();
-    expect(screen.getByText('mcp.market.activate.approvalInvalid')).toBeInTheDocument();
-
-    fireEvent.change(approvalInput()!, { target: { value: 'OA-20261115-paddle-prod-write' } });
+    expect(approvalInput()).toBeNull();
+    expect(screen.getByText('mcp.market.activate.productionWrite')).toBeInTheDocument();
     expect(okButton()).not.toBeDisabled();
     fireEvent.click(okButton());
-    await waitFor(() => expect(onConfirm).toHaveBeenCalledWith('OA-20261115-paddle-prod-write'));
+    await waitFor(() => expect(onConfirm).toHaveBeenCalled());
   });
 
-  it('asks no approval for a non-production write or a read instance', async () => {
-    const onConfirm = vi.fn(() => Promise.resolve());
-    render(<ActivateModal instance={instance({ environment: 'sandbox' })} onCancel={vi.fn()} onConfirm={onConfirm} />);
-    expect(approvalInput()).toBeNull();
-    fireEvent.click(okButton());
-    await waitFor(() => expect(onConfirm).toHaveBeenCalledWith(undefined));
+  it('shows no production rule for a non-production write or a read instance', () => {
+    render(<ActivateModal instance={instance({ environment: 'sandbox' })} onCancel={vi.fn()} onConfirm={vi.fn()} />);
+    expect(screen.queryByText('mcp.market.activate.productionWrite')).toBeNull();
   });
 
   it('blocks activation while required values are missing', () => {

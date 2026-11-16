@@ -149,7 +149,7 @@
       "problemsTitle": "Problèmes de règles",
       "enforcement": "Appliqué par : {{value}}",
       "approvalRecorded": "Approbation du propriétaire enregistrée",
-      "writeNote": "Niveau écriture : peut modifier des données en dehors de cette machine. Claude uniquement, et chaque appel d'outil demande d'abord confirmation."
+      "writeNote": "Écriture : tous les outils sur chaque CLI rattachée ; peut modifier des données, de l'argent, des publicités, des e-mails ou des publications publiques hors de cette machine. Pas de confirmation automatique : les agents doivent obtenir l'accord tapé du propriétaire pour chaque changement en production (règle)."
     },
     "secret": {
       "set": "Défini",
@@ -182,7 +182,6 @@
       "environmentPlaceholder": "Choisissez un environnement",
       "tier": "Niveau",
       "readTierNote": "Lecture : ne modifie rien en dehors de cette machine. Les outils restent bloqués jusqu'à ce que vous les autorisiez après un test de connexion.",
-      "writeTierNote": "Écriture : peut modifier des données de production, de l'argent, des publicités, des e-mails ou des publications publiques. Claude uniquement ; les MCP d'écriture en production restent en veille jusqu'à l'enregistrement de l'approbation écrite du propriétaire.",
       "clis": "CLI",
       "plainEnv": "Paramètres",
       "secrets": "Secrets",
@@ -190,7 +189,7 @@
       "dormantUntilComplete": "Reste en veille jusqu'à ce que ces champs soient remplis : {{keys}}",
       "startsDormant": "Les nouveaux MCP démarrent en veille. Activez-en un lorsque ses valeurs sont définies et que le test de connexion réussit.",
       "secretsNotSaved": "{{name}} a été créé, mais ces secrets n'ont pas été enregistrés : {{keys}}. Définissez-les dans le panneau de l'instance.",
-      "fullToolsNote": "Par défaut, tous les outils (lecture + écriture). Ce que les agents peuvent faire dépend des skills et des règles ; une écriture sur des données de production, des paiements, de la publicité ou des e-mails exige toujours l'accord écrit du propriétaire pour ce changement.",
+      "fullToolsNote": "Par défaut, tous les outils (lecture + écriture). Ce que les agents peuvent faire dépend des skills et des règles. Pas de confirmation automatique : les agents doivent obtenir l'accord tapé du propriétaire pour chaque changement en production (règle).",
       "patternProblem": "{{key}} n'a pas le format attendu."
     },
     "attach": {
@@ -223,12 +222,7 @@
       "title": "Activer {{name}} ?",
       "body": "Les MCP actifs sont démarrés pour les projets, assistants et CLI auxquels ils sont rattachés.",
       "missing": "Remplissez d'abord les valeurs obligatoires : {{keys}}",
-      "productionWrite": "Il s'agit d'un MCP d'écriture en production. Il reste en veille jusqu'à l'enregistrement de l'approbation écrite du propriétaire pour la modification exacte.",
-      "approvalLabel": "Référence d'approbation",
-      "approvalHelp": "approbation écrite du propriétaire pour la modification exacte",
-      "approvalFormat": "Format : OA-<yyyymmdd>-<slug>",
-      "approvalRequired": "La référence d'approbation est obligatoire.",
-      "approvalInvalid": "Utilisez le format OA-<yyyymmdd>-<slug>, par exemple une date et un nom court en minuscules."
+      "productionWrite": "Pas de confirmation automatique : les agents doivent obtenir l'accord tapé du propriétaire pour chaque changement en production (règle)."
     },
     "confirm": {
       "revoke": {

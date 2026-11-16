@@ -149,7 +149,7 @@
       "problemsTitle": "Problemas de reglas",
       "enforcement": "Aplicado por: {{value}}",
       "approvalRecorded": "Aprobación del propietario registrada",
-      "writeNote": "Nivel de escritura: puede cambiar datos fuera de esta máquina. Solo Claude, y cada llamada a una herramienta pide confirmación antes."
+      "writeNote": "Escritura: todas las herramientas en cada CLI adjunta; puede cambiar datos, dinero, anuncios, correos o publicaciones públicas fuera de esta máquina. Sin confirmación automática: los agentes necesitan el OK escrito del propietario para cada cambio en producción (regla)."
     },
     "secret": {
       "set": "Definido",
@@ -182,7 +182,6 @@
       "environmentPlaceholder": "Elige un entorno",
       "tier": "Nivel",
       "readTierNote": "Lectura: no cambia nada fuera de esta máquina. Las herramientas permanecen bloqueadas hasta que las permitas tras una prueba de conexión.",
-      "writeTierNote": "Escritura: puede cambiar datos de producción, dinero, anuncios, correo o publicaciones públicas. Solo Claude; los MCP de escritura en producción permanecen inactivos hasta que se registre la aprobación por escrito del propietario.",
       "clis": "CLI",
       "plainEnv": "Configuración",
       "secrets": "Secretos",
@@ -190,7 +189,7 @@
       "dormantUntilComplete": "Permanece inactivo hasta que se rellenen estos campos: {{keys}}",
       "startsDormant": "Los MCP nuevos empiezan inactivos. Activa uno cuando sus valores estén definidos y la prueba de conexión sea correcta.",
       "secretsNotSaved": "Se creó {{name}}, pero estos secretos no se guardaron: {{keys}}. Configúralos en el panel de la instancia.",
-      "fullToolsNote": "Por defecto, todas las herramientas (lectura + escritura). Lo que pueden hacer los agentes lo deciden las skills y las reglas; escribir en datos de producción, pagos, anuncios o correo sigue necesitando el OK por escrito del propietario para ese cambio.",
+      "fullToolsNote": "Por defecto, todas las herramientas (lectura + escritura). Lo que pueden hacer los agentes lo deciden las skills y las reglas. Sin confirmación automática: los agentes necesitan el OK escrito del propietario para cada cambio en producción (regla).",
       "patternProblem": "{{key}} no tiene el formato esperado."
     },
     "attach": {
@@ -223,12 +222,7 @@
       "title": "¿Activar {{name}}?",
       "body": "Los MCP activos se inician para los proyectos, asistentes y CLI a los que están vinculados.",
       "missing": "Rellena primero los valores obligatorios: {{keys}}",
-      "productionWrite": "Este es un MCP de escritura en producción. Permanece inactivo hasta que se registre la aprobación por escrito del propietario para el cambio exacto.",
-      "approvalLabel": "Referencia de aprobación",
-      "approvalHelp": "aprobación por escrito del propietario para el cambio exacto",
-      "approvalFormat": "Formato: OA-<yyyymmdd>-<slug>",
-      "approvalRequired": "La referencia de aprobación es obligatoria.",
-      "approvalInvalid": "Usa el formato OA-<yyyymmdd>-<slug>, por ejemplo una fecha y un nombre corto en minúsculas."
+      "productionWrite": "Sin confirmación automática: los agentes necesitan el OK escrito del propietario para cada cambio en producción (regla)."
     },
     "confirm": {
       "revoke": {

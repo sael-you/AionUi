@@ -149,7 +149,7 @@
       "problemsTitle": "Kural sorunları",
       "enforcement": "Uygulayan: {{value}}",
       "approvalRecorded": "Sahip onayı kaydedildi",
-      "writeNote": "Yazma katmanı: bu makinenin dışındaki verileri değiştirebilir. Yalnızca Claude; her araç çağrısından önce onay istenir."
+      "writeNote": "Yazma: bağlı her CLI'da tüm araçlar; bu makinenin dışındaki verileri, parayı, reklamları, e-postaları veya herkese açık gönderileri değiştirebilir. Otomatik onay yok: ajanlar her üretim değişikliği için sahibin yazılı (yazarak verilen) onayını almalıdır (kural)."
     },
     "secret": {
       "set": "Ayarlandı",
@@ -182,7 +182,6 @@
       "environmentPlaceholder": "Bir ortam seçin",
       "tier": "Katman",
       "readTierNote": "Okuma: bu makinenin dışında hiçbir şeyi değiştirmez. Araçlar, bağlantı testinden sonra siz izin verene kadar engelli kalır.",
-      "writeTierNote": "Yazma: üretim verilerini, parayı, reklamları, e-postayı veya herkese açık gönderileri değiştirebilir. Yalnızca Claude; üretim yazma MCP'leri, sahibin yazılı onayı kaydedilene kadar uykuda kalır.",
       "clis": "CLI'ler",
       "plainEnv": "Ayarlar",
       "secrets": "Gizli anahtarlar",
@@ -190,7 +189,7 @@
       "dormantUntilComplete": "Şunlar doldurulana kadar uykuda kalır: {{keys}}",
       "startsDormant": "Yeni MCP'ler uykuda başlar. Değerleri ayarlanıp bağlantı testi geçtiğinde etkinleştirin.",
       "secretsNotSaved": "{{name}} oluşturuldu ancak şu gizli değerler kaydedilmedi: {{keys}}. Bunları örnek panelinde ayarlayın.",
-      "fullToolsNote": "Varsayılan: tüm araçlar (okuma + yazma). Ajanların ne yapabileceğini beceriler ve kurallar belirler; üretim verisine, ödemelere, reklamlara veya e-postaya yazmak yine de her değişiklik için sahibin yazılı onayını gerektirir.",
+      "fullToolsNote": "Varsayılan: tüm araçlar (okuma + yazma). Ajanların ne yapabileceğini beceriler ve kurallar belirler. Otomatik onay yok: ajanlar her üretim değişikliği için sahibin yazılı (yazarak verilen) onayını almalıdır (kural).",
       "patternProblem": "{{key}} beklenen biçimde değil."
     },
     "attach": {
@@ -223,12 +222,7 @@
       "title": "{{name}} etkinleştirilsin mi?",
       "body": "Etkin MCP'ler, bağlı oldukları projeler, asistanlar ve CLI'ler için başlatılır.",
       "missing": "Önce zorunlu değerleri doldurun: {{keys}}",
-      "productionWrite": "Bu bir üretim yazma MCP'sidir. Sahibin tam değişikliğe ilişkin yazılı onayı kaydedilene kadar uykuda kalır.",
-      "approvalLabel": "Onay referansı",
-      "approvalHelp": "sahibin tam değişikliğe ilişkin yazılı onayı",
-      "approvalFormat": "Biçim: OA-<yyyymmdd>-<slug>",
-      "approvalRequired": "Onay referansı zorunludur.",
-      "approvalInvalid": "OA-<yyyymmdd>-<slug> biçimini kullanın, örneğin bir tarih ve kısa, küçük harfli bir ad."
+      "productionWrite": "Otomatik onay yok: ajanlar her üretim değişikliği için sahibin yazılı (yazarak verilen) onayını almalıdır (kural)."
     },
     "confirm": {
       "revoke": {
