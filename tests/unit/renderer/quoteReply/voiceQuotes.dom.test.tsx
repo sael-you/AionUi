@@ -63,13 +63,13 @@ const ack = (consumed: boolean, reason: 'posted' | 'too_large' | 'cleared'): Ser
 
 describe('voice protocol for stacked quotes (C32)', () => {
   it('reads the capability on the hello replies and the attach ack', () => {
-    const ready = decodeFrame(
+    const decodedReady = decodeFrame(
       JSON.stringify({
         name: 'voice.ready',
         data: { voiceSessionId: 'vs', engine: 'e', model: 'm', capabilities: { attachQuotes: true } },
       })
     );
-    expect(ready).toMatchObject({ name: 'voice.ready', attachQuotes: true });
+    expect(decodedReady).toMatchObject({ name: 'voice.ready', attachQuotes: true });
     const armed = decodeFrame(JSON.stringify({ name: 'voice.state', data: { state: 'armed', capabilities: {} } }));
     expect(armed).not.toHaveProperty('attachQuotes');
     expect(
