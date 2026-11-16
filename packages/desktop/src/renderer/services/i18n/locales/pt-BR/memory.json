@@ -1,0 +1,68 @@
+{
+  "title": "Memória",
+  "pageTitle": "Memória · {{project}}",
+  "openMemory": "Revisar memória",
+  "projectPicker": "Projeto",
+  "noProjects": "Ainda não há projetos.",
+  "loadFailed": "Não foi possível carregar a memória.",
+  "noMemory": "O Claude ainda não tem memória deste projeto.",
+  "searchPlaceholder": "Pesquisar memórias",
+  "searchContents": "Pesquisar também no conteúdo",
+  "filters": {
+    "type": "Tipo",
+    "allTypes": "Todos os tipos",
+    "stale": "Talvez desatualizada",
+    "issues": "Com problemas"
+  },
+  "type": {
+    "user": "Usuário",
+    "feedback": "Feedback",
+    "project": "Projeto",
+    "reference": "Referência",
+    "other": "Outros"
+  },
+  "review": {
+    "button": "Revisar com IA",
+    "buttonSelected": "Revisar {{count}} arquivos com IA",
+    "buttonSelected_one": "Revisar {{count}} arquivo com IA",
+    "buttonSelected_other": "Revisar {{count}} arquivos com IA",
+    "noClaude": "O assistente Claude Code não está disponível.",
+    "failed": "Não foi possível iniciar a conversa de revisão.",
+    "conversationName": "Revisão da memória"
+  },
+  "listLabel": "Arquivos de memória",
+  "summary": "{{count}} memórias · índice {{lines}} linhas",
+  "summary_one": "{{count}} memória · índice {{lines}} linhas",
+  "summary_other": "{{count}} memórias · índice {{lines}} linhas",
+  "lint": {
+    "duplicate": "Duplicada",
+    "not_in_index": "Fora do índice",
+    "missing_file": "Arquivo ausente",
+    "broken_link": "Link quebrado",
+    "stale": "Talvez desatualizada",
+    "missingFiles": "O índice cita {{count}} arquivos ausentes: {{files}}",
+    "missingFiles_one": "O índice cita {{count}} arquivo ausente: {{files}}",
+    "missingFiles_other": "O índice cita {{count}} arquivos ausentes: {{files}}"
+  },
+  "noMatches": "Nenhuma memória corresponde aos filtros.",
+  "pickOne": "Selecione uma memória para lê-la.",
+  "selectForReview": "Selecionar {{name}} para a revisão com IA",
+  "detail": {
+    "back": "Voltar à lista",
+    "modified": "Modificado em {{date}}",
+    "frontmatter": "Metadados",
+    "body": "Conteúdo (markdown)",
+    "links": "Links",
+    "loadFailed": "Não foi possível carregar esta memória.",
+    "saveFailed": "Falha ao salvar",
+    "conflict": "Esta memória mudou nesse meio-tempo (o agente pode tê-la escrito). Recarregue e edite novamente.",
+    "deleted": "{{file}} excluído",
+    "deletedHint": "A linha do índice também foi removida. Uma cópia é mantida por 30 dias.",
+    "undo": "Desfazer",
+    "restoreFailed": "Falha ao restaurar",
+    "deleteFailed": "Falha ao excluir",
+    "size": "{{count}} bytes",
+    "size_one": "{{count}} byte",
+    "size_other": "{{count}} bytes"
+  }
+}

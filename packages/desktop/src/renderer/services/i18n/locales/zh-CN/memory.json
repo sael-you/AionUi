@@ -1,0 +1,68 @@
+{
+  "title": "记忆",
+  "pageTitle": "记忆 · {{project}}",
+  "openMemory": "查看记忆",
+  "projectPicker": "项目",
+  "noProjects": "还没有项目。",
+  "loadFailed": "无法加载记忆。",
+  "noMemory": "Claude 还没有此项目的记忆。",
+  "searchPlaceholder": "搜索记忆",
+  "searchContents": "同时搜索内容",
+  "filters": {
+    "type": "类型",
+    "allTypes": "全部类型",
+    "stale": "可能过时",
+    "issues": "有问题"
+  },
+  "type": {
+    "user": "用户",
+    "feedback": "反馈",
+    "project": "项目",
+    "reference": "参考",
+    "other": "其他"
+  },
+  "review": {
+    "button": "让 AI 审查",
+    "buttonSelected": "让 AI 审查 {{count}} 个文件",
+    "buttonSelected_one": "让 AI 审查 {{count}} 个文件",
+    "buttonSelected_other": "让 AI 审查 {{count}} 个文件",
+    "noClaude": "Claude Code 助手不可用。",
+    "failed": "无法开始审查对话。",
+    "conversationName": "记忆审查"
+  },
+  "listLabel": "记忆文件",
+  "summary": "{{count}} 条记忆 · 索引 {{lines}} 行",
+  "summary_one": "{{count}} 条记忆 · 索引 {{lines}} 行",
+  "summary_other": "{{count}} 条记忆 · 索引 {{lines}} 行",
+  "lint": {
+    "duplicate": "重复",
+    "not_in_index": "不在索引中",
+    "missing_file": "文件缺失",
+    "broken_link": "链接失效",
+    "stale": "可能过时",
+    "missingFiles": "索引中有 {{count}} 个缺失的文件：{{files}}",
+    "missingFiles_one": "索引中有 {{count}} 个缺失的文件：{{files}}",
+    "missingFiles_other": "索引中有 {{count}} 个缺失的文件：{{files}}"
+  },
+  "noMatches": "没有符合筛选条件的记忆。",
+  "pickOne": "选择一条记忆以查看。",
+  "selectForReview": "选择 {{name}} 进行 AI 审查",
+  "detail": {
+    "back": "返回列表",
+    "modified": "修改于 {{date}}",
+    "frontmatter": "前置元数据",
+    "body": "内容（Markdown）",
+    "links": "链接",
+    "loadFailed": "无法加载此记忆。",
+    "saveFailed": "保存失败",
+    "conflict": "此记忆已在期间被修改（可能是代理写入的）。请重新加载后再编辑。",
+    "deleted": "已删除 {{file}}",
+    "deletedHint": "其索引行也已删除。副本会保留 30 天。",
+    "undo": "撤销",
+    "restoreFailed": "恢复失败",
+    "deleteFailed": "删除失败",
+    "size": "{{count}} 字节",
+    "size_one": "{{count}} 字节",
+    "size_other": "{{count}} 字节"
+  }
+}

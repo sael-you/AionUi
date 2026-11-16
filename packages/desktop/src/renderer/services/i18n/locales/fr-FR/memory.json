@@ -1,0 +1,68 @@
+{
+  "title": "Mémoire",
+  "pageTitle": "Mémoire · {{project}}",
+  "openMemory": "Examiner la mémoire",
+  "projectPicker": "Projet",
+  "noProjects": "Aucun projet pour l'instant.",
+  "loadFailed": "Impossible de charger la mémoire.",
+  "noMemory": "Claude n'a pas encore de mémoire pour ce projet.",
+  "searchPlaceholder": "Rechercher dans la mémoire",
+  "searchContents": "Rechercher aussi dans le contenu",
+  "filters": {
+    "type": "Type",
+    "allTypes": "Tous les types",
+    "stale": "Peut-être obsolète",
+    "issues": "Avec problèmes"
+  },
+  "type": {
+    "user": "Utilisateur",
+    "feedback": "Retours",
+    "project": "Projet",
+    "reference": "Référence",
+    "other": "Autres"
+  },
+  "review": {
+    "button": "Examiner avec l'IA",
+    "buttonSelected": "Examiner {{count}} fichiers avec l'IA",
+    "buttonSelected_one": "Examiner {{count}} fichier avec l'IA",
+    "buttonSelected_other": "Examiner {{count}} fichiers avec l'IA",
+    "noClaude": "L'assistant Claude Code n'est pas disponible.",
+    "failed": "Impossible de démarrer la conversation d'examen.",
+    "conversationName": "Examen de la mémoire"
+  },
+  "listLabel": "Fichiers de mémoire",
+  "summary": "{{count}} souvenirs · index {{lines}} lignes",
+  "summary_one": "{{count}} souvenir · index {{lines}} lignes",
+  "summary_other": "{{count}} souvenirs · index {{lines}} lignes",
+  "lint": {
+    "duplicate": "Doublon",
+    "not_in_index": "Absent de l'index",
+    "missing_file": "Fichier manquant",
+    "broken_link": "Lien cassé",
+    "stale": "Peut-être obsolète",
+    "missingFiles": "L'index cite {{count}} fichiers manquants : {{files}}",
+    "missingFiles_one": "L'index cite {{count}} fichier manquant : {{files}}",
+    "missingFiles_other": "L'index cite {{count}} fichiers manquants : {{files}}"
+  },
+  "noMatches": "Aucun souvenir ne correspond aux filtres.",
+  "pickOne": "Sélectionnez un souvenir pour le lire.",
+  "selectForReview": "Sélectionner {{name}} pour l'examen par l'IA",
+  "detail": {
+    "back": "Retour à la liste",
+    "modified": "Modifié le {{date}}",
+    "frontmatter": "Métadonnées",
+    "body": "Contenu (markdown)",
+    "links": "Liens",
+    "loadFailed": "Impossible de charger ce souvenir.",
+    "saveFailed": "Échec de l'enregistrement",
+    "conflict": "Ce souvenir a changé entre-temps (l'agent l'a peut-être écrit). Rechargez puis modifiez à nouveau.",
+    "deleted": "{{file}} supprimé",
+    "deletedHint": "Sa ligne d'index a aussi été supprimée. Une copie est conservée 30 jours.",
+    "undo": "Annuler",
+    "restoreFailed": "Échec de la restauration",
+    "deleteFailed": "Échec de la suppression",
+    "size": "{{count}} octets",
+    "size_one": "{{count}} octet",
+    "size_other": "{{count}} octets"
+  }
+}

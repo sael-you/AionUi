@@ -1,0 +1,68 @@
+{
+  "title": "Bellek",
+  "pageTitle": "Bellek · {{project}}",
+  "openMemory": "Belleği incele",
+  "projectPicker": "Proje",
+  "noProjects": "Henüz proje yok.",
+  "loadFailed": "Bellek yüklenemedi.",
+  "noMemory": "Claude'un bu proje için henüz belleği yok.",
+  "searchPlaceholder": "Bellekte ara",
+  "searchContents": "İçerikte de ara",
+  "filters": {
+    "type": "Tür",
+    "allTypes": "Tüm türler",
+    "stale": "Eskimiş olabilir",
+    "issues": "Sorunlu"
+  },
+  "type": {
+    "user": "Kullanıcı",
+    "feedback": "Geri bildirim",
+    "project": "Proje",
+    "reference": "Başvuru",
+    "other": "Diğer"
+  },
+  "review": {
+    "button": "Yapay zekâ ile incele",
+    "buttonSelected": "{{count}} dosyayı yapay zekâ ile incele",
+    "buttonSelected_one": "{{count}} dosyayı yapay zekâ ile incele",
+    "buttonSelected_other": "{{count}} dosyayı yapay zekâ ile incele",
+    "noClaude": "Claude Code asistanı kullanılamıyor.",
+    "failed": "İnceleme sohbeti başlatılamadı.",
+    "conversationName": "Bellek incelemesi"
+  },
+  "listLabel": "Bellek dosyaları",
+  "summary": "{{count}} bellek · dizin {{lines}} satır",
+  "summary_one": "{{count}} bellek · dizin {{lines}} satır",
+  "summary_other": "{{count}} bellek · dizin {{lines}} satır",
+  "lint": {
+    "duplicate": "Yinelenen",
+    "not_in_index": "Dizinde yok",
+    "missing_file": "Eksik dosya",
+    "broken_link": "Bozuk bağlantı",
+    "stale": "Eskimiş olabilir",
+    "missingFiles": "Dizin {{count}} eksik dosyayı gösteriyor: {{files}}",
+    "missingFiles_one": "Dizin {{count}} eksik dosyayı gösteriyor: {{files}}",
+    "missingFiles_other": "Dizin {{count}} eksik dosyayı gösteriyor: {{files}}"
+  },
+  "noMatches": "Filtrelerle eşleşen bellek yok.",
+  "pickOne": "Okumak için bir bellek seçin.",
+  "selectForReview": "{{name}} öğesini yapay zekâ incelemesi için seç",
+  "detail": {
+    "back": "Listeye dön",
+    "modified": "Değiştirildi {{date}}",
+    "frontmatter": "Ön bilgi",
+    "body": "İçerik (markdown)",
+    "links": "Bağlantılar",
+    "loadFailed": "Bu bellek yüklenemedi.",
+    "saveFailed": "Kaydedilemedi",
+    "conflict": "Bu bellek bu arada değişti (ajan yazmış olabilir). Yeniden yükleyip tekrar düzenleyin.",
+    "deleted": "{{file}} silindi",
+    "deletedHint": "Dizin satırı da kaldırıldı. Bir kopyası 30 gün saklanır.",
+    "undo": "Geri al",
+    "restoreFailed": "Geri yüklenemedi",
+    "deleteFailed": "Silinemedi",
+    "size": "{{count}} bayt",
+    "size_one": "{{count}} bayt",
+    "size_other": "{{count}} bayt"
+  }
+}

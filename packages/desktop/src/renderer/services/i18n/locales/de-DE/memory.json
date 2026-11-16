@@ -1,0 +1,68 @@
+{
+  "title": "Gedächtnis",
+  "pageTitle": "Gedächtnis · {{project}}",
+  "openMemory": "Gedächtnis prüfen",
+  "projectPicker": "Projekt",
+  "noProjects": "Noch keine Projekte.",
+  "loadFailed": "Das Gedächtnis konnte nicht geladen werden.",
+  "noMemory": "Claude hat für dieses Projekt noch kein Gedächtnis.",
+  "searchPlaceholder": "Erinnerungen suchen",
+  "searchContents": "Auch Inhalte durchsuchen",
+  "filters": {
+    "type": "Typ",
+    "allTypes": "Alle Typen",
+    "stale": "Evtl. veraltet",
+    "issues": "Mit Problemen"
+  },
+  "type": {
+    "user": "Nutzer",
+    "feedback": "Feedback",
+    "project": "Projekt",
+    "reference": "Referenz",
+    "other": "Sonstige"
+  },
+  "review": {
+    "button": "Mit KI prüfen",
+    "buttonSelected": "{{count}} Dateien mit KI prüfen",
+    "buttonSelected_one": "{{count}} Datei mit KI prüfen",
+    "buttonSelected_other": "{{count}} Dateien mit KI prüfen",
+    "noClaude": "Der Assistent Claude Code ist nicht verfügbar.",
+    "failed": "Die Prüfungsunterhaltung konnte nicht gestartet werden.",
+    "conversationName": "Gedächtnisprüfung"
+  },
+  "listLabel": "Gedächtnisdateien",
+  "summary": "{{count}} Erinnerungen · Index {{lines}} Zeilen",
+  "summary_one": "{{count}} Erinnerung · Index {{lines}} Zeilen",
+  "summary_other": "{{count}} Erinnerungen · Index {{lines}} Zeilen",
+  "lint": {
+    "duplicate": "Doppelt",
+    "not_in_index": "Nicht im Index",
+    "missing_file": "Datei fehlt",
+    "broken_link": "Defekter Link",
+    "stale": "Evtl. veraltet",
+    "missingFiles": "Der Index nennt {{count}} fehlende Dateien: {{files}}",
+    "missingFiles_one": "Der Index nennt {{count}} fehlende Datei: {{files}}",
+    "missingFiles_other": "Der Index nennt {{count}} fehlende Dateien: {{files}}"
+  },
+  "noMatches": "Keine Erinnerung passt zu den Filtern.",
+  "pickOne": "Wähle eine Erinnerung zum Lesen.",
+  "selectForReview": "{{name}} für die KI-Prüfung auswählen",
+  "detail": {
+    "back": "Zurück zur Liste",
+    "modified": "Geändert {{date}}",
+    "frontmatter": "Frontmatter",
+    "body": "Inhalt (Markdown)",
+    "links": "Links",
+    "loadFailed": "Diese Erinnerung konnte nicht geladen werden.",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "conflict": "Diese Erinnerung wurde inzwischen geändert (vielleicht vom Agenten). Neu laden und erneut bearbeiten.",
+    "deleted": "{{file}} gelöscht",
+    "deletedHint": "Die Indexzeile wurde ebenfalls entfernt. Eine Kopie bleibt 30 Tage erhalten.",
+    "undo": "Rückgängig",
+    "restoreFailed": "Wiederherstellen fehlgeschlagen",
+    "deleteFailed": "Löschen fehlgeschlagen",
+    "size": "{{count}} Byte",
+    "size_one": "{{count}} Byte",
+    "size_other": "{{count}} Byte"
+  }
+}

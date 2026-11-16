@@ -1,0 +1,68 @@
+{
+  "title": "Memory",
+  "pageTitle": "Memory · {{project}}",
+  "openMemory": "Review memory",
+  "projectPicker": "Project",
+  "noProjects": "No projects yet.",
+  "loadFailed": "The memory could not be loaded.",
+  "noMemory": "Claude has no memory for this project yet.",
+  "searchPlaceholder": "Search memories",
+  "searchContents": "Search contents too",
+  "filters": {
+    "type": "Type",
+    "allTypes": "All types",
+    "stale": "Maybe stale",
+    "issues": "With issues"
+  },
+  "type": {
+    "user": "User",
+    "feedback": "Feedback",
+    "project": "Project",
+    "reference": "Reference",
+    "other": "Other"
+  },
+  "review": {
+    "button": "Review with AI",
+    "buttonSelected": "Review {{count}} files with AI",
+    "buttonSelected_one": "Review {{count}} file with AI",
+    "buttonSelected_other": "Review {{count}} files with AI",
+    "noClaude": "Claude Code is not available as an assistant.",
+    "failed": "The review conversation could not be started.",
+    "conversationName": "Memory review"
+  },
+  "listLabel": "Memory files",
+  "summary": "{{count}} memories · index {{lines}} lines",
+  "summary_one": "{{count}} memory · index {{lines}} lines",
+  "summary_other": "{{count}} memories · index {{lines}} lines",
+  "lint": {
+    "duplicate": "Duplicate",
+    "not_in_index": "Not in index",
+    "missing_file": "Missing file",
+    "broken_link": "Broken link",
+    "stale": "Maybe stale",
+    "missingFiles": "The index names {{count}} missing files: {{files}}",
+    "missingFiles_one": "The index names {{count}} missing file: {{files}}",
+    "missingFiles_other": "The index names {{count}} missing files: {{files}}"
+  },
+  "noMatches": "No memory matches the filters.",
+  "pickOne": "Select a memory to read it.",
+  "selectForReview": "Select {{name}} for the AI review",
+  "detail": {
+    "back": "Back to the list",
+    "modified": "Modified {{date}}",
+    "frontmatter": "Frontmatter",
+    "body": "Content (markdown)",
+    "links": "Links",
+    "loadFailed": "This memory could not be loaded.",
+    "saveFailed": "Saving failed",
+    "conflict": "This memory changed meanwhile (the agent may have written it). Reload, then edit again.",
+    "deleted": "Deleted {{file}}",
+    "deletedHint": "Its index line was removed too. A copy is kept for 30 days.",
+    "undo": "Undo",
+    "restoreFailed": "Restoring failed",
+    "deleteFailed": "Deleting failed",
+    "size": "{{count}} bytes",
+    "size_one": "{{count}} byte",
+    "size_other": "{{count}} bytes"
+  }
+}
