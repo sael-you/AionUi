@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { VoiceController, SOCKET_DEAD_MAN_MS, DRAFT_LINGER_MS } from '@/renderer/voice/core/VoiceController';
+import {
+  VoiceController,
+  SOCKET_DEAD_MAN_MS,
+  DRAFT_LINGER_MS,
+  REPLY_SETTLE_MS,
+} from '@/renderer/voice/core/VoiceController';
 import type { VoiceDraft } from '@/renderer/voice/core/types';
 import { VoiceBusyError } from '@/renderer/voice/net/voiceApi';
 import { createFakeEffects, flush } from '../fakes';
@@ -595,6 +600,91 @@ describe('VoiceController — follow-ups, budget, errors', () => {
       f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'listening', reason: null });
       expect(f.clips.stop).not.toHaveBeenCalled();
       playing.resolve({ completed: true, tStart: 1, tEnd: 2 });
+    });
+  });
+
+  describe('minimax-cascade turn end and unvoiced lines (TASK-105)', () => {
+    const reply = (clipId: string | null, line = 'Sure.') =>
+      ({ name: 'voice.followUp', voiceSessionId: 'vs-1', conversationId: '', status: 'reply', line, clipId }) as const;
+    const finished = { name: 'voice.assistantAudioFinished', voiceSessionId: 'vs-1', responseId: 'r1' } as const;
+
+    async function cascadeCall() {
+      const { f, c } = await armed();
+      f.state.wakeEvents?.onWake(9.2, 0.9);
+      await flush();
+      f.frame({ name: 'voice.ready', voiceSessionId: 'vs-1', engine: 'minimax-cascade', model: 'm' });
+      return { f, c };
+    }
+    const yourTurns = (f: Awaited<ReturnType<typeof cascadeCall>>['f']) =>
+      f.earcons().filter((name) => name === 'yourTurn').length;
+
+    it('"your turn" waits until the last reply clip has finished', async () => {
+      const { f } = await cascadeCall();
+      const first = Promise.withResolvers<{ completed: boolean; tStart: number; tEnd: number }>();
+      f.clips.play.mockImplementationOnce(() => first.promise);
+      f.frame(reply('k1'));
+      await vi.advanceTimersByTimeAsync(100);
+      // The brain is done while the first sentence still plays and the second is in synthesis.
+      f.frame(finished);
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS * 3);
+      expect(yourTurns(f)).toBe(0);
+      first.resolve({ completed: true, tStart: 1, tEnd: 2 });
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS / 2);
+      f.frame(reply('k2', 'Done.'));
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS - 1);
+      expect(f.clips.play).toHaveBeenCalledTimes(2);
+      expect(yourTurns(f)).toBe(0);
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS);
+      expect(yourTurns(f)).toBe(1);
+    });
+
+    it('"your turn" also waits for a first clip that arrives after the brain is done', async () => {
+      const { f } = await cascadeCall();
+      f.frame(finished);
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS / 2);
+      f.frame(reply('k1'));
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS - 1);
+      expect(f.clips.play).toHaveBeenCalledTimes(1);
+      expect(yourTurns(f)).toBe(0);
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS);
+      expect(yourTurns(f)).toBe(1);
+    });
+
+    it('a barge-in cancels the pending "your turn"', async () => {
+      const { f } = await cascadeCall();
+      f.frame(reply('k1'));
+      f.frame(finished);
+      f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'listening', reason: null });
+      // That `listening` ended the answer; now you start to speak.
+      f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'listening', reason: null });
+      await vi.advanceTimersByTimeAsync(REPLY_SETTLE_MS * 3);
+      expect(yourTurns(f)).toBe(0);
+    });
+
+    it('the realtime engine keeps the immediate "your turn"', async () => {
+      const { f } = await inCall();
+      f.frame(finished);
+      await vi.advanceTimersByTimeAsync(100);
+      expect(f.earcons()).toContain('yourTurn');
+    });
+
+    it("a reply line without a clip is shown as Jarvis's caption, then replaced by the transcript", async () => {
+      const { f, c } = await cascadeCall();
+      f.frame(reply(null, 'Say "send it" to send.'));
+      f.frame(reply(null, 'Or tap the card.'));
+      expect(c.store.getSnapshot().captions.at(-1)).toMatchObject({
+        role: 'assistant',
+        text: 'Say "send it" to send. Or tap the card.',
+        final: false,
+      });
+      const answer = 'Here is the draft. Say "send it" to send. Or tap the card.';
+      f.frame({ name: 'voice.caption', voiceSessionId: 'vs-1', role: 'assistant', text: answer, final: true });
+      const assistant = c.store.getSnapshot().captions.filter((caption) => caption.role === 'assistant');
+      expect(assistant).toEqual([expect.objectContaining({ text: answer, final: true })]);
+      // A line that arrives after the transcript (slow synthesis that failed) is not shown twice.
+      f.frame(reply(null, 'Or tap the card.'));
+      expect(c.store.getSnapshot().captions.filter((caption) => caption.role === 'assistant')).toHaveLength(1);
+      expect(c.store.getSnapshot().followUps).toEqual([]);
     });
   });
 
