@@ -40,7 +40,7 @@ const VoiceComposerButton: React.FC<VoiceComposerButtonProps> = ({
   if (!available) return null;
   return (
     // While voice mode is on, the bar above the composer explains itself: no tooltip over its buttons.
-    <Tooltip content={label} mini disabled={pressed}>
+    <Tooltip content={label} mini {...(pressed ? { popupVisible: false } : {})}>
       <Button
         type='text'
         shape='circle'
