@@ -269,6 +269,20 @@ export type VoiceSettings = {
   provider_id?: string;
 };
 
+/** One row of `GET /api/voice/sessions` (core `VoiceSessionResponse`; times in ms). */
+export type VoiceSessionSummary = {
+  id: string;
+  engine: string;
+  model: string;
+  /** `starting` | `live` | `ended` | `failed`. */
+  state: string;
+  end_reason?: string;
+  created_at: number;
+  ready_at?: number;
+  ended_at?: number;
+  cost_usd: number;
+};
+
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
   enabled: false,
   engine: 'openai-realtime',

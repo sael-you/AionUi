@@ -52,12 +52,13 @@ import {
   type VoiceSettings,
 } from './types';
 import { callEndPolicy } from './endReasons';
+import { todayStats, type VoiceTodayStats } from './todayStats';
 import { MAX_CAPTIONS, MAX_FOLLOW_UPS, VoiceStore } from './voiceStore';
 import { outputLatencyOf } from '../audio/clipPlayer';
 import type { EarconName } from '../audio/earcons';
 import type { SendModeEvent } from '../capture/sendWorklet';
 import type { RealtimeCall } from '../engine/openaiRealtime';
-import { VoiceBusyError, voiceErrorCode } from '../net/voiceApi';
+import { VOICE_SESSIONS_LIMIT, VoiceBusyError, voiceErrorCode } from '../net/voiceApi';
 
 export const SOCKET_DEAD_MAN_MS = 20_000;
 export const READY_TIMEOUT_MS = 10_000;
@@ -400,6 +401,15 @@ export class VoiceController {
 
   dismissNotice(): void {
     this.store.update({ notice: null });
+  }
+
+  /** Today's calls and minutes for the settings panel; `null` when the list cannot be read. */
+  async loadTodayStats(): Promise<VoiceTodayStats | null> {
+    try {
+      return todayStats(await this.fx.api.listSessions(), this.fx.timers.now(), VOICE_SESSIONS_LIMIT);
+    } catch {
+      return null;
+    }
   }
 
   /** Fetch the settings now (settings page, arm without a cached value). */

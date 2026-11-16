@@ -181,7 +181,16 @@
     "shortcutReset": "Sıfırla",
     "loadFailed": "Ses ayarları yüklenemedi.",
     "saveFailed": "Ayar kaydedilemedi.",
-    "privacy": "Ses, bir arama başlayana kadar bu cihazda kalır ve asla saklanmaz."
+    "privacy": "Ses, bir arama başlayana kadar bu cihazda kalır ve asla saklanmaz.",
+    "today": "Bugün",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "En az {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} arama",
+    "todayCalls_one": "{{count}} arama",
+    "todayCalls_other": "{{count}} arama",
+    "todayMinutes": "{{count}} dakika",
+    "todayMinutes_one": "{{count}} dakika",
+    "todayMinutes_other": "{{count}} dakika"
   },
   "slash": {
     "description": "Ses modu: bu sohbetin ajanıyla konuş"

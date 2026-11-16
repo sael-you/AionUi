@@ -16,7 +16,12 @@
  */
 
 import { BackendHttpError, getBaseUrl, httpRequest, isBackendHttpError } from '@/common/adapter/httpBridge';
-import type { CreateVoiceSessionRequest, CreateVoiceSessionResponse, VoiceSettings } from '../core/types';
+import type {
+  CreateVoiceSessionRequest,
+  CreateVoiceSessionResponse,
+  VoiceSessionSummary,
+  VoiceSettings,
+} from '../core/types';
 import { DEFAULT_VOICE_SETTINGS } from '../core/types';
 
 /** Error raised for a 409 "busy": another device already admitted the wake (§3.6 step 1). */
@@ -69,7 +74,12 @@ export type VoiceApi = {
   createSession(body: CreateVoiceSessionRequest): Promise<CreateVoiceSessionResponse>;
   endSession(voiceSessionId: string, reason: string): Promise<void>;
   fetchClip(urlOrId: string): Promise<ArrayBuffer>;
+  /** The user's most recent sessions, newest first (core returns at most `VOICE_SESSIONS_LIMIT`). */
+  listSessions(): Promise<VoiceSessionSummary[]>;
 };
+
+/** Rows `GET /api/voice/sessions` returns at most (core `service.rs` `LIST_LIMIT`). */
+export const VOICE_SESSIONS_LIMIT = 50;
 
 const SETTINGS_PATH = '/api/voice/settings';
 
@@ -99,6 +109,9 @@ export const voiceApi: VoiceApi = {
   },
   async endSession(voiceSessionId, reason) {
     await unsafe<unknown>('POST', `/api/voice/sessions/${encodeURIComponent(voiceSessionId)}/end`, { reason });
+  },
+  async listSessions() {
+    return (await httpRequest<VoiceSessionSummary[]>('GET', '/api/voice/sessions')) ?? [];
   },
   async fetchClip(urlOrId) {
     const path = resolveClipPath(urlOrId);

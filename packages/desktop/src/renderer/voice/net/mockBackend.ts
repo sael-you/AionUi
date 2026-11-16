@@ -226,6 +226,7 @@ export function withMockBackend(fx: Effects): Effects {
         draft = null;
       },
       fetchClip: (urlOrId: string) => mockClip(urlOrId.startsWith('mock-say') ? 4 : 0.9),
+      listSessions: async () => [],
     },
     createSocket: (l) => {
       listener = l;

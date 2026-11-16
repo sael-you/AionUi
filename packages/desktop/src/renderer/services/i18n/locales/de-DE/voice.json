@@ -181,7 +181,16 @@
     "shortcutReset": "Zurücksetzen",
     "loadFailed": "Spracheinstellungen konnten nicht geladen werden.",
     "saveFailed": "Die Einstellung konnte nicht gespeichert werden.",
-    "privacy": "Audio bleibt auf diesem Gerät, bis ein Anruf startet, und wird nie gespeichert."
+    "privacy": "Audio bleibt auf diesem Gerät, bis ein Anruf startet, und wird nie gespeichert.",
+    "today": "Heute",
+    "todayUsage": "{{calls}} · {{minutes}}",
+    "todayUsageAtLeast": "Mindestens {{calls}} · {{minutes}}",
+    "todayCalls": "{{count}} Anrufe",
+    "todayCalls_one": "{{count}} Anruf",
+    "todayCalls_other": "{{count}} Anrufe",
+    "todayMinutes": "{{count}} Minuten",
+    "todayMinutes_one": "{{count}} Minute",
+    "todayMinutes_other": "{{count}} Minuten"
   },
   "slash": {
     "description": "Sprachmodus: mit dem Agenten dieser Unterhaltung sprechen"
