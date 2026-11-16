@@ -407,6 +407,7 @@
     "you": "你",
     "agent": "智能体 {{name}}",
     "agentUnknown": "某个智能体",
+    "conversation": "会话 {{id}}",
     "system": "Studio 监督程序",
     "team": "团队 {{name}}"
   },

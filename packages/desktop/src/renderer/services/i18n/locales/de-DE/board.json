@@ -407,6 +407,7 @@
     "you": "Du",
     "agent": "Agent „{{name}}“",
     "agentUnknown": "Ein Agent",
+    "conversation": "Unterhaltung {{id}}",
     "system": "Studio-Aufsicht",
     "team": "Team „{{name}}“"
   },

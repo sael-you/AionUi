@@ -25,7 +25,7 @@ import {
 import { BoardSelect } from '../BoardSelect';
 import type { BoardController } from '../hooks/useBoard';
 import type { CardDetailController } from '../hooks/useCardDetail';
-import { actorName, assigneeLabel, columnName, departmentName, formatBoardTime } from '../utils/boardFormat';
+import { assigneeLabel, creatorName, columnName, departmentName, formatBoardTime } from '../utils/boardFormat';
 import { endAnchor, isManualMoveTarget, sanitizeTagList, visibleColumns } from '../utils/boardModel';
 
 const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -203,7 +203,7 @@ export const CardFields: React.FC<{
           </Row>
         )}
         <Row label={t('board.drawer.creator')}>
-          <span className='text-13px text-t-primary'>{actorName(card.creator_kind, card.creator_ref, t)}</span>
+          <span className='text-13px text-t-primary'>{creatorName(card, t)}</span>
         </Row>
         <Row label={t('board.drawer.created')}>
           <span className='text-13px text-t-primary'>{formatBoardTime(card.created_at, i18n.language)}</span>

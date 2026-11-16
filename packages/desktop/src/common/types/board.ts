@@ -140,6 +140,10 @@ export type BoardCardSummary = {
   skills: string[];
   creator_kind: BoardActorKind;
   creator_ref: string;
+  /** Agent cards: the conversation that created the card. */
+  creator_conversation_id?: string | null;
+  /** Agent cards: that conversation's current name (absent once it is deleted). */
+  creator_name?: string | null;
   assignee_kind: BoardAssigneeKind | null;
   assignee_ref: string | null;
   /** Resolved display name of the assignee (assistant / team name), when the server knows it. */

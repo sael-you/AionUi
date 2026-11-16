@@ -412,6 +412,7 @@
     "you": "Tú",
     "agent": "Agente {{name}}",
     "agentUnknown": "Un agente",
+    "conversation": "Conversación {{id}}",
     "system": "Supervisor de Studio",
     "team": "Equipo {{name}}"
   },

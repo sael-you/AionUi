@@ -46,6 +46,7 @@ const SAME_AS_ENGLISH: Record<string, ReadonlySet<string>> = {
     'departments.marketing',
     'assign.assistant',
     'questions.title',
+    'actor.conversation',
     'conversations.title',
     'conversations.untitled',
   ]),

@@ -407,6 +407,7 @@
     "you": "你",
     "agent": "代理 {{name}}",
     "agentUnknown": "某個代理",
+    "conversation": "對話 {{id}}",
     "system": "Studio 監督程式",
     "team": "團隊 {{name}}"
   },

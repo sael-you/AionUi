@@ -407,6 +407,7 @@
     "you": "شما",
     "agent": "ایجنت {{name}}",
     "agentUnknown": "یک ایجنت",
+    "conversation": "گفتگو {{id}}",
     "system": "ناظر Studio",
     "team": "تیم {{name}}"
   },
