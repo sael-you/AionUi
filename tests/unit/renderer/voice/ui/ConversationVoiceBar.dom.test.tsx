@@ -144,11 +144,46 @@ describe('ConversationVoiceBar', () => {
     expect(screen.getByRole('button', { name: /voice.bar.end/ })).toBeInTheDocument();
   });
 
-  it('shows a notice (e.g. the call dropped) instead of the caption', async () => {
+  it('after a restart: still armed, says the restart interrupted the task', async () => {
     const { f, start } = await setup();
     await start();
     act(() => f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' }));
     expect(bar()).toHaveAttribute('data-state', 'armed');
-    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.callDropped');
+    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.restartInterrupted');
+  });
+
+  it('after 3 idle minutes: still armed with the idle notice', async () => {
+    const { f, start } = await setup();
+    await start();
+    act(() => f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'idle' }));
+    expect(bar()).toHaveAttribute('data-state', 'armed');
+    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.notice.conversationIdle');
+  });
+
+  it('"Not sent" vs "The task failed"', async () => {
+    const { f, start } = await setup();
+    await start();
+    act(() =>
+      f.frame({
+        name: 'voice.followUp',
+        voiceSessionId: 'vs-1',
+        conversationId: 'c1',
+        status: 'failed',
+        line: 'x',
+        clipId: null,
+      })
+    );
+    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.bar.outcome.failed');
+    act(() =>
+      f.frame({
+        name: 'voice.followUp',
+        voiceSessionId: null,
+        conversationId: 'c1',
+        status: 'failed',
+        line: 'y',
+        clipId: null,
+      })
+    );
+    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.bar.outcome.turnFailed');
   });
 });

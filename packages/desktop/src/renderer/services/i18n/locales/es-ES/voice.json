@@ -143,7 +143,9 @@
     "callHardCap": "La llamada llegó al límite de 55 minutos. Toca Hablar para iniciar otra.",
     "callDropped": "La llamada se cortó. Toca Hablar para intentarlo de nuevo.",
     "noProvider": "Aún no hay un proveedor de voz configurado para tu cuenta.",
-    "rateLimited": "Demasiadas solicitudes de voz. Espera un momento e inténtalo de nuevo."
+    "rateLimited": "Demasiadas solicitudes de voz. Espera un momento e inténtalo de nuevo.",
+    "restartInterrupted": "El reinicio interrumpió la tarea: di «Hey Jarvis» para continuar.",
+    "conversationIdle": "Escucha en pausa tras 3 minutos de silencio. Di «Hey Jarvis» o toca para hablar."
   },
   "settings": {
     "title": "Configuración de voz",
@@ -197,7 +199,9 @@
       "silenced": "Voz detenida",
       "stopped": "Tarea detenida",
       "failed": "No enviado",
-      "needs_approval": "Necesita tu aprobación en pantalla"
+      "needs_approval": "Necesita tu aprobación en pantalla",
+      "turnFailed": "La tarea falló",
+      "interrupted": "Interrumpida por un reinicio"
     }
   }
 }

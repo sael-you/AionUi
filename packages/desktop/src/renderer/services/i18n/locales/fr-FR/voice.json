@@ -143,7 +143,9 @@
     "callHardCap": "L’appel a atteint sa limite de 55 minutes. Touchez Parler pour en lancer un nouveau.",
     "callDropped": "L’appel a été coupé. Touchez Parler pour réessayer.",
     "noProvider": "Aucun fournisseur vocal n’est encore configuré pour votre compte.",
-    "rateLimited": "Trop de requêtes vocales. Patientez un instant puis réessayez."
+    "rateLimited": "Trop de requêtes vocales. Patientez un instant puis réessayez.",
+    "restartInterrupted": "Le redémarrage a interrompu la tâche — dites « Hey Jarvis » pour continuer.",
+    "conversationIdle": "Écoute en pause après 3 minutes de silence. Dites « Hey Jarvis » ou touchez pour parler."
   },
   "settings": {
     "title": "Paramètres vocaux",
@@ -197,7 +199,9 @@
       "silenced": "Parole arrêtée",
       "stopped": "Tâche arrêtée",
       "failed": "Non envoyé",
-      "needs_approval": "Votre approbation est requise à l’écran"
+      "needs_approval": "Votre approbation est requise à l’écran",
+      "turnFailed": "La tâche a échoué",
+      "interrupted": "Interrompue par un redémarrage"
     }
   }
 }

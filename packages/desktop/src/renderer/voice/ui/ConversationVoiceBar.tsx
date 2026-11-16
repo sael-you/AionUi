@@ -72,7 +72,9 @@ const ConversationVoiceBar: React.FC<ConversationVoiceBarProps> = ({
   // Your words as they are heard; after the send, what happened to them ("Added to the running task").
   const outcome =
     view.lastOutcome && !(state === 'listening' && lastCaption && !lastCaption.final)
-      ? t(`voice.bar.outcome.${view.lastOutcome.status}`, { defaultValue: view.lastOutcome.line })
+      ? t(`voice.bar.outcome.${view.lastOutcome.turnFailed ? 'turnFailed' : view.lastOutcome.status}`, {
+          defaultValue: view.lastOutcome.line,
+        })
       : null;
   const notice = view.notice ? t(`voice.notice.${view.notice.code}`, { message: view.notice.message ?? '' }) : null;
   const stateLabel = t(`voice.bar.state.${state}`);

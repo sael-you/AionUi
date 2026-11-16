@@ -143,7 +143,9 @@
     "callHardCap": "The call reached its 55-minute limit. Tap Talk to start a new one.",
     "callDropped": "The call dropped. Tap Talk to try again.",
     "noProvider": "No voice provider is set up for your account yet.",
-    "rateLimited": "Too many voice requests. Wait a moment and try again."
+    "rateLimited": "Too many voice requests. Wait a moment and try again.",
+    "restartInterrupted": "The restart interrupted the task — say “Hey Jarvis” to continue.",
+    "conversationIdle": "Listening paused after 3 quiet minutes. Say “Hey Jarvis” or tap to talk."
   },
   "settings": {
     "title": "Voice settings",
@@ -197,7 +199,9 @@
       "silenced": "Speech stopped",
       "stopped": "Task stopped",
       "failed": "Not sent",
-      "needs_approval": "Needs your approval on screen"
+      "needs_approval": "Needs your approval on screen",
+      "turnFailed": "The task failed",
+      "interrupted": "Interrupted by a restart"
     }
   }
 }

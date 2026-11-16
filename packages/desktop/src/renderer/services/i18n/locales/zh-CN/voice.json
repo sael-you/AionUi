@@ -143,7 +143,9 @@
     "callHardCap": "通话已达 55 分钟上限。点按“说话”开始新的通话。",
     "callDropped": "通话已中断。点按“说话”重试。",
     "noProvider": "你的账户尚未配置语音服务提供方。",
-    "rateLimited": "语音请求过多。请稍候再试。"
+    "rateLimited": "语音请求过多。请稍候再试。",
+    "restartInterrupted": "重启中断了任务——说“Hey Jarvis”继续。",
+    "conversationIdle": "安静 3 分钟后已暂停聆听。说“Hey Jarvis”或点按即可说话。"
   },
   "settings": {
     "title": "语音设置",
@@ -197,7 +199,9 @@
       "silenced": "已停止朗读",
       "stopped": "任务已停止",
       "failed": "未发送",
-      "needs_approval": "需要你在屏幕上批准"
+      "needs_approval": "需要你在屏幕上批准",
+      "turnFailed": "任务失败",
+      "interrupted": "因重启而中断"
     }
   }
 }

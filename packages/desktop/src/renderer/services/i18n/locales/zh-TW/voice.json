@@ -143,7 +143,9 @@
     "callHardCap": "通話已達 55 分鐘上限。點按「說話」開始新的通話。",
     "callDropped": "通話已中斷。點按「說話」重試。",
     "noProvider": "你的帳戶尚未設定語音服務提供者。",
-    "rateLimited": "語音請求過多。請稍候再試。"
+    "rateLimited": "語音請求過多。請稍候再試。",
+    "restartInterrupted": "重新啟動中斷了任務——說「Hey Jarvis」繼續。",
+    "conversationIdle": "安靜 3 分鐘後已暫停聆聽。說「Hey Jarvis」或點按即可說話。"
   },
   "settings": {
     "title": "語音設定",
@@ -197,7 +199,9 @@
       "silenced": "已停止朗讀",
       "stopped": "任務已停止",
       "failed": "未傳送",
-      "needs_approval": "需要你在螢幕上核准"
+      "needs_approval": "需要你在螢幕上核准",
+      "turnFailed": "任務失敗",
+      "interrupted": "因重新啟動而中斷"
     }
   }
 }

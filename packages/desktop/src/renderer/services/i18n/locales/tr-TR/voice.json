@@ -143,7 +143,9 @@
     "callHardCap": "Arama 55 dakika sınırına ulaştı. Yenisi için Konuş’a dokunun.",
     "callDropped": "Arama düştü. Tekrar denemek için Konuş’a dokunun.",
     "noProvider": "Hesabınız için henüz bir ses sağlayıcısı ayarlanmadı.",
-    "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin."
+    "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin.",
+    "restartInterrupted": "Yeniden başlatma görevi yarıda kesti — devam etmek için “Hey Jarvis” deyin.",
+    "conversationIdle": "3 dakika sessizlikten sonra dinleme duraklatıldı. “Hey Jarvis” deyin veya konuşmak için dokunun."
   },
   "settings": {
     "title": "Ses ayarları",
@@ -197,7 +199,9 @@
       "silenced": "Konuşma durduruldu",
       "stopped": "Görev durduruldu",
       "failed": "Gönderilemedi",
-      "needs_approval": "Ekranda onayın gerekiyor"
+      "needs_approval": "Ekranda onayın gerekiyor",
+      "turnFailed": "Görev başarısız oldu",
+      "interrupted": "Yeniden başlatma nedeniyle kesildi"
     }
   }
 }

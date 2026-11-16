@@ -63,7 +63,7 @@ export type VoiceView = {
   /** Conversation mode: an agent clip is playing (barge-in stops it). */
   agentSpeaking: boolean;
   /** Conversation mode: what happened to your last utterance (voice bar). */
-  lastOutcome: { status: FollowUpStatus; line: string } | null;
+  lastOutcome: { status: FollowUpStatus; line: string; turnFailed?: boolean } | null;
 };
 
 export const INITIAL_VIEW: VoiceView = {

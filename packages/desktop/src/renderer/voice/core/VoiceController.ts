@@ -169,6 +169,8 @@ export class VoiceController {
   private userSpeaking = false;
   /** Bumped when the agent's speech is stopped: clips fetched or queued before are dropped. */
   private speechEpoch = 0;
+  /** Conversation mode: the socket dropped while a ready call was live (a restart if the call is gone). */
+  private lostReadyCall = false;
 
   constructor(private readonly fx: Effects) {}
 
@@ -598,6 +600,7 @@ export class VoiceController {
     this.call = null;
     this.clearTimer('readyTimer');
     this.clearTimer('deadManTimer');
+    this.lostReadyCall = false;
     this.endAsk();
     this.unregisterMedia?.();
     this.unregisterMedia = null;
@@ -661,6 +664,7 @@ export class VoiceController {
   private onSocketClose(): void {
     if (this.machine.mode === 'off') return;
     const hadCall = Boolean(this.machine.call);
+    if (this.isConversationMode && hadCall && this.everReady) this.lostReadyCall = true;
     this.dispatch({ type: 'socketClosed' });
     if (!hadCall) return;
     if (!this.reconnectingToned) {
@@ -750,6 +754,7 @@ export class VoiceController {
     this.clearTimer('deadManTimer');
     this.everReady = true;
     this.reconnectingToned = false;
+    this.lostReadyCall = false;
     this.earcon(first ? 'listening' : 'back');
     if (this.isConversationMode && first && !this.machine.held) this.openWindow(LISTEN_WINDOW_MS);
   }
@@ -759,9 +764,20 @@ export class VoiceController {
    * rotation re-dials at once with `resume_of`; the other reasons stay armed with a notice.
    */
   private onCallEnded(voiceSessionId: string | null, reason: string): void {
-    // Conversation mode: 3 min without speech and without a running turn ends voice mode.
-    if (this.isConversationMode && reason === 'idle') {
-      this.disarm('idle');
+    if (this.isConversationMode && (reason === 'idle' || reason === 'restart')) {
+      // Conversation mode stays armed: only "stop voice", End voice, Escape or the kill switch end
+      // it. The wake word or a tap opens a new call for the same conversation, and the agent may
+      // still speak (core keeps its lines for 30 min after an idle hang-up).
+      const call = this.machine.call;
+      if (call && voiceSessionId && call.voiceSessionId && voiceSessionId !== call.voiceSessionId) return;
+      if (call) this.endCall(reason, false);
+      this.lostReadyCall = false;
+      if (reason === 'restart') {
+        this.store.update({ notice: { code: 'restartInterrupted' } });
+        this.earcon('needsYou');
+      } else {
+        this.store.update({ notice: { code: 'conversationIdle' } });
+      }
       return;
     }
     const policy = callEndPolicy(reason);
@@ -789,6 +805,12 @@ export class VoiceController {
       // Sideband re-attach in progress (reason `reconnecting`): mute, wait for `voice.ready`.
       this.dispatch({ type: 'callSuspended' });
       this.startDeadMan('offline');
+      return;
+    }
+    if (state === 'armed' && !reason && this.lostReadyCall) {
+      // Conversation mode: the socket came back but the backend no longer knows our ready call —
+      // AionUi restarted (a restart closes conversation calls and never re-attaches them).
+      this.onCallEnded(call.voiceSessionId, 'restart');
       return;
     }
     if (state === 'armed') {
@@ -1057,8 +1079,21 @@ export class VoiceController {
       if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: null, draftLine: true });
       return true;
     }
+    if (status === 'interrupted') {
+      // A restart cut the running turn: say so (spoken when core sends a clip), stay armed.
+      this.store.update({ lastOutcome: { status, line } });
+      if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: 'needsYou', draftLine: false });
+      else this.earcon('needsYou');
+      return true;
+    }
     if (TURN_END_STATUSES.has(status)) {
-      if (status !== 'finished') this.store.update({ lastOutcome: { status, line } });
+      // `failed` with the call's session id = your words could not be sent; without it = the
+      // watcher's line about the turn (the agent's task failed).
+      if (status !== 'finished') {
+        this.store.update({
+          lastOutcome: status === 'failed' ? { status, line, turnFailed: !frame.voiceSessionId } : { status, line },
+        });
+      }
       if (status === 'needs_approval') this.fx.vibrate([60, 60, 60]);
       const tone: EarconName = status === 'finished' ? 'yourTurn' : 'needsYou';
       const ms = this.followUpWindowMs();

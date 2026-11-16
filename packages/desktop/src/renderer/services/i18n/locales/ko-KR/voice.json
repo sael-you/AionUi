@@ -143,7 +143,9 @@
     "callHardCap": "통화가 55분 한도에 도달했습니다. 새 통화는 말하기를 탭하세요.",
     "callDropped": "통화가 끊겼습니다. 다시 시도하려면 말하기를 탭하세요.",
     "noProvider": "계정에 아직 음성 제공자가 설정되지 않았습니다.",
-    "rateLimited": "음성 요청이 너무 많습니다. 잠시 후 다시 시도하세요."
+    "rateLimited": "음성 요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
+    "restartInterrupted": "재시작으로 작업이 중단되었습니다. 계속하려면 “Hey Jarvis”라고 말하세요.",
+    "conversationIdle": "3분 동안 조용해서 듣기를 일시 중지했습니다. “Hey Jarvis”라고 말하거나 탭하여 말하세요."
   },
   "settings": {
     "title": "음성 설정",
@@ -197,7 +199,9 @@
       "silenced": "음성 중지됨",
       "stopped": "작업 중지됨",
       "failed": "보내지 못함",
-      "needs_approval": "화면에서 승인이 필요합니다"
+      "needs_approval": "화면에서 승인이 필요합니다",
+      "turnFailed": "작업이 실패했습니다",
+      "interrupted": "재시작으로 중단됨"
     }
   }
 }

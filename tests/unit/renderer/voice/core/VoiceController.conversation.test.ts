@@ -324,13 +324,104 @@ describe('conversation voice mode — stop vs cancel (rule 5)', () => {
     expect(c.store.getSnapshot().lastOutcome?.status).toBe('stopped');
   });
 
-  it('"stop voice" (call ended with sleep) and 3 idle minutes end voice mode', async () => {
+  it('only "stop voice" (sleep), End voice or the kill switch end voice mode', async () => {
     const a = await listening();
     a.f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'sleep' });
     expect(a.c.state.mode).toBe('off');
     const b = await listening();
-    b.f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'idle' });
+    b.c.disarm('tap');
     expect(b.c.state.mode).toBe('off');
-    expect(b.f.earcons()).toContain('bye');
+    const k = await listening();
+    k.f.frame({ name: 'voice.error', voiceSessionId: null, code: 'voice_disabled', message: 'off' });
+    expect(k.c.state.mode).toBe('off');
+  });
+});
+
+describe('conversation voice mode — idle, failures, restart (director decisions)', () => {
+  it('3 idle minutes end the CALL only: still armed, wake word live, a wake re-opens the same conversation', async () => {
+    const { f, c } = await listening();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'idle' });
+    expect(c.state.mode).toBe('armed');
+    expect(c.state.call).toBeNull();
+    expect(c.store.getSnapshot().voiceMode).toBe('conversation');
+    expect(c.store.getSnapshot().notice?.code).toBe('conversationIdle');
+    expect(f.earcons()).not.toContain('bye');
+    expect(f.fx.wakeWord.setMode).toHaveBeenLastCalledWith('wake');
+    f.state.wakeEvents?.onWake(20, 0.9);
+    await flush();
+    expect(f.fx.startCall).toHaveBeenCalledTimes(2);
+    expect(f.state.callOptions).toMatchObject({ mode: 'conversation', focusConversationId: 'c1' });
+    expect(c.store.getSnapshot().notice).toBeNull();
+  });
+
+  it('after an idle hang-up the agent may still speak: its clip plays without a call', async () => {
+    const { f, c } = await listening();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'idle' });
+    f.frame({ name: 'voice.wake', voiceSessionId: null, reason: 'says', itemId: 'late1' });
+    followUp(f, 'says', 'late1');
+    await vi.advanceTimersByTimeAsync(600);
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('late1');
+    expect(f.clips.play).toHaveBeenCalledTimes(1);
+    expect(c.state.call).toBeNull();
+  });
+
+  it('failed with the call session = your words were not sent; without it = the task failed', async () => {
+    const { f, c } = await listening();
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: 'vs-1',
+      conversationId: 'c1',
+      status: 'failed',
+      line: 'x',
+      clipId: null,
+    });
+    expect(c.store.getSnapshot().lastOutcome).toMatchObject({ status: 'failed', turnFailed: false });
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c1',
+      status: 'failed',
+      line: 'y',
+      clipId: 'err1',
+    });
+    expect(c.store.getSnapshot().lastOutcome).toMatchObject({ status: 'failed', turnFailed: true });
+  });
+
+  it('a restart (callEnded restart) stays armed and says the task was interrupted', async () => {
+    const { f, c } = await listening();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' });
+    expect(c.state.mode).toBe('armed');
+    expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
+    expect(f.earcons()).toContain('needsYou');
+  });
+
+  it('a restart seen from the socket: it drops, comes back, and the backend no longer knows the call', async () => {
+    const { f, c } = await listening();
+    f.closeSocket();
+    f.openSocket();
+    f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'armed', reason: null });
+    expect(c.state.call).toBeNull();
+    expect(c.state.mode).toBe('armed');
+    expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
+  });
+
+  it('a network blip whose call comes back (voice.ready) is not a restart', async () => {
+    const { f, c } = await listening();
+    f.closeSocket();
+    f.openSocket();
+    f.frame({ name: 'voice.ready', voiceSessionId: 'vs-1', engine: 'openai-realtime', model: 'm' });
+    f.frame({ name: 'voice.state', voiceSessionId: 'vs-1', state: 'armed', reason: null });
+    expect(c.state.call).not.toBeNull();
+    expect(c.store.getSnapshot().notice).toBeNull();
+  });
+
+  it('an `interrupted` line about the bound conversation is shown and its clip spoken', async () => {
+    const { f, c } = await listening();
+    followUp(f, 'sent');
+    followUp(f, 'interrupted', 'int1');
+    expect(c.store.getSnapshot().lastOutcome?.status).toBe('interrupted');
+    await vi.advanceTimersByTimeAsync(600);
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('int1');
+    expect(c.store.getSnapshot().followUps).toEqual([]);
   });
 });

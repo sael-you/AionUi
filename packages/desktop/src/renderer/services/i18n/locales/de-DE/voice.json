@@ -143,7 +143,9 @@
     "callHardCap": "Das Gespräch hat das 55-Minuten-Limit erreicht. Tippe auf Sprechen für ein neues.",
     "callDropped": "Das Gespräch ist abgebrochen. Tippe auf Sprechen, um es erneut zu versuchen.",
     "noProvider": "Für dein Konto ist noch kein Sprachanbieter eingerichtet.",
-    "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut."
+    "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut.",
+    "restartInterrupted": "Der Neustart hat die Aufgabe unterbrochen – sag „Hey Jarvis“, um fortzufahren.",
+    "conversationIdle": "Zuhören nach 3 stillen Minuten pausiert. Sag „Hey Jarvis“ oder tippe zum Sprechen."
   },
   "settings": {
     "title": "Spracheinstellungen",
@@ -197,7 +199,9 @@
       "silenced": "Sprachausgabe gestoppt",
       "stopped": "Aufgabe gestoppt",
       "failed": "Nicht gesendet",
-      "needs_approval": "Braucht deine Freigabe am Bildschirm"
+      "needs_approval": "Braucht deine Freigabe am Bildschirm",
+      "turnFailed": "Die Aufgabe ist fehlgeschlagen",
+      "interrupted": "Durch einen Neustart unterbrochen"
     }
   }
 }
