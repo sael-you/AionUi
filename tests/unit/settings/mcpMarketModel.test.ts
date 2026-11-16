@@ -14,7 +14,6 @@ import {
   attachConflicts,
   describeMarketError,
   globalBlockReason,
-  groupMarketInstances,
   instanceMatches,
   instanceNameProblem,
   isMaskedValueError,
@@ -69,57 +68,6 @@ const err = (status: number, code: string, error = '') =>
 
 const t = (key: string, options?: Record<string, unknown>) =>
   options && Object.keys(options).length > 0 ? `${key}|${JSON.stringify(options)}` : key;
-
-describe('groupMarketInstances', () => {
-  const projects = [
-    { workspace: '/p/beta', name: 'beta', project_id: 'p-beta' },
-    { workspace: '/p/alpha', name: 'alpha', project_id: 'p-alpha' },
-    { workspace: '/p/no-id', name: 'no-id' },
-  ];
-
-  it('groups by Global, by project (every project it is attached to) and Unassigned', () => {
-    const ctx = inst('context7');
-    const paddle = inst('tb-paddle-prod-read');
-    const resend = inst('tb-resend-drafts');
-    const lonely = inst('tb-lonely');
-    const assignments = [
-      asg(ctx, 'claude'),
-      asg(paddle, 'claude', 'p-alpha'),
-      asg(paddle, 'codex', 'p-beta', 'asst-1'),
-      asg(resend, 'claude', 'p-alpha'),
-    ];
-
-    const groups = groupMarketInstances([lonely, resend, paddle, ctx], assignments, projects);
-
-    expect(groups.global.map((i) => i.name)).toEqual(['context7']);
-    // Projects sorted by name; projects without a backend id get no group.
-    expect(groups.projects.map((g) => g.projectId)).toEqual(['p-alpha', 'p-beta']);
-    expect(groups.projects[0].instances.map((i) => i.name)).toEqual(['tb-paddle-prod-read', 'tb-resend-drafts']);
-    // An assistant binding puts the instance in that project too.
-    expect(groups.projects[1].instances.map((i) => i.name)).toEqual(['tb-paddle-prod-read']);
-    expect(groups.unassigned.map((i) => i.name)).toEqual(['tb-lonely']);
-  });
-
-  it('keeps empty project groups and adds groups for projects the sidebar does not list', () => {
-    const x = inst('tb-x');
-    const groups = groupMarketInstances([x], [asg(x, 'claude', 'p-gone')], projects);
-    expect(groups.projects.map((g) => [g.projectId, g.instances.length, g.project?.name ?? null])).toEqual([
-      ['p-alpha', 0, 'alpha'],
-      ['p-beta', 0, 'beta'],
-      ['p-gone', 1, null],
-    ]);
-    expect(groups.unassigned).toEqual([]);
-  });
-
-  it('ignores assignments of instances that are filtered out', () => {
-    const shown = inst('tb-shown');
-    const hidden = inst('tb-hidden');
-    const groups = groupMarketInstances([shown], [asg(hidden, 'claude'), asg(hidden, 'claude', 'p-alpha')], projects);
-    expect(groups.global).toEqual([]);
-    expect(groups.projects[0].instances).toEqual([]);
-    expect(groups.unassigned.map((i) => i.name)).toEqual(['tb-shown']);
-  });
-});
 
 describe('summarizeAttachments', () => {
   it('groups CLIs by scope, Global first, CLIs in a fixed order', () => {

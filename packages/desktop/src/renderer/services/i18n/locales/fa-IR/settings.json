@@ -121,7 +121,8 @@
     "noSearchResults": "هیچ مهارت منطبقی وجود ندارد.",
     "customHint": "یک پوشه مهارت، پوشه والد یا zip را وارد کنید؛ حداکثر {{maxFileSize}} برای هر فایل و {{maxTotalSize}} برای هر مهارت؛ وارد کردن نام تکراری مهارت موجود را بازنویسی می‌کند.",
     "officialHint": "مهارت‌های رسمی همراه AionUi — آماده استفاده، فقط‌خواندنی و با هر نسخه به‌روزرسانی می‌شوند.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "نحوهٔ کار وارد کردن"
   },
   "authMethod": "احراز هویت",
   "geminiApiKey": "کلید API جمینای",
@@ -1414,5 +1415,127 @@
   "crossSessionMessageDesc": "به عامل‌ها اجازه می‌دهد به گفتگوهای دیگر شما پیام بفرستند. با خاموش کردن، منشن @@ در کادر ورودی نیز غیرفعال می‌شود.",
   "crossSessionMessageDisabledBanner": "پیام‌های بین گفتگوها خاموش است، منشن @@ در دسترس نیست.",
   "crossSessionMessageResume": "روشن کردن دوباره",
-  "crossSessionMessageUpdateFailed": "به‌روزرسانی تنظیم پیام‌های بین گفتگوها ناموفق بود"
+  "crossSessionMessageUpdateFailed": "به‌روزرسانی تنظیم پیام‌های بین گفتگوها ناموفق بود",
+  "library": {
+    "scope": "دامنه",
+    "categories": "دسته‌ها",
+    "railLabel": "دامنه‌ها و دسته‌ها",
+    "scopeGlobal": "سراسری",
+    "scopeChip": "دامنه: {{name}}",
+    "categoryChip": "دسته: {{name}}",
+    "emptyProjects_one": "{{count}} پروژهٔ خالی",
+    "emptyProjects_other": "{{count}} پروژهٔ خالی",
+    "allCategories": "همه",
+    "count_one": "{{count}} مورد",
+    "count_other": "{{count}} مورد",
+    "tabActive": "فعال",
+    "tabLibrary": "کتابخانه",
+    "tabsLabel": "نما",
+    "sourcesLabel": "منبع",
+    "select": "انتخاب",
+    "selectNamed": "انتخاب {{name}}",
+    "selected_one": "{{count}} انتخاب شده",
+    "selected_other": "{{count}} انتخاب شده",
+    "batchLabel": "موارد انتخاب‌شده",
+    "batchAdd": "افزودن به {{scope}}",
+    "batchRemove": "حذف از {{scope}}",
+    "batchDelete_one": "حذف {{count}} مهارت",
+    "batchDelete_other": "حذف {{count}} مهارت",
+    "batchDone_one": "{{count}} مهارت در {{scope}} به‌روز شد",
+    "batchDone_other": "{{count}} مهارت در {{scope}} به‌روز شد",
+    "moreActions": "کارهای بیشتر برای {{name}}",
+    "menu": {
+      "details": "جزئیات",
+      "removeFrom": "حذف از {{scope}}",
+      "delete": "حذف از کتابخانه"
+    },
+    "onIn": "روشن در {{scope}}",
+    "turnedOn": "{{name}} در {{scope}} روشن است",
+    "turnedOff": "{{name}} در {{scope}} خاموش است",
+    "kitAttached": "{{name}} به {{scope}} افزوده شد",
+    "kitDetached": "{{name}} از {{scope}} برداشته شد",
+    "detachKit": "جدا کردن کیت",
+    "detachKitTitle": "{{name}} جدا شود؟",
+    "detachKitBody": "گفت‌وگوهای {{scope}} دیگر مهارت‌ها و MCPهای {{name}} را نمی‌گیرند. خود کیت باقی می‌ماند.",
+    "addCategory": "افزودن کل دسته به {{scope}}",
+    "editKit": "ویرایش کیت",
+    "manageInGlobal": "مدیریت در سراسری",
+    "fromGlobalHint": "از سراسری می‌آید. خاموش کردن آن در اینجا فقط بر این پروژه اثر دارد.",
+    "group": {
+      "projectKit": "کیت این پروژه",
+      "single": "افزوده‌شده به {{scope}}",
+      "fromGlobal": "از سراسری",
+      "removed": "در اینجا خاموش",
+      "globalKit": "کیت سراسری",
+      "kit": "از کیت‌های مشترک · {{name}}",
+      "alwaysOn": "همیشه روشن (داخلی)"
+    },
+    "noProjectKit": "{{name}} هنوز کیت ندارد. برای انتخاب مهارت‌ها و MCPها یک کیت بسازید.",
+    "emptyGroup": "هنوز چیزی اینجا نیست.",
+    "emptyActive": "هنوز چیزی اینجا فعال نیست — کتابخانه را ببینید.",
+    "browseLibrary": "دیدن کتابخانه",
+    "noMatch": "موردی پیدا نشد.",
+    "results": "نتایج",
+    "usedIn": "استفاده در",
+    "usedNowhere": "هنوز در جایی روشن نیست.",
+    "inKit": "کیت: {{name}}",
+    "summary": {
+      "active_one": "{{count}} فعال",
+      "active_other": "{{count}} فعال",
+      "fromGlobal_one": "{{count}} از سراسری",
+      "fromGlobal_other": "{{count}} از سراسری",
+      "kits_one": "{{count}} کیت",
+      "kits_other": "{{count}} کیت"
+    },
+    "suggestedFor": "پیشنهادی برای {{name}}",
+    "addAllToProjectKit": "افزودن همه به کیت پروژه"
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "پروژه",
+      "builtin": "داخلی",
+      "other": "سایر"
+    },
+    "filter": {
+      "all": "همه",
+      "mine": "مال من",
+      "official": "رسمی",
+      "imported": "واردشده"
+    },
+    "source": {
+      "mine": "مال من",
+      "official": "رسمی",
+      "imported": "واردشده",
+      "alwaysOn": "همیشه روشن"
+    },
+    "openPage": "باز کردن صفحهٔ کامل",
+    "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "سرورهای MCP قابل استفاده برای عامل‌ها و اینکه هر کدام کجا روشن است.",
+    "tabMarket": "بازار",
+    "tabKits": "کیت‌ها",
+    "needsKey": "کلید لازم است",
+    "noKey": "بدون کلید",
+    "added": "افزوده شد",
+    "viaKit": "از طریق {{name}}",
+    "attachElsewhere": "اتصال به…",
+    "detachTitle": "{{name}} از {{scope}} برداشته شود؟",
+    "detachBody": "گفت‌وگوهای {{scope}} دیگر {{name}} را نمی‌گیرند. نمونه و کلیدهایش باقی می‌مانند.",
+    "group": {
+      "attached": "متصل به {{scope}}",
+      "unassigned": "به جایی متصل نیست",
+      "custom": "سرورهای شما",
+      "extensions": "از افزونه‌ها"
+    },
+    "unassignedHint": "برای استفاده آن‌ها را به سراسری یا یک پروژه متصل کنید.",
+    "nothingAttached": "هنوز چیزی به {{scope}} متصل نیست.",
+    "browseMarket": "دیدن بازار",
+    "filter": {
+      "all": "همه",
+      "official": "رسمی",
+      "community": "انجمن",
+      "custom": "سفارشی"
+    }
+  }
 }

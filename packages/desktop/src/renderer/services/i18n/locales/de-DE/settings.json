@@ -121,7 +121,8 @@
     "noSearchResults": "Keine passenden Skills.",
     "customHint": "Importiere einen Skill-Ordner, übergeordneten Ordner oder eine Zip-Datei; max. {{maxFileSize}} pro Datei und {{maxTotalSize}} pro Skill; ein gleichnamiger Import überschreibt den vorhandenen Skill.",
     "officialHint": "Offizielle, mit AionUi gebündelte Skills – sofort einsatzbereit, schreibgeschützt und mit jedem Release aktualisiert.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "So funktioniert der Import"
   },
   "authMethod": "Authentifizierung",
   "geminiApiKey": "Gemini-API-Schlüssel",
@@ -1414,5 +1415,127 @@
   "crossSessionMessageDesc": "Erlaubt Agenten, Nachrichten an Ihre anderen Unterhaltungen zu senden. Beim Ausschalten wird auch die @@-Erwähnung im Eingabefeld deaktiviert.",
   "crossSessionMessageDisabledBanner": "Nachrichten zwischen Unterhaltungen sind aus, die @@-Erwähnung ist nicht verfügbar.",
   "crossSessionMessageResume": "Wieder einschalten",
-  "crossSessionMessageUpdateFailed": "Einstellung konnte nicht aktualisiert werden"
+  "crossSessionMessageUpdateFailed": "Einstellung konnte nicht aktualisiert werden",
+  "library": {
+    "scope": "Bereich",
+    "categories": "Kategorien",
+    "railLabel": "Bereiche und Kategorien",
+    "scopeGlobal": "Global",
+    "scopeChip": "Bereich: {{name}}",
+    "categoryChip": "Kategorie: {{name}}",
+    "emptyProjects_one": "{{count}} leeres Projekt",
+    "emptyProjects_other": "{{count}} leere Projekte",
+    "allCategories": "Alle",
+    "count_one": "{{count}} Eintrag",
+    "count_other": "{{count}} Einträge",
+    "tabActive": "Aktiv",
+    "tabLibrary": "Bibliothek",
+    "tabsLabel": "Ansicht",
+    "sourcesLabel": "Quelle",
+    "select": "Auswählen",
+    "selectNamed": "{{name}} auswählen",
+    "selected_one": "{{count}} ausgewählt",
+    "selected_other": "{{count}} ausgewählt",
+    "batchLabel": "Ausgewählte Einträge",
+    "batchAdd": "Zu {{scope}} hinzufügen",
+    "batchRemove": "Aus {{scope}} entfernen",
+    "batchDelete_one": "{{count}} Skill löschen",
+    "batchDelete_other": "{{count}} Skills löschen",
+    "batchDone_one": "{{count}} Skill in {{scope}} aktualisiert",
+    "batchDone_other": "{{count}} Skills in {{scope}} aktualisiert",
+    "moreActions": "Weitere Aktionen für {{name}}",
+    "menu": {
+      "details": "Details",
+      "removeFrom": "Aus {{scope}} entfernen",
+      "delete": "Aus der Bibliothek löschen"
+    },
+    "onIn": "Aktiv in {{scope}}",
+    "turnedOn": "{{name}} ist in {{scope}} aktiv",
+    "turnedOff": "{{name}} ist in {{scope}} aus",
+    "kitAttached": "{{name}} zu {{scope}} hinzugefügt",
+    "kitDetached": "{{name}} aus {{scope}} entfernt",
+    "detachKit": "Kit lösen",
+    "detachKitTitle": "{{name}} lösen?",
+    "detachKitBody": "Unterhaltungen in {{scope}} erhalten die Skills und MCPs von {{name}} nicht mehr. Das Kit selbst bleibt.",
+    "addCategory": "Ganze Kategorie zu {{scope}} hinzufügen",
+    "editKit": "Kit bearbeiten",
+    "manageInGlobal": "In Global verwalten",
+    "fromGlobalHint": "Kommt aus Global. Hier ausschalten wirkt nur in diesem Projekt.",
+    "group": {
+      "projectKit": "Kit dieses Projekts",
+      "single": "Zu {{scope}} hinzugefügt",
+      "fromGlobal": "Aus Global",
+      "removed": "Hier ausgeschaltet",
+      "globalKit": "Globales Kit",
+      "kit": "Aus geteilten Kits · {{name}}",
+      "alwaysOn": "Immer an (integriert)"
+    },
+    "noProjectKit": "{{name}} hat noch kein Kit. Lege eins an, um seine Skills und MCPs zu wählen.",
+    "emptyGroup": "Noch nichts hier.",
+    "emptyActive": "Hier ist noch nichts aktiv – stöbere in der Bibliothek.",
+    "browseLibrary": "Bibliothek öffnen",
+    "noMatch": "Keine Treffer.",
+    "results": "Ergebnisse",
+    "usedIn": "Verwendet in",
+    "usedNowhere": "Noch nirgends aktiv.",
+    "inKit": "Kit: {{name}}",
+    "summary": {
+      "active_one": "{{count}} aktiv",
+      "active_other": "{{count}} aktiv",
+      "fromGlobal_one": "{{count}} aus Global",
+      "fromGlobal_other": "{{count}} aus Global",
+      "kits_one": "{{count}} Kit",
+      "kits_other": "{{count}} Kits"
+    },
+    "suggestedFor": "Vorschläge für {{name}}",
+    "addAllToProjectKit": "Alle zum Projekt-Kit hinzufügen"
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "Projekt",
+      "builtin": "Integriert",
+      "other": "Sonstige"
+    },
+    "filter": {
+      "all": "Alle",
+      "mine": "Eigene",
+      "official": "Offiziell",
+      "imported": "Importiert"
+    },
+    "source": {
+      "mine": "Eigene",
+      "official": "Offiziell",
+      "imported": "Importiert",
+      "alwaysOn": "Immer an"
+    },
+    "openPage": "Ganze Seite öffnen",
+    "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "MCP-Server für deine Agenten – und wo jeder aktiv ist.",
+    "tabMarket": "Marktplatz",
+    "tabKits": "Kits",
+    "needsKey": "Schlüssel nötig",
+    "noKey": "Kein Schlüssel nötig",
+    "added": "Hinzugefügt",
+    "viaKit": "Über {{name}}",
+    "attachElsewhere": "Zuweisen an…",
+    "detachTitle": "{{name}} aus {{scope}} entfernen?",
+    "detachBody": "Unterhaltungen in {{scope}} erhalten {{name}} nicht mehr. Die Instanz und ihre Schlüssel bleiben.",
+    "group": {
+      "attached": "Zugewiesen an {{scope}}",
+      "unassigned": "Nirgends zugewiesen",
+      "custom": "Eigene Server",
+      "extensions": "Aus Erweiterungen"
+    },
+    "unassignedHint": "Weise sie Global oder einem Projekt zu, um sie zu nutzen.",
+    "nothingAttached": "{{scope}} ist noch nichts zugewiesen.",
+    "browseMarket": "Marktplatz öffnen",
+    "filter": {
+      "all": "Alle",
+      "official": "Offiziell",
+      "community": "Community",
+      "custom": "Eigene"
+    }
+  }
 }

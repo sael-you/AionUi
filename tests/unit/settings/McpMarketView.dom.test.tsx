@@ -3,8 +3,9 @@
  * Copyright 2025 AionUi (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  *
- * MCP market view of the Tools page (card C15): groups, legacy rows, states,
- * search, and the attach / detach calls made from an instance's drawer.
+ * Tools page in the library layout (C33, TASK-119; market C15): Active by
+ * scope (custom servers, instances attached nowhere, a project's instances),
+ * the rail, states, search, the card switch and the drawer's attach / detach.
  */
 
 import React from 'react';
@@ -15,11 +16,43 @@ import type { IMcpServer, McpMarketAssignment, McpMarketInstance } from '@/commo
 const state = vi.hoisted(() => ({
   market: {} as Record<string, unknown>,
   projects: [] as Array<{ workspace: string; name: string; project_id?: string }>,
+  kits: [] as unknown[],
+  kitAttachments: [] as unknown[],
+  effective: null as unknown,
+  origin: null as string | null,
+  confirm: null as null | { onOk?: () => Promise<void> | void },
 }));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
+
+vi.mock('@/renderer/hooks/mcp/market/useKits', () => ({
+  useKitList: () => ({ kits: state.kits ?? [] }),
+  useKitAttachments: () => ({ attachments: state.kitAttachments ?? [] }),
+  useKitEffective: () => ({ effective: state.effective ?? null, isLoading: false, reload: vi.fn() }),
+}));
+
+vi.mock('@/renderer/pages/settings/ToolsSettings/kits/KitsSection', () => ({
+  default: () => <div data-testid='kits-section-stub' />,
+}));
+
+vi.mock('@/renderer/components/settings/SettingsModal/library/useOriginProjectId', () => ({
+  useOriginProjectId: () => state.origin ?? null,
+}));
+
+vi.mock('@arco-design/web-react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@arco-design/web-react')>();
+  return {
+    ...actual,
+    Message: { ...actual.Message, success: vi.fn(), error: vi.fn(), warning: vi.fn() },
+    Modal: Object.assign(actual.Modal, {
+      confirm: (config: { onOk?: () => Promise<void> | void }) => {
+        state.confirm = config;
+      },
+    }),
+  };
+});
 
 vi.mock('@/renderer/hooks/mcp/market/useMcpMarket', () => ({
   useMcpMarket: () => state.market,
@@ -119,7 +152,12 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  state.projects = [{ workspace: '/root/projects/alpha', name: 'alpha', project_id: 'p-alpha' }];
+  state.origin = null;
+  state.confirm = null;
+  state.projects = [
+    { workspace: '/root/projects/alpha', name: 'alpha', project_id: 'p-alpha' },
+    { workspace: '/root/projects/empty', name: 'empty', project_id: 'p-empty' },
+  ];
   state.market = {
     templates: [
       {
@@ -147,42 +185,74 @@ beforeEach(() => {
 
 afterEach(() => cleanup());
 
-describe('McpMarketView', () => {
-  it('groups Global (legacy rows without market rows), projects and Unassigned', () => {
+const section = (key: string) =>
+  screen.getAllByTestId('library-section').find((el) => el.getAttribute('data-section-key') === key) as HTMLElement;
+const sectionKeys = () => screen.getAllByTestId('library-section').map((el) => el.getAttribute('data-section-key'));
+const cardIds = (el: HTMLElement) =>
+  within(el)
+    .queryAllByTestId('library-card')
+    .map((c) => c.getAttribute('data-card-id'));
+const openCard = (name: string) =>
+  fireEvent.click(screen.getAllByTestId('library-card-open').find((b) => b.textContent === name) as HTMLElement);
+const pickScope = (key: string) =>
+  fireEvent.click(
+    screen.getAllByTestId('library-rail-scope').find((b) => b.getAttribute('data-key') === key) as HTMLElement
+  );
+
+describe('McpMarketView (C33 library layout)', () => {
+  it('Global Active: custom servers (legacy rows without market rows) and instances attached nowhere', () => {
     renderView();
-    const global = screen.getByTestId('mcp-market-group-global');
+    expect(screen.getByTestId('library-tab-active')).toHaveAttribute('aria-selected', 'true');
+    expect(sectionKeys()).toEqual(['attached', 'unassigned', 'custom']);
     expect(
-      within(global)
+      within(section('custom'))
         .getAllByTestId('legacy-row')
         .map((n) => n.textContent)
     ).toEqual(['my-server']);
-
-    const project = screen.getByTestId('mcp-market-group-project');
-    expect(project.getAttribute('data-project-id')).toBe('p-alpha');
-    expect(within(project).getByText('tb-paddle-prod-read')).toBeInTheDocument();
-    expect(screen.getAllByTestId('project-chip').some((n) => n.textContent === 'alpha')).toBe(true);
-
-    const unassigned = screen.getByTestId('mcp-market-group-unassigned');
-    expect(
-      within(unassigned)
-        .getAllByTestId('mcp-market-instance')
-        .map((n) => n.getAttribute('data-instance-name'))
-    ).toEqual(['context7', 'tb-lonely']);
+    // Attached nowhere is folded; it opens on click.
+    const toggle = within(section('unassigned')).getByTestId('library-section-toggle');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(toggle);
+    expect(cardIds(section('unassigned'))).toEqual([ctx.id, lonely.id]);
   });
 
-  it('shows secret keys as set / not set and no ref value', () => {
+  it('rail: Global, projects with something; empty projects folded', () => {
     renderView();
-    const secrets = screen.getByTestId('mcp-market-instance-secrets');
-    expect(secrets).toHaveTextContent('PADDLE_API_KEY');
-    expect(secrets).toHaveTextContent('mcp.market.secret.set');
-    expect(document.body.innerHTML).not.toContain('TB_PADDLE_PROD_READ__PADDLE_API_KEY');
+    expect(screen.getAllByTestId('library-rail-scope').map((b) => b.getAttribute('data-key'))).toEqual([
+      'global',
+      'project:p-alpha',
+    ]);
+    expect(screen.getByTestId('library-rail-empty-toggle')).toHaveTextContent('settings.library.emptyProjects');
+  });
+
+  it('a project shows what is attached to it; switching it off detaches every CLI after a confirm', async () => {
+    renderView();
+    pickScope('project:p-alpha');
+    expect(cardIds(section('attached'))).toEqual([paddle.id]);
+    const toggle = within(section('attached')).getByTestId('library-card-toggle');
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+    fireEvent.click(toggle);
+    await state.confirm?.onOk?.();
+    expect(state.market.detach).toHaveBeenCalledWith([
+      `as-${paddle.name}-claude-p-alpha`,
+      `as-${paddle.name}-codex-p-alpha`,
+    ]);
+  });
+
+  it('switching an unattached instance on opens the attach dialog for that scope', async () => {
+    renderView();
+    fireEvent.click(within(section('unassigned')).getByTestId('library-section-toggle'));
+    const card = within(section('unassigned'))
+      .getAllByTestId('library-card')
+      .find((c) => c.getAttribute('data-card-id') === ctx.id) as HTMLElement;
+    fireEvent.click(within(card).getByTestId('library-card-toggle'));
+    expect(await screen.findByTestId('mcp-market-attach')).toBeInTheDocument();
   });
 
   it('filters by search text', () => {
     renderView();
     fireEvent.change(screen.getByPlaceholderText('mcp.market.search'), { target: { value: 'lonely' } });
-    expect(screen.queryByText('tb-paddle-prod-read')).toBeNull();
-    expect(screen.getByText('tb-lonely')).toBeInTheDocument();
+    expect(within(section('unassigned')).getByTestId('library-section-toggle')).toHaveTextContent('1');
     // Legacy rows only match their own name.
     expect(screen.queryByTestId('legacy-row')).toBeNull();
   });
@@ -195,28 +265,41 @@ describe('McpMarketView', () => {
 
     state.market = { ...state.market, loading: false, error: new Error('down') };
     renderView();
-    fireEvent.click(screen.getByText('mcp.market.actions.retry'));
+    fireEvent.click(screen.getAllByText('mcp.market.actions.retry')[0]);
     expect(state.market.reload).toHaveBeenCalled();
   });
 
-  it('shows the empty state with Browse templates', () => {
+  it('opens on the Market when nothing is set up yet', () => {
     state.market = { ...state.market, instances: [], assignments: [] };
     render(<McpMarketView legacyServers={[]} extensionServers={[]} renderLegacyServer={() => null} />);
-    expect(screen.getByText('mcp.market.empty')).toBeInTheDocument();
-    expect(screen.getByText('mcp.market.browseTemplates')).toBeInTheDocument();
+    expect(screen.getByTestId('library-tab-market')).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getAllByTestId('library-card').map((c) => c.getAttribute('data-card-id'))).toEqual(['paddle']);
+  });
+
+  it('opens on the project of the conversation the settings came from', () => {
+    state.origin = 'p-alpha';
+    renderView();
+    expect(screen.getByTestId('library-scope-title')).toHaveTextContent('alpha');
+    expect(cardIds(section('attached'))).toEqual([paddle.id]);
+  });
+
+  it('the drawer shows key names as set / not set and never a ref value', async () => {
+    renderView();
+    pickScope('project:p-alpha');
+    openCard(paddle.name);
+    expect(await screen.findByTestId('mcp-market-drawer-actions')).toBeInTheDocument();
+    expect(document.body.textContent).toContain('PADDLE_API_KEY');
+    expect(document.body.innerHTML).not.toContain('TB_PADDLE_PROD_READ__PADDLE_API_KEY');
   });
 
   it('attaches context7 globally and detaches a project attachment from the drawer', async () => {
     renderView();
-    const card = screen
-      .getAllByTestId('mcp-market-instance')
-      .find((n) => n.getAttribute('data-instance-name') === 'context7')!;
-    fireEvent.click(within(card).getByText('mcp.market.actions.manage'));
+    fireEvent.click(within(section('unassigned')).getByTestId('library-section-toggle'));
+    openCard('context7');
     const drawerActions = await screen.findByTestId('mcp-market-drawer-actions');
     fireEvent.click(within(drawerActions).getByText('mcp.market.actions.attach'));
 
-    const dialog = await screen.findByTestId('mcp-market-attach');
-    expect(dialog).toBeInTheDocument();
+    expect(await screen.findByTestId('mcp-market-attach')).toBeInTheDocument();
     // context7 may be global: Global is the default scope, every CLI it supports is pre-selected.
     const okButtons = screen.getAllByText('mcp.market.actions.attach').map((n) => n.closest('button')!);
     fireEvent.click(okButtons[okButtons.length - 1]);
@@ -226,10 +309,8 @@ describe('McpMarketView', () => {
 
     cleanup();
     renderView();
-    const paddleCard = screen
-      .getAllByTestId('mcp-market-instance')
-      .find((n) => n.getAttribute('data-instance-name') === paddle.name)!;
-    fireEvent.click(within(paddleCard).getByText('mcp.market.actions.manage'));
+    pickScope('project:p-alpha');
+    openCard(paddle.name);
     const attachments = await screen.findByTestId('mcp-market-drawer-attachments');
     fireEvent.click(within(attachments).getByText('mcp.market.actions.detach'));
     await waitFor(() =>
@@ -271,10 +352,11 @@ describe('McpMarketView', () => {
 
     const openAndRefresh = async () => {
       renderView();
+      fireEvent.click(within(section('unassigned')).getByTestId('library-section-toggle'));
       expect(screen.getByTestId('mcp-market-template-update')).toHaveTextContent(
         'mcp.market.template.updateAvailableVersions'
       );
-      fireEvent.click(screen.getByText('mcp.market.actions.manage'));
+      openCard('tb-outdated');
       fireEvent.click(await screen.findByTestId('mcp-market-refresh'));
       fireEvent.click(await screen.findByText('mcp.market.confirm.refresh.ok'));
     };

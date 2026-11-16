@@ -121,7 +121,8 @@
     "noSearchResults": "没有匹配的技能。",
     "customHint": "支持技能目录、父目录或 zip 导入；单文件上限 {{maxFileSize}}、单技能上限 {{maxTotalSize}}；同名导入会覆盖现有技能。",
     "officialHint": "AionUi 官方内置的技能，开箱即用、只读，随版本更新维护。",
-    "deleteAffectsNewOnlyHint": "删除仅影响新会话：历史会话中已选用的技能仍可继续使用。"
+    "deleteAffectsNewOnlyHint": "删除仅影响新会话：历史会话中已选用的技能仍可继续使用。",
+    "importHelpLabel": "导入说明"
   },
   "authMethod": "认证",
   "geminiApiKey": "Gemini API 密钥",
@@ -1415,5 +1416,127 @@
   "crossSessionMessageDesc": "允许 Agent 向你的其他会话发送消息。关闭后，输入框的 @@ 会话提及与投递能力同时停用。",
   "crossSessionMessageDisabledBanner": "跨会话消息已关闭，输入框的 @@ 会话提及不可用。",
   "crossSessionMessageResume": "重新开启",
-  "crossSessionMessageUpdateFailed": "跨会话消息设置更新失败"
+  "crossSessionMessageUpdateFailed": "跨会话消息设置更新失败",
+  "library": {
+    "scope": "范围",
+    "categories": "分类",
+    "railLabel": "范围与分类",
+    "scopeGlobal": "全局",
+    "scopeChip": "范围：{{name}}",
+    "categoryChip": "分类：{{name}}",
+    "emptyProjects_one": "{{count}} 个空项目",
+    "emptyProjects_other": "{{count}} 个空项目",
+    "allCategories": "全部",
+    "count_one": "{{count}} 项",
+    "count_other": "{{count}} 项",
+    "tabActive": "已启用",
+    "tabLibrary": "库",
+    "tabsLabel": "视图",
+    "sourcesLabel": "来源",
+    "select": "选择",
+    "selectNamed": "选择 {{name}}",
+    "selected_one": "已选 {{count}} 项",
+    "selected_other": "已选 {{count}} 项",
+    "batchLabel": "已选项目",
+    "batchAdd": "添加到 {{scope}}",
+    "batchRemove": "从 {{scope}} 移除",
+    "batchDelete_one": "删除 {{count}} 个技能",
+    "batchDelete_other": "删除 {{count}} 个技能",
+    "batchDone_one": "已更新 {{scope}} 中的 {{count}} 个技能",
+    "batchDone_other": "已更新 {{scope}} 中的 {{count}} 个技能",
+    "moreActions": "{{name}} 的更多操作",
+    "menu": {
+      "details": "详情",
+      "removeFrom": "从 {{scope}} 移除",
+      "delete": "从库中删除"
+    },
+    "onIn": "在 {{scope}} 中启用",
+    "turnedOn": "{{name}} 已在 {{scope}} 中启用",
+    "turnedOff": "{{name}} 已在 {{scope}} 中停用",
+    "kitAttached": "已将 {{name}} 添加到 {{scope}}",
+    "kitDetached": "已从 {{scope}} 移除 {{name}}",
+    "detachKit": "解除套件",
+    "detachKitTitle": "解除 {{name}}？",
+    "detachKitBody": "{{scope}} 中的会话将不再获得 {{name}} 的技能和 MCP。套件本身会保留。",
+    "addCategory": "将整个分类添加到 {{scope}}",
+    "editKit": "编辑套件",
+    "manageInGlobal": "在全局中管理",
+    "fromGlobalHint": "来自全局。在这里停用只影响本项目。",
+    "group": {
+      "projectKit": "本项目的套件",
+      "single": "已添加到 {{scope}}",
+      "fromGlobal": "来自全局",
+      "removed": "在此停用",
+      "globalKit": "全局套件",
+      "kit": "来自共享套件 · {{name}}",
+      "alwaysOn": "始终启用（内置）"
+    },
+    "noProjectKit": "{{name}} 还没有套件。创建一个以选择它的技能和 MCP。",
+    "emptyGroup": "暂无内容。",
+    "emptyActive": "这里还没有启用任何内容——去库里看看。",
+    "browseLibrary": "浏览库",
+    "noMatch": "没有匹配项。",
+    "results": "结果",
+    "usedIn": "使用位置",
+    "usedNowhere": "尚未在任何地方启用。",
+    "inKit": "套件：{{name}}",
+    "summary": {
+      "active_one": "{{count}} 个已启用",
+      "active_other": "{{count}} 个已启用",
+      "fromGlobal_one": "{{count}} 个来自全局",
+      "fromGlobal_other": "{{count}} 个来自全局",
+      "kits_one": "{{count}} 个套件",
+      "kits_other": "{{count}} 个套件"
+    },
+    "suggestedFor": "为 {{name}} 推荐",
+    "addAllToProjectKit": "全部添加到项目套件"
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "项目",
+      "builtin": "内置",
+      "other": "其他"
+    },
+    "filter": {
+      "all": "全部",
+      "mine": "我的",
+      "official": "官方",
+      "imported": "导入"
+    },
+    "source": {
+      "mine": "我的",
+      "official": "官方",
+      "imported": "导入",
+      "alwaysOn": "始终启用"
+    },
+    "openPage": "打开完整页面",
+    "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "智能体可用的 MCP 服务器，以及每个服务器在哪里启用。",
+    "tabMarket": "市场",
+    "tabKits": "套件",
+    "needsKey": "需要密钥",
+    "noKey": "无需密钥",
+    "added": "已添加",
+    "viaKit": "通过 {{name}}",
+    "attachElsewhere": "连接到…",
+    "detachTitle": "从 {{scope}} 移除 {{name}}？",
+    "detachBody": "{{scope}} 中的会话将不再获得 {{name}}。实例及其密钥会保留。",
+    "group": {
+      "attached": "已连接到 {{scope}}",
+      "unassigned": "未连接到任何地方",
+      "custom": "你的服务器",
+      "extensions": "来自扩展"
+    },
+    "unassignedHint": "连接到全局或某个项目后才能使用。",
+    "nothingAttached": "{{scope}} 还没有连接任何内容。",
+    "browseMarket": "浏览市场",
+    "filter": {
+      "all": "全部",
+      "official": "官方",
+      "community": "社区",
+      "custom": "自定义"
+    }
+  }
 }

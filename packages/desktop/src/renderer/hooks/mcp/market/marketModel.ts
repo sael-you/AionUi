@@ -236,69 +236,6 @@ export const attachConflicts = (
 /** A project the sidebar lists (`useStandardProjects`); only ones with a backend id can be attached. */
 export type MarketProject = { workspace: string; name: string; project_id?: string };
 
-export type MarketProjectGroup = {
-  projectId: string;
-  /** `null` when the assignment names a project the sidebar does not list. */
-  project: MarketProject | null;
-  instances: McpMarketInstance[];
-};
-
-export type MarketGroups = {
-  global: McpMarketInstance[];
-  projects: MarketProjectGroup[];
-  unassigned: McpMarketInstance[];
-};
-
-const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name);
-
-/**
- * Group market instances: Global (a global assignment), one group per project
- * (an instance shows in every project it is attached to, whole project or an
- * assistant of it), and Unassigned. Every listed project gets a group, even an
- * empty one, so something can be attached to it.
- */
-export const groupMarketInstances = (
-  instances: readonly McpMarketInstance[],
-  assignments: readonly McpMarketAssignment[],
-  projects: readonly MarketProject[]
-): MarketGroups => {
-  const known = new Set(instances.map((i) => i.id));
-  const globalIds = new Set<string>();
-  const projectInstances = new Map<string, Set<string>>();
-  for (const a of assignments) {
-    if (!known.has(a.instance_id)) continue;
-    if (!a.project_id) {
-      globalIds.add(a.instance_id);
-      continue;
-    }
-    const set = projectInstances.get(a.project_id) ?? new Set<string>();
-    set.add(a.instance_id);
-    projectInstances.set(a.project_id, set);
-  }
-  const sorted = [...instances].toSorted(byName);
-  const pick = (ids: Set<string> | undefined) => sorted.filter((i) => ids?.has(i.id));
-
-  const groups: MarketProjectGroup[] = [];
-  const seen = new Set<string>();
-  for (const project of [...projects].toSorted(byName)) {
-    if (!project.project_id || seen.has(project.project_id)) continue;
-    seen.add(project.project_id);
-    groups.push({ projectId: project.project_id, project, instances: pick(projectInstances.get(project.project_id)) });
-  }
-  for (const [projectId, ids] of [...projectInstances.entries()].toSorted(([a], [b]) => a.localeCompare(b))) {
-    if (seen.has(projectId)) continue;
-    groups.push({ projectId, project: null, instances: pick(ids) });
-  }
-
-  const attached = new Set(globalIds);
-  for (const ids of projectInstances.values()) for (const id of ids) attached.add(id);
-  return {
-    global: pick(globalIds),
-    projects: groups,
-    unassigned: sorted.filter((i) => !attached.has(i.id)),
-  };
-};
-
 // ---------------------------------------------------------------------------
 // Search and filters
 // ---------------------------------------------------------------------------
@@ -370,17 +307,6 @@ export const templateCategory = (template: Pick<McpMarketTemplate, 'category'>):
   (MCP_TEMPLATE_CATEGORIES as readonly string[]).includes(template.category ?? '')
     ? (template.category as McpTemplateCategory)
     : 'other';
-
-export type TemplateCategoryGroup = { category: McpTemplateCategory; templates: McpMarketTemplate[] };
-
-/** Templates grouped by category (display order), core picks before optional ones, then by name. */
-export const groupTemplatesByCategory = (templates: readonly McpMarketTemplate[]): TemplateCategoryGroup[] =>
-  MCP_TEMPLATE_CATEGORIES.map((category) => ({
-    category,
-    templates: templates
-      .filter((tpl) => templateCategory(tpl) === category)
-      .toSorted((a, b) => Number(a.optional === true) - Number(b.optional === true) || a.name.localeCompare(b.name)),
-  })).filter((g) => g.templates.length > 0);
 
 /** Secret keys the template requires (the "needs a key" line). */
 export const requiredSecretKeys = (template: Pick<McpMarketTemplate, 'env'>): string[] =>

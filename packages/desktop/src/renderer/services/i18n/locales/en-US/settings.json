@@ -121,7 +121,8 @@
     "noSearchResults": "No matching skills.",
     "customHint": "Import a skill folder, parent folder, or zip; up to {{maxFileSize}} per file and {{maxTotalSize}} per skill; importing the same name overwrites the existing skill.",
     "officialHint": "Official skills bundled with AionUi — ready to use out of the box, read-only, and updated with each release.",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "How importing works"
   },
   "authMethod": "Authentication",
   "geminiApiKey": "Gemini API Key",
@@ -1414,5 +1415,127 @@
   "crossSessionMessageDesc": "Let agents send messages to your other conversations. Turning this off also disables the @@ conversation mention in the input box.",
   "crossSessionMessageDisabledBanner": "Cross-conversation messages are off, so the @@ conversation mention is unavailable.",
   "crossSessionMessageResume": "Turn back on",
-  "crossSessionMessageUpdateFailed": "Failed to update the cross-conversation message setting"
+  "crossSessionMessageUpdateFailed": "Failed to update the cross-conversation message setting",
+  "library": {
+    "scope": "Scope",
+    "categories": "Categories",
+    "railLabel": "Scopes and categories",
+    "scopeGlobal": "Global",
+    "scopeChip": "Scope: {{name}}",
+    "categoryChip": "Category: {{name}}",
+    "emptyProjects_one": "{{count}} empty project",
+    "emptyProjects_other": "{{count}} empty projects",
+    "allCategories": "All",
+    "count_one": "{{count}} item",
+    "count_other": "{{count}} items",
+    "tabActive": "Active",
+    "tabLibrary": "Library",
+    "tabsLabel": "View",
+    "sourcesLabel": "Source",
+    "select": "Select",
+    "selectNamed": "Select {{name}}",
+    "selected_one": "{{count}} selected",
+    "selected_other": "{{count}} selected",
+    "batchLabel": "Selected items",
+    "batchAdd": "Add to {{scope}}",
+    "batchRemove": "Remove from {{scope}}",
+    "batchDelete_one": "Delete {{count}} skill",
+    "batchDelete_other": "Delete {{count}} skills",
+    "batchDone_one": "Updated {{count}} skill in {{scope}}",
+    "batchDone_other": "Updated {{count}} skills in {{scope}}",
+    "moreActions": "More actions for {{name}}",
+    "menu": {
+      "details": "Details",
+      "removeFrom": "Remove from {{scope}}",
+      "delete": "Delete from library"
+    },
+    "onIn": "On in {{scope}}",
+    "turnedOn": "{{name}} is on in {{scope}}",
+    "turnedOff": "{{name}} is off in {{scope}}",
+    "kitAttached": "{{name}} added to {{scope}}",
+    "kitDetached": "{{name}} removed from {{scope}}",
+    "detachKit": "Detach kit",
+    "detachKitTitle": "Detach {{name}}?",
+    "detachKitBody": "Conversations in {{scope}} stop getting the skills and MCPs of {{name}}. The kit itself stays.",
+    "addCategory": "Add whole category to {{scope}}",
+    "editKit": "Edit kit",
+    "manageInGlobal": "Manage in Global",
+    "fromGlobalHint": "Comes from Global. Turning one off here only affects this project.",
+    "group": {
+      "projectKit": "This project's kit",
+      "single": "Added to {{scope}}",
+      "fromGlobal": "From Global",
+      "removed": "Turned off here",
+      "globalKit": "Global kit",
+      "kit": "From shared kits · {{name}}",
+      "alwaysOn": "Always on (built-in)"
+    },
+    "noProjectKit": "{{name}} has no kit yet. Create one to choose its skills and MCPs.",
+    "emptyGroup": "Nothing here yet.",
+    "emptyActive": "Nothing is active here yet — browse the Library.",
+    "browseLibrary": "Browse the Library",
+    "noMatch": "No matches.",
+    "results": "Results",
+    "usedIn": "Used in",
+    "usedNowhere": "Not on anywhere yet.",
+    "inKit": "Kit: {{name}}",
+    "summary": {
+      "active_one": "{{count}} active",
+      "active_other": "{{count}} active",
+      "fromGlobal_one": "{{count}} from Global",
+      "fromGlobal_other": "{{count}} from Global",
+      "kits_one": "{{count}} kit",
+      "kits_other": "{{count}} kits"
+    },
+    "suggestedFor": "Suggested for {{name}}",
+    "addAllToProjectKit": "Add all to project kit"
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "Project",
+      "builtin": "Built-in",
+      "other": "Other"
+    },
+    "filter": {
+      "all": "All",
+      "mine": "Mine",
+      "official": "Official",
+      "imported": "Imported"
+    },
+    "source": {
+      "mine": "Mine",
+      "official": "Official",
+      "imported": "Imported",
+      "alwaysOn": "Always on"
+    },
+    "openPage": "Open full page",
+    "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "MCP servers your agents can use, and where each one is on.",
+    "tabMarket": "Market",
+    "tabKits": "Kits",
+    "needsKey": "Needs key",
+    "noKey": "No key needed",
+    "added": "Added",
+    "viaKit": "Via {{name}}",
+    "attachElsewhere": "Attach to…",
+    "detachTitle": "Remove {{name}} from {{scope}}?",
+    "detachBody": "Conversations in {{scope}} stop getting {{name}}. The instance and its keys stay.",
+    "group": {
+      "attached": "Attached to {{scope}}",
+      "unassigned": "Not attached anywhere",
+      "custom": "Your own servers",
+      "extensions": "From extensions"
+    },
+    "unassignedHint": "Attach them to Global or a project to use them.",
+    "nothingAttached": "Nothing is attached to {{scope}} yet.",
+    "browseMarket": "Browse the Market",
+    "filter": {
+      "all": "All",
+      "official": "Official",
+      "community": "Community",
+      "custom": "Custom"
+    }
+  }
 }

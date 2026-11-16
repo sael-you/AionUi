@@ -121,7 +121,8 @@
     "noSearchResults": "一致するスキルがありません。",
     "customHint": "スキルフォルダ、親フォルダ、または zip をインポートできます。1 ファイルあたり最大 {{maxFileSize}}、1 スキルあたり最大 {{maxTotalSize}}。同名でインポートすると既存のスキルを上書きします。",
     "officialHint": "AionUi に同梱される公式スキル。すぐに使え、読み取り専用で、リリースごとに更新されます。",
-    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working."
+    "deleteAffectsNewOnlyHint": "Deleting only affects new conversations. Skills already selected in existing conversations keep working.",
+    "importHelpLabel": "インポートの仕組み"
   },
   "authMethod": "認証",
   "geminiApiKey": "Gemini API キー",
@@ -1416,5 +1417,127 @@
   "crossSessionMessageDesc": "エージェントが他の会話にメッセージを送れるようにします。オフにすると入力欄の @@ 会話メンションも無効になります。",
   "crossSessionMessageDisabledBanner": "会話間メッセージはオフです。入力欄の @@ 会話メンションは使用できません。",
   "crossSessionMessageResume": "再度オンにする",
-  "crossSessionMessageUpdateFailed": "会話間メッセージ設定の更新に失敗しました"
+  "crossSessionMessageUpdateFailed": "会話間メッセージ設定の更新に失敗しました",
+  "library": {
+    "scope": "スコープ",
+    "categories": "カテゴリ",
+    "railLabel": "スコープとカテゴリ",
+    "scopeGlobal": "グローバル",
+    "scopeChip": "スコープ: {{name}}",
+    "categoryChip": "カテゴリ: {{name}}",
+    "emptyProjects_one": "空のプロジェクト {{count}} 件",
+    "emptyProjects_other": "空のプロジェクト {{count}} 件",
+    "allCategories": "すべて",
+    "count_one": "{{count}} 件",
+    "count_other": "{{count}} 件",
+    "tabActive": "有効",
+    "tabLibrary": "ライブラリ",
+    "tabsLabel": "表示",
+    "sourcesLabel": "ソース",
+    "select": "選択",
+    "selectNamed": "{{name}} を選択",
+    "selected_one": "{{count}} 件選択中",
+    "selected_other": "{{count}} 件選択中",
+    "batchLabel": "選択した項目",
+    "batchAdd": "{{scope}} に追加",
+    "batchRemove": "{{scope}} から外す",
+    "batchDelete_one": "{{count}} 件のスキルを削除",
+    "batchDelete_other": "{{count}} 件のスキルを削除",
+    "batchDone_one": "{{scope}} のスキル {{count}} 件を更新しました",
+    "batchDone_other": "{{scope}} のスキル {{count}} 件を更新しました",
+    "moreActions": "{{name}} のその他の操作",
+    "menu": {
+      "details": "詳細",
+      "removeFrom": "{{scope}} から外す",
+      "delete": "ライブラリから削除"
+    },
+    "onIn": "{{scope}} で有効",
+    "turnedOn": "{{name}} を {{scope}} で有効にしました",
+    "turnedOff": "{{name}} を {{scope}} で無効にしました",
+    "kitAttached": "{{name}} を {{scope}} に追加しました",
+    "kitDetached": "{{name}} を {{scope}} から外しました",
+    "detachKit": "キットを外す",
+    "detachKitTitle": "{{name}} を外しますか?",
+    "detachKitBody": "{{scope}} の会話は {{name}} のスキルと MCP を受け取らなくなります。キット自体は残ります。",
+    "addCategory": "カテゴリ全体を {{scope}} に追加",
+    "editKit": "キットを編集",
+    "manageInGlobal": "グローバルで管理",
+    "fromGlobalHint": "グローバルから適用されています。ここで無効にしてもこのプロジェクトだけに反映されます。",
+    "group": {
+      "projectKit": "このプロジェクトのキット",
+      "single": "{{scope}} に追加済み",
+      "fromGlobal": "グローバルから",
+      "removed": "ここで無効",
+      "globalKit": "グローバルキット",
+      "kit": "共有キットから · {{name}}",
+      "alwaysOn": "常に有効（組み込み）"
+    },
+    "noProjectKit": "{{name}} にはまだキットがありません。作成するとスキルと MCP を選べます。",
+    "emptyGroup": "まだ何もありません。",
+    "emptyActive": "ここではまだ何も有効になっていません。ライブラリを見てみましょう。",
+    "browseLibrary": "ライブラリを見る",
+    "noMatch": "一致するものはありません。",
+    "results": "結果",
+    "usedIn": "使用場所",
+    "usedNowhere": "まだどこでも有効になっていません。",
+    "inKit": "キット: {{name}}",
+    "summary": {
+      "active_one": "{{count}} 件有効",
+      "active_other": "{{count}} 件有効",
+      "fromGlobal_one": "グローバルから {{count}} 件",
+      "fromGlobal_other": "グローバルから {{count}} 件",
+      "kits_one": "キット {{count}} 件",
+      "kits_other": "キット {{count}} 件"
+    },
+    "suggestedFor": "{{name}} へのおすすめ",
+    "addAllToProjectKit": "すべてプロジェクトキットに追加"
+  },
+  "skillsLibrary": {
+    "category": {
+      "project": "プロジェクト",
+      "builtin": "組み込み",
+      "other": "その他"
+    },
+    "filter": {
+      "all": "すべて",
+      "mine": "自分の",
+      "official": "公式",
+      "imported": "インポート"
+    },
+    "source": {
+      "mine": "自分の",
+      "official": "公式",
+      "imported": "インポート",
+      "alwaysOn": "常に有効"
+    },
+    "openPage": "ページ全体を開く",
+    "skillFile": "SKILL.md"
+  },
+  "toolsLibrary": {
+    "description": "エージェントが使える MCP サーバーと、それぞれが有効な場所。",
+    "tabMarket": "マーケット",
+    "tabKits": "キット",
+    "needsKey": "キーが必要",
+    "noKey": "キー不要",
+    "added": "追加済み",
+    "viaKit": "{{name}} 経由",
+    "attachElsewhere": "接続先…",
+    "detachTitle": "{{name}} を {{scope}} から外しますか?",
+    "detachBody": "{{scope}} の会話は {{name}} を受け取らなくなります。インスタンスとキーは残ります。",
+    "group": {
+      "attached": "{{scope}} に接続済み",
+      "unassigned": "どこにも接続されていない",
+      "custom": "自分のサーバー",
+      "extensions": "拡張機能から"
+    },
+    "unassignedHint": "使うにはグローバルかプロジェクトに接続してください。",
+    "nothingAttached": "{{scope}} にはまだ何も接続されていません。",
+    "browseMarket": "マーケットを見る",
+    "filter": {
+      "all": "すべて",
+      "official": "公式",
+      "community": "コミュニティ",
+      "custom": "カスタム"
+    }
+  }
 }

@@ -49,7 +49,6 @@ import {
   setClientBusinessSetting,
 } from '@/renderer/services/clientBusinessSettings';
 import classNames from 'classnames';
-import KitsSection from '@/renderer/pages/settings/ToolsSettings/kits/KitsSection';
 import { useSettingsTabNavigate, useSettingsViewMode } from '../settingsViewContext';
 
 type MessageInstance = ReturnType<typeof Message.useMessage>[0];
@@ -200,14 +199,10 @@ const ModalMcpManagementSection: React.FC<{
 
   return (
     <div className='flex flex-col gap-16px min-h-0'>
-      <div className='flex gap-8px items-center justify-between'>
-        <div className='text-14px text-t-primary'>{t('settings.mcpSettings')}</div>
-        <div>{renderAddButton()}</div>
-      </div>
-
       <div className='flex-1 min-h-0'>
         <AionScrollArea className={classNames('max-h-360px', isPageMode && 'max-h-none')} disableOverflow={isPageMode}>
           <McpMarketView
+            headerActions={renderAddButton()}
             legacyServers={visibleMcpServers}
             extensionServers={extensionMcpServers}
             renderLegacyServer={(server, readOnly) =>
@@ -509,8 +504,8 @@ const ToolsModalContent: React.FC = () => {
       {/* Content Area */}
       <AionScrollArea className='flex-1 min-h-0 pb-16px' disableOverflow={isPageMode}>
         <div className='space-y-16px'>
-          {/* MCP 工具配置 */}
-          <div className='px-[12px] md:px-[32px] py-[24px] bg-2 rd-12px md:rd-16px flex flex-col min-h-0 border border-border-2'>
+          {/* MCP library (C33): its own header, rail, tabs (Active · Market · Kits) */}
+          <div className='flex flex-col min-h-0'>
             <div className='flex-1 min-h-0'>
               <AionScrollArea
                 className={classNames('h-full', isPageMode && 'overflow-visible')}
@@ -526,10 +521,6 @@ const ToolsModalContent: React.FC = () => {
                 />
               </AionScrollArea>
             </div>
-          </div>
-          {/* Kits (C27) */}
-          <div className='px-[12px] md:px-[32px] py-[24px] bg-2 rd-12px md:rd-16px border border-border-2'>
-            <KitsSection />
           </div>
           {/* 图像生成 */}
           <div className='px-[12px] md:px-[32px] py-[24px] bg-2 rd-12px md:rd-16px border border-border-2'>
