@@ -223,16 +223,17 @@ describe('ServerBrowserSettings (C30 Settings > Browser)', () => {
     await waitFor(() => expect(Message.error).toHaveBeenCalledWith('settings.serverBrowser.errors.outOfRange'));
   });
 
-  it('adds a profile with only the fields that were filled in', async () => {
+  it('adds a profile with only the fields that were filled in, colour picked by its name', async () => {
     renderSettings();
     fireEvent.click(await screen.findByRole('button', { name: /settings\.serverBrowser\.profile\.add/ }));
     const dialog = await screen.findByTestId('browser-profile-modal');
     fireEvent.change(within(dialog).getByPlaceholderText('settings.serverBrowser.profile.namePlaceholder'), {
       target: { value: '  Work  ' },
     });
+    fireEvent.click(within(dialog).getByRole('radio', { name: 'conversation.history.projectColors.teal' }));
     fireEvent.click(screen.getByRole('button', { name: 'common.save' }));
 
-    await waitFor(() => expect(api.createInstance.invoke).toHaveBeenCalledWith({ name: 'Work' }));
+    await waitFor(() => expect(api.createInstance.invoke).toHaveBeenCalledWith({ name: 'Work', color: 'teal' }));
     expect(Message.success).toHaveBeenCalledWith('settings.serverBrowser.profile.added');
   });
 

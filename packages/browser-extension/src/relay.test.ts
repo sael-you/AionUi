@@ -241,6 +241,26 @@ describe('sharing', () => {
     expect(h.socket().sent.at(-1)).toMatchObject({ id: 3, error: { code: 'not_attached' } });
   });
 
+  it('sends the full state on every URL or title change of a shared tab (approvals read the origin from it)', async () => {
+    const h = await online();
+    await h.relay.share(1);
+    const states = () => h.socket().sent.filter((frame) => frame.type === 'state');
+    const before = states().length;
+    h.relay.onTabUpdated(1, { url: 'https://accounts.google.com/signin' });
+    expect(states().at(-1)).toEqual({
+      type: 'state',
+      new_tabs: true,
+      tabs: [{ tab_id: 1, url: 'https://accounts.google.com/signin', title: 'Mail' }],
+    });
+    h.relay.onTabUpdated(1, { title: 'Sign in' });
+    expect(states().at(-1)).toMatchObject({ tabs: [{ tab_id: 1, title: 'Sign in' }] });
+    expect(states()).toHaveLength(before + 2);
+    // No change, or a tab that is not shared: nothing is sent.
+    h.relay.onTabUpdated(1, { url: 'https://accounts.google.com/signin' });
+    h.relay.onTabUpdated(2, { url: 'https://evil.example.com/' });
+    expect(states()).toHaveLength(before + 2);
+  });
+
   it('forwards every debugger event of a shared tab (Fetch included) and nothing from other tabs', async () => {
     const h = await online();
     await h.relay.share(1);

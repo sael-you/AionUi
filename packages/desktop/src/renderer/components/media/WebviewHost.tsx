@@ -668,6 +668,7 @@ const ElectronWebviewHost: React.FC<WebviewHostProps> = ({
               onFocus={(e) => e.target.select()}
               className='toolbar-input'
               placeholder={t('preview.browser.addressPlaceholder')}
+              data-browser-address=''
             />
           </form>
         </div>

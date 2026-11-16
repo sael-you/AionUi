@@ -11,6 +11,7 @@
  */
 
 import { Input, Modal, Radio } from '@arco-design/web-react';
+import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -117,17 +118,36 @@ const BrowserProfileModal: React.FC<BrowserProfileModalProps> = ({ target, savin
             {t('settings.serverBrowser.profile.color')}
           </span>
           <Radio.Group
-            type='button'
-            size='small'
-            className='flex flex-wrap'
+            className='flex flex-wrap items-center gap-6px'
             value={draft.color}
             aria-labelledby='browser-profile-color'
             onChange={(value: string) => update({ color: value })}
           >
-            <Radio value=''>{t('settings.serverBrowser.profile.noColor')}</Radio>
+            <Radio value='' className='!m-0'>
+              {({ checked }) => (
+                <span
+                  className={classNames(
+                    'inline-flex h-24px items-center rd-12px border border-solid px-10px text-12px text-t-primary',
+                    checked ? 'border-primary-6 bg-fill-2' : 'border-3'
+                  )}
+                >
+                  {t('settings.serverBrowser.profile.noColor')}
+                </span>
+              )}
+            </Radio>
             {BROWSER_PROFILE_COLORS.map((color) => (
-              <Radio key={color} value={color} aria-label={t(`conversation.history.projectColors.${color}`)}>
-                <Swatch color={color} />
+              <Radio key={color} value={color} className='!m-0'>
+                {({ checked }) => (
+                  <span
+                    className={classNames(
+                      'inline-flex size-24px items-center justify-center rd-full border-[2px] border-solid',
+                      checked ? 'border-primary-6' : 'border-transparent'
+                    )}
+                  >
+                    <Swatch color={color} />
+                    <span className='sr-only'>{t(`conversation.history.projectColors.${color}`)}</span>
+                  </span>
+                )}
               </Radio>
             ))}
           </Radio.Group>

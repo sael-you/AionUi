@@ -51,6 +51,8 @@ const BrowserScopeSelect: React.FC<{
         return profile ? <BrowserProfileLabel profile={profile} /> : null;
       }}
       onChange={(key: string) => onChange(scopeOf(key))}
+      // The list may be wider than the narrow phone trigger: grow it and keep it on screen (right-aligned).
+      triggerProps={{ autoAlignPopupWidth: false, autoAlignPopupMinWidth: true, position: 'br' }}
       data-testid='server-browser-profile'
     >
       {profiles.map((profile) => (

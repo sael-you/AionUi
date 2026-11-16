@@ -132,6 +132,8 @@ export interface PreviewContextValue {
    * Open a browser tab; blank page when url is omitted.
    */
   openBrowserTab: (url?: string) => void;
+  /** Switch to an existing tab and show the panel (switchTab alone keeps a collapsed panel collapsed). */
+  revealTab: (tabId: string) => void;
   closePreview: () => void;
   /** 切换最大化 / Toggle maximized. */
   toggleMaximized: () => void;
@@ -881,6 +883,12 @@ export const PreviewProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [openPreview]
   );
 
+  const revealTab = useCallback((tabId: string) => {
+    if (!tabsRef.current.some((tab) => tab.id === tabId)) return;
+    setActiveTabId(tabId);
+    setIsOpen(true);
+  }, []);
+
   /**
    * Hide the preview panel, keeping its tabs.
    *
@@ -1369,6 +1377,7 @@ export const PreviewProvider: React.FC<{ children: React.ReactNode }> = ({ child
       updateContent,
       updateTab,
       openBrowserTab,
+      revealTab,
       browserTabLimitHitAt,
       persistQuotaExceededAt,
       saveContent,
@@ -1400,6 +1409,7 @@ export const PreviewProvider: React.FC<{ children: React.ReactNode }> = ({ child
     updateContent,
     updateTab,
     openBrowserTab,
+    revealTab,
     browserTabLimitHitAt,
     persistQuotaExceededAt,
     saveContent,

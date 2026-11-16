@@ -289,6 +289,7 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({
           value={address}
           placeholder={t('preview.browser.addressPlaceholder')}
           aria-label={t('preview.browser.addressLabel')}
+          data-browser-address=''
           onFocus={(event) => {
             setEditingAddress(true);
             event.target.select();
