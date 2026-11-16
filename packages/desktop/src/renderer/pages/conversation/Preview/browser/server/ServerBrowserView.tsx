@@ -300,6 +300,8 @@ const ServerBrowserView: React.FC<ServerBrowserViewProps> = ({ profiles, request
               return current ? <BrowserProfileLabel profile={current} /> : null;
             }}
             onChange={(value: number) => setInstance(value)}
+            // The list may be wider than the narrow phone trigger: grow it and keep it on screen (right-aligned).
+            triggerProps={{ autoAlignPopupWidth: false, autoAlignPopupMinWidth: true, position: 'br' }}
             data-testid='server-browser-profile'
           >
             {profiles.map((profile) => (
