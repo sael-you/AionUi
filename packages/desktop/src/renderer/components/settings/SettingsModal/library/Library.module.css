@@ -413,11 +413,14 @@
   color: var(--primary);
 }
 
+/* One row under the name (vendor, badges, key chip); wraps only when the card is narrow. */
 .cardChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  align-items: center;
+  gap: 4px 6px;
   min-width: 0;
+  font-size: 12px;
 }
 
 .cardCheck {

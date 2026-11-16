@@ -111,7 +111,6 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
           >
             {name}
           </Button>
-          {chips ? <div className={styles.cardChips}>{chips}</div> : null}
         </div>
         {menu && menu.length > 0 && !batch ? (
           <span onClick={(event) => event.stopPropagation()}>
@@ -147,6 +146,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
           </span>
         ) : null}
       </div>
+      {chips ? <div className={styles.cardChips}>{chips}</div> : null}
       {description ? (
         <p id={descriptionId} className={styles.cardDescription} title={description}>
           {description}
