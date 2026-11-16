@@ -642,6 +642,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}}（累計第 {{attempts}} 次重試，已等待 {{elapsed}}——Agent 的服務方反覆中斷連線，AionUi 正在等待重連。）"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "此工作階段已停用背景工作。"
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "此代理無法將此工具呼叫轉到背景。"
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "此工具呼叫已經結束。"
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "無法將此工具呼叫轉到背景。"
       }
     }
   },
@@ -971,5 +983,10 @@
     "stackLabel": "{{count}} 則待傳送的引用",
     "stackLabel_one": "{{count}} 則待傳送的引用",
     "stackLabel_other": "{{count}} 則待傳送的引用"
+  },
+  "backgroundTool": {
+    "continue": "轉到背景繼續",
+    "running": "正在背景執行",
+    "failed": "無法將此工具呼叫轉到背景。"
   }
 }

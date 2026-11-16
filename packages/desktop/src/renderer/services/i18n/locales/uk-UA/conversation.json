@@ -650,6 +650,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (спроба {{attempts}}, минуло {{elapsed}} — провайдер агента постійно обриває з'єднання, AionUi очікує відновлення.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "Фонові завдання в цьому сеансі вимкнено."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "Цей агент не може перевести цей виклик інструмента у фон."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "Виклик інструмента вже завершився."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "Не вдалося перевести виклик інструмента у фон."
       }
     }
   },
@@ -1005,5 +1017,10 @@
     "stackLabel_few": "{{count}} цитати до надсилання",
     "stackLabel_many": "{{count}} цитат до надсилання",
     "stackLabel_other": "{{count}} цитати до надсилання"
+  },
+  "backgroundTool": {
+    "continue": "Продовжити у фоні",
+    "running": "Виконується у фоні",
+    "failed": "Не вдалося перевести виклик інструмента у фон."
   }
 }

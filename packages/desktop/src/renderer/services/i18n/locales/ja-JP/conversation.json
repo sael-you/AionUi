@@ -642,6 +642,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}}（累計 {{attempts}} 回目の再試行、経過 {{elapsed}} — エージェントの提供元が接続を切断し続けており、AionUi は再接続を待っています。）"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "このセッションではバックグラウンドタスクが無効です。"
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "このエージェントはこのツール呼び出しをバックグラウンドに移せません。"
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "ツール呼び出しはすでに終了していました。"
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "ツール呼び出しをバックグラウンドに移せませんでした。"
       }
     }
   },
@@ -971,5 +983,10 @@
     "stackLabel": "送信する引用 {{count}} 件",
     "stackLabel_one": "送信する引用 {{count}} 件",
     "stackLabel_other": "送信する引用 {{count}} 件"
+  },
+  "backgroundTool": {
+    "continue": "バックグラウンドで続行",
+    "running": "バックグラウンドで実行中",
+    "failed": "ツール呼び出しをバックグラウンドに移せませんでした。"
   }
 }

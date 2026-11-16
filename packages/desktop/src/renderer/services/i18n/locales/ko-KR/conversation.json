@@ -642,6 +642,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (누적 {{attempts}}번째 재시도, {{elapsed}} 경과 — 에이전트 제공자가 연결을 계속 끊고 있어 AionUi가 재연결을 기다리는 중입니다.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "이 세션에서는 백그라운드 작업이 비활성화되어 있습니다."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "이 에이전트는 이 도구 호출을 백그라운드로 옮길 수 없습니다."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "도구 호출이 이미 끝났습니다."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "도구 호출을 백그라운드로 옮기지 못했습니다."
       }
     }
   },
@@ -971,5 +983,10 @@
     "stackLabel": "보낼 인용 {{count}}개",
     "stackLabel_one": "보낼 인용 {{count}}개",
     "stackLabel_other": "보낼 인용 {{count}}개"
+  },
+  "backgroundTool": {
+    "continue": "백그라운드에서 계속",
+    "running": "백그라운드에서 실행 중",
+    "failed": "도구 호출을 백그라운드로 옮기지 못했습니다."
   }
 }

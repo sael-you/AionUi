@@ -644,6 +644,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} ({{attempts}}. deneme, {{elapsed}} geçti — aracının sağlayıcısı bağlantıyı sürekli kesiyor; AionUi bekliyor.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "Bu oturumda arka plan görevleri devre dışı."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "Bu ajan bu araç çağrısını arka plana alamaz."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "Araç çağrısı zaten bitmişti."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "Araç çağrısı arka plana alınamadı."
       }
     }
   },
@@ -973,5 +985,10 @@
     "stackLabel": "Gönderilecek {{count}} alıntı",
     "stackLabel_one": "Gönderilecek {{count}} alıntı",
     "stackLabel_other": "Gönderilecek {{count}} alıntı"
+  },
+  "backgroundTool": {
+    "continue": "Arka planda devam et",
+    "running": "Arka planda çalışıyor",
+    "failed": "Araç çağrısı arka plana alınamadı."
   }
 }

@@ -76,6 +76,12 @@ export interface ConversationContextValue {
    * attachments reach the agent as file paths, and the send box hints so.
    */
   promptCapability?: { image: boolean; audio: boolean };
+
+  /**
+   * Agent backend of an ACP-type conversation (`claude`, `codex`, …). Gates
+   * backend-specific affordances such as "Continue in background" (TASK-8).
+   */
+  backend?: string;
 }
 
 /**

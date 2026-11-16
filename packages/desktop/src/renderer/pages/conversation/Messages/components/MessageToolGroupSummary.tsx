@@ -1,15 +1,18 @@
 import type { BadgeProps } from '@arco-design/web-react';
-import { Badge, Button, Message, Spin, Tooltip } from '@arco-design/web-react';
+import { Badge, Button, Message, Spin, Tag, Tooltip } from '@arco-design/web-react';
 import { IconDown, IconRight } from '@arco-design/web-react/icon';
 import { Checklist, Download, Right } from '@icon-park/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ipcBridge } from '@/common';
 import { getAcpImageFileName } from '@/common/chat/acpToolCallOutput';
+import { backgroundRefused, isBackgroundToolSupported } from '@/common/chat/backgroundTool';
 import type { NormalizedToolCall, NormalizedToolStatus, ToolMessage } from '@/common/chat/normalizeToolCall';
 import { normalizeToolMessages, hasRunningToolMessages } from '@/common/chat/normalizeToolCall';
 import LocalImageView from '@/renderer/components/media/LocalImageView';
+import { useConversationContextSafe } from '@/renderer/hooks/context/ConversationContext';
 import { downloadFileFromPath } from '@/renderer/utils/file/download';
+import { useMessageList } from '../hooks';
 import './MessageToolGroupSummary.css';
 
 const statusToBadge = (status: NormalizedToolStatus): BadgeProps['status'] => {
@@ -26,6 +29,69 @@ const statusToBadge = (status: NormalizedToolStatus): BadgeProps['status'] => {
     default:
       return 'default';
   }
+};
+
+/** Calls already sent to the background in this page session (`conversation:call`). */
+const requestedCalls = new Set<string>();
+
+/** Test seam: forget the requested calls. */
+export const resetBackgroundRequests = (): void => requestedCalls.clear();
+
+/**
+ * "Continue in background" for a RUNNING tool call (TASK-8): the agent's turn
+ * goes on while the command keeps running; the card stays running until the
+ * task's own notification settles it. Shown only where the backend supports
+ * it and nothing refused it yet; afterwards a "running in background" tag.
+ */
+export const BackgroundToolButton: React.FC<{ callId: string; status: string }> = ({ callId, status }) => {
+  const { t } = useTranslation();
+  const conversation = useConversationContextSafe();
+  const messages = useMessageList();
+  const key = `${conversation?.conversation_id ?? ''}:${callId}`;
+  const [requested, setRequested] = useState(() => requestedCalls.has(key));
+  const [sending, setSending] = useState(false);
+
+  if (!conversation || status !== 'running') return null;
+  if (!isBackgroundToolSupported({ type: conversation.type, backend: conversation.backend })) return null;
+  if (requested) {
+    return (
+      <Tag size='small' color='arcoblue' className='flex-shrink-0'>
+        {t('conversation.backgroundTool.running')}
+      </Tag>
+    );
+  }
+  if (backgroundRefused(messages, callId)) return null;
+
+  const send = async () => {
+    setSending(true);
+    try {
+      await ipcBridge.conversation.backgroundToolCall.invoke({
+        conversation_id: conversation.conversation_id,
+        call_id: callId,
+      });
+      requestedCalls.add(key);
+      setRequested(true);
+    } catch {
+      Message.error(t('conversation.backgroundTool.failed'));
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <Button
+      size='mini'
+      type='text'
+      className='flex-shrink-0'
+      loading={sending}
+      onClick={(event) => {
+        event.stopPropagation();
+        void send();
+      }}
+    >
+      {t('conversation.backgroundTool.continue')}
+    </Button>
+  );
 };
 
 /**
@@ -106,6 +172,7 @@ export const ToolItemDetail: React.FC<{
             </span>
           )}
         </span>
+        <BackgroundToolButton callId={item.key} status={item.status} />
         {trailing}
         {hasDetail && (
           <span className='flex-shrink-0 cursor-pointer hover:color-#4E5969 transition-colors' onClick={toggleExpanded}>

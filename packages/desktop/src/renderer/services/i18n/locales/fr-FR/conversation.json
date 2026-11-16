@@ -642,6 +642,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (tentative {{attempts}}, {{elapsed}} écoulées — le fournisseur de l'agent coupe la connexion à répétition ; AionUi patiente.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "Les tâches en arrière-plan sont désactivées dans cette session."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "Cet agent ne peut pas passer cet appel d'outil en arrière-plan."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "L'appel d'outil était déjà terminé."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "Impossible de passer l'appel d'outil en arrière-plan."
       }
     }
   },
@@ -971,5 +983,10 @@
     "stackLabel": "{{count}} citations à envoyer",
     "stackLabel_one": "{{count}} citation à envoyer",
     "stackLabel_other": "{{count}} citations à envoyer"
+  },
+  "backgroundTool": {
+    "continue": "Continuer en arrière-plan",
+    "running": "En cours en arrière-plan",
+    "failed": "Impossible de passer l'appel d'outil en arrière-plan."
   }
 }

@@ -642,6 +642,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}} (تلاش {{attempts}}، {{elapsed}} سپری شده — ارائه‌دهنده ایجنت مدام اتصال را قطع می‌کند؛ AionUi در حال انتظار است.)"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "وظایف پس‌زمینه در این نشست غیرفعال است."
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "این عامل نمی‌تواند این فراخوانی ابزار را به پس‌زمینه ببرد."
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "فراخوانی ابزار قبلاً تمام شده بود."
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "انتقال فراخوانی ابزار به پس‌زمینه ممکن نشد."
       }
     }
   },
@@ -971,5 +983,10 @@
     "stackLabel": "{{count}} نقل‌قول برای ارسال",
     "stackLabel_one": "{{count}} نقل‌قول برای ارسال",
     "stackLabel_other": "{{count}} نقل‌قول برای ارسال"
+  },
+  "backgroundTool": {
+    "continue": "ادامه در پس‌زمینه",
+    "running": "در حال اجرا در پس‌زمینه",
+    "failed": "انتقال فراخوانی ابزار به پس‌زمینه ممکن نشد."
   }
 }

@@ -642,6 +642,18 @@
       },
       "CODEX_RETRYING": {
         "body": "{{detail}}（累计第 {{attempts}} 次重试，已等待 {{elapsed}}——Agent 的服务方反复中断连接，AionUi 正在等待重连。）"
+      },
+      "TOOL_BACKGROUND_DISABLED": {
+        "body": "此会话已禁用后台任务。"
+      },
+      "TOOL_BACKGROUND_UNSUPPORTED": {
+        "body": "此代理无法将该工具调用转到后台。"
+      },
+      "TOOL_BACKGROUND_NOT_RUNNING": {
+        "body": "该工具调用已经结束。"
+      },
+      "TOOL_BACKGROUND_FAILED": {
+        "body": "无法将该工具调用转到后台。"
       }
     }
   },
@@ -971,5 +983,10 @@
     "stackLabel": "{{count}} 条待发送的引用",
     "stackLabel_one": "{{count}} 条待发送的引用",
     "stackLabel_other": "{{count}} 条待发送的引用"
+  },
+  "backgroundTool": {
+    "continue": "转到后台继续",
+    "running": "正在后台运行",
+    "failed": "无法将该工具调用转到后台。"
   }
 }
