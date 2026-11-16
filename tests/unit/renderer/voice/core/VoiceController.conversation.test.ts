@@ -386,7 +386,9 @@ describe('conversation voice mode — idle, failures, restart (director decision
     f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' });
     expect(c.state.mode).toBe('armed');
     expect(c.store.getSnapshot().notice?.code).toBe('restartReconnected');
-    expect(f.earcons()).toContain('needsYou');
+    // Information only: the neutral tone, never needsYou (C26 leftover).
+    expect(f.earcons()).toContain('back');
+    expect(f.earcons()).not.toContain('needsYou');
     // No `interrupted` line from core: the notice never claims a task was cut.
     await vi.advanceTimersByTimeAsync(5000);
     expect(c.store.getSnapshot().notice?.code).toBe('restartReconnected');
@@ -395,8 +397,11 @@ describe('conversation voice mode — idle, failures, restart (director decision
   it("a restart followed by core's `interrupted` line switches to the interrupted text", async () => {
     const { f, c } = await listening();
     f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' });
+    expect(f.earcons()).not.toContain('needsYou');
     followUp(f, 'interrupted');
     expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
+    // The cut task is what needs you: its line brings the needs-you tone (once).
+    expect(f.earcons().filter((name) => name === 'needsYou')).toHaveLength(1);
   });
 
   it('the voice socket says which mode the device is armed in (core ends an old binding on jarvis)', async () => {
@@ -538,7 +543,8 @@ describe('conversation voice mode — review round fixes (#1, #2, #3, #17)', () 
   it("#21 core's spoken `interrupted` after the bar already showed the restart: one cue only", async () => {
     const { f, c } = await listening();
     f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' });
-    const tones = f.earcons().filter((e) => e === 'needsYou').length;
+    // The restart itself only has the neutral tone; the cut task is the one needs-you cue.
+    expect(f.earcons().filter((e) => e === 'needsYou')).toHaveLength(0);
     f.frame({
       name: 'voice.followUp',
       voiceSessionId: null,
@@ -549,7 +555,7 @@ describe('conversation voice mode — review round fixes (#1, #2, #3, #17)', () 
     });
     await vi.advanceTimersByTimeAsync(600);
     expect(f.fx.api.fetchClip).toHaveBeenCalledWith('int1');
-    expect(f.earcons().filter((e) => e === 'needsYou').length).toBe(tones);
+    expect(f.earcons().filter((e) => e === 'needsYou')).toHaveLength(1);
     expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
   });
 });

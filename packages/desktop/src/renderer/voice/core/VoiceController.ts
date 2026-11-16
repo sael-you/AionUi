@@ -806,7 +806,8 @@ export class VoiceController {
         // Only core knows whether a task was running: its `interrupted` follow-up turns this into
         // `restartInterrupted`. Until then the call merely came back after the restart.
         this.store.update({ notice: { code: 'restartReconnected' } });
-        this.earcon('needsYou');
+        // Information, not a call to act: the neutral "back" tone. `interrupted` brings needsYou.
+        this.earcon('back');
       } else {
         this.store.update({ notice: { code: 'conversationIdle' } });
         this.clearTimer('graceTimer');
@@ -1144,9 +1145,9 @@ export class VoiceController {
     if (status === 'interrupted') {
       // A restart cut the running turn: say so (spoken when core sends a clip), stay armed.
       this.store.update({ lastOutcome: { status, line } });
-      // One cue only: the bar may already show the restart notice with its tone.
-      const shown = this.store.getSnapshot().notice?.code;
-      const toned = shown === 'restartInterrupted' || shown === 'restartReconnected';
+      // One needs-you cue only: the bar may already show this notice with its tone. The
+      // reconnected notice only had the neutral tone, so the cut task still sounds needsYou.
+      const toned = this.store.getSnapshot().notice?.code === 'restartInterrupted';
       this.store.update({ notice: { code: 'restartInterrupted' } });
       if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: toned ? null : 'needsYou', draftLine: false });
       else if (!toned) this.earcon('needsYou');
