@@ -495,6 +495,8 @@ export class VoiceController {
         return;
       }
       this.wakeEnabled = settings?.wake_word_enabled !== false;
+      // Start the early-end window before getUserMedia: an end during worklet loading is early too.
+      this.micOpenedAt = this.fx.timers.now();
       const capture = await this.fx.openCapture(ctx, {
         level: this.micLevel,
         onTrackEnded: () => this.onTrackEnded(token),
