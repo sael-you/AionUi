@@ -108,6 +108,7 @@ export const EFFECTIVE: KitEffectiveSetResponse = {
         tier: 'read',
         clis: ['claude'],
         delivered: true,
+        shadowed_by_project_file: false,
       },
     },
     {
@@ -121,6 +122,7 @@ export const EFFECTIVE: KitEffectiveSetResponse = {
         clis: ['claude'],
         delivered: false,
         reason: 'instance is dormant',
+        shadowed_by_project_file: true,
       },
     },
   ],

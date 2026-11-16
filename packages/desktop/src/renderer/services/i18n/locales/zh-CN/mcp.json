@@ -407,7 +407,8 @@
       "projectHint": "作用于此项目中的所有会话。",
       "conversationTitle": "此会话的套件",
       "conversationHint": "仅作用于此会话。技能变更在下次会话启动时生效。",
-      "attachTab": "附加项"
+      "attachTab": "附加项",
+      "sharedTab": "共享套件"
     },
     "assistantSection": {
       "title": "套件",
@@ -428,7 +429,9 @@
       "frozenTitle": "创建时确定的技能",
       "frozenHint": "此会话创建时获得的技能（含套件）。",
       "missingTitle": "需要但尚无实例",
-      "missingItem": "{{template}}（套件 {{kit}}）"
+      "missingItem": "{{template}}（套件 {{kit}}）",
+      "projectTitle": "此项目中的会话获得的内容",
+      "shadowed": "项目的 .mcp.json 中也定义了它：会被加载两次。"
     },
     "errors": {
       "nameTaken": "已存在同名套件，请换一个名称。",
@@ -439,7 +442,90 @@
       "invalidName": "套件名称须为 1 到 {{max}} 个字符。",
       "invalidItem": "服务器拒绝了请求中的某个条目：{{detail}}",
       "invalidTarget": "目标与层级不匹配：全局不需要目标，其他层级必须有目标。{{detail}}",
-      "globalNotAllowed": "只有只读的 Context7 和 studio-memory MCP 实例可以全局附加。"
+      "globalNotAllowed": "只有只读的 Context7 和 studio-memory MCP 实例可以全局附加。",
+      "projectHasKit": "此项目已有套件，视图已刷新。"
+    },
+    "projectKit": {
+      "title": "项目套件",
+      "hint": "此套件作用于项目中的所有会话，无需附加。助手和会话仍可移除其中的条目。",
+      "none": "{{name}} 还没有项目套件。",
+      "create": "创建项目套件",
+      "created": "项目套件已创建",
+      "of": "项目 · {{name}}",
+      "viewSkills": "按套件查看技能",
+      "addSkill": "从技能库添加技能",
+      "addMcp": "添加 MCP 实例",
+      "addTemplate": "添加需要的目录模板",
+      "removeLabel": "移除 {{name}}",
+      "customHint": "需要自定义 MCP 服务器？请在 设置 > 工具 > MCP 中将其创建为实例，再在此添加。",
+      "count": "{{count}} 项",
+      "count_one": "{{count}} 项",
+      "count_other": "{{count}} 项"
+    },
+    "skillGroups": {
+      "tab": "按套件",
+      "hint": "同一个技能库，按使用它的套件分组。一个技能可以属于多个分组。",
+      "filterLabel": "显示分组",
+      "all": "全部",
+      "global": "全局",
+      "project": "此项目的套件",
+      "projectOf": "此项目的套件 · {{name}}",
+      "shared": "共享套件",
+      "ungrouped": "不在任何套件中",
+      "noProjectKit": "此项目还没有套件。请在项目菜单 > 套件 中创建。",
+      "openSkill": "打开技能 {{name}}",
+      "count": "{{count}} 个技能",
+      "count_one": "{{count}} 个技能",
+      "count_other": "{{count}} 个技能"
+    },
+    "import": {
+      "open": "从 .mcp.json 导入密钥",
+      "buttonHint": "只导入密钥；每个服务器都来自 AionUi 目录。",
+      "title": "从此项目的 .mcp.json 导入密钥",
+      "hint": "只在服务器端复制凭据。每个服务器始终来自其 AionUi 目录模板；旧的命令、包版本和 URL 会被忽略。不会显示任何值。",
+      "noFile": "此项目没有工作区或没有有效的 .mcp.json。",
+      "noServers": ".mcp.json 中没有服务器。",
+      "serversLabel": ".mcp.json 中的服务器",
+      "resultsLabel": "导入结果",
+      "pickLabel": "导入 {{name}}",
+      "instanceNameLabel": "{{name}} 的实例名称",
+      "environmentLabel": "{{name}} 的环境",
+      "tierLabel": "{{name}} 的权限级别",
+      "oauth": "OAuth：导入后在实例中连接",
+      "noKeys": "无需密钥",
+      "keyFound": "已找到 {{field}}",
+      "keyMissing": "缺少 {{field}}",
+      "created": "已创建 {{name}}",
+      "failed": "未导入",
+      "test": "测试",
+      "testLabel": "测试 {{name}}",
+      "missingSecrets": "缺少密钥：{{fields}}。实例已以休眠状态创建：请在 设置 > 工具 > MCP 中粘贴后再测试。",
+      "testFailed": "测试失败：{{detail}}",
+      "match": {
+        "custom": "自定义服务器：请手动添加",
+        "none": "不在目录中"
+      },
+      "errors": {
+        "invalid": "服务器拒绝了此项：{{detail}} 如果与只读工具有关，请选择写入级别。",
+        "nameTaken": "该实例名称已被使用，请换一个。{{detail}}",
+        "notInFile": "此服务器已不在 .mcp.json 中，请重新加载预览。",
+        "unknownTemplate": "没有与此服务器匹配的目录模板。",
+        "other": "未导入：{{detail}}"
+      },
+      "nameProblem": {
+        "required": "请输入实例名称。",
+        "pattern": "请使用小写字母、数字和单个连字符，并以字母开头。",
+        "tooLong": "最多 24 个字符。",
+        "reserved": "此名称为保留名称。",
+        "notInMarket": "此名称属于市场之外的服务器。",
+        "taken": "此名称已被使用。"
+      },
+      "submit": "导入 {{count}} 个服务器",
+      "submit_one": "导入 {{count}} 个服务器",
+      "submit_other": "导入 {{count}} 个服务器",
+      "testOk": "已连接 · {{count}} 个工具",
+      "testOk_one": "已连接 · {{count}} 个工具",
+      "testOk_other": "已连接 · {{count}} 个工具"
     }
   }
 }

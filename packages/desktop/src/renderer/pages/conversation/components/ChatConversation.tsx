@@ -217,7 +217,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
         <ParentBreadcrumb conversation={conversation} />
         <RunSummaryPill conversationId={conversation.id} />
         <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />
-        <ConversationKitsButton conversationId={conversation.id} />
+        <ConversationKitsButton conversationId={conversation.id} projectId={conversation.project_id} />
         {!isMobile && (
           <AionrsModelSelector
             selection={modelSelection}
@@ -427,7 +427,7 @@ const ChatConversation: React.FC<{
       )}
       {conversation && (
         <div className='shrink-0'>
-          <ConversationKitsButton conversationId={conversation.id} />
+          <ConversationKitsButton conversationId={conversation.id} projectId={conversation.project_id} />
         </div>
       )}
       {modelSelector && <div className='shrink-0'>{modelSelector}</div>}

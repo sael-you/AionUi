@@ -407,7 +407,8 @@
       "projectHint": "套用到此專案中的所有對話。",
       "conversationTitle": "此對話的套件",
       "conversationHint": "僅套用到此對話。技能變更在下次工作階段啟動時生效。",
-      "attachTab": "附加項"
+      "attachTab": "附加項",
+      "sharedTab": "共用套件"
     },
     "assistantSection": {
       "title": "套件",
@@ -428,7 +429,9 @@
       "frozenTitle": "建立時確定的技能",
       "frozenHint": "此對話建立時取得的技能（含套件）。",
       "missingTitle": "需要但尚無執行個體",
-      "missingItem": "{{template}}（套件 {{kit}}）"
+      "missingItem": "{{template}}（套件 {{kit}}）",
+      "projectTitle": "此專案中的對話取得的內容",
+      "shadowed": "專案的 .mcp.json 也定義了它：會被載入兩次。"
     },
     "errors": {
       "nameTaken": "已有同名套件，請換一個名稱。",
@@ -439,7 +442,90 @@
       "invalidName": "套件名稱須為 1 到 {{max}} 個字元。",
       "invalidItem": "伺服器拒絕了此請求中的某個項目：{{detail}}",
       "invalidTarget": "目標與層級不符：全域不需要目標，其他層級必須有目標。{{detail}}",
-      "globalNotAllowed": "只有唯讀的 Context7 與 studio-memory MCP 執行個體可以全域附加。"
+      "globalNotAllowed": "只有唯讀的 Context7 與 studio-memory MCP 執行個體可以全域附加。",
+      "projectHasKit": "此專案已有套件，畫面已重新整理。"
+    },
+    "projectKit": {
+      "title": "專案套件",
+      "hint": "此套件套用到專案中的所有對話，無需附加。助理與對話仍可移除其中的項目。",
+      "none": "{{name}} 還沒有專案套件。",
+      "create": "建立專案套件",
+      "created": "專案套件已建立",
+      "of": "專案 · {{name}}",
+      "viewSkills": "依套件檢視技能",
+      "addSkill": "從技能庫新增技能",
+      "addMcp": "新增 MCP 執行個體",
+      "addTemplate": "新增需要的目錄範本",
+      "removeLabel": "移除 {{name}}",
+      "customHint": "需要自訂 MCP 伺服器？請在 設定 > 工具 > MCP 將其建立為執行個體，再於此新增。",
+      "count": "{{count}} 項",
+      "count_one": "{{count}} 項",
+      "count_other": "{{count}} 項"
+    },
+    "skillGroups": {
+      "tab": "依套件",
+      "hint": "同一個技能庫，依使用它的套件分組。一個技能可屬於多個群組。",
+      "filterLabel": "顯示群組",
+      "all": "全部",
+      "global": "全域",
+      "project": "此專案的套件",
+      "projectOf": "此專案的套件 · {{name}}",
+      "shared": "共用套件",
+      "ungrouped": "不在任何套件中",
+      "noProjectKit": "此專案還沒有套件。請從專案選單 > 套件 建立。",
+      "openSkill": "開啟技能 {{name}}",
+      "count": "{{count}} 個技能",
+      "count_one": "{{count}} 個技能",
+      "count_other": "{{count}} 個技能"
+    },
+    "import": {
+      "open": "從 .mcp.json 匯入金鑰",
+      "buttonHint": "只匯入金鑰；每個伺服器都來自 AionUi 目錄。",
+      "title": "從此專案的 .mcp.json 匯入金鑰",
+      "hint": "只在伺服器端複製憑證。每個伺服器一律來自其 AionUi 目錄範本；舊的指令、套件版本與 URL 會被忽略。不會顯示任何值。",
+      "noFile": "此專案沒有工作區或沒有有效的 .mcp.json。",
+      "noServers": ".mcp.json 中沒有伺服器。",
+      "serversLabel": ".mcp.json 中的伺服器",
+      "resultsLabel": "匯入結果",
+      "pickLabel": "匯入 {{name}}",
+      "instanceNameLabel": "{{name}} 的執行個體名稱",
+      "environmentLabel": "{{name}} 的環境",
+      "tierLabel": "{{name}} 的權限等級",
+      "oauth": "OAuth：匯入後在執行個體中連線",
+      "noKeys": "不需要金鑰",
+      "keyFound": "已找到 {{field}}",
+      "keyMissing": "缺少 {{field}}",
+      "created": "已建立 {{name}}",
+      "failed": "未匯入",
+      "test": "測試",
+      "testLabel": "測試 {{name}}",
+      "missingSecrets": "缺少金鑰：{{fields}}。執行個體已以休眠狀態建立：請在 設定 > 工具 > MCP 貼上後再測試。",
+      "testFailed": "測試失敗：{{detail}}",
+      "match": {
+        "custom": "自訂伺服器：請手動新增",
+        "none": "不在目錄中"
+      },
+      "errors": {
+        "invalid": "伺服器拒絕了此項：{{detail}} 若與唯讀工具有關，請選擇寫入等級。",
+        "nameTaken": "此執行個體名稱已被使用，請換一個。{{detail}}",
+        "notInFile": "此伺服器已不在 .mcp.json 中，請重新載入預覽。",
+        "unknownTemplate": "沒有符合此伺服器的目錄範本。",
+        "other": "未匯入：{{detail}}"
+      },
+      "nameProblem": {
+        "required": "請輸入執行個體名稱。",
+        "pattern": "請使用小寫字母、數字與單一連字號，並以字母開頭。",
+        "tooLong": "最多 24 個字元。",
+        "reserved": "此名稱為保留名稱。",
+        "notInMarket": "此名稱屬於市集以外的伺服器。",
+        "taken": "此名稱已被使用。"
+      },
+      "submit": "匯入 {{count}} 個伺服器",
+      "submit_one": "匯入 {{count}} 個伺服器",
+      "submit_other": "匯入 {{count}} 個伺服器",
+      "testOk": "已連線 · {{count}} 個工具",
+      "testOk_one": "已連線 · {{count}} 個工具",
+      "testOk_other": "已連線 · {{count}} 個工具"
     }
   }
 }

@@ -861,8 +861,10 @@ export type KitResponse = {
   id: string;
   name: string;
   description: string;
-  /** `K1`…`K12` for the seeded kits; absent for the owner's own kits. */
+  /** `K0` (Global) and `K1`…`K12` for the seeded kits; absent for the owner's own kits. */
   builtin_key?: string;
+  /** Set = the project kit of that project (`projects.project_id`, C28); absent = a shared kit. Fixed once created. */
+  project_id?: string;
   skills: string[];
   mcps: KitMcpMember[];
   /** Wanted catalogue templates without an instance in the kit ("needs an instance"; never delivered). */
@@ -871,10 +873,11 @@ export type KitResponse = {
   updated_at: number;
 };
 
-/** `POST /api/kits`. */
+/** `POST /api/kits`. `project_id` makes it that project's kit (one per project, C28). */
 export type CreateKitRequest = {
   name: string;
   description?: string;
+  project_id?: string;
   skills: string[];
   mcp_instance_ids: string[];
   mcp_templates: string[];
@@ -915,6 +918,9 @@ export type AttachKitItemRequest = {
 
 export type KitAttachmentsQuery = { level?: KitLevel; target_id?: string };
 
+/** `GET /api/kits` filter (C28); omitted = every kit. */
+export type KitListQuery = { project_id?: string };
+
 /** `GET /api/kits/effective`: a conversation, or a project/assistant preview. */
 export type KitEffectiveQuery = { conversation_id?: string; project_id?: string; assistant_id?: string };
 
@@ -938,6 +944,8 @@ export type KitEffectiveMcp = {
   /** Whether a session start would launch it; `reason` says why not otherwise. */
   delivered: boolean;
   reason?: string;
+  /** The conversation's workspace `.mcp.json` defines a server of the same name, so it would load twice (C28; false for previews). */
+  shadowed_by_project_file: boolean;
 };
 
 export type KitEffectiveItem = {
@@ -962,6 +970,56 @@ export type KitEffectiveSetResponse = {
   conversation_skills?: string[];
   missing_templates: KitMissingTemplate[];
 };
+
+// ---------------------------------------------------------------------------
+// Import keys from a project's .mcp.json (C28 §5): only credentials are taken;
+// the server always comes from the catalogue template. Never carries a value.
+// ---------------------------------------------------------------------------
+
+export type KitImportMatch = 'catalogue' | 'custom' | 'none';
+
+export type KitImportSecret = { field: string; found: boolean };
+
+export type KitImportPreviewServer = {
+  name: string;
+  /** `null` when no catalogue template matches. */
+  template_id: string | null;
+  match: KitImportMatch;
+  secrets: KitImportSecret[];
+  oauth_only: boolean;
+};
+
+/** `GET /api/projects/{project_id}/kit/import-preview`. */
+export type KitImportPreviewResponse = {
+  project_id: string;
+  /** `false` when the project has no workspace or no valid `<workspace>/.mcp.json`. */
+  file_found: boolean;
+  /** Sorted by name. */
+  servers: KitImportPreviewServer[];
+};
+
+/** One server of `POST /api/projects/{project_id}/kit/import` (`deny_unknown_fields`). */
+export type KitImportServerRequest = {
+  name: string;
+  template_id: string;
+  instance_name: string;
+  environment: string;
+  tier: string;
+};
+
+export type KitImportRequest = { servers: KitImportServerRequest[] };
+
+export type KitImportServerResult = {
+  name: string;
+  instance_id: string | null;
+  error_code: string | null;
+  message?: string;
+  /** Required secrets the file did not have: the instance is created dormant without them. */
+  missing_secrets: string[];
+};
+
+/** HTTP 200 even when some servers fail; results in request order. */
+export type KitImportResponse = { kit_id: string; servers: KitImportServerResult[] };
 
 export type McpMarketInstanceHealth = {
   id: string;

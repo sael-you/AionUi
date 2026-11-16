@@ -407,7 +407,8 @@
       "projectHint": "このプロジェクトのすべての会話に適用されます。",
       "conversationTitle": "この会話のキット",
       "conversationHint": "この会話にのみ適用されます。スキルの変更は次のセッション開始時に反映されます。",
-      "attachTab": "割り当て"
+      "attachTab": "割り当て",
+      "sharedTab": "共有キット"
     },
     "assistantSection": {
       "title": "キット",
@@ -428,7 +429,9 @@
       "frozenTitle": "作成時に確定したスキル",
       "frozenHint": "この会話の作成時に付与されたスキル（キットを含む）。",
       "missingTitle": "必要だがインスタンスなし",
-      "missingItem": "{{template}}（キット {{kit}}）"
+      "missingItem": "{{template}}（キット {{kit}}）",
+      "projectTitle": "このプロジェクトの会話に含まれるもの",
+      "shadowed": "プロジェクトの .mcp.json にも定義されています。二重に読み込まれます。"
     },
     "errors": {
       "nameTaken": "同じ名前のキットがすでにあります。別の名前を選んでください。",
@@ -439,7 +442,90 @@
       "invalidName": "キット名は 1〜{{max}} 文字にしてください。",
       "invalidItem": "サーバーがこのリクエストの項目を拒否しました：{{detail}}",
       "invalidTarget": "対象がレベルに合いません。グローバルは対象なし、その他のレベルは対象が必要です。{{detail}}",
-      "globalNotAllowed": "グローバルに割り当てられるのは読み取り専用の Context7 と studio-memory の MCP インスタンスのみです。"
+      "globalNotAllowed": "グローバルに割り当てられるのは読み取り専用の Context7 と studio-memory の MCP インスタンスのみです。",
+      "projectHasKit": "このプロジェクトにはすでにキットがあります。表示を更新しました。"
+    },
+    "projectKit": {
+      "title": "プロジェクトキット",
+      "hint": "このキットは割り当てなしでプロジェクトのすべての会話に適用されます。アシスタントや会話で項目を除外することもできます。",
+      "none": "{{name}} にはまだプロジェクトキットがありません。",
+      "create": "プロジェクトキットを作成",
+      "created": "プロジェクトキットを作成しました",
+      "of": "プロジェクト · {{name}}",
+      "viewSkills": "キット別にスキルを見る",
+      "addSkill": "ライブラリからスキルを追加",
+      "addMcp": "MCP インスタンスを追加",
+      "addTemplate": "必要なカタログテンプレートを追加",
+      "removeLabel": "{{name}} を削除",
+      "customHint": "カスタム MCP サーバーが必要な場合は、設定 > ツール > MCP でインスタンスとして作成してからここで追加してください。",
+      "count": "{{count}} 件",
+      "count_one": "{{count}} 件",
+      "count_other": "{{count}} 件"
+    },
+    "skillGroups": {
+      "tab": "キット別",
+      "hint": "同じスキルライブラリを、使っているキットごとにまとめた表示です。スキルは複数のグループに入ることがあります。",
+      "filterLabel": "表示するグループ",
+      "all": "すべて",
+      "global": "グローバル",
+      "project": "このプロジェクトのキット",
+      "projectOf": "このプロジェクトのキット · {{name}}",
+      "shared": "共有キット",
+      "ungrouped": "どのキットにもない",
+      "noProjectKit": "このプロジェクトにはまだキットがありません。プロジェクトメニュー > キット から作成してください。",
+      "openSkill": "スキル {{name}} を開く",
+      "count": "{{count}} 個のスキル",
+      "count_one": "{{count}} 個のスキル",
+      "count_other": "{{count}} 個のスキル"
+    },
+    "import": {
+      "open": ".mcp.json からキーを取り込む",
+      "buttonHint": "取り込むのはキーだけです。サーバーは AionUi カタログから使います。",
+      "title": "このプロジェクトの .mcp.json からキーを取り込む",
+      "hint": "資格情報だけをサーバー側でコピーします。サーバーは常に AionUi カタログのテンプレートから使い、古いコマンド・パッケージのバージョン・URL は無視します。値は表示されません。",
+      "noFile": "このプロジェクトにはワークスペースまたは有効な .mcp.json がありません。",
+      "noServers": ".mcp.json にサーバーがありません。",
+      "serversLabel": ".mcp.json のサーバー",
+      "resultsLabel": "取り込み結果",
+      "pickLabel": "{{name}} を取り込む",
+      "instanceNameLabel": "{{name}} のインスタンス名",
+      "environmentLabel": "{{name}} の環境",
+      "tierLabel": "{{name}} の権限",
+      "oauth": "OAuth：取り込み後にインスタンスで接続",
+      "noKeys": "キー不要",
+      "keyFound": "{{field}} あり",
+      "keyMissing": "{{field}} なし",
+      "created": "{{name}} を作成しました",
+      "failed": "取り込まれませんでした",
+      "test": "テスト",
+      "testLabel": "{{name}} をテスト",
+      "missingSecrets": "不足しているキー：{{fields}}。インスタンスは休止状態で作成されました。設定 > ツール > MCP で貼り付けてからテストしてください。",
+      "testFailed": "テストに失敗しました：{{detail}}",
+      "match": {
+        "custom": "カスタムサーバー：手動で追加してください",
+        "none": "カタログにありません"
+      },
+      "errors": {
+        "invalid": "サーバーがこの項目を拒否しました：{{detail}} 読み取りツールに関する場合は書き込み権限を選んでください。",
+        "nameTaken": "そのインスタンス名はすでに使われています。別の名前にしてください。{{detail}}",
+        "notInFile": "このサーバーはもう .mcp.json にありません。プレビューを再読み込みしてください。",
+        "unknownTemplate": "このサーバーに合うカタログテンプレートがありません。",
+        "other": "取り込まれませんでした：{{detail}}"
+      },
+      "nameProblem": {
+        "required": "インスタンス名を入力してください。",
+        "pattern": "英小文字・数字・単一のハイフンを使い、英字で始めてください。",
+        "tooLong": "最大 24 文字です。",
+        "reserved": "この名前は予約されています。",
+        "notInMarket": "この名前はマーケット外のサーバーのものです。",
+        "taken": "この名前はすでに使われています。"
+      },
+      "submit": "{{count}} 件のサーバーを取り込む",
+      "submit_one": "{{count}} 件のサーバーを取り込む",
+      "submit_other": "{{count}} 件のサーバーを取り込む",
+      "testOk": "接続済み · ツール {{count}} 件",
+      "testOk_one": "接続済み · ツール {{count}} 件",
+      "testOk_other": "接続済み · ツール {{count}} 件"
     }
   }
 }

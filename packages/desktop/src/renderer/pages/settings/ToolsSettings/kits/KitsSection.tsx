@@ -20,6 +20,7 @@ import type { KitResponse } from '@/common/config/storage';
 import { kitAttachmentLevels, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
 import { useKitActions, useKitAttachments, useKitList } from '@/renderer/hooks/mcp/market/useKits';
 import { MarketErrorNotice, touchClass, useIsMobileLayout } from '../market/shared';
+import { useStandardProjects } from '@/renderer/pages/conversation/GroupedHistory/hooks/useStandardProjects';
 import KitAttachPanel from './KitAttachPanel';
 import KitEditModal from './KitEditModal';
 
@@ -39,10 +40,12 @@ const MemberTags: React.FC<{ label: string; empty: string; children: React.React
 
 const KitCard: React.FC<{
   kit: KitResponse;
+  /** Display name of the kit's project (project kits only). */
+  projectName?: string;
   levels: ReturnType<typeof kitAttachmentLevels>;
   onEdit: () => void;
   onDelete: () => void;
-}> = ({ kit, levels, onEdit, onDelete }) => {
+}> = ({ kit, projectName, levels, onEdit, onDelete }) => {
   const { t } = useTranslation();
   const isMobile = useIsMobileLayout();
   return (
@@ -52,6 +55,11 @@ const KitCard: React.FC<{
         {kit.builtin_key ? (
           <Tag size='small' color='arcoblue'>
             {t('mcp.kits.builtin', { key: kit.builtin_key })}
+          </Tag>
+        ) : null}
+        {kit.project_id ? (
+          <Tag size='small' color='cyan' data-testid='kit-card-project'>
+            {t('mcp.kits.projectKit.of', { name: projectName ?? kit.project_id })}
           </Tag>
         ) : null}
         <div className='ms-auto flex items-center gap-4px'>
@@ -120,8 +128,14 @@ const KitsSection: React.FC = () => {
   const [editing, setEditing] = useState<{ kit: KitResponse | null } | null>(null);
   const [modal, modalContextHolder] = Modal.useModal();
 
+  const projects = useStandardProjects(null);
+  const projectNames = useMemo(
+    () =>
+      new Map(projects.flatMap((project) => (project.project_id ? [[project.project_id, project.name] as const] : []))),
+    [projects]
+  );
   const levelsByKit = useMemo(
-    () => new Map(kits.map((kit) => [kit.id, kitAttachmentLevels(kit.id, attachments)])),
+    () => new Map(kits.map((kit) => [kit.id, kitAttachmentLevels(kit.id, attachments, kit.project_id)])),
     [kits, attachments]
   );
 
@@ -172,6 +186,7 @@ const KitsSection: React.FC = () => {
             <KitCard
               key={kit.id}
               kit={kit}
+              projectName={kit.project_id ? projectNames.get(kit.project_id) : undefined}
               levels={levelsByKit.get(kit.id) ?? []}
               onEdit={() => setEditing({ kit })}
               onDelete={() => confirmDelete(kit)}

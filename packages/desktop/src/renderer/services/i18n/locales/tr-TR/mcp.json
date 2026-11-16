@@ -407,7 +407,8 @@
       "projectHint": "Bu projedeki tüm sohbetlere uygulanır.",
       "conversationTitle": "Bu sohbetin kitleri",
       "conversationHint": "Yalnızca bu sohbete uygulanır. Beceri değişiklikleri bir sonraki oturum başlangıcında geçerli olur.",
-      "attachTab": "Bağlantılar"
+      "attachTab": "Bağlantılar",
+      "sharedTab": "Paylaşılan kitler"
     },
     "assistantSection": {
       "title": "Kitler",
@@ -428,7 +429,9 @@
       "frozenTitle": "Oluşturulurken sabitlenen beceriler",
       "frozenHint": "Bu sohbetin oluşturulduğu beceriler (kitler dahil).",
       "missingTitle": "İstenen, henüz örnek yok",
-      "missingItem": "{{template}} (kit {{kit}})"
+      "missingItem": "{{template}} (kit {{kit}})",
+      "projectTitle": "Buradaki sohbetlerin aldıkları",
+      "shadowed": "Projenin .mcp.json dosyasında da tanımlı: iki kez yüklenir."
     },
     "errors": {
       "nameTaken": "Bu adda bir kit zaten var. Başka bir ad seçin.",
@@ -439,7 +442,90 @@
       "invalidName": "Kit adı 1 ile {{max}} karakter arasında olmalıdır.",
       "invalidItem": "Sunucu bu istekteki bir öğeyi reddetti: {{detail}}",
       "invalidTarget": "Hedef düzeye uymuyor: Genel düzey hedef almaz, diğer düzeyler bir hedef gerektirir. {{detail}}",
-      "globalNotAllowed": "Yalnızca salt okunur Context7 ve studio-memory MCP örnekleri genel olarak bağlanabilir."
+      "globalNotAllowed": "Yalnızca salt okunur Context7 ve studio-memory MCP örnekleri genel olarak bağlanabilir.",
+      "projectHasKit": "Bu projenin zaten bir kiti var. Görünüm yenilendi."
+    },
+    "projectKit": {
+      "title": "Proje kiti",
+      "hint": "Bu kit, bağlantı gerekmeden projedeki tüm sohbetlere uygulanır. Asistanlar ve sohbetler yine de öğeleri kaldırabilir.",
+      "none": "{{name}} için henüz proje kiti yok.",
+      "create": "Proje kiti oluştur",
+      "created": "Proje kiti oluşturuldu",
+      "of": "Proje · {{name}}",
+      "viewSkills": "Becerileri kite göre gör",
+      "addSkill": "Kitaplıktan beceri ekle",
+      "addMcp": "MCP örneği ekle",
+      "addTemplate": "İstenen bir katalog şablonu ekle",
+      "removeLabel": "{{name}} öğesini kaldır",
+      "customHint": "Özel bir MCP sunucusu mu gerekiyor? Ayarlar > Araçlar > MCP bölümünde örnek olarak oluşturup buraya ekleyin.",
+      "count": "{{count}} öğe",
+      "count_one": "{{count}} öğe",
+      "count_other": "{{count}} öğe"
+    },
+    "skillGroups": {
+      "tab": "Kite göre",
+      "hint": "Tek beceri kitaplığı, onu kullanan kitlere göre gruplanmış. Bir beceri birden fazla grupta olabilir.",
+      "filterLabel": "Grubu göster",
+      "all": "Tümü",
+      "global": "Genel",
+      "project": "Bu projenin kiti",
+      "projectOf": "Bu projenin kiti · {{name}}",
+      "shared": "Paylaşılan kitler",
+      "ungrouped": "Hiçbir kitte değil",
+      "noProjectKit": "Bu projenin henüz kiti yok. Proje menüsü > Kitler'den oluşturun.",
+      "openSkill": "{{name}} becerisini aç",
+      "count": "{{count}} beceri",
+      "count_one": "{{count}} beceri",
+      "count_other": "{{count}} beceri"
+    },
+    "import": {
+      "open": ".mcp.json'dan anahtarları içe aktar",
+      "buttonHint": "Yalnızca anahtarlar alınır; her sunucu AionUi kataloğundan gelir.",
+      "title": "Bu projenin .mcp.json dosyasından anahtarları içe aktar",
+      "hint": "Yalnızca kimlik bilgileri sunucu tarafında kopyalanır. Her sunucu her zaman AionUi katalog şablonundan gelir; eski komut, paket sürümü ve URL yok sayılır. Değerler asla gösterilmez.",
+      "noFile": "Bu projenin çalışma alanı veya geçerli bir .mcp.json dosyası yok.",
+      "noServers": ".mcp.json hiç sunucu listelemiyor.",
+      "serversLabel": ".mcp.json içindeki sunucular",
+      "resultsLabel": "İçe aktarma sonuçları",
+      "pickLabel": "{{name}} içe aktar",
+      "instanceNameLabel": "{{name}} için örnek adı",
+      "environmentLabel": "{{name}} için ortam",
+      "tierLabel": "{{name}} için katman",
+      "oauth": "OAuth: içe aktardıktan sonra örnekte bağlanın",
+      "noKeys": "Anahtar gerekmez",
+      "keyFound": "{{field}} bulundu",
+      "keyMissing": "{{field}} eksik",
+      "created": "{{name}} oluşturuldu",
+      "failed": "İçe aktarılmadı",
+      "test": "Test et",
+      "testLabel": "{{name}} test et",
+      "missingSecrets": "Eksik anahtarlar: {{fields}}. Örnek uykuda oluşturuldu: Ayarlar > Araçlar > MCP'de yapıştırın, sonra test edin.",
+      "testFailed": "Test başarısız: {{detail}}",
+      "match": {
+        "custom": "Özel sunucu: elle ekleyin",
+        "none": "Katalogda yok"
+      },
+      "errors": {
+        "invalid": "Sunucu bunu reddetti: {{detail}} Okuma araçlarıyla ilgiliyse yazma katmanını seçin.",
+        "nameTaken": "Bu örnek adı zaten kullanılıyor. Başka bir ad seçin. {{detail}}",
+        "notInFile": "Bu sunucu artık .mcp.json içinde değil. Önizlemeyi yeniden yükleyin.",
+        "unknownTemplate": "Bu sunucuyla eşleşen katalog şablonu yok.",
+        "other": "İçe aktarılmadı: {{detail}}"
+      },
+      "nameProblem": {
+        "required": "Bir örnek adı girin.",
+        "pattern": "Küçük harf, rakam ve tek tire kullanın; bir harfle başlayın.",
+        "tooLong": "En fazla 24 karakter.",
+        "reserved": "Bu ad ayrılmış.",
+        "notInMarket": "Bu ad pazarın dışındaki bir sunucuya ait.",
+        "taken": "Bu ad zaten kullanılıyor."
+      },
+      "submit": "{{count}} sunucuyu içe aktar",
+      "submit_one": "{{count}} sunucuyu içe aktar",
+      "submit_other": "{{count}} sunucuyu içe aktar",
+      "testOk": "Bağlandı · {{count}} araç",
+      "testOk_one": "Bağlandı · {{count}} araç",
+      "testOk_other": "Bağlandı · {{count}} araç"
     }
   }
 }

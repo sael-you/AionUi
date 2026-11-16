@@ -28,6 +28,10 @@ import type {
   KitAttachmentsQuery,
   KitEffectiveQuery,
   KitEffectiveSetResponse,
+  KitImportPreviewResponse,
+  KitImportRequest,
+  KitImportResponse,
+  KitListQuery,
   KitResponse,
   McpMarketAssignment,
   McpMarketCreateAssignmentRequest,
@@ -1507,7 +1511,12 @@ const kitQueryString = (params: Record<string, string | undefined>): string => {
 // ---------------------------------------------------------------------------
 
 export const kits = {
-  list: httpGet<KitResponse[], void>('/api/kits'),
+  list: httpGet<KitResponse[], KitListQuery>((p) => `/api/kits${kitQueryString({ project_id: p?.project_id })}`),
+  /** The project's kit (C28); 404 when it has none, without logging it as an error. */
+  projectKit: httpGet<KitResponse, { project_id: string }>(
+    (p) => `/api/projects/${encodeURIComponent(p.project_id)}/kit`,
+    { silentStatuses: [404] }
+  ),
   get: httpGet<KitResponse, { id: string }>((p) => `/api/kits/${encodeURIComponent(p.id)}`),
   create: httpPost<KitResponse, CreateKitRequest>('/api/kits'),
   update: httpPut<KitResponse, { id: string; data: UpdateKitRequest }>(
@@ -1515,6 +1524,15 @@ export const kits = {
     (p) => p.data
   ),
   remove: httpDelete<void, { id: string }>((p) => `/api/kits/${encodeURIComponent(p.id)}`),
+  /** Servers of the project's `.mcp.json` with the catalogue template and which keys were found (C28 §5). */
+  importPreview: httpGet<KitImportPreviewResponse, { project_id: string }>(
+    (p) => `/api/projects/${encodeURIComponent(p.project_id)}/kit/import-preview`
+  ),
+  /** Create catalogue instances with the file's keys copied server-side and add them to the project kit. */
+  importKeys: httpPost<KitImportResponse, { project_id: string; data: KitImportRequest }>(
+    (p) => `/api/projects/${encodeURIComponent(p.project_id)}/kit/import`,
+    (p) => p.data
+  ),
   listAttachments: httpGet<KitAttachmentResponse[], KitAttachmentsQuery>(
     (p) => `/api/kits/attachments${kitQueryString({ level: p?.level, target_id: p?.target_id })}`
   ),
