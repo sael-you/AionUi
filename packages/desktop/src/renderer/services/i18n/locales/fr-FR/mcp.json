@@ -149,7 +149,7 @@
       "problemsTitle": "Problèmes de règles",
       "enforcement": "Appliqué par : {{value}}",
       "approvalRecorded": "Approbation du propriétaire enregistrée",
-      "writeNote": "Écriture : tous les outils sur chaque CLI rattachée ; peut modifier des données, de l'argent, des publicités, des e-mails ou des publications publiques hors de cette machine. Pas de confirmation automatique : les agents doivent obtenir l'accord tapé du propriétaire pour chaque changement en production (règle)."
+      "writeNote": "Écriture : tous les outils sur chaque CLI rattachée ; peut modifier des données, de l'argent, des publicités, des e-mails ou des publications publiques hors de cette machine. Écriture en production : l'agent vous demande avant chaque appel à ce serveur, sur chaque CLI."
     },
     "secret": {
       "set": "Défini",
@@ -189,7 +189,7 @@
       "dormantUntilComplete": "Reste en veille jusqu'à ce que ces champs soient remplis : {{keys}}",
       "startsDormant": "Les nouveaux MCP démarrent en veille. Activez-en un lorsque ses valeurs sont définies et que le test de connexion réussit.",
       "secretsNotSaved": "{{name}} a été créé, mais ces secrets n'ont pas été enregistrés : {{keys}}. Définissez-les dans le panneau de l'instance.",
-      "fullToolsNote": "Par défaut, tous les outils (lecture + écriture). Ce que les agents peuvent faire dépend des skills et des règles. Pas de confirmation automatique : les agents doivent obtenir l'accord tapé du propriétaire pour chaque changement en production (règle).",
+      "fullToolsNote": "Par défaut, tous les outils (lecture + écriture). Ce que les agents peuvent faire dépend des skills et des règles. Écriture en production : l'agent vous demande avant chaque appel à ce serveur, sur chaque CLI.",
       "patternProblem": "{{key}} n'a pas le format attendu."
     },
     "attach": {
@@ -222,7 +222,7 @@
       "title": "Activer {{name}} ?",
       "body": "Les MCP actifs sont démarrés pour les projets, assistants et CLI auxquels ils sont rattachés.",
       "missing": "Remplissez d'abord les valeurs obligatoires : {{keys}}",
-      "productionWrite": "Pas de confirmation automatique : les agents doivent obtenir l'accord tapé du propriétaire pour chaque changement en production (règle)."
+      "productionWrite": "Écriture en production : l'agent vous demande avant chaque appel à ce serveur, sur chaque CLI."
     },
     "confirm": {
       "revoke": {

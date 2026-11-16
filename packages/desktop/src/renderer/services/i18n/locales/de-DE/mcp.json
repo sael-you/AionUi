@@ -149,7 +149,7 @@
       "problemsTitle": "Regelprobleme",
       "enforcement": "Durchgesetzt von: {{value}}",
       "approvalRecorded": "Freigabe des Eigentümers erfasst",
-      "writeNote": "Schreiben: alle Tools in jeder angehängten CLI; kann Daten, Geld, Werbung, E-Mails oder öffentliche Beiträge außerhalb dieses Rechners ändern. Keine automatische Bestätigung: Agenten brauchen für jede Produktionsänderung das getippte OK des Eigentümers (Regel)."
+      "writeNote": "Schreiben: alle Tools in jeder angehängten CLI; kann Daten, Geld, Werbung, E-Mails oder öffentliche Beiträge außerhalb dieses Rechners ändern. Produktiv-Schreiben: Der Agent fragt dich vor jedem Aufruf dieses Servers, in jeder CLI."
     },
     "secret": {
       "set": "Festgelegt",
@@ -189,7 +189,7 @@
       "dormantUntilComplete": "Bleibt ruhend, bis diese Felder ausgefüllt sind: {{keys}}",
       "startsDormant": "Neue MCPs starten ruhend. Aktivieren Sie ein MCP, wenn seine Werte festgelegt sind und der Verbindungstest erfolgreich ist.",
       "secretsNotSaved": "{{name}} wurde erstellt, aber diese Geheimnisse wurden nicht gespeichert: {{keys}}. Lege sie im Instanzbereich fest.",
-      "fullToolsNote": "Standard sind alle Tools (lesen + schreiben). Was Agenten dürfen, bestimmen Skills und Regeln. Keine automatische Bestätigung: Agenten brauchen für jede Produktionsänderung das getippte OK des Eigentümers (Regel).",
+      "fullToolsNote": "Standard sind alle Tools (lesen + schreiben). Was Agenten dürfen, bestimmen Skills und Regeln. Produktiv-Schreiben: Der Agent fragt dich vor jedem Aufruf dieses Servers, in jeder CLI.",
       "patternProblem": "{{key}} hat nicht das erwartete Format."
     },
     "attach": {
@@ -222,7 +222,7 @@
       "title": "{{name}} aktivieren?",
       "body": "Aktive MCPs werden für die Projekte, Assistenten und CLIs gestartet, an die sie angebunden sind.",
       "missing": "Füllen Sie zuerst die Pflichtwerte aus: {{keys}}",
-      "productionWrite": "Keine automatische Bestätigung: Agenten brauchen für jede Produktionsänderung das getippte OK des Eigentümers (Regel)."
+      "productionWrite": "Produktiv-Schreiben: Der Agent fragt dich vor jedem Aufruf dieses Servers, in jeder CLI."
     },
     "confirm": {
       "revoke": {

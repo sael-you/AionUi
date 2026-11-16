@@ -66,7 +66,7 @@ export const instanceNameProblem = (name: string, takenNames: readonly string[] 
   return null;
 };
 
-/** D50: a production write instance runs without automatic confirmation; the owner's typed OK per change is the rule. */
+/** D50 / TASK-97: a production write instance asks the owner before every call to it, on every CLI (core enforces it). */
 export const isProductionWrite = (instance: Pick<McpMarketInstance, 'tier' | 'environment'>): boolean =>
   instance.tier === 'write' && instance.environment === 'production';
 
