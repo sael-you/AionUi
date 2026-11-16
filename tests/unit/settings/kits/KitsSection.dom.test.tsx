@@ -97,6 +97,23 @@ describe('KitsSection (C27 Settings > Tools > Kits)', () => {
     expect(screen.getByTestId('kit-attach-global')).toBeInTheDocument();
   });
 
+  it('shows a project kit with its project and its implicit project level (C28)', async () => {
+    api.kits.list.invoke.mockResolvedValue([
+      { ...KIT_OPS, id: 'kit-tb', name: 'TB-test', project_id: 'proj-tb' },
+      { ...KIT_OPS, id: 'kit-x', name: 'Orphan', project_id: 'proj-gone' },
+    ]);
+    renderWithSwr(<KitsSection />);
+
+    const cards = await screen.findAllByTestId('kit-card');
+    expect(within(cards[0] as HTMLElement).getByTestId('kit-card-project')).toHaveTextContent(
+      'mcp.kits.projectKit.of|{"name":"TB-test"}'
+    );
+    expect(cards[0]).toHaveTextContent('mcp.kits.levelCount|{"level":"mcp.kits.level.project","count":1}');
+    expect(within(cards[1] as HTMLElement).getByTestId('kit-card-project')).toHaveTextContent(
+      'mcp.kits.projectKit.of|{"name":"proj-gone"}'
+    );
+  });
+
   it('shows the empty state and a retryable load error', async () => {
     api.kits.list.invoke.mockResolvedValueOnce([]);
     const { unmount } = renderWithSwr(<KitsSection />);

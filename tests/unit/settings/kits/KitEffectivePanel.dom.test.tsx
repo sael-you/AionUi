@@ -79,6 +79,11 @@ describe('What this conversation gets (C27 effective set)', () => {
       'mcp.kits.effective.fromKit|{"level":"mcp.kits.level.assistant","kit":"Backend"}'
     );
     expect(mcpRows[1]).toHaveTextContent('mcp.kits.effective.notDeliveredReason|{"reason":"instance is dormant"}');
+    // C28: a server also in the workspace .mcp.json is flagged; the other one is not.
+    expect(within(mcpRows[1] as HTMLElement).getByTestId('kit-effective-shadowed')).toHaveTextContent(
+      'mcp.kits.effective.shadowed'
+    );
+    expect(within(mcpRows[0] as HTMLElement).queryByTestId('kit-effective-shadowed')).toBeNull();
   });
 
   it('shows the frozen skill snapshot and wanted templates without an instance', async () => {

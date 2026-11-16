@@ -89,6 +89,17 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
+// The By kit pane (C28) has its own tests; here only which tab opens and what it receives.
+const kitPane = vi.hoisted(() => ({
+  props: null as null | { skillNames: readonly string[]; projectId: string | null },
+}));
+vi.mock('@/renderer/pages/settings/SkillsSettings/SkillsByKitPane', () => ({
+  default: (props: { skillNames: readonly string[]; projectId: string | null }) => {
+    kitPane.props = props;
+    return <div data-testid='skills-by-kit-stub' />;
+  },
+}));
+
 import SkillsHubSettings from '@/renderer/pages/settings/SkillsSettings/SkillsHubSettings';
 
 describe('SkillsHubSettings', () => {
@@ -376,6 +387,26 @@ describe('SkillsHubSettings', () => {
     expect(screen.queryByText('job-generated')).not.toBeInTheDocument();
     // The custom skill is not in the Official tab.
     expect(screen.queryByTestId('my-skill-card-sample-single')).not.toBeInTheDocument();
+  });
+
+  it('opens the By kit tab with the project when opened from a project (C28)', async () => {
+    searchParamsMock.current = new URLSearchParams('project=proj-tb');
+    mocks.listAvailableSkills.mockResolvedValue([
+      {
+        name: 'officecli',
+        description: 'Official builtin skill.',
+        location: '/tmp/builtin-skills/officecli/SKILL.md',
+        is_auto_inject: false,
+        is_custom: false,
+        source: 'builtin',
+      },
+    ]);
+
+    render(<SkillsHubSettings withWrapper={false} />);
+
+    expect(await screen.findByTestId('skills-by-kit-stub')).toBeInTheDocument();
+    await waitFor(() => expect(kitPane.props?.skillNames).toEqual(['officecli']));
+    expect(kitPane.props?.projectId).toBe('proj-tb');
   });
 
   it('restores the originating tab and preserves it when opening another skill', async () => {
