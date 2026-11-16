@@ -10,7 +10,6 @@ import type { Assistant } from '@/common/types/agent/assistantTypes';
 import type { MemoryItem } from '@/common/types/memory';
 import {
   EMPTY_MEMORY_FILTERS,
-  STALE_AFTER_MS,
   fileForLink,
   filterMemories,
   groupMemories,
@@ -28,51 +27,54 @@ const item = (over: Partial<MemoryItem> & { file: string }): MemoryItem => ({
   description: null,
   type: 'feedback',
   modified: NOW - DAY,
+  frontmatter_modified: null,
   size: 100,
   links: [],
   in_index: true,
   broken_links: [],
+  stale: false,
   ...over,
 });
 
 const ITEMS: MemoryItem[] = [
   item({ file: 'use-bun.md', name: 'Use bun', type: 'feedback', modified: NOW - 3 * DAY }),
   item({ file: 'use_bun_2.md', name: 'use-bun', type: 'feedback', modified: NOW - 2 * DAY }),
-  item({ file: 'deploy.md', name: 'Deploy train', type: 'project', modified: NOW - STALE_AFTER_MS - DAY }),
+  item({ file: 'deploy.md', name: 'Deploy train', type: 'project', modified: NOW - 31 * DAY, stale: true }),
   item({ file: 'owner.md', name: 'Owner', type: 'user', modified: NOW - 40 * DAY, in_index: false }),
   item({ file: 'dash.md', name: 'Dashboard', type: 'reference', links: ['nope'], broken_links: ['nope'] }),
   item({ file: 'raw.md', name: null, type: 'weird', description: 'malformed frontmatter' }),
 ];
 
+/** Server lint as core computes it on this list (core is the source of truth). */
+const LINT = [
+  { kind: 'duplicate', file: 'use-bun.md', detail: 'same name as use_bun_2.md' },
+  { kind: 'duplicate', file: 'use_bun_2.md', detail: 'same name as use-bun.md' },
+  { kind: 'missing_file', file: 'gone.md', detail: 'MEMORY.md line 4' },
+  { kind: 'from_a_newer_server', file: 'raw.md', detail: 'unknown kind' },
+];
+
 describe('memory lint', () => {
-  it('flags duplicates, files missing from the index, broken links and stale project memories', () => {
-    const flags = lintByFile({ items: ITEMS }, NOW);
+  it('takes not-in-index, broken links and stale from the items and duplicates from the server lint', () => {
+    const flags = lintByFile({ items: ITEMS, lint: LINT });
     expect([...(flags.get('use-bun.md') ?? [])]).toEqual(['duplicate']);
     expect([...(flags.get('use_bun_2.md') ?? [])]).toEqual(['duplicate']);
     expect([...(flags.get('deploy.md') ?? [])]).toEqual(['stale']);
-    // Old, but a user memory is never "stale".
+    // Old, but the server did not flag it stale (a user memory never is).
     expect([...(flags.get('owner.md') ?? [])]).toEqual(['not_in_index']);
     expect([...(flags.get('dash.md') ?? [])]).toEqual(['broken_link']);
+    // An unknown kind is ignored, never shown as a raw i18n key.
     expect(flags.has('raw.md')).toBe(false);
   });
 
-  it('merges server issues and keeps index lines that point to missing files apart', () => {
-    const list = {
-      items: ITEMS,
-      lint: [
-        { kind: 'duplicate' as const, file: 'raw.md', detail: 'similar to x' },
-        { kind: 'missing_file' as const, file: 'gone.md', detail: 'MEMORY.md line 4' },
-      ],
-    };
-    const flags = lintByFile(list, NOW);
-    expect([...(flags.get('raw.md') ?? [])]).toEqual(['duplicate']);
-    expect(flags.has('gone.md')).toBe(false);
+  it('keeps index lines that point to missing files apart', () => {
+    const list = { items: ITEMS, lint: LINT };
+    expect(lintByFile(list).has('gone.md')).toBe(false);
     expect(missingFileIssues(list).map((i) => i.file)).toEqual(['gone.md']);
   });
 });
 
 describe('memory list', () => {
-  const flags = lintByFile({ items: ITEMS }, NOW);
+  const flags = lintByFile({ items: ITEMS, lint: LINT });
 
   it('groups by type in display order with an "other" bucket', () => {
     const groups = groupMemories(filterMemories(ITEMS, EMPTY_MEMORY_FILTERS, flags));

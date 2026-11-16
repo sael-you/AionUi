@@ -114,7 +114,12 @@ import type {
 import type { AgentMetadata } from '@/renderer/utils/model/agentTypes';
 import type { Theme } from '@/common/theme/types';
 import type { AttachFolderRequest, ProjectDetailDto, ProjectEntryDto } from '@/common/types/project';
-import type { MemoryFileResponse, MemoryListResponse, UpdateMemoryFileRequest } from '@/common/types/memory';
+import type {
+  MemoryDeleteResponse,
+  MemoryFileResponse,
+  MemoryListResponse,
+  UpdateMemoryFileRequest,
+} from '@/common/types/memory';
 import type {
   BoardAssignRequest,
   BoardAssignResponse,
@@ -660,7 +665,9 @@ export const memory = {
     ({ project_id: _projectId, file: _file, ...body }) => body
   ),
   /** DELETE /api/projects/{pid}/memory/{file} → also drops its `MEMORY.md` line. */
-  remove: httpDelete<void, { project_id: string; file: string }>((p) => memoryFilePath(p.project_id, p.file)),
+  remove: httpDelete<MemoryDeleteResponse, { project_id: string; file: string }>((p) =>
+    memoryFilePath(p.project_id, p.file)
+  ),
   /** POST /api/projects/{pid}/memory/{file}/restore → the newest trash copy is back. */
   restore: httpPost<MemoryFileResponse, { project_id: string; file: string }>(
     (p) => `${memoryFilePath(p.project_id, p.file)}/restore`,

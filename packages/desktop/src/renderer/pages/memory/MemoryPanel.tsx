@@ -51,8 +51,7 @@ export const MemoryPanel: React.FC<Props> = ({ projectId, workspace }) => {
   const [loadingBodies, setLoadingBodies] = useState(false);
   const review = useMemoryReview(workspace);
 
-  // Lint "stale" is relative to now; recomputed with each list load.
-  const flags = useMemo(() => (data ? lintByFile(data, Date.now()) : new Map()), [data]);
+  const flags = useMemo(() => (data ? lintByFile(data) : new Map()), [data]);
   const items = data?.items ?? [];
   const visible = useMemo(() => filterMemories(items, filters, flags, bodies), [items, filters, flags, bodies]);
   const groups = useMemo(() => groupMemories(visible), [visible]);

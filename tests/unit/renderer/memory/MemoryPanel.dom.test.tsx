@@ -69,10 +69,12 @@ const item = (over: Partial<MemoryItem> & { file: string }): MemoryItem => ({
   description: null,
   type: 'feedback',
   modified: NOW - 1000,
+  frontmatter_modified: null,
   size: 120,
   links: [],
   in_index: true,
   broken_links: [],
+  stale: false,
   ...over,
 });
 
@@ -84,6 +86,7 @@ const LIST: MemoryListResponse = {
     item({ file: 'deploy.md', name: 'Deploy train', type: 'project' }),
     item({ file: 'orphan.md', name: 'Orphan', type: 'user', in_index: false }),
   ],
+  lint: [{ kind: 'not_in_index', file: 'orphan.md', detail: 'no MEMORY.md line' }],
 };
 
 const renderPanel = () => {
@@ -188,7 +191,12 @@ describe('MemoryPanel', () => {
 
   it('a save on a file changed meanwhile (409) asks to reload instead of overwriting', async () => {
     api.update.mockRejectedValue(
-      new BackendHttpError({ method: 'PUT', path: '/api/projects/p1/memory/use-bun.md', status: 409, body: {} })
+      new BackendHttpError({
+        method: 'PUT',
+        path: '/api/projects/p1/memory/use-bun.md',
+        status: 409,
+        body: { success: false, code: 'MEMORY_CHANGED', details: { current_modified: 333 } },
+      })
     );
     renderPanel();
     const detail = await openFile('Use bun');
@@ -210,7 +218,7 @@ describe('MemoryPanel', () => {
   });
 
   it('deletes with an undo toast that restores the file', async () => {
-    api.remove.mockResolvedValue(undefined);
+    api.remove.mockResolvedValue({ file: 'use-bun.md', trash_file: '.trash/use-bun.md.1', index_lines_removed: 1 });
     api.restore.mockResolvedValue({ file: 'use-bun.md', frontmatter_raw: '', body: 'back', modified: 5 });
     renderPanel();
     const detail = await openFile('Use bun');
@@ -253,7 +261,7 @@ describe('MemoryPanel', () => {
   });
 
   it('says so when the project has no memory directory yet', async () => {
-    api.list.mockResolvedValue({ dir_exists: false, index_lines: 0, items: [] });
+    api.list.mockResolvedValue({ dir_exists: false, index_lines: 0, items: [], lint: [] });
     renderPanel();
     expect(await screen.findByText('Claude has no memory for this project yet.')).toBeTruthy();
   });

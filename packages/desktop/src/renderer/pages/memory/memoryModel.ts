@@ -9,59 +9,47 @@
  * file, filters, search, sort, and the "Review with AI" request.
  */
 
-import type { MemoryItem, MemoryLintIssue, MemoryLintKind, MemoryListResponse } from '@/common/types/memory';
+import type { MemoryItem, MemoryLint, MemoryLintKind, MemoryListResponse } from '@/common/types/memory';
 import type { Assistant } from '@/common/types/agent/assistantTypes';
 
 /** Known types in display order; anything else is grouped under `other`. */
 export const MEMORY_TYPES = ['user', 'feedback', 'project', 'reference'] as const;
 export type MemoryGroupKey = (typeof MEMORY_TYPES)[number] | 'other';
 
-/** A `project` memory untouched this long may be stale (C29 §2 lint). */
-export const STALE_AFTER_MS = 30 * 24 * 3600 * 1000;
+const LINT_KINDS: readonly MemoryLintKind[] = ['duplicate', 'not_in_index', 'missing_file', 'broken_link', 'stale'];
+const isLintKind = (kind: string): kind is MemoryLintKind => (LINT_KINDS as readonly string[]).includes(kind);
 
 export const groupKeyOf = (item: Pick<MemoryItem, 'type'>): MemoryGroupKey =>
   (MEMORY_TYPES as readonly string[]).includes(item.type ?? '') ? (item.type as MemoryGroupKey) : 'other';
 
-const normalizeName = (name: string): string =>
-  name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
-
 /**
- * Lint flags per file: the ones derivable from the list itself, plus the
- * server's issues (which also cover index lines pointing to missing files).
+ * Lint flags per file, all computed by the server: the item fields
+ * (`in_index`, `broken_links`, `stale`) and the list's `lint` findings
+ * (duplicates among them). Unknown kinds from a newer server are ignored.
  */
-export function lintByFile(
-  list: Pick<MemoryListResponse, 'items' | 'lint'>,
-  now: number
-): Map<string, Set<MemoryLintKind>> {
+export function lintByFile(list: Pick<MemoryListResponse, 'items' | 'lint'>): Map<string, Set<MemoryLintKind>> {
   const flags = new Map<string, Set<MemoryLintKind>>();
   const add = (file: string, kind: MemoryLintKind) => {
     const set = flags.get(file) ?? new Set<MemoryLintKind>();
     set.add(kind);
     flags.set(file, set);
   };
-  const byName = new Map<string, string[]>();
   for (const item of list.items) {
     if (!item.in_index) add(item.file, 'not_in_index');
     if (item.broken_links.length > 0) add(item.file, 'broken_link');
-    if (item.type === 'project' && now - item.modified > STALE_AFTER_MS) add(item.file, 'stale');
-    const key = item.name ? normalizeName(item.name) : '';
-    if (key) byName.set(key, [...(byName.get(key) ?? []), item.file]);
+    if (item.stale) add(item.file, 'stale');
   }
-  for (const files of byName.values()) {
-    if (files.length > 1) files.forEach((file) => add(file, 'duplicate'));
-  }
-  for (const issue of list.lint ?? []) {
-    if (issue.file && list.items.some((item) => item.file === issue.file)) add(issue.file, issue.kind);
+  for (const issue of list.lint) {
+    if (issue.file && isLintKind(issue.kind) && list.items.some((item) => item.file === issue.file)) {
+      add(issue.file, issue.kind);
+    }
   }
   return flags;
 }
 
 /** Server issues about files that do not exist (index lines pointing nowhere). */
-export const missingFileIssues = (list: Pick<MemoryListResponse, 'items' | 'lint'>): MemoryLintIssue[] =>
-  (list.lint ?? []).filter((issue) => issue.kind === 'missing_file');
+export const missingFileIssues = (list: Pick<MemoryListResponse, 'lint'>): MemoryLint[] =>
+  list.lint.filter((issue) => issue.kind === 'missing_file');
 
 export type MemoryFilters = {
   query: string;
