@@ -28,6 +28,7 @@ import { useSettingsViewMode } from '../../settingsViewContext';
 import BrowserNotificationGrant from './BrowserNotificationGrant';
 import DevSettings from './DevSettings';
 import BrowserDataSection from './BrowserDataSection';
+import BrowserDevicesSettings from './BrowserDevicesSettings';
 import ServerBrowserSettings from './ServerBrowserSettings';
 import DirInputItem from './DirInputItem';
 import PreferenceRow from './PreferenceRow';
@@ -579,6 +580,7 @@ const SystemModalContent: React.FC = () => {
           {/* In-app browser: sign-in state and cache */}
           {/* Desktop: the webview's data and CDP switch. WebUI: the server-side browser (C30). */}
           {isDesktop ? <BrowserDataSection /> : <ServerBrowserSettings />}
+          {isDesktop ? null : <BrowserDevicesSettings />}
 
           {/* Developer settings: DevTools + CDP (only visible in dev mode) */}
           <DevSettings />
