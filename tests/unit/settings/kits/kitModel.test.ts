@@ -6,8 +6,10 @@
 
 import { describe, expect, it } from 'vitest';
 import type { KitAttachmentResponse, KitEffectiveItem, KitResponse } from '@/common/config/storage';
+import { BackendHttpError } from '@/common/adapter/httpBridge';
 import {
   attachRequest,
+  describeKitError,
   createKitRequest,
   globalAttachBlock,
   kitAttachmentLevels,
@@ -49,6 +51,10 @@ const item = (ref: string, included: boolean, name?: string): KitEffectiveItem =
   provenance: { level: 'global', op: included ? 'add' : 'remove' },
   ...(name ? { mcp: { instance_name: name, status: 'active', clis: [], delivered: true } } : {}),
 });
+
+/** `t` stand-ins: key with options, and key only. */
+const echoT = (key: string, options?: Record<string, unknown>) => `${key}|${JSON.stringify(options)}`;
+const keyT = (key: string) => key;
 
 describe('kitModel', () => {
   it('sends exactly the CreateKitRequest fields, trimmed, sorted and de-duplicated', () => {
@@ -131,5 +137,32 @@ describe('kitModel', () => {
   it('sorts effective items: included first, then by display name', () => {
     const sorted = sortEffectiveItems([item('b', false), item('z', true), item('id-1', true, 'alpha')]);
     expect(sorted.map((entry) => entry.item_ref)).toEqual(['id-1', 'z', 'b']);
+  });
+
+  it.each([
+    ['KIT_NAME_TAKEN', 409, 'nameTaken'],
+    ['KIT_STALE', 409, 'stale'],
+    ['KIT_NOT_FOUND', 404, 'notFound'],
+    ['KIT_ATTACHMENT_NOT_FOUND', 404, 'attachmentNotFound'],
+    ['KIT_UNKNOWN_TARGET', 404, 'unknownTarget'],
+    ['KIT_INVALID_NAME', 400, 'invalidName'],
+    ['KIT_INVALID_ITEM', 400, 'invalidItem'],
+    ['KIT_INVALID_TARGET', 400, 'invalidTarget'],
+    ['KIT_GLOBAL_NOT_ALLOWED', 400, 'globalNotAllowed'],
+  ])('maps %s to its own message with the server detail', (code, status, key) => {
+    const error = new BackendHttpError({ method: 'POST', path: '/api/kits', status, body: { code, error: ' why ' } });
+    expect(describeKitError(echoT, error)).toBe(`mcp.kits.errors.${key}|{"detail":"why","max":80}`);
+  });
+
+  it('falls back to the shared mapping for other failures', () => {
+    const csrf = new BackendHttpError({
+      method: 'POST',
+      path: '/api/kits',
+      status: 403,
+      body: { code: 'CSRF_INVALID' },
+    });
+
+    expect(describeKitError(keyT, csrf)).toBe('mcp.market.errors.csrf');
+    expect(describeKitError(keyT, new Error('offline'))).toBe('offline');
   });
 });

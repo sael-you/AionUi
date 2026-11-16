@@ -17,8 +17,7 @@ import { Plus } from '@icon-park/react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { KitResponse } from '@/common/config/storage';
-import { kitAttachmentLevels } from '@/renderer/hooks/mcp/market/kitModel';
-import { describeMarketError } from '@/renderer/hooks/mcp/market/marketModel';
+import { kitAttachmentLevels, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
 import { useKitActions, useKitAttachments, useKitList } from '@/renderer/hooks/mcp/market/useKits';
 import { MarketErrorNotice, touchClass, useIsMobileLayout } from '../market/shared';
 import KitAttachPanel from './KitAttachPanel';
@@ -138,7 +137,7 @@ const KitsSection: React.FC = () => {
           await deleteKit(kit.id);
           Message.success(t('mcp.kits.deleted'));
         } catch (deleteError) {
-          Message.error(describeMarketError(t, deleteError));
+          Message.error(describeKitError(t, deleteError));
         }
       },
     });
@@ -162,7 +161,7 @@ const KitsSection: React.FC = () => {
         </Button>
       </div>
       <p className='m-0 mb-12px text-12px text-t-secondary'>{t('mcp.kits.description')}</p>
-      {error ? <MarketErrorNotice message={describeMarketError(t, error)} onRetry={() => void reload()} /> : null}
+      {error ? <MarketErrorNotice message={describeKitError(t, error)} onRetry={() => void reload()} /> : null}
       {isLoading ? (
         <div className='text-13px text-t-secondary'>{t('mcp.kits.loading')}</div>
       ) : kits.length === 0 && !error ? (

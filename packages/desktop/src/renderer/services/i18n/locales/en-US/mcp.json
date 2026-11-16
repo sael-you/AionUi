@@ -336,7 +336,6 @@
     "deleteConfirmContent": "The kit and all of its attachments are removed. Conversations that already exist keep their skills.",
     "deleted": "Kit deleted",
     "saved": "Kit saved",
-    "staleEdit": "This kit was changed elsewhere and has been reloaded. Open it again and redo your change.",
     "empty": "No kits yet.",
     "loading": "Loading…",
     "builtin": "Built-in {{key}}",
@@ -430,6 +429,17 @@
       "frozenHint": "The skills this conversation was created with, kits included.",
       "missingTitle": "Wanted, no instance yet",
       "missingItem": "{{template}} (kit {{kit}})"
+    },
+    "errors": {
+      "nameTaken": "A kit with this name already exists. Choose another name.",
+      "stale": "This kit was changed elsewhere and has been reloaded. Open it again and redo your change.",
+      "notFound": "This kit no longer exists. The list has been refreshed.",
+      "attachmentNotFound": "This attachment no longer exists. The list has been refreshed.",
+      "unknownTarget": "The project or conversation no longer exists.",
+      "invalidName": "The kit name must be 1 to {{max}} characters.",
+      "invalidItem": "The server refused an item in this request: {{detail}}",
+      "invalidTarget": "This target does not fit the level: Global takes none, the other levels need one. {{detail}}",
+      "globalNotAllowed": "Only the read-only Context7 and studio-memory MCP instances can be attached globally."
     }
   }
 }

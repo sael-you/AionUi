@@ -37,13 +37,8 @@ vi.mock('@/renderer/hooks/context/LayoutContext', () => ({ useLayoutContext: () 
 
 import KitsSection from '@/renderer/pages/settings/ToolsSettings/kits/KitsSection';
 
-const conflict = () =>
-  new BackendHttpError({
-    method: 'PUT',
-    path: '/api/kits/kit-1',
-    status: 409,
-    body: { code: 'CONFLICT', error: 'kit changed since it was read' },
-  });
+const kitError = (code: string, status: number) =>
+  new BackendHttpError({ method: 'PUT', path: '/api/kits/kit-1', status, body: { code, error: 'detail' } });
 
 const openEditor = async (buttonName: RegExp | string) => {
   fireEvent.click(await screen.findByRole('button', { name: buttonName }));
@@ -144,8 +139,8 @@ describe('KitsSection (C27 Settings > Tools > Kits)', () => {
     expect(api.kits.create.invoke).not.toHaveBeenCalled();
   });
 
-  it('edits a kit: replaces the member sets, sends expected_updated_at, explains a stale edit', async () => {
-    api.kits.update.invoke.mockRejectedValueOnce(conflict());
+  it('edits a kit: replaces the member sets, sends expected_updated_at, explains KIT_STALE', async () => {
+    api.kits.update.invoke.mockRejectedValueOnce(kitError('KIT_STALE', 409));
     renderWithSwr(<KitsSection />);
     const modal = await openEditor('mcp.kits.editLabel|{"name":"Platform Dev"}');
     expect(nameInput(modal)).toHaveValue('Platform Dev');
@@ -165,9 +160,24 @@ describe('KitsSection (C27 Settings > Tools > Kits)', () => {
         },
       })
     );
-    await waitFor(() => expect(Message.error).toHaveBeenCalledWith('mcp.kits.staleEdit'));
+    await waitFor(() =>
+      expect(Message.error).toHaveBeenCalledWith(expect.stringMatching(/^mcp\.kits\.errors\.stale\|/))
+    );
     // The kit list is refreshed after the refusal.
     await waitFor(() => expect(api.kits.list.invoke.mock.calls.length).toBeGreaterThanOrEqual(2));
+  });
+
+  it('explains KIT_NAME_TAKEN on create, also when only the name changed on edit', async () => {
+    api.kits.create.invoke.mockRejectedValueOnce(kitError('KIT_NAME_TAKEN', 409));
+    renderWithSwr(<KitsSection />);
+    const modal = await openEditor('mcp.kits.create');
+    fireEvent.change(nameInput(modal), { target: { value: 'Platform Dev' } });
+    fireEvent.click(screen.getByRole('button', { name: 'common.save' }));
+
+    await waitFor(() =>
+      expect(Message.error).toHaveBeenCalledWith(expect.stringMatching(/^mcp\.kits\.errors\.nameTaken\|/))
+    );
+    expect(Message.error).not.toHaveBeenCalledWith(expect.stringMatching(/stale/));
   });
 
   it('deletes a kit after confirmation', async () => {
