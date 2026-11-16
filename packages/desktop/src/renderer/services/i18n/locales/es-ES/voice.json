@@ -112,7 +112,8 @@
       "confirm_rejected": "No confirmado",
       "added": "Añadido",
       "stopped": "Detenido",
-      "silenced": "Silenciado"
+      "silenced": "Silenciado",
+      "turn_failed": "Tarea fallida"
     }
   },
   "budget": {
@@ -145,7 +146,8 @@
     "noProvider": "Aún no hay un proveedor de voz configurado para tu cuenta.",
     "rateLimited": "Demasiadas solicitudes de voz. Espera un momento e inténtalo de nuevo.",
     "restartInterrupted": "El reinicio interrumpió la tarea: di «Hey Jarvis» para continuar.",
-    "conversationIdle": "Escucha en pausa tras 3 minutos de silencio. Di «Hey Jarvis» o toca para hablar."
+    "conversationIdle": "Escucha en pausa tras 3 minutos de silencio. Di «Hey Jarvis» o toca para hablar.",
+    "conversationRested": "La voz está en reposo: las respuestas del agente quedan en el chat. Di «Hey Jarvis» o toca para volver a hablar."
   },
   "settings": {
     "title": "Configuración de voz",
@@ -200,8 +202,8 @@
       "stopped": "Tarea detenida",
       "failed": "No enviado",
       "needs_approval": "Necesita tu aprobación en pantalla",
-      "turnFailed": "La tarea falló",
-      "interrupted": "Interrumpida por un reinicio"
+      "interrupted": "Interrumpida por un reinicio",
+      "turn_failed": "La tarea falló"
     }
   }
 }

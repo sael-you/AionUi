@@ -25,6 +25,7 @@ const STATUS_COLOR: Record<FollowUpStatus, string> = {
   added: 'green',
   stopped: 'orange',
   silenced: 'gray',
+  turn_failed: 'red',
 };
 
 /** Recent follow-ups (plan §3.4); approvals are opened on screen, never given by voice. */

@@ -141,7 +141,9 @@ export type FollowUpStatus =
   /** Conversation mode: the running turn was cancelled ("stop the task"). */
   | 'stopped'
   /** Conversation mode: a bare "stop" silenced the agent's speech only. */
-  | 'silenced';
+  | 'silenced'
+  /** Conversation mode: the bound conversation's turn failed (`failed` = the send failed). */
+  | 'turn_failed';
 
 export type VoiceFollowUp = {
   id: number;

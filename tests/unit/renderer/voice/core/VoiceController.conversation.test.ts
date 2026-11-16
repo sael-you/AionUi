@@ -7,6 +7,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ASK_WINDOW_MS,
+  BINDING_GRACE_MS,
   FOLLOW_UP_WINDOW_MS,
   LISTEN_WINDOW_MS,
   VoiceController,
@@ -365,26 +366,19 @@ describe('conversation voice mode — idle, failures, restart (director decision
     expect(c.state.call).toBeNull();
   });
 
-  it('failed with the call session = your words were not sent; without it = the task failed', async () => {
+  it('failed = your words were not sent; turn_failed = the task failed (explicit core status)', async () => {
     const { f, c } = await listening();
-    f.frame({
-      name: 'voice.followUp',
-      voiceSessionId: 'vs-1',
-      conversationId: 'c1',
-      status: 'failed',
-      line: 'x',
-      clipId: null,
-    });
-    expect(c.store.getSnapshot().lastOutcome).toMatchObject({ status: 'failed', turnFailed: false });
-    f.frame({
-      name: 'voice.followUp',
-      voiceSessionId: null,
-      conversationId: 'c1',
-      status: 'failed',
-      line: 'y',
-      clipId: 'err1',
-    });
-    expect(c.store.getSnapshot().lastOutcome).toMatchObject({ status: 'failed', turnFailed: true });
+    followUp(f, 'failed');
+    expect(c.store.getSnapshot().lastOutcome).toEqual({ status: 'failed', line: 'line failed' });
+    followUp(f, 'turn_failed', 'err1');
+    expect(c.store.getSnapshot().lastOutcome).toEqual({ status: 'turn_failed', line: 'line turn_failed' });
+    expect(f.earcons()).toContain('needsYou');
+    // The failed send opened the mic for a retry: the agent's line waits until it closes.
+    await vi.advanceTimersByTimeAsync(600);
+    expect(f.fx.api.fetchClip).not.toHaveBeenCalledWith('err1');
+    await vi.advanceTimersByTimeAsync(FOLLOW_UP_WINDOW_MS + 1000);
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('err1');
+    expect(c.store.getSnapshot().followUps).toEqual([]);
   });
 
   it('a restart (callEnded restart) stays armed and says the task was interrupted', async () => {
@@ -423,5 +417,119 @@ describe('conversation voice mode — idle, failures, restart (director decision
     await vi.advanceTimersByTimeAsync(600);
     expect(f.fx.api.fetchClip).toHaveBeenCalledWith('int1');
     expect(c.store.getSnapshot().followUps).toEqual([]);
+  });
+});
+
+describe('conversation voice mode — review round fixes (#1, #2, #3, #17)', () => {
+  it('#1 a text-only `finished` during a `says` clip never opens the mic over it', async () => {
+    const { f, c } = await listening();
+    followUp(f, 'sent');
+    const clip = hangingClip(f);
+    followUp(f, 'says', 'result1');
+    await vi.advanceTimersByTimeAsync(200);
+    expect(c.store.getSnapshot().agentSpeaking).toBe(true);
+    followUp(f, 'finished');
+    expect(c.state.held).toBe(true);
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(c.state.held).toBe(true);
+    clip.finish();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(c.state.held).toBe(false);
+    await vi.advanceTimersByTimeAsync(FOLLOW_UP_WINDOW_MS + 100);
+    expect(c.state.held).toBe(true);
+  });
+
+  it('#1 a text-only `finished` while a clip is still queued waits for that clip too', async () => {
+    const { f, c } = await listening();
+    followUp(f, 'sent');
+    const first = hangingClip(f);
+    followUp(f, 'says', 'a1');
+    followUp(f, 'says', 'a2');
+    await vi.advanceTimersByTimeAsync(200);
+    followUp(f, 'finished');
+    first.finish();
+    await vi.advanceTimersByTimeAsync(5);
+    // a2 is the last line: the mic stays quiet until it has been heard.
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('a2');
+    await vi.advanceTimersByTimeAsync(600);
+    expect(f.clips.play).toHaveBeenCalledTimes(2);
+    expect(c.state.held).toBe(false);
+  });
+
+  it('#2 a `turn_failed` clip queued behind a playing line plays right after it, then the window opens', async () => {
+    const { f, c } = await listening();
+    followUp(f, 'sent');
+    const clip = hangingClip(f);
+    followUp(f, 'says', 'say1');
+    await vi.advanceTimersByTimeAsync(200);
+    followUp(f, 'turn_failed', 'fail1');
+    clip.finish();
+    await vi.advanceTimersByTimeAsync(600);
+    // Played at once, not re-queued behind an open mic and heard 8-12 s late.
+    expect(f.clips.play).toHaveBeenCalledTimes(2);
+    expect(f.fx.api.fetchClip.mock.calls.map((call) => call[0])).toEqual(['say1', 'fail1']);
+    expect(c.state.held).toBe(false);
+  });
+
+  it('#3 long continuous speech in the follow-up window is never cut; the mic closes after the speech ends', async () => {
+    const { f, c } = await listening();
+    followUp(f, 'sent');
+    followUp(f, 'finished');
+    expect(c.state.held).toBe(false);
+    await vi.advanceTimersByTimeAsync(FOLLOW_UP_WINDOW_MS - 500);
+    f.state.wakeEvents?.onVad(true, 20);
+    // 20 s of speech without a pause: no onset after the first one.
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect(c.state.held).toBe(false);
+    f.state.wakeEvents?.onVad(false, 40);
+    await vi.advanceTimersByTimeAsync(FOLLOW_UP_WINDOW_MS - 1000);
+    expect(c.state.held).toBe(false);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(c.state.held).toBe(true);
+  });
+
+  it('#17 30 min after an idle hang-up the bar says the agent answers in the chat; a wake re-binds the same conversation', async () => {
+    const { f, c } = await listening();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'idle' });
+    await vi.advanceTimersByTimeAsync(BINDING_GRACE_MS - 1000);
+    expect(c.store.getSnapshot().notice?.code).toBe('conversationIdle');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(c.store.getSnapshot().notice?.code).toBe('conversationRested');
+    expect(c.state.mode).toBe('armed');
+    f.state.wakeEvents?.onWake(50, 0.9);
+    await flush();
+    expect(f.fx.startCall).toHaveBeenCalledTimes(2);
+    expect(f.state.callOptions).toMatchObject({ mode: 'conversation', focusConversationId: 'c1' });
+    expect(c.store.getSnapshot().notice).toBeNull();
+  });
+
+  it('#17 a re-bind that fails is never silent: the bar shows why and voice stays armed', async () => {
+    const { f, c } = await listening();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'idle' });
+    await vi.advanceTimersByTimeAsync(BINDING_GRACE_MS + 1000);
+    f.fx.startCall.mockRejectedValueOnce(new Error('offline'));
+    c.talk();
+    await flush();
+    expect(c.state.mode).toBe('armed');
+    expect(c.state.call).toBeNull();
+    expect(c.store.getSnapshot().notice?.code).toBe('callFailed');
+  });
+
+  it("#21 core's spoken `interrupted` after the bar already showed the restart: one cue only", async () => {
+    const { f, c } = await listening();
+    f.frame({ name: 'voice.callEnded', voiceSessionId: 'vs-1', reason: 'restart' });
+    const tones = f.earcons().filter((e) => e === 'needsYou').length;
+    f.frame({
+      name: 'voice.followUp',
+      voiceSessionId: null,
+      conversationId: 'c1',
+      status: 'interrupted',
+      line: 'x',
+      clipId: 'int1',
+    });
+    await vi.advanceTimersByTimeAsync(600);
+    expect(f.fx.api.fetchClip).toHaveBeenCalledWith('int1');
+    expect(f.earcons().filter((e) => e === 'needsYou').length).toBe(tones);
+    expect(c.store.getSnapshot().notice?.code).toBe('restartInterrupted');
   });
 });

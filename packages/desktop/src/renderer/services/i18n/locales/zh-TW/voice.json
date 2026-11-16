@@ -112,7 +112,8 @@
       "confirm_rejected": "未確認",
       "added": "已加入",
       "stopped": "已停止",
-      "silenced": "已靜音"
+      "silenced": "已靜音",
+      "turn_failed": "任務失敗"
     }
   },
   "budget": {
@@ -145,7 +146,8 @@
     "noProvider": "你的帳戶尚未設定語音服務提供者。",
     "rateLimited": "語音請求過多。請稍候再試。",
     "restartInterrupted": "重新啟動中斷了任務——說「Hey Jarvis」繼續。",
-    "conversationIdle": "安靜 3 分鐘後已暫停聆聽。說「Hey Jarvis」或點按即可說話。"
+    "conversationIdle": "安靜 3 分鐘後已暫停聆聽。說「Hey Jarvis」或點按即可說話。",
+    "conversationRested": "語音已休息：代理的回覆會留在聊天中。說「Hey Jarvis」或點按即可再次說話。"
   },
   "settings": {
     "title": "語音設定",
@@ -200,8 +202,8 @@
       "stopped": "任務已停止",
       "failed": "未傳送",
       "needs_approval": "需要你在螢幕上核准",
-      "turnFailed": "任務失敗",
-      "interrupted": "因重新啟動而中斷"
+      "interrupted": "因重新啟動而中斷",
+      "turn_failed": "任務失敗"
     }
   }
 }

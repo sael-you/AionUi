@@ -151,6 +151,7 @@ describe('voice protocol — S1b frames as the backend serialises them (aionui-a
     'failed',
     'stopped',
     'silenced',
+    'turn_failed',
   ])('decodes a voice.followUp with status %s', (status) => {
     expect(
       decodeFrame(env('voice.followUp', { voiceSessionId: null, conversationId: 'c1', status, line: 'x' }))

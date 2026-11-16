@@ -112,7 +112,8 @@
       "confirm_rejected": "未确认",
       "added": "已加入",
       "stopped": "已停止",
-      "silenced": "已静音"
+      "silenced": "已静音",
+      "turn_failed": "任务失败"
     }
   },
   "budget": {
@@ -145,7 +146,8 @@
     "noProvider": "你的账户尚未配置语音服务提供方。",
     "rateLimited": "语音请求过多。请稍候再试。",
     "restartInterrupted": "重启中断了任务——说“Hey Jarvis”继续。",
-    "conversationIdle": "安静 3 分钟后已暂停聆听。说“Hey Jarvis”或点按即可说话。"
+    "conversationIdle": "安静 3 分钟后已暂停聆听。说“Hey Jarvis”或点按即可说话。",
+    "conversationRested": "语音已休息：智能体的回复会留在聊天中。说“Hey Jarvis”或点按即可再次说话。"
   },
   "settings": {
     "title": "语音设置",
@@ -200,8 +202,8 @@
       "stopped": "任务已停止",
       "failed": "未发送",
       "needs_approval": "需要你在屏幕上批准",
-      "turnFailed": "任务失败",
-      "interrupted": "因重启而中断"
+      "interrupted": "因重启而中断",
+      "turn_failed": "任务失败"
     }
   }
 }

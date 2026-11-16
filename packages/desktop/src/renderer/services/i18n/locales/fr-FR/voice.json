@@ -112,7 +112,8 @@
       "confirm_rejected": "Non confirmé",
       "added": "Ajouté",
       "stopped": "Arrêté",
-      "silenced": "Silencieux"
+      "silenced": "Silencieux",
+      "turn_failed": "Tâche échouée"
     }
   },
   "budget": {
@@ -145,7 +146,8 @@
     "noProvider": "Aucun fournisseur vocal n’est encore configuré pour votre compte.",
     "rateLimited": "Trop de requêtes vocales. Patientez un instant puis réessayez.",
     "restartInterrupted": "Le redémarrage a interrompu la tâche — dites « Hey Jarvis » pour continuer.",
-    "conversationIdle": "Écoute en pause après 3 minutes de silence. Dites « Hey Jarvis » ou touchez pour parler."
+    "conversationIdle": "Écoute en pause après 3 minutes de silence. Dites « Hey Jarvis » ou touchez pour parler.",
+    "conversationRested": "La voix est en pause : les réponses de l'agent restent dans le chat. Dites « Hey Jarvis » ou touchez pour reparler."
   },
   "settings": {
     "title": "Paramètres vocaux",
@@ -200,8 +202,8 @@
       "stopped": "Tâche arrêtée",
       "failed": "Non envoyé",
       "needs_approval": "Votre approbation est requise à l’écran",
-      "turnFailed": "La tâche a échoué",
-      "interrupted": "Interrompue par un redémarrage"
+      "interrupted": "Interrompue par un redémarrage",
+      "turn_failed": "La tâche a échoué"
     }
   }
 }

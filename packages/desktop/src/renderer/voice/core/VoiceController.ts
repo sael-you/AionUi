@@ -82,10 +82,15 @@ export const ASK_WINDOW_MS = 30_000;
  * agent may speak again.
  */
 export const LISTEN_WINDOW_MS = 15_000;
+/**
+ * Conversation mode: core keeps the conversation binding this long after an idle hang-up
+ * (`BINDING_GRACE`); after it the agent's lines stay text until a wake or tap opens a new call.
+ */
+export const BINDING_GRACE_MS = 30 * 60_000;
 /** Conversation-mode outcomes of your utterance: the mic goes quiet again. */
 const HOLD_STATUSES: ReadonlySet<FollowUpStatus> = new Set(['sent', 'added', 'queued', 'silenced', 'stopped']);
 /** Conversation-mode turn ends: the mic opens for the follow-up window. */
-const TURN_END_STATUSES: ReadonlySet<FollowUpStatus> = new Set(['finished', 'failed', 'needs_approval']);
+const TURN_END_STATUSES: ReadonlySet<FollowUpStatus> = new Set(['finished', 'failed', 'turn_failed', 'needs_approval']);
 /** `voice.state armed` reasons an older backend used to signal a hang-up. */
 const LEGACY_END_REASONS: ReadonlySet<string> = new Set(['idle', 'budget', 'rotation', 'kill', 'ended']);
 /**
@@ -110,6 +115,7 @@ const DRAFT_LINE_STATUSES: ReadonlySet<FollowUpStatus> = new Set([
 ]);
 const NEEDS_YOU_STATUSES: ReadonlySet<FollowUpStatus> = new Set([
   'failed',
+  'turn_failed',
   'needs_approval',
   'saved_not_started',
   'expired',
@@ -169,6 +175,10 @@ export class VoiceController {
   private userSpeaking = false;
   /** Bumped when the agent's speech is stopped: clips fetched or queued before are dropped. */
   private speechEpoch = 0;
+  /** The agent clip being fetched or played now. */
+  private currentFollowUpClipId: string | null = null;
+  /** Conversation mode: core keeps the binding this long after an idle hang-up. */
+  private graceTimer: unknown = null;
   /** Conversation mode: the socket dropped while a ready call was live (a restart if the call is gone). */
   private lostReadyCall = false;
 
@@ -274,6 +284,7 @@ export class VoiceController {
     this.clearTimer('resumeTimer');
     this.clearTimer('draftTimer');
     this.clearTimer('windowTimer');
+    this.clearTimer('graceTimer');
     this.autoTalk = false;
     this.windowAfterClip = null;
     this.userSpeaking = false;
@@ -527,6 +538,8 @@ export class VoiceController {
       return;
     }
     this.dispatch({ type: 'wake' });
+    // A new call (re)binds the conversation, after the 30-min grace too.
+    this.clearTimer('graceTimer');
     this.wakeT = resumeOf ? null : t;
     this.everReady = false;
     // Conversation mode keeps the wake word live during the call: "Hey Jarvis" barges in.
@@ -777,6 +790,14 @@ export class VoiceController {
         this.earcon('needsYou');
       } else {
         this.store.update({ notice: { code: 'conversationIdle' } });
+        this.clearTimer('graceTimer');
+        this.graceTimer = this.fx.timers.setTimeout(() => {
+          this.graceTimer = null;
+          // Never silent: say that the agent now answers in the chat until you talk again.
+          if (this.isConversationMode && this.machine.mode === 'armed' && !this.machine.call) {
+            this.store.update({ notice: { code: 'conversationRested' } });
+          }
+        }, BINDING_GRACE_MS);
       }
       return;
     }
@@ -967,7 +988,10 @@ export class VoiceController {
         this.store.update({ readbackPlaying: false });
       }
       if (this.playingKind === kind) this.playingKind = null;
-      if (kind === 'followUp') this.followUpBusy = false;
+      if (kind === 'followUp') {
+        this.followUpBusy = false;
+        if (this.currentFollowUpClipId === clipId) this.currentFollowUpClipId = null;
+      }
       if (kind === 'followUp' && this.store.getSnapshot().agentSpeaking) this.store.update({ agentSpeaking: false });
       if (kind === 'followUp' && !requeued && clipId === this.windowAfterClip?.clipId) {
         const { ms } = this.windowAfterClip;
@@ -1006,6 +1030,7 @@ export class VoiceController {
     if (index < 0) return;
     this.followUpBusy = true;
     const [next] = this.followUpQueue.splice(index, 1);
+    this.currentFollowUpClipId = next.clipId;
     const endsAt = next.tone ? this.earcon(next.tone) : null;
     const delayMs = endsAt !== null && this.ctx ? Math.max(0, (endsAt - this.ctx.currentTime) * 1000) : 0;
     const epoch = this.speechEpoch;
@@ -1082,26 +1107,25 @@ export class VoiceController {
     if (status === 'interrupted') {
       // A restart cut the running turn: say so (spoken when core sends a clip), stay armed.
       this.store.update({ lastOutcome: { status, line } });
-      if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: 'needsYou', draftLine: false });
-      else this.earcon('needsYou');
+      // One cue only: the bar may already show the restart notice with its tone.
+      const toned = this.store.getSnapshot().notice?.code === 'restartInterrupted';
+      this.store.update({ notice: { code: 'restartInterrupted' } });
+      if (clipId) this.enqueueClip({ clipId, urlOrId: clipId, tone: toned ? null : 'needsYou', draftLine: false });
+      else if (!toned) this.earcon('needsYou');
       return true;
     }
     if (TURN_END_STATUSES.has(status)) {
-      // `failed` with the call's session id = your words could not be sent; without it = the
-      // watcher's line about the turn (the agent's task failed).
-      if (status !== 'finished') {
-        this.store.update({
-          lastOutcome: status === 'failed' ? { status, line, turnFailed: !frame.voiceSessionId } : { status, line },
-        });
-      }
+      // `failed` = your words could not be sent; `turn_failed` = the agent's task failed.
+      if (status !== 'finished') this.store.update({ lastOutcome: { status, line } });
       if (status === 'needs_approval') this.fx.vibrate([60, 60, 60]);
       const tone: EarconName = status === 'finished' ? 'yourTurn' : 'needsYou';
       const ms = this.followUpWindowMs();
-      // The window opens after the agent's last line, never over it.
+      // The window opens after the agent's last line, never over it (openWindow defers itself
+      // while a clip plays or waits).
       if (clipId && this.enqueueClip({ clipId, urlOrId: clipId, tone, draftLine: false })) {
         this.windowAfterClip = { clipId, ms };
       } else {
-        if (!clipId) this.earcon(tone);
+        if (!clipId && !this.agentSpeechPending()) this.earcon(tone);
         this.openWindow(ms);
       }
       return true;
@@ -1136,6 +1160,12 @@ export class VoiceController {
    */
   private openWindow(ms: number): void {
     if (this.machine.call?.phase !== 'ready') return;
+    // Never open the mic over the agent's speech: wait for the last playing or queued clip.
+    const lastClip = this.followUpQueue.at(-1)?.clipId ?? this.currentFollowUpClipId;
+    if (lastClip && this.agentSpeechPending()) {
+      this.windowAfterClip = { clipId: lastClip, ms };
+      return;
+    }
     this.clearTimer('windowTimer');
     this.windowMs = ms;
     this.lastSpeechAt = null;
@@ -1163,6 +1193,11 @@ export class VoiceController {
       }
       this.holdMic();
     }, ms);
+  }
+
+  /** An agent clip is playing, being fetched, or waiting in the queue. */
+  private agentSpeechPending(): boolean {
+    return this.followUpQueue.length > 0 || this.followUpBusy || this.playingKind === 'followUp';
   }
 
   /** Stop the agent's speech now (barge-in, "stop"): the playing clip and the queued ones. */
@@ -1297,7 +1332,15 @@ export class VoiceController {
   }
 
   private clearTimer(
-    key: 'deadManTimer' | 'readyTimer' | 'draftTimer' | 'resumeTimer' | 'askTimer' | 'askHangupTimer' | 'windowTimer'
+    key:
+      | 'deadManTimer'
+      | 'readyTimer'
+      | 'draftTimer'
+      | 'resumeTimer'
+      | 'askTimer'
+      | 'askHangupTimer'
+      | 'windowTimer'
+      | 'graceTimer'
   ): void {
     const handle = this[key];
     if (handle) this.fx.timers.clearTimeout(handle);

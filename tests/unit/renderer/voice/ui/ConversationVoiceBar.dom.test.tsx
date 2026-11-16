@@ -179,11 +179,11 @@ describe('ConversationVoiceBar', () => {
         name: 'voice.followUp',
         voiceSessionId: null,
         conversationId: 'c1',
-        status: 'failed',
+        status: 'turn_failed',
         line: 'y',
         clipId: null,
       })
     );
-    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.bar.outcome.turnFailed');
+    expect(screen.getByTestId('voice-bar-caption')).toHaveTextContent('voice.bar.outcome.turn_failed');
   });
 });

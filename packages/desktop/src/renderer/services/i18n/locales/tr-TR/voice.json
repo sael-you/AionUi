@@ -112,7 +112,8 @@
       "confirm_rejected": "Onaylanmadı",
       "added": "Eklendi",
       "stopped": "Durduruldu",
-      "silenced": "Susturuldu"
+      "silenced": "Susturuldu",
+      "turn_failed": "Görev başarısız"
     }
   },
   "budget": {
@@ -145,7 +146,8 @@
     "noProvider": "Hesabınız için henüz bir ses sağlayıcısı ayarlanmadı.",
     "rateLimited": "Çok fazla ses isteği. Biraz bekleyip tekrar deneyin.",
     "restartInterrupted": "Yeniden başlatma görevi yarıda kesti — devam etmek için “Hey Jarvis” deyin.",
-    "conversationIdle": "3 dakika sessizlikten sonra dinleme duraklatıldı. “Hey Jarvis” deyin veya konuşmak için dokunun."
+    "conversationIdle": "3 dakika sessizlikten sonra dinleme duraklatıldı. “Hey Jarvis” deyin veya konuşmak için dokunun.",
+    "conversationRested": "Ses dinleniyor: ajanın yanıtları sohbette kalır. Yeniden konuşmak için “Hey Jarvis” deyin veya dokunun."
   },
   "settings": {
     "title": "Ses ayarları",
@@ -200,8 +202,8 @@
       "stopped": "Görev durduruldu",
       "failed": "Gönderilemedi",
       "needs_approval": "Ekranda onayın gerekiyor",
-      "turnFailed": "Görev başarısız oldu",
-      "interrupted": "Yeniden başlatma nedeniyle kesildi"
+      "interrupted": "Yeniden başlatma nedeniyle kesildi",
+      "turn_failed": "Görev başarısız oldu"
     }
   }
 }

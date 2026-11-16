@@ -112,7 +112,8 @@
       "confirm_rejected": "Nicht bestätigt",
       "added": "Hinzugefügt",
       "stopped": "Gestoppt",
-      "silenced": "Stumm"
+      "silenced": "Stumm",
+      "turn_failed": "Aufgabe fehlgeschlagen"
     }
   },
   "budget": {
@@ -145,7 +146,8 @@
     "noProvider": "Für dein Konto ist noch kein Sprachanbieter eingerichtet.",
     "rateLimited": "Zu viele Sprachanfragen. Warte kurz und versuche es erneut.",
     "restartInterrupted": "Der Neustart hat die Aufgabe unterbrochen – sag „Hey Jarvis“, um fortzufahren.",
-    "conversationIdle": "Zuhören nach 3 stillen Minuten pausiert. Sag „Hey Jarvis“ oder tippe zum Sprechen."
+    "conversationIdle": "Zuhören nach 3 stillen Minuten pausiert. Sag „Hey Jarvis“ oder tippe zum Sprechen.",
+    "conversationRested": "Voice ruht: Die Antworten des Agenten bleiben im Chat. Sag „Hey Jarvis“ oder tippe, um wieder zu sprechen."
   },
   "settings": {
     "title": "Spracheinstellungen",
@@ -200,8 +202,8 @@
       "stopped": "Aufgabe gestoppt",
       "failed": "Nicht gesendet",
       "needs_approval": "Braucht deine Freigabe am Bildschirm",
-      "turnFailed": "Die Aufgabe ist fehlgeschlagen",
-      "interrupted": "Durch einen Neustart unterbrochen"
+      "interrupted": "Durch einen Neustart unterbrochen",
+      "turn_failed": "Die Aufgabe ist fehlgeschlagen"
     }
   }
 }
