@@ -59,6 +59,15 @@ const EffectiveRow: React.FC<{ item: KitEffectiveItem }> = ({ item }) => {
         <KitOpTag op={item.provenance.op} />
         <Provenance item={item} />
       </div>
+      {mcp?.shadowed_by_project_file && item.included ? (
+        <span
+          className='inline-flex items-center gap-4px text-12px text-t-secondary'
+          data-testid='kit-effective-shadowed'
+        >
+          <Attention theme='filled' size={14} className='text-warning-6' aria-hidden />
+          {t('mcp.kits.effective.shadowed')}
+        </span>
+      ) : null}
       {mcp && item.included ? (
         <span className='inline-flex items-center gap-4px text-12px text-t-secondary'>
           {mcp.delivered ? (

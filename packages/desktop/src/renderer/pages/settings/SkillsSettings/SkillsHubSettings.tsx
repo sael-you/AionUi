@@ -10,6 +10,7 @@ import useSWR from 'swr';
 import SkillUsedByStack, { getAssistantsUsingSkill } from './SkillUsedByStack';
 import SettingsPageWrapper from '../components/SettingsPageWrapper';
 import SettingsPageHeader from '../components/SettingsPageHeader';
+import SkillsByKitPane from './SkillsByKitPane';
 import TalkToButlerButton from '@/renderer/components/base/TalkToButlerButton';
 import { AionSearchInput } from '@/renderer/components/base';
 import { formatDateTime } from '@/renderer/services/i18n/format';
@@ -129,9 +130,11 @@ interface SkillsHubSettingsProps {
   withWrapper?: boolean;
 }
 
-type SkillsTab = 'custom' | 'official';
+type SkillsTab = 'custom' | 'official' | 'kits';
 
-const getSkillsTabFromState = (state: unknown): SkillsTab => {
+const getSkillsTabFromState = (state: unknown, projectId: string | null): SkillsTab => {
+  // Opened from a project (C28): start on the grouped view with that project's kit.
+  if (projectId) return 'kits';
   if (typeof state === 'object' && state !== null && 'skillsTab' in state && state.skillsTab === 'official') {
     return 'official';
   }
@@ -155,7 +158,8 @@ const SkillsHubSettings: React.FC<SkillsHubSettingsProps> = ({ withWrapper = tru
   const [search_query, setSearchQuery] = useState('');
   const [importHistory, setImportHistory] = useState<SkillImportRecord[]>([]);
   const [importLimits, setImportLimits] = useState<SkillImportLimits | null>(null);
-  const [activeTab, setActiveTab] = useState<SkillsTab>(() => getSkillsTabFromState(location.state));
+  const kitsProjectId = searchParams.get('project');
+  const [activeTab, setActiveTab] = useState<SkillsTab>(() => getSkillsTabFromState(location.state, kitsProjectId));
   // Batch management (Custom tab only): multi-select skills for bulk deletion.
   const [batchMode, setBatchMode] = useState(false);
   const [selectedSkillNames, setSelectedSkillNames] = useState<Set<string>>(new Set());
@@ -170,6 +174,7 @@ const SkillsHubSettings: React.FC<SkillsHubSettingsProps> = ({ withWrapper = tru
   );
 
   // "Custom" tab: only user-imported skills.
+  const availableSkillNames = useMemo(() => availableSkills.map((skill) => skill.name), [availableSkills]);
   const mySkills = useMemo(() => availableSkills.filter((s) => s.source === 'custom'), [availableSkills]);
   // "Official" tab: built-in non-auto-injected skills shown as the primary list,
   // with extension skills and auto-injected skills kept as separate read-only sections.
@@ -1025,14 +1030,17 @@ const SkillsHubSettings: React.FC<SkillsHubSettingsProps> = ({ withWrapper = tru
             label: t('settings.skillsHub.tabOfficial', { defaultValue: 'Official' }),
             count: officialSkills.length + extensionSkills.length + builtinAutoSkills.length,
           },
+          { key: 'kits', label: t('mcp.kits.skillGroups.tab') },
         ]}
         activeTab={activeTab}
         onTabChange={(key) => {
-          setActiveTab(key as 'custom' | 'official');
+          setActiveTab(key as SkillsTab);
           exitBatchMode();
         }}
       />
-      {activeTab === 'custom' ? customPane : officialPane}
+      {activeTab === 'custom' ? customPane : null}
+      {activeTab === 'official' ? officialPane : null}
+      {activeTab === 'kits' ? <SkillsByKitPane skillNames={availableSkillNames} projectId={kitsProjectId} /> : null}
     </div>
   );
 

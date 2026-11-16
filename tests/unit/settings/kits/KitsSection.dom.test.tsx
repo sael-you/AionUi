@@ -34,6 +34,9 @@ vi.mock('@/common/adapter/ipcBridge', () => ({ kits: api.kits, mcpService: { mar
 vi.mock('@/common', () => ({ ipcBridge: { fs: { listAvailableSkills: api.listSkills } } }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: fakeT }) }));
 vi.mock('@/renderer/hooks/context/LayoutContext', () => ({ useLayoutContext: () => ({ isMobile: false }) }));
+vi.mock('@/renderer/pages/conversation/GroupedHistory/hooks/useStandardProjects', () => ({
+  useStandardProjects: () => [{ workspace: '/root/projects/tb', name: 'TB-test', project_id: 'proj-tb' }],
+}));
 
 import KitsSection from '@/renderer/pages/settings/ToolsSettings/kits/KitsSection';
 
@@ -92,6 +95,23 @@ describe('KitsSection (C27 Settings > Tools > Kits)', () => {
     expect(platform).toHaveTextContent('mcp.kits.levelCount|{"level":"mcp.kits.level.conversation","count":1}');
     expect(cards[1]).toHaveTextContent('mcp.kits.notAttached');
     expect(screen.getByTestId('kit-attach-global')).toBeInTheDocument();
+  });
+
+  it('shows a project kit with its project and its implicit project level (C28)', async () => {
+    api.kits.list.invoke.mockResolvedValue([
+      { ...KIT_OPS, id: 'kit-tb', name: 'TB-test', project_id: 'proj-tb' },
+      { ...KIT_OPS, id: 'kit-x', name: 'Orphan', project_id: 'proj-gone' },
+    ]);
+    renderWithSwr(<KitsSection />);
+
+    const cards = await screen.findAllByTestId('kit-card');
+    expect(within(cards[0] as HTMLElement).getByTestId('kit-card-project')).toHaveTextContent(
+      'mcp.kits.projectKit.of|{"name":"TB-test"}'
+    );
+    expect(cards[0]).toHaveTextContent('mcp.kits.levelCount|{"level":"mcp.kits.level.project","count":1}');
+    expect(within(cards[1] as HTMLElement).getByTestId('kit-card-project')).toHaveTextContent(
+      'mcp.kits.projectKit.of|{"name":"proj-gone"}'
+    );
   });
 
   it('shows the empty state and a retryable load error', async () => {

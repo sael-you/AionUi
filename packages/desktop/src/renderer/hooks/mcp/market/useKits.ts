@@ -14,6 +14,7 @@
 import { useCallback } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ipcBridge } from '@/common';
+import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import { kits as kitsApi, mcpService } from '@/common/adapter/ipcBridge';
 import type {
   AttachKitItemRequest,
@@ -21,9 +22,12 @@ import type {
   KitAttachmentsQuery,
   KitEffectiveQuery,
   KitEffectiveSetResponse,
+  KitImportPreviewResponse,
+  KitImportServerRequest,
   KitResponse,
   McpMarketInstance,
   McpMarketTemplate,
+  UpdateKitRequest,
 } from '@/common/config/storage';
 import { createKitRequest, updateKitRequest, type KitFormValues } from './kitModel';
 
@@ -37,8 +41,35 @@ export const kitEffectiveKey = (query: KitEffectiveQuery): string =>
   `kits.effective:${query.conversation_id ?? ''}:${query.project_id ?? ''}:${query.assistant_id ?? ''}`;
 
 export const useKitList = () => {
-  const { data, error, isLoading, mutate } = useSWR<KitResponse[]>(KITS_KEY, () => kitsApi.list.invoke());
+  const { data, error, isLoading, mutate } = useSWR<KitResponse[]>(KITS_KEY, () => kitsApi.list.invoke({}));
   return { kits: data ?? [], error: error as unknown, isLoading, reload: mutate };
+};
+
+export const projectKitKey = (projectId: string): string => `kits.project:${projectId}`;
+
+/** The kit of one project (C28), or `null` when it has none (404). */
+export const useProjectKit = (projectId: string | null) => {
+  const { data, error, isLoading } = useSWR<KitResponse | null>(
+    projectId ? projectKitKey(projectId) : null,
+    async () => {
+      try {
+        return await kitsApi.projectKit.invoke({ project_id: projectId ?? '' });
+      } catch (fetchError) {
+        if (isBackendHttpError(fetchError) && fetchError.status === 404) return null;
+        throw fetchError;
+      }
+    }
+  );
+  return { projectKit: data ?? null, error: error as unknown, isLoading };
+};
+
+/** The `.mcp.json` import preview of a project (C28 §5); `null` = not loaded (closed). */
+export const useKitImportPreview = (projectId: string | null) => {
+  const { data, error, isLoading } = useSWR<KitImportPreviewResponse>(
+    projectId ? `kits.import-preview:${projectId}` : null,
+    () => kitsApi.importPreview.invoke({ project_id: projectId ?? '' })
+  );
+  return { preview: data ?? null, error: error as unknown, isLoading };
 };
 
 /** Attachments at one level/target; no query fields = every attachment of the user. */
@@ -96,7 +127,13 @@ export const useKitActions = () => {
   );
 
   const createKit = useCallback(
-    (values: KitFormValues) => after(kitsApi.create.invoke(createKitRequest(values))),
+    (values: KitFormValues, projectId?: string) => after(kitsApi.create.invoke(createKitRequest(values, projectId))),
+    [after]
+  );
+  /** Partial update (only the given fields, e.g. one member list), guarded by the kit's `updated_at`. */
+  const patchKit = useCallback(
+    (kit: KitResponse, data: Omit<UpdateKitRequest, 'expected_updated_at'>) =>
+      after(kitsApi.update.invoke({ id: kit.id, data: { ...data, expected_updated_at: kit.updated_at } })),
     [after]
   );
   const updateKit = useCallback(
@@ -104,9 +141,15 @@ export const useKitActions = () => {
       after(kitsApi.update.invoke({ id: kit.id, data: updateKitRequest(kit, values) })),
     [after]
   );
+  /** Import keys from the project's `.mcp.json` (C28 §5); creates the project kit when missing. */
+  const importKeys = useCallback(
+    (projectId: string, servers: KitImportServerRequest[]) =>
+      after(kitsApi.importKeys.invoke({ project_id: projectId, data: { servers } })),
+    [after]
+  );
   const deleteKit = useCallback((kitId: string) => after(kitsApi.remove.invoke({ id: kitId })), [after]);
   const attach = useCallback((request: AttachKitItemRequest) => after(kitsApi.attach.invoke(request)), [after]);
   const detach = useCallback((attachmentId: string) => after(kitsApi.detach.invoke({ id: attachmentId })), [after]);
 
-  return { createKit, updateKit, deleteKit, attach, detach };
+  return { createKit, updateKit, patchKit, deleteKit, attach, detach, importKeys };
 };

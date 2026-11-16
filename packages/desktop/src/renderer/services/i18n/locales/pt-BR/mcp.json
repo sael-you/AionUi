@@ -407,7 +407,8 @@
       "projectHint": "Vale para todas as conversas deste projeto.",
       "conversationTitle": "Kits desta conversa",
       "conversationHint": "Vale só para esta conversa. Mudanças de skills valem a partir do próximo início de sessão.",
-      "attachTab": "Anexos"
+      "attachTab": "Anexos",
+      "sharedTab": "Kits compartilhados"
     },
     "assistantSection": {
       "title": "Kits",
@@ -428,7 +429,9 @@
       "frozenTitle": "Skills fixadas na criação",
       "frozenHint": "As skills com que esta conversa foi criada, incluindo kits.",
       "missingTitle": "Desejado, ainda sem instância",
-      "missingItem": "{{template}} (kit {{kit}})"
+      "missingItem": "{{template}} (kit {{kit}})",
+      "projectTitle": "O que as conversas daqui recebem",
+      "shadowed": "Também definido no .mcp.json do projeto: seria carregado duas vezes."
     },
     "errors": {
       "nameTaken": "Já existe um kit com esse nome. Escolha outro nome.",
@@ -439,7 +442,90 @@
       "invalidName": "O nome do kit deve ter de 1 a {{max}} caracteres.",
       "invalidItem": "O servidor recusou um item desta solicitação: {{detail}}",
       "invalidTarget": "O alvo não combina com o nível: o global não tem alvo, os demais níveis precisam de um. {{detail}}",
-      "globalNotAllowed": "Só as instâncias MCP somente leitura Context7 e studio-memory podem ser anexadas globalmente."
+      "globalNotAllowed": "Só as instâncias MCP somente leitura Context7 e studio-memory podem ser anexadas globalmente.",
+      "projectHasKit": "Este projeto já tem um kit. A visualização foi atualizada."
+    },
+    "projectKit": {
+      "title": "Kit do projeto",
+      "hint": "Este kit vale para todas as conversas do projeto, sem anexo. Assistentes e conversas ainda podem remover itens.",
+      "none": "{{name}} ainda não tem kit de projeto.",
+      "create": "Criar kit do projeto",
+      "created": "Kit do projeto criado",
+      "of": "Projeto · {{name}}",
+      "viewSkills": "Ver skills por kit",
+      "addSkill": "Adicionar uma skill da biblioteca",
+      "addMcp": "Adicionar uma instância MCP",
+      "addTemplate": "Adicionar um template do catálogo desejado",
+      "removeLabel": "Remover {{name}}",
+      "customHint": "Precisa de um servidor MCP próprio? Crie-o como instância em Configurações > Ferramentas > MCP e adicione aqui.",
+      "count": "{{count}} itens",
+      "count_one": "{{count}} item",
+      "count_other": "{{count}} itens"
+    },
+    "skillGroups": {
+      "tab": "Por kit",
+      "hint": "A biblioteca única de skills, agrupada pelos kits que as usam. Uma skill pode estar em vários grupos.",
+      "filterLabel": "Mostrar grupo",
+      "all": "Todos",
+      "global": "Global",
+      "project": "Kit deste projeto",
+      "projectOf": "Kit deste projeto · {{name}}",
+      "shared": "Kits compartilhados",
+      "ungrouped": "Fora de qualquer kit",
+      "noProjectKit": "Este projeto ainda não tem kit. Crie-o no menu do projeto > Kits.",
+      "openSkill": "Abrir skill {{name}}",
+      "count": "{{count}} skills",
+      "count_one": "{{count}} skill",
+      "count_other": "{{count}} skills"
+    },
+    "import": {
+      "open": "Importar chaves do .mcp.json",
+      "buttonHint": "Só as chaves são importadas; cada servidor vem do catálogo do AionUi.",
+      "title": "Importar chaves do .mcp.json deste projeto",
+      "hint": "Só as credenciais são copiadas, no servidor. Cada servidor sempre vem do template do catálogo do AionUi; o comando, a versão do pacote e a URL antigos são ignorados. Os valores nunca são exibidos.",
+      "noFile": "Este projeto não tem workspace ou um .mcp.json válido.",
+      "noServers": "O .mcp.json não lista servidores.",
+      "serversLabel": "Servidores no .mcp.json",
+      "resultsLabel": "Resultado da importação",
+      "pickLabel": "Importar {{name}}",
+      "instanceNameLabel": "Nome da instância para {{name}}",
+      "environmentLabel": "Ambiente para {{name}}",
+      "tierLabel": "Nível para {{name}}",
+      "oauth": "OAuth: conecte na instância após importar",
+      "noKeys": "Sem chaves necessárias",
+      "keyFound": "{{field}} encontrada",
+      "keyMissing": "{{field}} ausente",
+      "created": "{{name}} criada",
+      "failed": "Não importado",
+      "test": "Testar",
+      "testLabel": "Testar {{name}}",
+      "missingSecrets": "Chaves ausentes: {{fields}}. A instância foi criada inativa: cole-as em Configurações > Ferramentas > MCP e teste.",
+      "testFailed": "Falha no teste: {{detail}}",
+      "match": {
+        "custom": "Servidor personalizado: adicione manualmente",
+        "none": "Fora do catálogo"
+      },
+      "errors": {
+        "invalid": "O servidor recusou este item: {{detail}} Se for sobre ferramentas de leitura, escolha o nível de escrita.",
+        "nameTaken": "Esse nome de instância já está em uso. Escolha outro. {{detail}}",
+        "notInFile": "Este servidor não está mais no .mcp.json. Recarregue a prévia.",
+        "unknownTemplate": "Nenhum template do catálogo corresponde a este servidor.",
+        "other": "Não importado: {{detail}}"
+      },
+      "nameProblem": {
+        "required": "Informe um nome de instância.",
+        "pattern": "Use letras minúsculas, dígitos e hifens simples, começando por letra.",
+        "tooLong": "No máximo 24 caracteres.",
+        "reserved": "Este nome é reservado.",
+        "notInMarket": "Este nome pertence a um servidor fora do marketplace.",
+        "taken": "Este nome já está em uso."
+      },
+      "submit": "Importar {{count}} servidores",
+      "submit_one": "Importar {{count}} servidor",
+      "submit_other": "Importar {{count}} servidores",
+      "testOk": "Conectado · {{count}} ferramentas",
+      "testOk_one": "Conectado · {{count}} ferramenta",
+      "testOk_other": "Conectado · {{count}} ferramentas"
     }
   }
 }

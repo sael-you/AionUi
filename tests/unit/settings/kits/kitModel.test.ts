@@ -9,7 +9,9 @@ import type { KitAttachmentResponse, KitEffectiveItem, KitResponse } from '@/com
 import { BackendHttpError } from '@/common/adapter/httpBridge';
 import {
   attachRequest,
+  describeImportError,
   describeKitError,
+  importInstanceName,
   createKitRequest,
   globalAttachBlock,
   kitAttachmentLevels,
@@ -49,7 +51,9 @@ const item = (ref: string, included: boolean, name?: string): KitEffectiveItem =
   item_ref: ref,
   included,
   provenance: { level: 'global', op: included ? 'add' : 'remove' },
-  ...(name ? { mcp: { instance_name: name, status: 'active', clis: [], delivered: true } } : {}),
+  ...(name
+    ? { mcp: { instance_name: name, status: 'active', clis: [], delivered: true, shadowed_by_project_file: false } }
+    : {}),
 });
 
 /** `t` stand-ins: key with options, and key only. */
@@ -73,6 +77,18 @@ describe('kitModel', () => {
       mcp_templates: [],
     });
     expect(Object.keys(request)).not.toContain('description');
+  });
+
+  it('creates a project kit with project_id only when a project is given', () => {
+    const values = { ...kitFormFromKit(null), name: 'TB-test' };
+    expect(createKitRequest(values, 'proj-tb')).toEqual({
+      name: 'TB-test',
+      project_id: 'proj-tb',
+      skills: [],
+      mcp_instance_ids: [],
+      mcp_templates: [],
+    });
+    expect(Object.keys(createKitRequest(values))).not.toContain('project_id');
   });
 
   it('replaces every member set on update, guarded by the updated_at the editor opened with', () => {
@@ -149,6 +165,7 @@ describe('kitModel', () => {
     ['KIT_INVALID_ITEM', 400, 'invalidItem'],
     ['KIT_INVALID_TARGET', 400, 'invalidTarget'],
     ['KIT_GLOBAL_NOT_ALLOWED', 400, 'globalNotAllowed'],
+    ['KIT_PROJECT_HAS_KIT', 409, 'projectHasKit'],
   ])('maps %s to its own message with the server detail', (code, status, key) => {
     const error = new BackendHttpError({ method: 'POST', path: '/api/kits', status, body: { code, error: ' why ' } });
     expect(describeKitError(echoT, error)).toBe(`mcp.kits.errors.${key}|{"detail":"why","max":80}`);
@@ -164,5 +181,22 @@ describe('kitModel', () => {
 
     expect(describeKitError(keyT, csrf)).toBe('mcp.market.errors.csrf');
     expect(describeKitError(keyT, new Error('offline'))).toBe('offline');
+  });
+
+  it('suggests tb-<template> instance names that fit the market name rule', () => {
+    expect(importInstanceName('TB-test', 'paddle')).toBe('tb-paddle');
+    expect(importInstanceName('clauterm-studio', 'google_workspace')).toBe('clauterm-google-workspac');
+    expect(importInstanceName('9 Lives', 'sentry')).toBe('lives-sentry');
+    expect(importInstanceName('', 'github')).toBe('p-github');
+  });
+
+  it('explains import error codes with the server message, unknown codes generically', () => {
+    expect(describeImportError(echoT, 'MCP_MARKET_CONFLICT', ' taken ')).toBe(
+      'mcp.kits.import.errors.nameTaken|{"detail":"taken"}'
+    );
+    expect(describeImportError(echoT, 'KIT_IMPORT_NOT_IN_FILE')).toBe(
+      'mcp.kits.import.errors.notInFile|{"detail":"KIT_IMPORT_NOT_IN_FILE"}'
+    );
+    expect(describeImportError(echoT, 'MCP_MARKET_SOMETHING', 'x')).toBe('mcp.kits.import.errors.other|{"detail":"x"}');
   });
 });

@@ -40,6 +40,8 @@ vi.mock('@/renderer/pages/settings/ToolsSettings/McpServerItem', () => ({
   default: () => null,
 }));
 
+// The Kits card (C27/C28) has its own tests; it is not part of the image settings.
+vi.mock('@/renderer/pages/settings/ToolsSettings/kits/KitsSection', () => ({ default: () => null }));
 vi.mock('@/renderer/pages/settings/ToolsSettings/market', () => ({
   default: () => null,
 }));

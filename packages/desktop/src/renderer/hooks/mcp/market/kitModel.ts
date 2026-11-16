@@ -25,7 +25,7 @@ import type {
 } from '@/common/config/storage';
 import { KIT_LEVELS } from '@/common/config/storage';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
-import { describeMarketError, globalBlockReason } from './marketModel';
+import { MCP_INSTANCE_NAME_MAX, describeMarketError, globalBlockReason } from './marketModel';
 
 /** Server rule: kit name 1–80 characters, unique per user among live kits. */
 export const KIT_NAME_MAX = 80;
@@ -64,11 +64,12 @@ export const validateKitForm = (values: KitFormValues): KitFormError | null => {
   return null;
 };
 
-export const createKitRequest = (values: KitFormValues): CreateKitRequest => {
+export const createKitRequest = (values: KitFormValues, projectId?: string): CreateKitRequest => {
   const description = values.description.trim();
   return {
     name: values.name.trim(),
     ...(description ? { description } : {}),
+    ...(projectId ? { project_id: projectId } : {}),
     skills: normalizeList(values.skills),
     mcp_instance_ids: normalizeList(values.mcpInstanceIds),
     mcp_templates: normalizeList(values.mcpTemplates),
@@ -106,12 +107,15 @@ export const attachRequest = (
 /** Levels a kit is attached to (any op), in resolution order, with how many targets per level. */
 export const kitAttachmentLevels = (
   kitId: string,
-  attachments: readonly KitAttachmentResponse[]
+  attachments: readonly KitAttachmentResponse[],
+  /** A project kit (C28) applies at its project without an attachment row: counted as one project add. */
+  projectId?: string
 ): Array<{ level: KitLevel; count: number; removes: number }> => {
   const rows = attachments.filter((row) => row.item_kind === 'kit' && row.item_ref === kitId);
   return KIT_LEVELS.map((level) => {
     const atLevel = rows.filter((row) => row.level === level);
-    return { level, count: atLevel.length, removes: atLevel.filter((row) => row.op === 'remove').length };
+    const implicit = level === 'project' && projectId ? 1 : 0;
+    return { level, count: atLevel.length + implicit, removes: atLevel.filter((row) => row.op === 'remove').length };
   }).filter((entry) => entry.count > 0);
 };
 
@@ -143,6 +147,7 @@ const KIT_ERROR_KEYS: Record<string, string> = {
   KIT_INVALID_ITEM: 'invalidItem',
   KIT_INVALID_TARGET: 'invalidTarget',
   KIT_GLOBAL_NOT_ALLOWED: 'globalNotAllowed',
+  KIT_PROJECT_HAS_KIT: 'projectHasKit',
 };
 
 /**
@@ -157,3 +162,37 @@ export const describeKitError = (t: TFn, error: unknown): string => {
   }
   return describeMarketError(t, error);
 };
+
+/** Lowercase letters and digits joined by single hyphens. */
+const slug = (text: string): string =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+/**
+ * Suggested instance name for an imported server, `tb-<template>` style: the
+ * project name's first word as prefix, then the template id, fitted to the
+ * market name rule (lowercase letters, digits and single hyphens, at most 24).
+ */
+export const importInstanceName = (projectName: string, templateId: string): string => {
+  const prefix =
+    (
+      slug(projectName)
+        .replace(/^[^a-z]+/, '')
+        .split('-')[0] ?? ''
+    ).slice(0, 8) || 'p';
+  return `${prefix}-${slug(templateId)}`.slice(0, MCP_INSTANCE_NAME_MAX).replace(/-+$/, '');
+};
+
+/** `error_code` of one import result → `mcp.kits.import.errors.*` key (unknown codes use the generic one). */
+const IMPORT_ERROR_KEYS: Record<string, string> = {
+  MCP_MARKET_INVALID: 'invalid',
+  MCP_MARKET_CONFLICT: 'nameTaken',
+  KIT_IMPORT_NOT_IN_FILE: 'notInFile',
+  KIT_IMPORT_UNKNOWN_TEMPLATE: 'unknownTemplate',
+};
+
+/** The message for a failed import row; the server's own message is shown as the detail. */
+export const describeImportError = (t: TFn, code: string, message?: string): string =>
+  t(`mcp.kits.import.errors.${IMPORT_ERROR_KEYS[code] ?? 'other'}`, { detail: message?.trim() || code });

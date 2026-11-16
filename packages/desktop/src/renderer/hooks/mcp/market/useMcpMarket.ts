@@ -66,7 +66,9 @@ export type McpMarketController = {
  * real transport from the template, plain env and decrypted secrets and ignores
  * the client transport (R1 #12), so only a placeholder is sent.
  */
-const testPayload = (instance: McpMarketInstance): IMcpServer & { runtime_scope_id?: string } => ({
+export const marketTestPayload = (
+  instance: Pick<McpMarketInstance, 'id' | 'name' | 'created_at' | 'updated_at'>
+): IMcpServer & { runtime_scope_id?: string } => ({
   id: instance.id,
   name: instance.name,
   enabled: false,
@@ -225,7 +227,7 @@ export const useMcpMarket = (): McpMarketController => {
   const testConnection = useCallback(
     async (instance: McpMarketInstance): Promise<McpMarketTestResult> => {
       try {
-        const result = await mcpService.testMcpConnection.invoke(testPayload(instance));
+        const result = await mcpService.testMcpConnection.invoke(marketTestPayload(instance));
         if (result.success) return { kind: 'ok', tools: (result.tools ?? []).map((tool) => tool.name) };
         return { kind: 'failed', error: result };
       } catch (err) {

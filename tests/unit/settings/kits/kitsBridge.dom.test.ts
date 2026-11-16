@@ -43,7 +43,10 @@ describe('ipcBridge.kits', () => {
   it('reads kits, attachments and the effective set at the contract paths', async () => {
     const { kits } = await import('@/common/adapter/ipcBridge');
 
-    await kits.list.invoke();
+    await kits.list.invoke({});
+    await kits.list.invoke({ project_id: 'proj 1' });
+    await kits.projectKit.invoke({ project_id: 'proj/1' });
+    await kits.importPreview.invoke({ project_id: 'proj/1' });
     await kits.get.invoke({ id: 'k/1' });
     await kits.listAttachments.invoke({});
     await kits.listAttachments.invoke({ level: 'project', target_id: 'p1' });
@@ -52,6 +55,9 @@ describe('ipcBridge.kits', () => {
 
     expect(calls.map((call) => `${call.method} ${pathOf(call.url)}`)).toEqual([
       'GET /api/kits',
+      'GET /api/kits?project_id=proj+1',
+      'GET /api/projects/proj%2F1/kit',
+      'GET /api/projects/proj%2F1/kit/import-preview',
       'GET /api/kits/k%2F1',
       'GET /api/kits/attachments',
       'GET /api/kits/attachments?level=project&target_id=p1',
@@ -64,23 +70,58 @@ describe('ipcBridge.kits', () => {
     const { kits } = await import('@/common/adapter/ipcBridge');
 
     await kits.create.invoke({ name: 'Ops', skills: ['pf-ui'], mcp_instance_ids: [], mcp_templates: [] });
+    await kits.create.invoke({
+      name: 'TB-test',
+      project_id: 'proj-tb',
+      skills: [],
+      mcp_instance_ids: [],
+      mcp_templates: [],
+    });
     await kits.update.invoke({ id: 'k1', data: { name: 'Ops 2', expected_updated_at: 7 } });
     await kits.remove.invoke({ id: 'k1' });
     await kits.attach.invoke({ level: 'global', item_kind: 'kit', item_ref: 'k1', op: 'add' });
     await kits.detach.invoke({ id: 'att 1' });
+    await kits.importKeys.invoke({
+      project_id: 'proj-tb',
+      data: {
+        servers: [
+          {
+            name: 'paddle',
+            template_id: 'paddle',
+            instance_name: 'tb-paddle',
+            environment: 'production',
+            tier: 'read',
+          },
+        ],
+      },
+    });
 
     // Writes prime the CSRF cookie once per page load (GET /api/auth/user); only the kit calls matter here.
-    const kitCalls = calls.filter((call) => pathOf(call.url).startsWith('/api/kits'));
+    const kitCalls = calls.filter((call) => /^\/api\/(kits|projects)/.test(pathOf(call.url)));
     expect(kitCalls.map((call) => `${call.method} ${pathOf(call.url)}`)).toEqual([
+      'POST /api/kits',
       'POST /api/kits',
       'PUT /api/kits/k1',
       'DELETE /api/kits/k1',
       'POST /api/kits/attachments',
       'DELETE /api/kits/attachments/att%201',
+      'POST /api/projects/proj-tb/kit/import',
     ]);
+    expect(kitCalls[6]?.body).toEqual({
+      servers: [
+        { name: 'paddle', template_id: 'paddle', instance_name: 'tb-paddle', environment: 'production', tier: 'read' },
+      ],
+    });
     expect(kitCalls[0]?.body).toEqual({ name: 'Ops', skills: ['pf-ui'], mcp_instance_ids: [], mcp_templates: [] });
-    expect(kitCalls[1]?.body).toEqual({ name: 'Ops 2', expected_updated_at: 7 });
-    expect(kitCalls[3]?.body).toEqual({ level: 'global', item_kind: 'kit', item_ref: 'k1', op: 'add' });
+    expect(kitCalls[1]?.body).toEqual({
+      name: 'TB-test',
+      project_id: 'proj-tb',
+      skills: [],
+      mcp_instance_ids: [],
+      mcp_templates: [],
+    });
+    expect(kitCalls[2]?.body).toEqual({ name: 'Ops 2', expected_updated_at: 7 });
+    expect(kitCalls[4]?.body).toEqual({ level: 'global', item_kind: 'kit', item_ref: 'k1', op: 'add' });
     for (const call of kitCalls) {
       const names = Object.keys(call.headers).map((name) => name.toLowerCase());
       expect(names, `${call.method} ${call.url}`).toContain('x-csrf-token');
