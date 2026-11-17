@@ -7,10 +7,12 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"runtime"
@@ -19,6 +21,7 @@ import (
 	"time"
 
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/adb"
+	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/addons"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/agent"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/audit"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/cdp"
@@ -42,6 +45,9 @@ const usage = `aionui-mac-helper — lets AionUi agents use your phones (and thi
   install-adb --accept-android-sdk-license download Google's platform-tools (adb) into the helper's folder
   install-agent / uninstall-agent          start at login (launchd) / stop that
   logs [N]                                 last N lines of the local audit log (default 20)
+  addons                                   installed add-ons (Artemis, Mobilerun), size, stored key names
+  addon-install <artemis|mobilerun> [version] / addon-remove <name>   (AionUi can do this too)
+  addon-key <name> <ENV_NAME>              store an API key for an add-on (typed, not echoed; empty = delete)
   forget                                   delete the pairing and token
   version
 `
@@ -80,6 +86,12 @@ func runCommand(cmd string, args []string) error {
 		return macos.UninstallAgent()
 	case "logs":
 		return cmdLogs(args)
+	case "addons":
+		return cmdAddons()
+	case "addon-install", "addon-remove":
+		return cmdAddonInstall(cmd, args)
+	case "addon-key":
+		return cmdAddonKey(args)
 	case "forget":
 		return config.Forget()
 	case "version", "--version":
@@ -98,6 +110,7 @@ func capabilities() []string {
 		"screenshot", "ui_tree", "tap", "swipe", "text", "key", "launch", "foreground",
 		"install_apk", "logcat", "stop", "cdp_open", "cdp_frame", "cdp_close",
 	}
+	caps = append(caps, "addon_install", "addon_remove", "addon_run", "addon_stop")
 	if control.Supported() {
 		caps = append(caps, "mac_screenshot", "mac_ax_tree", "mac_click", "mac_type", "mac_key", "mac_open_app")
 	}
@@ -195,11 +208,14 @@ func cmdRun() error {
 	if control.Supported() {
 		a.Mac = control.New(dir)
 	}
+	host := addonHost(dir)
+	host.Phones = a
+	a.Addons = host
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go a.Run(ctx, filepath.Join(dir, "config.json"))
 	client := &relay.Client{
-		Server: cfg.Server, Token: token, Version: version, Caps: capabilities(), H: &emitAll{a, tunnels},
+		Server: cfg.Server, Token: token, Version: version, Caps: capabilities(), H: &emitAll{a, tunnels, host},
 		OnState: func(connected bool, err error) {
 			state := "disconnected"
 			if connected {
@@ -227,11 +243,22 @@ func cmdRun() error {
 type emitAll struct {
 	*agent.Agent
 	tunnels *cdp.Manager
+	addons  *addons.Host
 }
 
 func (e *emitAll) SetEmitter(f func(any)) {
 	e.Agent.SetEmitter(f)
 	e.tunnels.SetEmit(f)
+	e.addons.SetEmit(f)
+}
+
+// addonHost keeps add-ons, uv and Python inside the helper's state dir.
+func addonHost(dir string) *addons.Host {
+	h := &addons.Host{Root: filepath.Join(dir, "addons"), StateDir: dir}
+	if bin, err := adb.Find(dir); err == nil {
+		h.ADBDir = filepath.Dir(bin)
+	}
+	return h
 }
 
 func errOrEmpty(err error) any {
@@ -402,4 +429,86 @@ func cmdLogs(args []string) error {
 		fmt.Println(l)
 	}
 	return sc.Err()
+}
+
+func cmdAddons() error {
+	dir, err := stateDir()
+	if err != nil {
+		return err
+	}
+	h := addonHost(dir)
+	installed := h.Installed()
+	if len(installed) == 0 {
+		fmt.Println("No add-ons installed.")
+	}
+	for _, a := range installed {
+		fmt.Printf("  %-10s %-14s %6.1f MB  keys: %s\n", a.Name, *a.Version, float64(*a.DiskBytes)/1e6, strings.Join(h.KeyNames(a.Name), ", "))
+	}
+	return nil
+}
+
+func cmdAddonInstall(cmd string, args []string) error {
+	if len(args) < 1 || len(args) > 2 || (cmd == "addon-remove" && len(args) != 1) {
+		return fmt.Errorf("usage: %s <artemis|mobilerun> [version]", cmd)
+	}
+	dir, err := stateDir()
+	if err != nil {
+		return err
+	}
+	h := addonHost(dir)
+	payload := map[string]any{"name": args[0]}
+	verb := "addon_remove"
+	if cmd == "addon-install" {
+		verb = "addon_install"
+		if len(args) == 2 {
+			payload["version"] = args[1]
+		}
+		fmt.Println("Installing", args[0], "(downloads uv, Python and the add-on into the helper folder; a few minutes)…")
+	}
+	raw, _ := json.Marshal(payload)
+	res, err := h.Handle(context.Background(), verb, raw)
+	if err != nil {
+		return err
+	}
+	if res != nil {
+		fmt.Println(res)
+	}
+	return nil
+}
+
+func cmdAddonKey(args []string) error {
+	if len(args) != 2 {
+		return errors.New("usage: addon-key <artemis|mobilerun> <ENV_NAME>   (e.g. GEMINI_API_KEY)")
+	}
+	dir, err := stateDir()
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "Value for %s (not shown; empty deletes it): ", args[1])
+	value, err := readSecret()
+	fmt.Fprintln(os.Stderr)
+	if err != nil {
+		return err
+	}
+	return addonHost(dir).SetKey(args[0], args[1], value)
+}
+
+// readSecret reads one line with terminal echo off when stdin is a terminal.
+func readSecret() (string, error) {
+	if info, err := os.Stdin.Stat(); err == nil && info.Mode()&os.ModeCharDevice != 0 {
+		off := exec.Command("stty", "-echo")
+		off.Stdin = os.Stdin
+		if off.Run() == nil {
+			defer func() {
+				on := exec.Command("stty", "echo")
+				on.Stdin = os.Stdin
+				_ = on.Run()
+			}()
+		}
+	}
+	line, err := bufio.NewReader(os.Stdin).ReadString('\n')
+	if err != nil && line == "" {
+		return "", err
+	}
+	return strings.TrimSpace(line), nil
 }

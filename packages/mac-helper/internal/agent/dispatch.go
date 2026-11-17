@@ -61,7 +61,17 @@ func (a *Agent) Handle(ctx context.Context, device, verb string, args json.RawMe
 		if a.Addons == nil {
 			return nil, wire.Errorf(wire.ErrRefused, "no add-on host on this Mac")
 		}
-		return a.Addons.Handle(ctx, verb, args)
+		result, err := a.Addons.Handle(ctx, verb, args)
+		if err == nil && (verb == "addon_install" || verb == "addon_remove") {
+			a.changed()
+		}
+		if verb == "addon_run" {
+			// The task text is the owner's business: only its size is logged.
+			var in struct{ Name, Task, Device string }
+			_ = json.Unmarshal(args, &in)
+			detail["addon"], detail["task_chars"], detail["phone"] = in.Name, strconv.Itoa(len([]rune(in.Task))), in.Device
+		}
+		return result, err
 	case strings.HasPrefix(verb, "mac_"):
 		if device != wire.DeviceMac || a.Mac == nil {
 			return nil, wire.Errorf(wire.ErrUnknownDevice, "this helper does not control the Mac")

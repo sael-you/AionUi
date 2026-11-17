@@ -80,7 +80,30 @@ Limits: main display only; clicks use points (screenshots are scaled to points t
 never report their content; macOS ties the permissions to this exact binary, so **every new version needs steps
 1–2 again** (ad-hoc signature, no Apple Developer ID). AionUi asks you before crucial actions here too.
 
-## 8 Remove
+## 8 Add-ons: Artemis and Mobilerun (optional)
+
+Two phone agents that run a whole flow on their own ("do this on my phone"), on this Mac, against a phone the
+helper reaches: **Artemis** (google/artemis, Apache-2.0) and **Mobilerun** (droidrun/mobilerun, MIT; its Portal
+app on the phone is AGPL-3.0 — fine for personal use). Install/remove them from AionUi → Devices → Add-ons, or:
+
+```sh
+aionui-mac-helper addon-install artemis        # pinned to the current commit of google/artemis
+aionui-mac-helper addon-install mobilerun      # from PyPI
+aionui-mac-helper addon-key artemis GEMINI_API_KEY      # their own model key, typed, not shown
+aionui-mac-helper addons                       # what is installed, size, stored key names
+aionui-mac-helper addon-remove mobilerun       # frees the disk (Python/uv go with the last add-on)
+```
+
+- They use **their own LLM loop and key** (Artemis: `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, …;
+  Mobilerun: `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `MINIMAX_API_KEY`, …). Keys stay in the
+  helper folder (file mode 0600) and are never sent anywhere else or logged.
+- AionUi asks you to approve each **task text** before a run starts; inside the run the add-on taps on its own, so
+  per-tap approvals do not apply. The phone's switch, `stop-all`, AionUi's Stop and the time limit end a run at once.
+- Mobilerun installs its Portal app on the phone before its first task there (once per phone).
+- Everything (uv, Python, add-ons) lives in the helper folder; nothing listens on the Mac (Artemis runs standalone,
+  without its web console).
+
+## 9 Remove
 
 ```sh
 aionui-mac-helper uninstall-agent

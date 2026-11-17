@@ -117,6 +117,12 @@ func (a *Agent) Enabled(key string) bool {
 	return a.cfg.DeviceEnabled(key)
 }
 
+// Ready reports a phone adb can drive now (add-on host check).
+func (a *Agent) Ready(serial string) bool {
+	p, ok := a.phone(serial)
+	return ok && p.dev.Ready()
+}
+
 // Inventory implements relay.Handler.
 func (a *Agent) Inventory() wire.Inventory {
 	a.mu.Lock()
