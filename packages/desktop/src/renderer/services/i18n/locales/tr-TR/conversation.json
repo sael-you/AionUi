@@ -968,7 +968,33 @@
     "pill": {
       "label": "Devredilen işler: {{summary}}"
     },
-    "breadcrumb": "Konuşma yolu"
+    "breadcrumb": "Konuşma yolu",
+    "restart": {
+      "title": "Yeniden başlatma nedeniyle kesildi",
+      "kind": {
+        "approval": "Onayınızı bekliyordu. O istek artık yok; Devam et yeniden sorar.",
+        "approvalNamed": "“{{tool}}” için onayınızı bekliyordu. O istek artık yok; Devam et yeniden sorar.",
+        "tool": "Bir araç çalışıyordu. Bitmiş, kısmen bitmiş veya hiç başlamamış olabilir.",
+        "toolNamed": "“{{tool}}” çalışıyordu. Bitmiş, kısmen bitmiş veya hiç başlamamış olabilir.",
+        "text": "Yanıtını yazıyordu."
+      },
+      "blocked": {
+        "sensitive": "Otomatik devam edilmedi: bu adım üretime yazıyor, ödeme yapıyor, e-posta gönderiyor, push veya dağıtım yapıyor.",
+        "repeat": "Otomatik devam edilmedi: bu adım zaten bir kez kesilip devam ettirildi."
+      },
+      "continue": "Devam et",
+      "dismiss": "Kapat",
+      "failed": "Yapılamadı. Yeniden deneyin.",
+      "alreadyHandled": "Zaten devam ettirildi veya kapatıldı.",
+      "autoContinued": "Yeniden başlatmadan sonra otomatik devam etti",
+      "auto": {
+        "label": "Yeniden başlatmalardan sonra otomatik devam et",
+        "desc": "AionUi bir turun ortasında yeniden başlarsa bu sohbet kendiliğinden devam eder. Üretime yazan, ödeme yapan, e-posta gönderen, push veya dağıtım yapan adımlar yine sizi bekler.",
+        "on": "Bu sohbet için otomatik devam açık.",
+        "off": "Bu sohbet için otomatik devam kapalı.",
+        "failed": "Otomatik devam değiştirilemedi."
+      }
+    }
   },
   "quoteReply": {
     "toolbarLabel": "Seçim işlemleri",

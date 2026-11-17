@@ -966,7 +966,33 @@
     "pill": {
       "label": "Delegated work: {{summary}}"
     },
-    "breadcrumb": "Conversation path"
+    "breadcrumb": "Conversation path",
+    "restart": {
+      "title": "Interrupted by a restart",
+      "kind": {
+        "approval": "It was waiting for your approval. That request is gone; Continue asks again.",
+        "approvalNamed": "It was waiting for your approval of “{{tool}}”. That request is gone; Continue asks again.",
+        "tool": "A tool was running. It may have finished, partly finished or not started.",
+        "toolNamed": "“{{tool}}” was running. It may have finished, partly finished or not started.",
+        "text": "It was writing its answer."
+      },
+      "blocked": {
+        "sensitive": "Not continued automatically: this step writes to production, pays, sends mail, pushes or deploys.",
+        "repeat": "Not continued automatically: this step was already interrupted and continued once."
+      },
+      "continue": "Continue",
+      "dismiss": "Dismiss",
+      "failed": "Could not do that. Try again.",
+      "alreadyHandled": "Already continued or dismissed.",
+      "autoContinued": "Continued automatically after a restart",
+      "auto": {
+        "label": "Auto-continue after restarts",
+        "desc": "If AionUi restarts in the middle of a turn, this conversation picks up by itself. Steps that write to production, pay, send mail, push or deploy still wait for you.",
+        "on": "Auto-continue is on for this conversation.",
+        "off": "Auto-continue is off for this conversation.",
+        "failed": "Could not change auto-continue."
+      }
+    }
   },
   "quoteReply": {
     "toolbarLabel": "Selection actions",

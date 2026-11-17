@@ -18,6 +18,8 @@ export type NeedsYouItem = {
   state: Extract<RunState, 'waiting' | 'failed'>;
   /** Project name, shown trailing (absent outside a project). */
   where?: string;
+  /** Waiting because an AionUi restart interrupted its turn (TASK-44). */
+  restartInterrupted?: boolean;
 };
 
 type NeedsYouBoxProps = {
@@ -81,9 +83,12 @@ const NeedsYouBox: React.FC<NeedsYouBoxProps> = ({ items, runningCount, onOpen, 
         <span className={styles.count}>{items.length}</span>
       </h2>
       <div role='list'>
-        {items.map(({ conversation, state, where }) => {
+        {items.map(({ conversation, state, where, restartInterrupted }) => {
           const name = conversation.name || t('conversation.welcome.newConversation');
-          const label = [name, t(runStateLabelKey(state)), where].filter(Boolean).join(', ');
+          const reason = restartInterrupted
+            ? t('conversation.orchestration.restart.title')
+            : t(runStateLabelKey(state));
+          const label = [name, reason, where].filter(Boolean).join(', ');
           return (
             <BoxItem
               key={conversation.id}
@@ -93,7 +98,7 @@ const NeedsYouBox: React.FC<NeedsYouBoxProps> = ({ items, runningCount, onOpen, 
               onActivate={() => onOpen(conversation)}
             >
               <StatusGlyph state={state} size={14} label={null} />
-              <span className={styles.name} title={name}>
+              <span className={styles.name} title={restartInterrupted ? `${name} · ${reason}` : name}>
                 {name}
               </span>
               {where && (
