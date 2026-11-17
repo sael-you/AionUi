@@ -976,7 +976,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "Ações da seleção",
-    "dictateReply": "Responder por voz",
+    "replyTooltip": "Responder (R)",
+    "dictateReplyTooltip": "Responder por voz (D)",
     "popoverLabel": "Responder à seleção",
     "replyPlaceholder": "Resposta…",
     "replyLabel": "Sua resposta",
@@ -988,7 +989,19 @@
     "withReply": "Com resposta",
     "stackLabel": "{{count}} citações para enviar",
     "stackLabel_one": "{{count}} citação para enviar",
-    "stackLabel_other": "{{count}} citações para enviar"
+    "stackLabel_other": "{{count}} citações para enviar",
+    "dictation": {
+      "start": "Ditar (Ctrl/Cmd+M)",
+      "stop": "Parar o ditado",
+      "stopHint": "Ouvindo… Enter ou Esc para",
+      "listening": "Ouvindo…",
+      "offTitle": "Fala para texto está desligado",
+      "offContent": "Ligar com o provedor salvo e começar a ditar?",
+      "turnOn": "Ligar e ditar",
+      "offLabel": "Ditar (fala para texto desligado)",
+      "setUp": "Configure fala para texto nas Configurações para ditar",
+      "enableFailed": "Não foi possível ligar fala para texto"
+    }
   },
   "backgroundTool": {
     "continue": "Continuar em segundo plano",

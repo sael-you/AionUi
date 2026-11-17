@@ -970,7 +970,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "選択範囲の操作",
-    "dictateReply": "音声で返信",
+    "replyTooltip": "返信 (R)",
+    "dictateReplyTooltip": "音声で返信 (D)",
     "popoverLabel": "選択部分に返信",
     "replyPlaceholder": "返信…",
     "replyLabel": "あなたの返信",
@@ -982,7 +983,19 @@
     "withReply": "返信あり",
     "stackLabel": "送信する引用 {{count}} 件",
     "stackLabel_one": "送信する引用 {{count}} 件",
-    "stackLabel_other": "送信する引用 {{count}} 件"
+    "stackLabel_other": "送信する引用 {{count}} 件",
+    "dictation": {
+      "start": "音声入力 (Ctrl/Cmd+M)",
+      "stop": "音声入力を停止",
+      "stopHint": "聞き取り中… Enter または Esc で停止",
+      "listening": "聞き取り中…",
+      "offTitle": "音声入力はオフです",
+      "offContent": "保存済みのプロバイダーでオンにして音声入力を始めますか？",
+      "turnOn": "オンにして音声入力",
+      "offLabel": "音声入力（音声入力はオフ）",
+      "setUp": "音声入力を使うには設定で音声認識を設定してください",
+      "enableFailed": "音声入力をオンにできませんでした"
+    }
   },
   "backgroundTool": {
     "continue": "バックグラウンドで続行",

@@ -970,7 +970,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "Actions sur la sélection",
-    "dictateReply": "Répondre à la voix",
+    "replyTooltip": "Répondre (R)",
+    "dictateReplyTooltip": "Répondre à la voix (D)",
     "popoverLabel": "Répondre à la sélection",
     "replyPlaceholder": "Réponse…",
     "replyLabel": "Votre réponse",
@@ -982,7 +983,19 @@
     "withReply": "Avec réponse",
     "stackLabel": "{{count}} citations à envoyer",
     "stackLabel_one": "{{count}} citation à envoyer",
-    "stackLabel_other": "{{count}} citations à envoyer"
+    "stackLabel_other": "{{count}} citations à envoyer",
+    "dictation": {
+      "start": "Dicter (Ctrl/Cmd+M)",
+      "stop": "Arrêter la dictée",
+      "stopHint": "Écoute… Entrée ou Échap arrête",
+      "listening": "Écoute…",
+      "offTitle": "La reconnaissance vocale est désactivée",
+      "offContent": "L’activer avec le fournisseur enregistré et commencer à dicter ?",
+      "turnOn": "Activer et dicter",
+      "offLabel": "Dicter (reconnaissance vocale désactivée)",
+      "setUp": "Configurez la reconnaissance vocale dans les réglages pour dicter",
+      "enableFailed": "Impossible d’activer la reconnaissance vocale"
+    }
   },
   "backgroundTool": {
     "continue": "Continuer en arrière-plan",

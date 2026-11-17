@@ -5,16 +5,19 @@
  */
 
 /**
- * The reply popover anchored at a selection (C32): the quoted text (two lines),
- * a reply typed or dictated, and Add (Enter) to put it on the conversation's
- * quote stack. An empty reply is allowed (quote only). Esc closes.
+ * The reply card anchored at a selection (C32, TASK-126): the quoted text (two
+ * lines, accent bar), a growing reply field with its own mic, subtle Cancel and
+ * primary Add (Enter or Ctrl/Cmd+Enter) to put it on the conversation's quote
+ * stack. An empty reply is allowed (quote only). Esc closes. On phones it is a
+ * bottom sheet over a scrim.
  */
 
 import { Button } from '@arco-design/web-react';
-import { Quote } from '@icon-park/react';
+import classNames from 'classnames';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QuoteReplyField from './QuoteReplyField';
+import styles from './quoteReply.module.css';
 
 export type ReplyPopoverAnchor = { top: number; left: number };
 
@@ -22,47 +25,95 @@ type ReplyPopoverProps = {
   anchor: ReplyPopoverAnchor;
   quote: string;
   autoDictate?: boolean;
+  /** Phones: a bottom sheet instead of a card at the selection. */
+  sheet?: boolean;
   onAdd: (reply: string) => void;
   onClose: () => void;
 };
 
-const POPOVER_WIDTH = 360;
+const POPOVER_WIDTH = 380;
 
-const ReplyPopover: React.FC<ReplyPopoverProps> = ({ anchor, quote, autoDictate, onAdd, onClose }) => {
+const ReplyPopover: React.FC<ReplyPopoverProps> = ({ anchor, quote, autoDictate, sheet = false, onAdd, onClose }) => {
   const { t } = useTranslation();
   const [reply, setReply] = useState('');
-  const width = Math.min(POPOVER_WIDTH, window.innerWidth - 16);
-  const left = Math.max(8, Math.min(anchor.left - width / 2, window.innerWidth - width - 8));
+  const add = () => onAdd(reply.trim());
 
-  return (
-    <div
-      role='dialog'
-      aria-label={t('conversation.quoteReply.popoverLabel')}
-      className='fixed z-9999 flex flex-col gap-8px p-10px rd-10px bg-base border border-solid border-3 shadow-lg'
-      style={{ top: anchor.top, left, width }}
-      data-testid='quote-reply-popover'
-      data-quote-ui
-      onMouseDown={(event) => event.stopPropagation()}
-    >
-      <div className='flex items-start gap-6px'>
-        <Quote theme='outline' size='14' className='flex-shrink-0 mt-2px text-t-secondary' aria-hidden />
-        <span className='text-12px text-t-secondary line-clamp-2 break-words'>{quote}</span>
+  const body = (
+    <>
+      {sheet ? <div className={styles.sheetHandle} aria-hidden /> : null}
+      <div className={classNames('text-12px leading-18px text-t-secondary line-clamp-2 break-words', styles.quote)}>
+        {quote}
       </div>
       <QuoteReplyField
         value={reply}
         onChange={setReply}
-        onSubmit={() => onAdd(reply.trim())}
+        onSubmit={add}
         onCancel={onClose}
         autoDictate={autoDictate}
+        actions={
+          <>
+            <Button size='small' type='text' className='!text-t-secondary' onClick={onClose}>
+              {t('common.cancel')}
+            </Button>
+            <Button size='small' type='primary' aria-keyshortcuts='Enter Control+Enter Meta+Enter' onClick={add}>
+              {t('conversation.quoteReply.add')}
+            </Button>
+          </>
+        }
       />
-      <div className='flex justify-end gap-6px'>
-        <Button size='mini' onClick={onClose}>
-          {t('common.cancel')}
-        </Button>
-        <Button size='mini' type='primary' onClick={() => onAdd(reply.trim())}>
-          {t('conversation.quoteReply.add')}
-        </Button>
-      </div>
+    </>
+  );
+
+  const common = {
+    role: 'dialog',
+    'aria-label': t('conversation.quoteReply.popoverLabel'),
+    'data-testid': 'quote-reply-popover',
+    'data-quote-ui': true,
+    onMouseDown: (event: React.MouseEvent) => event.stopPropagation(),
+    onKeyDown: (event: React.KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      onClose();
+    },
+  } as const;
+
+  if (sheet) {
+    return (
+      <>
+        <div
+          className={classNames('fixed inset-0 z-9998', styles.scrim)}
+          aria-hidden
+          data-quote-ui
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={onClose}
+        />
+        <div
+          {...common}
+          className={classNames(
+            'fixed inset-x-0 bottom-0 z-9999 flex flex-col gap-10px px-14px pt-8px rd-t-16px bg-base border-t border-t-solid border-3 shadow-lg',
+            styles.sheet
+          )}
+          data-variant='sheet'
+        >
+          {body}
+        </div>
+      </>
+    );
+  }
+
+  const width = Math.min(POPOVER_WIDTH, window.innerWidth - 16);
+  const left = Math.max(8, Math.min(anchor.left - width / 2, window.innerWidth - width - 8));
+  return (
+    <div
+      {...common}
+      className={classNames(
+        'fixed z-9999 flex flex-col gap-10px p-12px rd-12px bg-base border border-solid border-3 shadow-lg',
+        styles.card
+      )}
+      style={{ top: anchor.top, left, width }}
+      data-variant='card'
+    >
+      {body}
     </div>
   );
 };

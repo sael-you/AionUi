@@ -971,7 +971,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "Acciones de la selección",
-    "dictateReply": "Responder por voz",
+    "replyTooltip": "Responder (R)",
+    "dictateReplyTooltip": "Responder por voz (D)",
     "popoverLabel": "Responder a la selección",
     "replyPlaceholder": "Respuesta…",
     "replyLabel": "Tu respuesta",
@@ -983,7 +984,19 @@
     "withReply": "Con respuesta",
     "stackLabel": "{{count}} citas por enviar",
     "stackLabel_one": "{{count}} cita por enviar",
-    "stackLabel_other": "{{count}} citas por enviar"
+    "stackLabel_other": "{{count}} citas por enviar",
+    "dictation": {
+      "start": "Dictar (Ctrl/Cmd+M)",
+      "stop": "Detener el dictado",
+      "stopHint": "Escuchando… Enter o Esc detiene",
+      "listening": "Escuchando…",
+      "offTitle": "Voz a texto está desactivado",
+      "offContent": "¿Activarlo con el proveedor guardado y empezar a dictar?",
+      "turnOn": "Activar y dictar",
+      "offLabel": "Dictar (voz a texto desactivado)",
+      "setUp": "Configura voz a texto en Ajustes para dictar",
+      "enableFailed": "No se pudo activar voz a texto"
+    }
   },
   "backgroundTool": {
     "continue": "Continuar en segundo plano",

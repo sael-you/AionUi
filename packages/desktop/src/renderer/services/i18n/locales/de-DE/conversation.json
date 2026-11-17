@@ -971,7 +971,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "Aktionen für die Auswahl",
-    "dictateReply": "Per Sprache antworten",
+    "replyTooltip": "Antworten (R)",
+    "dictateReplyTooltip": "Per Sprache antworten (D)",
     "popoverLabel": "Auf die Auswahl antworten",
     "replyPlaceholder": "Antwort…",
     "replyLabel": "Ihre Antwort",
@@ -983,7 +984,19 @@
     "withReply": "Mit Antwort",
     "stackLabel": "{{count}} Zitate zum Senden",
     "stackLabel_one": "{{count}} Zitat zum Senden",
-    "stackLabel_other": "{{count}} Zitate zum Senden"
+    "stackLabel_other": "{{count}} Zitate zum Senden",
+    "dictation": {
+      "start": "Diktieren (Strg/Cmd+M)",
+      "stop": "Diktat beenden",
+      "stopHint": "Hört zu … Enter oder Esc beendet",
+      "listening": "Hört zu …",
+      "offTitle": "Sprache-zu-Text ist aus",
+      "offContent": "Mit dem gespeicherten Anbieter einschalten und diktieren?",
+      "turnOn": "Einschalten und diktieren",
+      "offLabel": "Diktieren (Sprache-zu-Text ist aus)",
+      "setUp": "Richte Sprache-zu-Text in den Einstellungen ein, um zu diktieren",
+      "enableFailed": "Sprache-zu-Text konnte nicht eingeschaltet werden"
+    }
   },
   "backgroundTool": {
     "continue": "Im Hintergrund fortsetzen",

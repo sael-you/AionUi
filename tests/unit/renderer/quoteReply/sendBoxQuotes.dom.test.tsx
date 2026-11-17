@@ -121,6 +121,22 @@ vi.mock('@/renderer/utils/emitter', () => ({
 
 vi.mock('@/renderer/components/chat/BtwOverlay', () => ({ default: () => null }));
 vi.mock('@/renderer/components/chat/SpeechInputButton', () => ({ default: () => null }));
+// The edit modal's reply mic (its binding is covered in replyDictation.dom.test.tsx).
+vi.mock('@/renderer/components/chat/SendBox/useReplyDictation', () => ({
+  useReplyDictation: () => ({
+    setup: 'ready',
+    enabling: false,
+    status: 'idle',
+    live: null,
+    availability: 'record',
+    levels: [],
+    durationMs: 0,
+    start: () => {},
+    stop: () => {},
+    toggle: () => {},
+    enableAndStart: () => {},
+  }),
+}));
 vi.mock('@/renderer/components/media/UploadProgressBar', () => ({ default: () => null }));
 
 import SendBox from '@/renderer/components/chat/SendBox';
@@ -220,6 +236,28 @@ describe('SendBox with stacked quotes (C32)', () => {
       name: 'conversation.quoteReply.removeLabel',
     });
     fireEvent.click(alphaRemove);
-    expect(quoteStackStore.get(CONVERSATION).map((item) => item.id)).toEqual(['b']);
+    // The chip fades out first (150 ms), then leaves the stack.
+    expect(chips()[1]?.className).toMatch(/chipLeaving/);
+    await waitFor(() => expect(quoteStackStore.get(CONVERSATION).map((item) => item.id)).toEqual(['b']));
+    expect(chips()).toHaveLength(1);
+  });
+
+  it('drags a chip by its handle to reorder the stack', () => {
+    quoteStackStore.set(CONVERSATION, [quote('a', 'alpha'), quote('b', 'beta'), quote('c', 'gamma')]);
+    render(<Harness onSend={vi.fn().mockResolvedValue(undefined)} />);
+    const chips = () => screen.getAllByTestId('quote-chip');
+
+    // Only the handle arms dragging, so text in the chip stays selectable.
+    expect(chips()[2]).toHaveAttribute('draggable', 'false');
+    fireEvent.mouseDown(within(chips()[2] as HTMLElement).getByTestId('quote-chip-handle'));
+    expect(chips()[2]).toHaveAttribute('draggable', 'true');
+
+    const dataTransfer = { effectAllowed: '' };
+    fireEvent.dragStart(chips()[2] as HTMLElement, { dataTransfer });
+    fireEvent.dragOver(chips()[0] as HTMLElement, { dataTransfer });
+    fireEvent.drop(chips()[0] as HTMLElement, { dataTransfer });
+    fireEvent.dragEnd(chips()[2] as HTMLElement, { dataTransfer });
+
+    expect(quoteStackStore.get(CONVERSATION).map((item) => item.id)).toEqual(['c', 'a', 'b']);
   });
 });
