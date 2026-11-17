@@ -17,6 +17,8 @@ const api = vi.hoisted(() => ({
   install: { invoke: vi.fn() },
   remove: { invoke: vi.fn() },
   job: { invoke: vi.fn() },
+  audit: { invoke: vi.fn(async () => ({ rows: [], next_cursor: null })) },
+  createPairingCode: { invoke: vi.fn() },
   changed: { on: () => () => undefined },
 }));
 vi.mock('@/common/adapter/ipcBridge', () => ({
@@ -40,6 +42,7 @@ vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalConten
 }));
 vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserDevicesSettings', () => ({
   default: () => <div data-testid='browser-devices-settings' />,
+  formatCountdown: (seconds: number) => `${seconds}s`,
 }));
 vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserApprovalsLog', () => ({
   default: () => <div data-testid='browser-approvals-log' />,
@@ -252,6 +255,28 @@ describe('Settings → Devices page (TASK-136 U1)', () => {
     const drawer = await screen.findByTestId('device-drawer');
     expect(drawer).toHaveTextContent('142.0');
     expect(drawer).toHaveTextContent('312 MB');
+  });
+
+  it('a phone opens with its access, connection options and activity; Add a phone starts pairing', async () => {
+    api.list.invoke.mockResolvedValue([
+      { ...PIXEL, routes: [{ route: 'mac_relay', enabled: true, status: 'on', experimental: false }] },
+    ]);
+    api.createPairingCode.invoke.mockResolvedValue({
+      code: 'ABCD-2345',
+      expires_at: Date.now() + 300_000,
+      download_url: null,
+      qr_payload: null,
+    });
+    renderPage();
+    fireEvent.click(railButton('phone'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Pixel 9' }));
+    const drawer = await screen.findByTestId('device-drawer');
+    expect(within(drawer).getByTestId('device-access')).toBeInTheDocument();
+    expect(within(drawer).getAllByTestId('device-route')).toHaveLength(1);
+    expect(await within(drawer).findByTestId('device-audit-empty')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('devices-add-phone'));
+    fireEvent.click(await screen.findByText(`${KEY}.routes.companion.name`, { selector: '.arco-dropdown-menu-item' }));
+    await waitFor(() => expect(api.createPairingCode.invoke).toHaveBeenCalledWith({ kind: 'companion' }));
   });
 
   it('My browsers keeps the extension install, pairing and the approvals log', async () => {
