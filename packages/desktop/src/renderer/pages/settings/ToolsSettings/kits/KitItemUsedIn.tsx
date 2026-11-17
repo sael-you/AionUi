@@ -5,33 +5,47 @@
  */
 
 /**
- * "Used in" of one server (C36): every attachment at every level (global,
- * project, assistant, conversation) with its op, a way to drop it, and a row to
- * turn the server on — or off — for a project or an assistant. Conversation-level
- * attachments are made from the conversation's own kits button.
+ * "Used in" of one item attached only through kits — a server (C36) or a rule
+ * (C37): every attachment at every level (global, project, assistant,
+ * conversation) with its op, a way to drop it, and a row to turn the item on —
+ * or off — for Global, a project or an assistant. Conversation-level attachments
+ * are made from the conversation's own kits button.
  */
 
 import { Button, Message, Radio, Select, Tag } from '@arco-design/web-react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { KitLevel, KitOp } from '@/common/config/storage';
+import type { KitItemKind, KitLevel, KitOp } from '@/common/config/storage';
+import { attachRequest } from '@/renderer/hooks/mcp/market/kitModel';
+import { useKitActions, useKitItemAttachments } from '@/renderer/hooks/mcp/market/useKits';
 import { useAssistantList } from '@/renderer/hooks/assistant/useAssistantList';
 import type { StandardProject } from '@/renderer/pages/conversation/GroupedHistory/utils/standardProjects';
-import { KitOpTag } from '../ToolsSettings/kits/KitAttachPanel';
-import { describeServerError } from './serverModel';
-import { useServerActions, useServerAttachments } from './useServers';
+import { KitOpTag } from './KitAttachPanel';
 
 const ADD_LEVELS: readonly KitLevel[] = ['global', 'project', 'assistant'];
 
-const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; disabled?: boolean }> = ({
-  serverId,
+type KitItemUsedInProps = {
+  kind: Extract<KitItemKind, 'server' | 'rule'>;
+  itemRef: string;
+  projects: StandardProject[];
+  /** Strings of the page: `<prefix>.nowhere`, `.drop`, `.dropLabel`, `.levelLabel`, … */
+  i18nPrefix: string;
+  describeError: (error: unknown) => string;
+  disabled?: boolean;
+};
+
+const KitItemUsedIn: React.FC<KitItemUsedInProps> = ({
+  kind,
+  itemRef,
   projects,
+  i18nPrefix,
+  describeError,
   disabled,
 }) => {
   const { t } = useTranslation();
-  const { attachments, isLoading } = useServerAttachments(serverId);
+  const { attachments, isLoading } = useKitItemAttachments(kind, itemRef);
   const { assistants } = useAssistantList();
-  const { attach, detach } = useServerActions();
+  const { attach, detach } = useKitActions();
   const [level, setLevel] = useState<KitLevel>('project');
   const [target, setTarget] = useState<string | undefined>(undefined);
   const [op, setOp] = useState<KitOp>('add');
@@ -47,7 +61,7 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
     if (rowLevel === 'global') return t('settings.library.scopeGlobal');
     if (rowLevel === 'project') return projectName.get(targetId) ?? targetId;
     if (rowLevel === 'assistant') return assistantName.get(targetId) ?? targetId;
-    return t('settings.servers.usedIn.conversation', { id: targetId.slice(0, 8) });
+    return t(`${i18nPrefix}.conversation`, { id: targetId.slice(0, 8) });
   };
 
   const targets =
@@ -62,7 +76,7 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
     try {
       await action();
     } catch (error) {
-      Message.error(describeServerError(t, error));
+      Message.error(describeError(error));
     } finally {
       setBusy(null);
     }
@@ -71,13 +85,13 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
   const canAdd = level === 'global' || Boolean(target);
 
   return (
-    <div className='flex flex-col gap-8px' data-testid='server-used-in'>
+    <div className='flex flex-col gap-8px' data-testid={`${kind}-used-in`}>
       {isLoading ? null : attachments.length === 0 ? (
-        <span className='text-12px text-t-tertiary'>{t('settings.servers.usedIn.nowhere')}</span>
+        <span className='text-12px text-t-tertiary'>{t(`${i18nPrefix}.nowhere`)}</span>
       ) : (
         <ul className='m-0 p-0 list-none flex flex-col gap-4px'>
           {attachments.map((row) => (
-            <li key={row.id} className='flex items-center gap-8px min-w-0' data-testid='server-used-in-row'>
+            <li key={row.id} className='flex items-center gap-8px min-w-0' data-testid={`${kind}-used-in-row`}>
               <Tag size='small'>{t(`mcp.kits.level.${row.level}`)}</Tag>
               <span className='flex-1 min-w-0 truncate text-13px text-t-primary'>
                 {targetLabel(row.level, row.target_id)}
@@ -88,10 +102,10 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
                 type='text'
                 disabled={disabled}
                 loading={busy === row.id}
-                aria-label={t('settings.servers.usedIn.dropLabel', { scope: targetLabel(row.level, row.target_id) })}
+                aria-label={t(`${i18nPrefix}.dropLabel`, { scope: targetLabel(row.level, row.target_id) })}
                 onClick={() => void run(row.id, () => detach(row.id))}
               >
-                {t('settings.servers.usedIn.drop')}
+                {t(`${i18nPrefix}.drop`)}
               </Button>
             </li>
           ))}
@@ -106,7 +120,7 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
             setLevel(value);
             setTarget(undefined);
           }}
-          aria-label={t('settings.servers.usedIn.levelLabel')}
+          aria-label={t(`${i18nPrefix}.levelLabel`)}
           disabled={disabled}
         >
           {ADD_LEVELS.map((key) => (
@@ -121,8 +135,8 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
             className='!min-w-160px !flex-1'
             value={target}
             onChange={setTarget}
-            placeholder={t('settings.servers.usedIn.targetPlaceholder')}
-            aria-label={t('settings.servers.usedIn.targetLabel')}
+            placeholder={t(`${i18nPrefix}.targetPlaceholder`)}
+            aria-label={t(`${i18nPrefix}.targetLabel`)}
             showSearch
             disabled={disabled}
             options={targets}
@@ -133,7 +147,7 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
           size='small'
           value={op}
           onChange={setOp}
-          aria-label={t('settings.servers.usedIn.opLabel')}
+          aria-label={t(`${i18nPrefix}.opLabel`)}
           disabled={disabled}
         >
           <Radio value='add'>{t('mcp.kits.op.add')}</Radio>
@@ -144,15 +158,15 @@ const ServerUsedIn: React.FC<{ serverId: string; projects: StandardProject[]; di
           type='primary'
           disabled={disabled || !canAdd}
           loading={busy === 'attach'}
-          onClick={() => void run('attach', () => attach(serverId, level, target ?? '', op))}
-          data-testid='server-used-in-attach'
+          onClick={() => void run('attach', () => attach(attachRequest(level, target ?? '', kind, itemRef, op)))}
+          data-testid={`${kind}-used-in-attach`}
         >
-          {t('settings.servers.usedIn.apply')}
+          {t(`${i18nPrefix}.apply`)}
         </Button>
       </div>
-      <span className='text-12px text-t-tertiary'>{t('settings.servers.usedIn.hint')}</span>
+      <span className='text-12px text-t-tertiary'>{t(`${i18nPrefix}.hint`)}</span>
     </div>
   );
 };
 
-export default ServerUsedIn;
+export default KitItemUsedIn;

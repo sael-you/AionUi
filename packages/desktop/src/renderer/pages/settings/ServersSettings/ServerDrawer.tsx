@@ -21,11 +21,11 @@ import {
   type ServerTestResponse,
 } from '@/common/types/platform/serverPools';
 import { DrawerBlock, LibraryDrawer } from '@/renderer/components/settings/SettingsModal/library/LibraryParts';
+import KitItemUsedIn from '@/renderer/pages/settings/ToolsSettings/kits/KitItemUsedIn';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
 import type { StandardProject } from '@/renderer/pages/conversation/GroupedHistory/utils/standardProjects';
 import ServerAuditList from './ServerAuditList';
 import { HostKeyField, PrivateKeyField } from './ServerKeyFields';
-import ServerUsedIn from './ServerUsedIn';
 import {
   createRequest,
   describeServerError,
@@ -349,7 +349,13 @@ const ServerDrawer: React.FC<{
             </div>
           </DrawerBlock>
           <DrawerBlock title={t('settings.library.usedIn')}>
-            <ServerUsedIn serverId={existing.id} projects={projects} />
+            <KitItemUsedIn
+              kind='server'
+              itemRef={existing.id}
+              projects={projects}
+              i18nPrefix='settings.servers.usedIn'
+              describeError={(error) => describeServerError(t, error)}
+            />
           </DrawerBlock>
           <DrawerBlock title={t('settings.servers.audit.title')}>
             <ServerAuditList serverId={existing.id} />
