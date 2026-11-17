@@ -18,7 +18,7 @@ import { isElectronDesktop } from '@/renderer/utils/platform';
 export const SERVER_BROWSER_STATUS_KEY = 'server-browser.status';
 export const SERVER_BROWSER_SETTINGS_KEY = 'server-browser.settings';
 
-export type ServerBrowserProfile = Pick<BrowserInstanceSettings, 'instance' | 'name' | 'color' | 'emoji'>;
+export type ServerBrowserProfile = Pick<BrowserInstanceSettings, 'instance' | 'name' | 'color' | 'emoji' | 'engine'>;
 
 export const useServerBrowserAvailability = (): {
   available: boolean;

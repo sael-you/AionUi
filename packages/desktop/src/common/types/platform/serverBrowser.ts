@@ -73,6 +73,8 @@ export type BrowserInstanceSettings = {
   emoji?: string;
   /** "Hide that the browser is automated" (default false); applies at the next start. */
   hide_automation: boolean;
+  /** The browser engine of the profile (C35); `camoufox` has a VNC live view instead of the CDP stream. */
+  engine?: string;
 };
 
 /** Optional profile fields; `""` for `color`/`emoji` clears them, absent = unchanged. */

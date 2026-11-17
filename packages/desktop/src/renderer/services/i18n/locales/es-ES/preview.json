@@ -225,7 +225,21 @@
       "stopped": "El navegador está detenido.",
       "error": "El navegador se detuvo con un error."
     },
-    "profileLabel": "Perfil del navegador"
+    "profileLabel": "Perfil del navegador",
+    "vnc": {
+      "viewOnly": "Solo ver",
+      "connect": "Conectar",
+      "stop": "Detener el navegador",
+      "stopFailed": "No se pudo detener el navegador.",
+      "connecting": "Iniciando el navegador…",
+      "surfaceLabel": "Vista en directo del navegador del servidor. Desactiva «Solo ver» para usar allí el ratón y el teclado.",
+      "closed": {
+        "ended": "La vista en directo terminó. Conecta para iniciar de nuevo el navegador.",
+        "notCamoufox": "Este perfil no tiene una vista en directo de este tipo.",
+        "notAllowed": "La vista en directo no está permitida: los agentes no pueden usar el navegador o el panel está desactivado.",
+        "startFailed": "El navegador no pudo iniciarse ({{reason}})."
+      }
+    }
   },
   "browserDevices": {
     "activity": "Acciones recientes de los agentes",

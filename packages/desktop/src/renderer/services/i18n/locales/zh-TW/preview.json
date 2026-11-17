@@ -225,7 +225,21 @@
       "stopped": "瀏覽器已停止。",
       "error": "瀏覽器因錯誤而停止。"
     },
-    "profileLabel": "瀏覽器設定檔"
+    "profileLabel": "瀏覽器設定檔",
+    "vnc": {
+      "viewOnly": "僅檢視",
+      "connect": "連線",
+      "stop": "停止瀏覽器",
+      "stopFailed": "無法停止瀏覽器。",
+      "connecting": "正在啟動瀏覽器…",
+      "surfaceLabel": "伺服器瀏覽器的即時畫面。關閉「僅檢視」即可在其中使用滑鼠和鍵盤。",
+      "closed": {
+        "ended": "即時畫面已結束。連線即可重新啟動瀏覽器。",
+        "notCamoufox": "此設定檔沒有這種即時畫面。",
+        "notAllowed": "不允許即時畫面：智慧代理不得使用瀏覽器，或面板已關閉。",
+        "startFailed": "瀏覽器無法啟動（{{reason}}）。"
+      }
+    }
   },
   "browserDevices": {
     "activity": "智慧代理最近的操作",

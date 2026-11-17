@@ -225,7 +225,21 @@
       "stopped": "浏览器已停止。",
       "error": "浏览器因错误而停止。"
     },
-    "profileLabel": "浏览器配置"
+    "profileLabel": "浏览器配置",
+    "vnc": {
+      "viewOnly": "仅查看",
+      "connect": "连接",
+      "stop": "停止浏览器",
+      "stopFailed": "无法停止浏览器。",
+      "connecting": "正在启动浏览器…",
+      "surfaceLabel": "服务器浏览器的实时画面。关闭“仅查看”即可在其中使用鼠标和键盘。",
+      "closed": {
+        "ended": "实时画面已结束。连接即可重新启动浏览器。",
+        "notCamoufox": "此配置文件没有这种实时画面。",
+        "notAllowed": "不允许实时画面：智能体不得使用浏览器，或面板已关闭。",
+        "startFailed": "浏览器无法启动（{{reason}}）。"
+      }
+    }
   },
   "browserDevices": {
     "activity": "智能体最近的操作",

@@ -264,7 +264,9 @@ function spliceUpgradeToBackend(client: Socket, backendPort: number, head: Buffe
  *    channel, `/api/browser/ws` the server-side in-app browser's screencast and input stream, TASK-111;
  *    `/api/browser/extension` the owner's own browser via the AionUi extension, TASK-125 — no session cookie, the
  *    backend authenticates its first frame and Origin; `/api/devices/relay` the Mac helper and the Android companion app,
- *    C38 W2 / TASK-136 — no cookie, any Origin refused, first frame authenticates), splice to backend
+ *    C38 W2 / TASK-136 — no cookie, any Origin refused, first frame authenticates;
+ *    `/api/browser/instances/{n}/vnc` the VNC live view of a Camoufox profile, raw RFB in binary frames), splice to
+ *    backend
  *  - `false` → any other HTTP method / path, hand to internal HTTP server
  *  - `null`  → need more bytes (no CRLF yet)
  *
@@ -277,7 +279,7 @@ export function peekWsRoute(buf: Buffer): boolean | null {
   const newlineIdx = buf.indexOf(0x0a); // \n
   if (newlineIdx < 0) return null;
   const firstLine = buf.slice(0, newlineIdx).toString('ascii');
-  return /^GET\s+\/(?:ws|api\/stt\/stream|api\/voice\/ws|api\/browser\/ws|api\/browser\/extension|api\/devices\/relay)(?:\?[^\s]*)?\s+HTTP\/1\.[01]\r?$/.test(
+  return /^GET\s+\/(?:ws|api\/stt\/stream|api\/voice\/ws|api\/browser\/ws|api\/browser\/extension|api\/browser\/instances\/\d+\/vnc|api\/devices\/relay)(?:\?[^\s]*)?\s+HTTP\/1\.[01]\r?$/.test(
     firstLine
   );
 }
