@@ -1775,7 +1775,13 @@
       "target": "在 {{target}} 中：",
       "taskHint": "你批准的是整个任务：附加组件自行决定每次点按。停止和超时仍会结束它。",
       "allow": "允许",
-      "allowed": "已允许。"
+      "allowed": "已允许。",
+      "allowFor_one": "允许 {{count}} 分钟",
+      "allowFor_other": "允许 {{count}} 分钟",
+      "allowedFor_one": "已允许 {{count}} 分钟。",
+      "allowedFor_other": "已允许 {{count}} 分钟。",
+      "grantHint_one": "允许后，{{count}} 分钟内可在此设备和应用上读取并操作；之后智能体会再次询问。",
+      "grantHint_other": "允许后，{{count}} 分钟内可在此设备和应用上读取并操作；之后智能体会再次询问。"
     },
     "pair": {
       "title": {

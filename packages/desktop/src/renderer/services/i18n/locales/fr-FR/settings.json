@@ -1774,7 +1774,13 @@
       "target": "Dans {{target}} :",
       "taskHint": "Vous approuvez la tâche entière : le module décide lui-même de ses gestes. Arrêter et le délai y mettent fin malgré tout.",
       "allow": "Autoriser",
-      "allowed": "Autorisé."
+      "allowed": "Autorisé.",
+      "allowFor_one": "Autoriser {{count}} min",
+      "allowFor_other": "Autoriser {{count}} min",
+      "allowedFor_one": "Autorisé pendant {{count}} min.",
+      "allowedFor_other": "Autorisé pendant {{count}} min.",
+      "grantHint_one": "L'autorisation couvre la lecture et les actions sur cet appareil et cette application pendant {{count}} min ; ensuite les agents redemandent.",
+      "grantHint_other": "L'autorisation couvre la lecture et les actions sur cet appareil et cette application pendant {{count}} min ; ensuite les agents redemandent."
     },
     "pair": {
       "title": {

@@ -1776,7 +1776,13 @@
       "target": "{{target}} で:",
       "taskHint": "タスク全体を承認します。個々のタップはアドオンが判断します。停止とタイムアウトでいつでも終了します。",
       "allow": "許可",
-      "allowed": "許可しました。"
+      "allowed": "許可しました。",
+      "allowFor_one": "{{count}} 分間許可",
+      "allowFor_other": "{{count}} 分間許可",
+      "allowedFor_one": "{{count}} 分間許可しました。",
+      "allowedFor_other": "{{count}} 分間許可しました。",
+      "grantHint_one": "許可すると、このデバイスとアプリでの読み取りと操作が {{count}} 分間有効になります。その後はエージェントが再度確認します。",
+      "grantHint_other": "許可すると、このデバイスとアプリでの読み取りと操作が {{count}} 分間有効になります。その後はエージェントが再度確認します。"
     },
     "pair": {
       "title": {

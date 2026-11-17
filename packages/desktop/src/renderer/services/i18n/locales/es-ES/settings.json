@@ -1774,7 +1774,13 @@
       "target": "En {{target}}:",
       "taskHint": "Apruebas la tarea completa: el complemento decide sus propios toques. Detener y el tiempo límite la terminan igualmente.",
       "allow": "Permitir",
-      "allowed": "Permitido."
+      "allowed": "Permitido.",
+      "allowFor_one": "Permitir {{count}} min",
+      "allowFor_other": "Permitir {{count}} min",
+      "allowedFor_one": "Permitido durante {{count}} min.",
+      "allowedFor_other": "Permitido durante {{count}} min.",
+      "grantHint_one": "Permitir cubre leer y actuar en este dispositivo y esta app durante {{count}} min; después los agentes vuelven a preguntar.",
+      "grantHint_other": "Permitir cubre leer y actuar en este dispositivo y esta app durante {{count}} min; después los agentes vuelven a preguntar."
     },
     "pair": {
       "title": {

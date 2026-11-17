@@ -92,6 +92,8 @@ export type DeviceApproval = {
   conversation_id: string | null;
   created_at: number;
   expires_at: number;
+  /** Allowing covers reads and actions on that device + app for this many minutes; absent on add-on tasks. */
+  grant_minutes?: number;
 };
 
 export type DeviceApprovalDecision = 'allow' | 'deny';

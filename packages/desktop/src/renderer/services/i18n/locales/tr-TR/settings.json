@@ -1774,7 +1774,13 @@
       "target": "{{target}} içinde:",
       "taskHint": "Görevin tamamını onaylıyorsunuz: eklenti dokunuşlarına kendi karar verir. Durdur ve zaman aşımı onu yine de sonlandırır.",
       "allow": "İzin ver",
-      "allowed": "İzin verildi."
+      "allowed": "İzin verildi.",
+      "allowFor_one": "{{count}} dk izin ver",
+      "allowFor_other": "{{count}} dk izin ver",
+      "allowedFor_one": "{{count}} dk izin verildi.",
+      "allowedFor_other": "{{count}} dk izin verildi.",
+      "grantHint_one": "İzin, bu cihazda ve uygulamada {{count}} dk boyunca okumayı ve işlem yapmayı kapsar; sonra ajanlar yeniden sorar.",
+      "grantHint_other": "İzin, bu cihazda ve uygulamada {{count}} dk boyunca okumayı ve işlem yapmayı kapsar; sonra ajanlar yeniden sorar."
     },
     "pair": {
       "title": {

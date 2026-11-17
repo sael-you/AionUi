@@ -125,6 +125,16 @@ describe('device approvals (TASK-136 U2/U3)', () => {
     expect(Message.success).toHaveBeenCalledWith(`${KEY}.approval.allowed`);
   });
 
+  it('a grant says how long Allow covers that device and app; an add-on task has none', async () => {
+    api.decideApproval.invoke.mockResolvedValue(undefined);
+    render(<DeviceApprovalCard approval={approval({ grant_minutes: 5 })} now={1_000} onDecided={() => undefined} />);
+    expect(screen.getByTestId('device-approval-grant')).toHaveTextContent(`${KEY}.approval.grantHint|{"count":5}`);
+    const allow = screen.getByTestId('device-approval-allow');
+    expect(allow).toHaveTextContent(`${KEY}.approval.allowFor|{"count":5}`);
+    fireEvent.click(allow);
+    await waitFor(() => expect(Message.success).toHaveBeenCalledWith(`${KEY}.approval.allowedFor|{"count":5}`));
+  });
+
   it('an add-on run shows the whole task text; Deny on an expired one says so', async () => {
     api.decideApproval.invoke.mockRejectedValue({ status: 410 });
     render(
@@ -138,6 +148,8 @@ describe('device approvals (TASK-136 U2/U3)', () => {
     expect(card).toHaveTextContent(`${KEY}.approval.titleTask|{"device":"Pixel 9"}`);
     expect(screen.getByTestId('device-approval-summary')).toHaveTextContent('Book the 9:00 train to Lyon');
     expect(card).toHaveTextContent(`${KEY}.approval.taskHint`);
+    expect(screen.queryByTestId('device-approval-grant')).toBeNull();
+    expect(screen.getByTestId('device-approval-allow')).toHaveTextContent(`${KEY}.approval.allow`);
     fireEvent.click(screen.getByTestId('device-approval-deny'));
     await waitFor(() => expect(api.decideApproval.invoke).toHaveBeenCalledWith({ id: 'a1', decision: 'deny' }));
     await waitFor(() => expect(Message.error).toHaveBeenCalledWith(`${SHARED}.expired`));

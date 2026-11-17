@@ -1774,7 +1774,13 @@
       "target": "In {{target}}:",
       "taskHint": "Du gibst die ganze Aufgabe frei: Das Add-on entscheidet seine Tipps selbst. Stopp und das Zeitlimit beenden sie trotzdem.",
       "allow": "Erlauben",
-      "allowed": "Erlaubt."
+      "allowed": "Erlaubt.",
+      "allowFor_one": "Für {{count}} Min. erlauben",
+      "allowFor_other": "Für {{count}} Min. erlauben",
+      "allowedFor_one": "Für {{count}} Min. erlaubt.",
+      "allowedFor_other": "Für {{count}} Min. erlaubt.",
+      "grantHint_one": "Erlauben gilt {{count}} Min. lang für Lesen und Handeln auf diesem Gerät und in dieser App; danach fragen Agenten erneut.",
+      "grantHint_other": "Erlauben gilt {{count}} Min. lang für Lesen und Handeln auf diesem Gerät und in dieser App; danach fragen Agenten erneut."
     },
     "pair": {
       "title": {
