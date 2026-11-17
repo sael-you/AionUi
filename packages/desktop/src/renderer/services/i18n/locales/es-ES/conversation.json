@@ -1002,5 +1002,10 @@
     "continue": "Continuar en segundo plano",
     "running": "Ejecutándose en segundo plano",
     "failed": "No se pudo pasar la llamada a la herramienta a segundo plano."
+  },
+  "unsent": {
+    "notSent": "No enviado: guardado como borrador",
+    "autoRetry": "se enviará de nuevo cuando vuelva la conexión",
+    "retry": "Reintentar"
   }
 }

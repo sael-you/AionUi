@@ -39,6 +39,21 @@ const {
   runtimeViewIsProcessingRef: { current: false },
 }));
 
+// Unsent-message recovery (TASK-127) has its own tests in unsentMessage.dom.test.tsx.
+vi.mock('@/renderer/pages/conversation/platforms/UnsentMessageBanner', () => ({ default: () => null }));
+vi.mock('@/renderer/pages/conversation/platforms/useUnsentMessage', () => ({
+  isConnectionFailure: () => false,
+  useUnsentMessage: () => ({
+    unsent: null,
+    idempotent: false,
+    retrying: false,
+    keyFor: () => undefined,
+    remember: () => {},
+    forget: () => {},
+    retry: async () => {},
+  }),
+}));
+
 vi.mock('@/common', () => ({
   ipcBridge: {
     conversation: {

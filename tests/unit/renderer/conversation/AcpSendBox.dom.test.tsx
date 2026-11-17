@@ -396,6 +396,32 @@ describe('AcpSendBox', () => {
     });
   });
 
+  it('keeps a message that found no connection as a draft with Retry, without an error card (TASK-127)', async () => {
+    window.localStorage.removeItem('aionui.unsentMessage.conv-1');
+    sendMessageInvokeMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    sendMessageInvokeMock.mockResolvedValueOnce({ turn_id: 'turn-1', runtime: null, msg_id: 'msg-1' });
+
+    render(<AcpSendBox conversation_id='conv-1' backend='claude' messageState={makeMessageState()} />);
+    await act(async () => {
+      screen.getByRole('button', { name: 'send' }).click();
+    });
+
+    const banner = await screen.findByTestId('unsent-message-banner');
+    expect(banner).toHaveTextContent('conversation.unsent.notSent');
+    expect(JSON.parse(window.localStorage.getItem('aionui.unsentMessage.conv-1') as string)).toMatchObject({
+      input: 'Hello',
+    });
+
+    // Retry sends the same message again; once accepted the banner and the record go.
+    await act(async () => {
+      screen.getByRole('button', { name: 'conversation.unsent.retry' }).click();
+    });
+    await waitFor(() => expect(sendMessageInvokeMock).toHaveBeenCalledTimes(2));
+    expect(sendMessageInvokeMock.mock.calls[1]?.[0]).toMatchObject({ input: 'Hello', conversation_id: 'conv-1' });
+    await waitFor(() => expect(screen.queryByTestId('unsent-message-banner')).toBeNull());
+    expect(window.localStorage.getItem('aionui.unsentMessage.conv-1')).toBeNull();
+  });
+
   it('shows a progress ring with a window size, a hollow ring without one, and nothing without usage', () => {
     const { container, rerender } = render(
       <AcpSendBox

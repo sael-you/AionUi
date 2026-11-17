@@ -46,6 +46,9 @@ import { useCrossSessionMessageEnabled } from '@/renderer/hooks/chat/useCrossSes
 import { emitter, useAddEventListener } from '@/renderer/utils/emitter';
 import { type ChatFileRef, isChatFileRef, uploadFileRef } from '@/common/types/chatFile';
 import { localSelectionItems, mergeFileSelectionItems } from '@/renderer/utils/file/fileSelection';
+import { useQuoteStack } from '@/renderer/components/chat/SendBox/quoteStack';
+import UnsentMessageBanner from '../UnsentMessageBanner';
+import { isConnectionFailure, useUnsentMessage, type UnsentMessage } from '../useUnsentMessage';
 import { collectChatFileRefs, splitChatFileRefs } from '@/renderer/utils/file/messageFiles';
 import type { AgentModeOption } from '@/renderer/utils/model/agentTypes';
 import { Button, Message, Tag } from '@arco-design/web-react';
@@ -252,7 +255,12 @@ const AionrsSendBox: React.FC<{
   });
 
   const executeCommand = useCallback(
-    async ({ input, files, sessions }: Pick<ConversationCommandQueueItem, 'input' | 'files' | 'sessions'>) => {
+    async ({
+      input,
+      files,
+      sessions,
+      idempotency_key,
+    }: Pick<ConversationCommandQueueItem, 'input' | 'files' | 'sessions'> & { idempotency_key?: string }) => {
       if (teamPermission) await teamPermission.warmupSession();
       if (!current_model?.use_model) {
         Message.warning(t('conversation.chat.noModelSelected'));
@@ -282,6 +290,7 @@ const AionrsSendBox: React.FC<{
           // `@@` references. Omitting this makes the whole feature silently
           // no-op for this platform.
           sessions,
+          idempotency_key,
         });
         setActiveMsgId(res.msg_id);
         markSendAccepted(res.turn_id, res.runtime, res.msg_id);
@@ -306,6 +315,11 @@ const AionrsSendBox: React.FC<{
         }
 
         markSendFailed({ kind: 'ordinary', reason: errorMessage });
+        // No connection (TASK-127): no toast; the caller keeps the message as a draft with Retry.
+        if (isConnectionFailure(error)) {
+          setWaitingResponse(false);
+          throw error;
+        }
         Message.error(errorMessage);
         throw error;
       }
@@ -389,6 +403,26 @@ const AionrsSendBox: React.FC<{
   // replying, sending is hard-blocked with a toast instead of implicitly
   // enqueuing. The only way to queue a message while busy is the explicit
   // "add to queue" entry (handleAddToQueue below).
+  // A message that found no connection (TASK-127): kept as the draft, sent again when it is back.
+  const quoteStack = useQuoteStack(conversation_id);
+  const unsentMessage = useUnsentMessage({
+    conversation_id,
+    content,
+    resend: async (unsent: UnsentMessage) => {
+      await executeCommand({
+        input: unsent.input,
+        files: unsent.files,
+        sessions: unsent.sessions,
+        idempotency_key: unsent.key,
+      });
+      setContent('');
+      clearFiles();
+      setSelectedSessions([]);
+      quoteStack.clear();
+      emitter.emit('aionrs.selected.file.clear');
+    },
+  });
+
   const onSendHandler = async (message: string): Promise<void | false> => {
     if (isBusy) {
       Message.warning(
@@ -402,10 +436,24 @@ const AionrsSendBox: React.FC<{
 
     const filesToSend = collectChatFileRefs(uploadFile, atPath);
     const sessions = selectedSessions.length > 0 ? selectedSessions : undefined;
+    const idempotency_key = unsentMessage.keyFor(message, filesToSend);
+    // The send box cleared its input just before this call; `content` still holds what was typed.
+    const draftText = content;
     clearFiles();
     setSelectedSessions([]);
     emitter.emit('aionrs.selected.file.clear');
-    await executeCommand({ input: message, files: filesToSend, sessions });
+    try {
+      await executeCommand({ input: message, files: filesToSend, sessions, idempotency_key });
+      unsentMessage.forget();
+    } catch (error) {
+      if (!isConnectionFailure(error)) throw error;
+      const restored = splitChatFileRefs(filesToSend);
+      setUploadFile(restored.uploadFiles);
+      setAtPath(restored.atPath);
+      if (sessions) setSelectedSessions(sessions);
+      unsentMessage.remember({ key: idempotency_key, input: message, files: filesToSend, sessions, draftText });
+      return false;
+    }
   };
 
   const [interrupting, setInterrupting] = useState(false);
@@ -752,6 +800,13 @@ const AionrsSendBox: React.FC<{
         onRetryStart={teamRuntime?.onRetryStart ? () => void teamRuntime.onRetryStart?.() : undefined}
       />
       <CrossSessionDisabledBanner />
+      {unsentMessage.unsent ? (
+        <UnsentMessageBanner
+          retrying={unsentMessage.retrying}
+          autoRetry={unsentMessage.idempotent}
+          onRetry={() => void unsentMessage.retry()}
+        />
+      ) : null}
       <SendBox
         data-testid='aionrs-sendbox'
         onMobilePlusClick={isMobile ? () => setIsMobileSheetOpen(true) : undefined}

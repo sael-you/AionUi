@@ -52,6 +52,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { classifyConversationBusyError } from '../conversationBusyError';
 import { buildSendFailureError } from './buildSendFailureError';
+import { useQuoteStack } from '@/renderer/components/chat/SendBox/quoteStack';
+import UnsentMessageBanner from '../UnsentMessageBanner';
+import { isConnectionFailure, useUnsentMessage, type UnsentMessage } from '../useUnsentMessage';
 import { useAcpInitialMessage } from './useAcpInitialMessage';
 import type { UseAcpMessageReturn } from './useAcpMessage';
 
@@ -282,7 +285,12 @@ const AcpSendBox: React.FC<{
   });
 
   const executeCommand = useCallback(
-    async ({ input, files, sessions }: Pick<ConversationCommandQueueItem, 'input' | 'files' | 'sessions'>) => {
+    async ({
+      input,
+      files,
+      sessions,
+      idempotency_key,
+    }: Pick<ConversationCommandQueueItem, 'input' | 'files' | 'sessions'> & { idempotency_key?: string }) => {
       // Plain user text; the backend resolves each ChatFileRef and injects the
       // [[AION_FILES]] marker at the send edge (no front-end path/marker building).
       try {
@@ -306,6 +314,7 @@ const AcpSendBox: React.FC<{
           // `@@` references. Dropping this here is a silent failure: the agent
           // simply never receives the session block.
           sessions,
+          idempotency_key,
         });
         markSendAccepted(result.turn_id, result.runtime, result.msg_id);
         emitter.emit('chat.history.refresh');
@@ -325,6 +334,14 @@ const AcpSendBox: React.FC<{
         }
 
         markSendFailed({ kind: 'ordinary', reason: errorMsg });
+
+        // No connection (TASK-127): no error card. The caller puts the message back
+        // into the composer as a draft and offers Retry.
+        if (isConnectionFailure(error)) {
+          resetState();
+          setAiProcessing(false);
+          throw error;
+        }
 
         // Archived conversation (e.g. legacy Gemini). Backend signals this
         // via HTTP 410 + code='CONVERSATION_ARCHIVED' — identified by code,
@@ -441,6 +458,27 @@ Please check your local CLI tool authentication status`,
   // Non-supporting agents can no longer send while the agent is replying —
   // that path is hard-blocked with a toast; the only way to queue a message
   // while busy is the explicit "add to queue" entry (handleAddToQueue below).
+  // A message that found no connection (TASK-127): kept as the draft, sent again when it is back.
+  const quoteStack = useQuoteStack(conversation_id);
+  const unsentMessage = useUnsentMessage({
+    conversation_id,
+    content,
+    resend: async (unsent: UnsentMessage) => {
+      await executeCommand({
+        input: unsent.input,
+        files: unsent.files,
+        sessions: unsent.sessions,
+        idempotency_key: unsent.key,
+      });
+      // It went out: the draft copy in the composer is done.
+      setContent('');
+      clearFiles();
+      setSelectedSessions([]);
+      quoteStack.clear();
+      emitter.emit('acp.selected.file.clear');
+    },
+  });
+
   const onSendHandler = async (message: string): Promise<void | false> => {
     if (!supportsMidturnDelivery && isBusy) {
       Message.warning(
@@ -454,10 +492,26 @@ Please check your local CLI tool authentication status`,
 
     const allFiles = collectChatFileRefs(uploadFile, atPath);
     const sessions = selectedSessions.length > 0 ? selectedSessions : undefined;
+    const idempotency_key = unsentMessage.keyFor(message, allFiles);
+    // The send box cleared its input just before this call; `content` still holds what was typed.
+    const draftText = content;
     clearFiles();
     setSelectedSessions([]);
     emitter.emit('acp.selected.file.clear');
-    await executeCommand({ input: message, files: allFiles, sessions });
+    try {
+      await executeCommand({ input: message, files: allFiles, sessions, idempotency_key });
+      unsentMessage.forget();
+    } catch (error) {
+      if (!isConnectionFailure(error)) throw error;
+      // Not sent: keep it. `false` makes the send box put the text and quotes back;
+      // the files go back here. All of it is the saved draft now.
+      const restored = splitChatFileRefs(allFiles);
+      setUploadFile(restored.uploadFiles);
+      setAtPath(restored.atPath);
+      if (sessions) setSelectedSessions(sessions);
+      unsentMessage.remember({ key: idempotency_key, input: message, files: allFiles, sessions, draftText });
+      return false;
+    }
   };
 
   const [interrupting, setInterrupting] = useState(false);
@@ -803,6 +857,13 @@ Please check your local CLI tool authentication status`,
         onRetryStart={teamRuntime?.onRetryStart ? () => void teamRuntime.onRetryStart?.() : undefined}
       />
       <CrossSessionDisabledBanner />
+      {unsentMessage.unsent ? (
+        <UnsentMessageBanner
+          retrying={unsentMessage.retrying}
+          autoRetry={unsentMessage.idempotent}
+          onRetry={() => void unsentMessage.retry()}
+        />
+      ) : null}
       <SendBox
         onMobilePlusClick={isMobile ? () => setIsMobileSheetOpen(true) : undefined}
         value={content}

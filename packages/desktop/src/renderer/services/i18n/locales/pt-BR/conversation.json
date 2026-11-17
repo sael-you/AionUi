@@ -1007,5 +1007,10 @@
     "continue": "Continuar em segundo plano",
     "running": "Em execução em segundo plano",
     "failed": "Não foi possível mover a chamada de ferramenta para segundo plano."
+  },
+  "unsent": {
+    "notSent": "Não enviado — salvo como rascunho",
+    "autoRetry": "será reenviado quando a conexão voltar",
+    "retry": "Tentar de novo"
   }
 }

@@ -1002,5 +1002,10 @@
     "continue": "Im Hintergrund fortsetzen",
     "running": "Läuft im Hintergrund",
     "failed": "Der Tool-Aufruf konnte nicht in den Hintergrund verschoben werden."
+  },
+  "unsent": {
+    "notSent": "Nicht gesendet — als Entwurf gespeichert",
+    "autoRetry": "wird erneut gesendet, sobald die Verbindung zurück ist",
+    "retry": "Erneut senden"
   }
 }
