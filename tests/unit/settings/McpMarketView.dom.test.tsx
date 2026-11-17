@@ -10,8 +10,14 @@
 
 import React from 'react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, configure, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { IMcpServer, McpMarketAssignment, McpMarketInstance } from '@/common/config/storage';
+
+// TASK-122: these tests wait for the UI to be ready (findBy / waitFor), never for a fixed time. The library's default
+// 1 s bound for those waits is itself a wall clock: on a loaded gate machine a dialog can take longer to appear. A wait
+// still returns the moment its condition holds, so the larger bound costs nothing when the UI is fast.
+configure({ asyncUtilTimeout: 15_000 });
+vi.setConfig({ testTimeout: 60_000 });
 
 const state = vi.hoisted(() => ({
   market: {} as Record<string, unknown>,
@@ -301,8 +307,18 @@ describe('McpMarketView (C33 library layout)', () => {
 
     expect(await screen.findByTestId('mcp-market-attach')).toBeInTheDocument();
     // context7 may be global: Global is the default scope, every CLI it supports is pre-selected.
-    const okButtons = screen.getAllByText('mcp.market.actions.attach').map((n) => n.closest('button')!);
-    fireEvent.click(okButtons[okButtons.length - 1]);
+    // The dialog's own Attach button exists once the dialog body is rendered: wait for it instead of reading the
+    // buttons at whatever moment the dialog shell appeared (TASK-122).
+    const drawerAttach = within(drawerActions).getByText('mcp.market.actions.attach').closest('button');
+    const dialogAttach = await waitFor(() => {
+      const buttons = screen
+        .getAllByText('mcp.market.actions.attach')
+        .map((n) => n.closest('button')!)
+        .filter((button) => button !== drawerAttach);
+      expect(buttons.length).toBeGreaterThan(0);
+      return buttons[buttons.length - 1];
+    });
+    fireEvent.click(dialogAttach);
     await waitFor(() =>
       expect(state.market.attach).toHaveBeenCalledWith({ instance_id: ctx.id, clis: ['claude', 'codex', 'gemini'] })
     );
