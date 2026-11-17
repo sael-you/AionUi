@@ -152,7 +152,9 @@ const ServersLibrary: React.FC = () => {
     tabServers.forEach((server) =>
       serverCategories(server).forEach((key) => counts.set(key, (counts.get(key) ?? 0) + 1))
     );
-    const keys = [...counts.keys()].toSorted((a, b) => (a === UNLABELLED ? 1 : b === UNLABELLED ? -1 : a.localeCompare(b)));
+    const keys = [...counts.keys()].toSorted((a, b) =>
+      a === UNLABELLED ? 1 : b === UNLABELLED ? -1 : a.localeCompare(b)
+    );
     return [
       { key: ALL_CATEGORY_KEY, label: t('settings.library.allCategories'), count: tabServers.length },
       ...keys.map((key) => ({
@@ -332,7 +334,12 @@ const ServersLibrary: React.FC = () => {
         title={t('settings.servers.title')}
         description={t('settings.servers.description')}
         headerActions={
-          <Button type='primary' icon={<Plus theme='outline' size='14' />} onClick={addServer} data-testid='server-add'>
+          <Button
+            type='primary'
+            icon={<Plus theme='outline' size='14' fill='currentColor' className='me-6px' />}
+            onClick={addServer}
+            data-testid='server-add'
+          >
             {t('settings.servers.add')}
           </Button>
         }
