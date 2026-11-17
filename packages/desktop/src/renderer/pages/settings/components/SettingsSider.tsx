@@ -4,6 +4,8 @@ import { type IExtensionSettingsTab } from '@/common/adapter/ipcBridge';
 import { useExtI18n } from '@/renderer/hooks/system/useExtI18n';
 import { useExtensionSettingsTabs } from '@/renderer/hooks/system/useExtensionSettingsTabs';
 import {
+  Brain,
+  Browser,
   Cat,
   Communication,
   Computer,
@@ -17,7 +19,6 @@ import {
   System,
   Toolkit,
   Voice,
-  Brain,
 } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
@@ -32,6 +33,7 @@ export const BUILTIN_TAB_IDS = [
   'model',
   'skills',
   'tools',
+  'browser',
   'appearance',
   'webui',
   'voice',
@@ -108,6 +110,7 @@ const SettingsSider: React.FC<{ collapsed?: boolean; tooltipEnabled?: boolean }>
         icon: <Toolkit />,
         path: 'tools',
       },
+      browser: { id: 'browser', label: t('settings.browserPage.title'), icon: <Browser />, path: 'browser' },
       appearance: { id: 'appearance', label: t('settings.appearancePanel'), icon: <Computer />, path: 'appearance' },
       webui: {
         id: 'webui',

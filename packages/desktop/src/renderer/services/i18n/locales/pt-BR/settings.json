@@ -1633,5 +1633,34 @@
     "sharedTabs_one": "{{count}} aba compartilhada",
     "sharedTabs_other": "{{count}} abas compartilhadas",
     "title": "Seu próprio navegador"
+  },
+  "browserPage": {
+    "title": "Navegador",
+    "description": "O navegador que seus agentes podem usar: perfis, seus próprios navegadores e o que precisou da sua aprovação.",
+    "descriptionDesktop": "O navegador integrado: logins salvos e se os agentes podem usá-lo.",
+    "approvalsLog": {
+      "title": "Registro de aprovações",
+      "description": "Ações de agentes em páginas de login, e-mail, banco e pagamento nos seus próprios navegadores que esperaram por você, e como cada uma terminou.",
+      "empty": "Nada precisou da sua aprovação ainda.",
+      "pending_one": "{{count}} ação aguarda sua resposta",
+      "pending_other": "{{count}} ações aguardam sua resposta"
+    },
+    "install": {
+      "title": "Instalar no seu computador",
+      "description": "Adicione o AionUi Browser Bridge ao Chrome ou Arc no seu computador. Leva cerca de um minuto e não precisa da Chrome Web Store.",
+      "download": "Baixar a versão {{version}}",
+      "sha256": "SHA-256",
+      "copySha": "Copiar o SHA-256",
+      "shaCopied": "SHA-256 copiado.",
+      "copyFailed": "Não foi possível copiar.",
+      "unavailable": "Esta compilação não inclui o download da extensão.",
+      "stepUnzip": "Baixe o zip e descompacte-o em um local permanente, por exemplo a pasta Documentos.",
+      "stepOpen": "Abra a página de extensões: copie o endereço e cole na barra de endereços. Uma página da web não pode abri-la por você.",
+      "copyAddress": "Copiar {{address}}",
+      "addressCopied": "{{address}} copiado. Cole na barra de endereços.",
+      "stepLoad": "Ative o “Modo do desenvolvedor” (canto superior direito), clique em “Carregar sem compactação” e escolha a pasta descompactada.",
+      "stepPair": "Pareie: clique em “{{button}}” abaixo, depois no ícone do AionUi no navegador e digite o código.",
+      "update": "A versão {{version}} está disponível. Ainda em uma anterior: {{names}}. Baixe-a, substitua os arquivos da pasta e pressione a seta de recarregar no cartão da extensão."
+    }
   }
 }

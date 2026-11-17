@@ -12,6 +12,7 @@
  * 30-second alarm reconnects when the device should be online.
  */
 
+import { LAN_RULE_IDS, lanBlockRules } from './lanGuard';
 import { browserLabelFrom } from './protocol';
 import { Relay, type PersistedState, type RelaySnapshot, type SocketLike } from './relay';
 import type { PopupRequest, PopupResponse } from './popupMessages';
@@ -109,7 +110,14 @@ const relay = new Relay({
   saveShared: async (tabIds) => {
     await chrome.storage.session.set({ [SHARED_KEY]: tabIds });
   },
+  setLanBlockedTabs: async (tabIds) => {
+    await chrome.declarativeNetRequest.updateSessionRules({
+      removeRuleIds: [...LAN_RULE_IDS],
+      addRules: lanBlockRules(tabIds),
+    });
+  },
   browser: browserLabelFrom(navigator.userAgent),
+  extensionVersion: chrome.runtime.getManifest().version,
   setTimeout: (fn, ms) => setTimeout(fn, ms),
   clearTimeout: (handle) => clearTimeout(handle as ReturnType<typeof setTimeout>),
   setInterval: (fn, ms) => setInterval(fn, ms),

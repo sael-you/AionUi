@@ -9,6 +9,8 @@ import { isElectronDesktop, resolveExtensionAssetUrl } from '@/renderer/utils/pl
 import { type IExtensionSettingsTab } from '@/common/adapter/ipcBridge';
 import { useExtensionSettingsTabs } from '@/renderer/hooks/system/useExtensionSettingsTabs';
 import {
+  Brain,
+  Browser,
   Cat,
   Communication,
   Computer,
@@ -22,7 +24,6 @@ import {
   System,
   Toolkit,
   Voice,
-  Brain,
 } from '@icon-park/react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -78,6 +79,12 @@ export function getBuiltinSettingsNavItems(isDesktop: boolean, t: TranslateFn): 
       label: t('settings.webui'),
       icon: isDesktop ? <Earth theme='outline' size='16' /> : <Communication theme='outline' size='16' />,
       path: 'webui',
+    },
+    browser: {
+      id: 'browser',
+      label: t('settings.browserPage.title'),
+      icon: <Browser theme='outline' size='16' />,
+      path: 'browser',
     },
     voice: { id: 'voice', label: t('voice.settings.title'), icon: <Voice theme='outline' size='16' />, path: 'voice' },
     memory: { id: 'memory', label: t('memory.title'), icon: <Brain theme='outline' size='16' />, path: 'memory' },

@@ -22,6 +22,7 @@ type ChromeEvent<T extends (...args: never[]) => unknown> = { addListener(callba
 declare const chrome: {
   runtime: {
     lastError: { message?: string } | undefined;
+    getManifest(): { version: string };
     sendMessage(message: unknown): Promise<unknown>;
     onMessage: ChromeEvent<
       (message: unknown, sender: unknown, sendResponse: (response: unknown) => void) => boolean | void
@@ -52,6 +53,9 @@ declare const chrome: {
   action: {
     setBadgeText(details: { text: string }): Promise<void>;
     setBadgeBackgroundColor(details: { color: string | [number, number, number, number] }): Promise<void>;
+  };
+  declarativeNetRequest: {
+    updateSessionRules(options: { removeRuleIds?: number[]; addRules?: object[] }): Promise<void>;
   };
   i18n: { getUILanguage(): string };
 };

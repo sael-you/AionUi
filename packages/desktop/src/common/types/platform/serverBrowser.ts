@@ -237,6 +237,8 @@ export type BrowserDevice = {
   device_id: string;
   name: string;
   browser: string;
+  /** The extension build that last connected (TASK-133); absent for builds that predate it. */
+  extension_version?: string;
   created_at: number;
   last_seen_at?: number;
   online: boolean;

@@ -17,6 +17,10 @@ Writes `packages/browser-extension/dist/unpacked/` (load this folder) and
 
 ## Install (owner, once per browser)
 
+The web UI ships the zip: **Settings → Browser → Install on your computer** has the download
+(`/extension/aionui-browser-bridge-<version>.zip`, SHA-256 shown, descriptor `/extension/latest.json`)
+and the same steps. It also says when a paired browser runs an older build.
+
 1. Unzip `aionui-browser-bridge-<version>.zip` somewhere permanent (e.g. `~/AionUi Browser Bridge`).
 2. Chrome: open `chrome://extensions` · Arc: open `arc://extensions`. Turn on **Developer mode**.
 3. **Load unpacked** → pick the unzipped folder. Pin the AionUi icon to the toolbar.
@@ -27,6 +31,12 @@ Writes `packages/browser-extension/dist/unpacked/` (load this folder) and
 7. Open the tab you want an agent to use, click the AionUi icon, switch on **Share this tab with AionUi**.
 
 Google sign-in, Gmail, banks and payment pages pause the agent until you tap **Allow** in AionUi.
+
+## Local network
+
+Shared tabs cannot reach your local network: requests to private, loopback and link-local IPs,
+`localhost` and `*.local` are blocked in the browser while a tab is shared, and such pages cannot be
+shared (TASK-121). Tabs you have not shared are untouched.
 
 ## Update
 

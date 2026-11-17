@@ -24,6 +24,10 @@ const api = vi.hoisted(() => {
     deleteInstance: fn(),
     createPairingCode: fn(),
     listDevices: fn(),
+    deviceActivity: fn(),
+    listApprovals: fn(),
+    approvalRequested: { on: () => () => undefined },
+    approvalResolved: { on: () => () => undefined },
     revokeDevice: fn(),
     listeners: new Map<string, () => void>(),
     devicesChanged: {
@@ -36,6 +40,16 @@ const api = vi.hoisted(() => {
 });
 
 vi.mock('@/common/adapter/ipcBridge', () => ({ serverBrowser: api }));
+const platform = vi.hoisted(() => ({ desktop: false }));
+const clipboard = vi.hoisted(() => ({ copyText: vi.fn() }));
+vi.mock('@/renderer/utils/ui/clipboard', () => clipboard);
+vi.mock('@/renderer/utils/platform', () => ({ isElectronDesktop: () => platform.desktop }));
+vi.mock('@/renderer/pages/settings/components/SettingsPageWrapper', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserDataSection', () => ({
+  default: () => <div data-testid='browser-data-section' />,
+}));
 vi.mock('@/renderer/hooks/context/ThemeContext', () => ({ useThemeContext: () => ({ theme: 'light' }) }));
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -49,6 +63,16 @@ import {
   profileFields,
 } from '@/renderer/pages/conversation/Preview/browser/server/BrowserProfileModal';
 import ServerBrowserSettings from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/ServerBrowserSettings';
+import BrowserApprovalsLog, {
+  approvalLogRows,
+} from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserApprovalsLog';
+import BrowserExtensionInstall, {
+  isOlderVersion,
+  outdatedDevices,
+  parseRelease,
+} from '@/renderer/pages/conversation/Preview/browser/BrowserExtensionInstall';
+import BrowserSettingsPage from '@/renderer/pages/conversation/Preview/browser/BrowserSettingsPage';
+import { BUILTIN_TAB_IDS } from '@/renderer/pages/settings/components/SettingsSider';
 import BrowserDevicesSettings, {
   formatCountdown,
 } from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserDevicesSettings';
@@ -402,5 +426,204 @@ describe('BrowserDevicesSettings (C34 Settings > Browser > your own browser)', (
   it('formats the countdown', () => {
     expect(formatCountdown(299)).toBe('4:59');
     expect(formatCountdown(5)).toBe('0:05');
+  });
+});
+
+describe('Settings → Browser page (TASK-128)', () => {
+  const activity = [
+    {
+      at: 30,
+      conversation_id: null,
+      tab_id: 1,
+      origin: 'https://mail.google.com',
+      method: 'Input.insertText',
+      outcome: 'approved',
+    },
+    { at: 20, conversation_id: null, tab_id: 1, origin: 'https://example.com', method: 'Page.navigate', outcome: 'ok' },
+    {
+      at: 10,
+      conversation_id: null,
+      tab_id: 1,
+      origin: 'https://accounts.google.com',
+      method: 'Runtime.evaluate',
+      outcome: 'timeout',
+    },
+  ];
+
+  beforeEach(() => {
+    platform.desktop = false;
+    api.getSettings.invoke.mockResolvedValue({ ...SETTINGS, devices_agents_enabled: false });
+    api.getStatus.invoke.mockResolvedValue(STATUS);
+    api.listDevices.invoke.mockResolvedValue([MAC]);
+    api.listApprovals.invoke.mockResolvedValue([]);
+    api.deviceActivity.invoke.mockResolvedValue(activity);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const renderPage = () =>
+    render(
+      <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+        <BrowserSettingsPage />
+      </SWRConfig>
+    );
+
+  it('is a top-level settings entry right after Tools', () => {
+    expect(BUILTIN_TAB_IDS.indexOf('browser')).toBe(BUILTIN_TAB_IDS.indexOf('tools') + 1);
+  });
+
+  it('WebUI: profiles and limits, your own browsers and the approvals log on one page', async () => {
+    renderPage();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('settings.browserPage.title');
+    expect(await screen.findByTestId('server-browser-settings')).toBeInTheDocument();
+    expect(screen.getByTestId('browser-devices-settings')).toBeInTheDocument();
+    expect(screen.getByTestId('browser-approvals-log')).toBeInTheDocument();
+    expect(screen.queryByTestId('browser-data-section')).toBeNull();
+  });
+
+  it('desktop: the in-app browser data section only', () => {
+    platform.desktop = true;
+    renderPage();
+    expect(screen.getByTestId('browser-data-section')).toBeInTheDocument();
+    expect(screen.queryByTestId('server-browser-settings')).toBeNull();
+    expect(screen.queryByTestId('browser-approvals-log')).toBeNull();
+  });
+
+  it('the approvals log lists only approval outcomes, newest first, and says what is pending', async () => {
+    api.listApprovals.invoke.mockResolvedValue([
+      { approval_id: 'a1', expires_at: Date.now() + 60_000, requested_at: Date.now() },
+    ]);
+    render(
+      <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+        <BrowserApprovalsLog />
+      </SWRConfig>
+    );
+    const rows = await screen.findAllByTestId('browser-approvals-row');
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveTextContent('https://mail.google.com');
+    expect(rows[0]).toHaveTextContent('preview.browserDevices.outcome.approved');
+    expect(rows[1]).toHaveTextContent('preview.browserDevices.outcome.timeout');
+    expect(api.deviceActivity.invoke).toHaveBeenCalledWith({ device_id: 'dev_mac', limit: 200 });
+    expect(await screen.findByTestId('browser-approvals-pending')).toHaveTextContent('{"count":1}');
+  });
+
+  it('merges several browsers into one log', () => {
+    const rows = approvalLogRows(
+      [
+        { device_id: 'a', name: 'Mac' },
+        { device_id: 'b', name: 'Work' },
+      ],
+      [
+        [{ at: 5, conversation_id: null, tab_id: 1, origin: 'o1', method: 'm', outcome: 'denied' }],
+        [
+          { at: 9, conversation_id: null, tab_id: 2, origin: 'o2', method: 'm', outcome: 'paused' },
+          { at: 7, conversation_id: null, tab_id: 2, origin: 'o3', method: 'm', outcome: 'refused' },
+        ],
+      ]
+    );
+    expect(rows.map((row) => [row.device_name, row.origin])).toEqual([
+      ['Work', 'o2'],
+      ['Mac', 'o1'],
+    ]);
+  });
+});
+
+describe('Settings → Browser → Install on your computer (TASK-133)', () => {
+  const RELEASE = {
+    version: '0.1.2',
+    file: 'aionui-browser-bridge-0.1.2.zip',
+    sha256: 'ab'.repeat(32),
+    size: 20480,
+  };
+  const serve = (body: unknown, ok = true) =>
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({ ok, json: async () => body }))
+    );
+
+  beforeEach(() => {
+    api.listDevices.invoke.mockResolvedValue([MAC]);
+    clipboard.copyText.mockResolvedValue(undefined);
+    vi.spyOn(Message, 'success').mockImplementation(() => ({}) as never);
+    vi.spyOn(Message, 'error').mockImplementation(() => ({}) as never);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
+  const renderInstall = () =>
+    render(
+      <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+        <BrowserExtensionInstall />
+      </SWRConfig>
+    );
+
+  it('compares dotted versions numerically and ignores malformed ones', () => {
+    expect(isOlderVersion('0.1.1', '0.1.2')).toBe(true);
+    expect(isOlderVersion('0.1.9', '0.1.10')).toBe(true);
+    expect(isOlderVersion('0.1.2', '0.1.2')).toBe(false);
+    expect(isOlderVersion('0.2.0', '0.1.9')).toBe(false);
+    expect(isOlderVersion('dev', '0.1.2')).toBe(false);
+  });
+
+  it('accepts only a well-formed release descriptor', () => {
+    expect(parseRelease(RELEASE)).toEqual(RELEASE);
+    expect(parseRelease({ ...RELEASE, sha256: 'nope' })).toBeNull();
+    expect(parseRelease({ ...RELEASE, file: '../evil.zip' })).toBeNull();
+    expect(parseRelease('<!doctype html>')).toBeNull();
+  });
+
+  it('flags only browsers known to run an older extension', () => {
+    const rows = [
+      { ...MAC, device_id: 'a', extension_version: '0.1.1' },
+      { ...MAC, device_id: 'b', extension_version: '0.1.2' },
+      { ...MAC, device_id: 'c' },
+    ];
+    expect(outdatedDevices(rows, '0.1.2').map((row) => row.device_id)).toEqual(['a']);
+  });
+
+  it('offers the versioned download with its SHA-256 and the four steps', async () => {
+    serve(RELEASE);
+    renderInstall();
+    const download = await screen.findByTestId('browser-extension-download');
+    expect(download.getAttribute('href')).toBe('/extension/aionui-browser-bridge-0.1.2.zip');
+    expect(download.getAttribute('download')).toBe('aionui-browser-bridge-0.1.2.zip');
+    expect(download.textContent).toContain('"version":"0.1.2"');
+    expect(screen.getByTestId('browser-extension-sha256').textContent).toBe(RELEASE.sha256);
+    expect(within(screen.getByTestId('browser-extension-steps')).getAllByRole('listitem')).toHaveLength(4);
+    expect(screen.queryByTestId('browser-extension-update')).toBeNull();
+  });
+
+  it('copies chrome://extensions and arc://extensions instead of linking to them', async () => {
+    serve(RELEASE);
+    renderInstall();
+    const buttons = await screen.findAllByTestId('browser-extension-copy-address');
+    expect(buttons).toHaveLength(2);
+    expect(buttons.every((button) => button.getAttribute('href') === null)).toBe(true);
+    fireEvent.click(buttons[0]);
+    await waitFor(() => expect(clipboard.copyText).toHaveBeenCalledWith('chrome://extensions'));
+    fireEvent.click(buttons[1]);
+    await waitFor(() => expect(clipboard.copyText).toHaveBeenCalledWith('arc://extensions'));
+  });
+
+  it('says a new version is available when a paired browser runs an older one', async () => {
+    serve(RELEASE);
+    api.listDevices.invoke.mockResolvedValue([{ ...MAC, extension_version: '0.1.1' }]);
+    renderInstall();
+    const notice = await screen.findByTestId('browser-extension-update');
+    expect(notice.textContent).toContain('"version":"0.1.2"');
+    expect(notice.textContent).toContain(`${MAC.name} (0.1.1)`);
+  });
+
+  it('keeps the steps and explains when the build has no extension download', async () => {
+    serve('<!doctype html>');
+    renderInstall();
+    expect(await screen.findByTestId('browser-extension-unavailable')).toBeTruthy();
+    expect(screen.queryByTestId('browser-extension-download')).toBeNull();
+    expect(screen.getByTestId('browser-extension-steps')).toBeTruthy();
   });
 });

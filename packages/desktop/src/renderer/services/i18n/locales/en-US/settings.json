@@ -1630,5 +1630,34 @@
     "sharedTabs_one": "{{count}} shared tab",
     "sharedTabs_other": "{{count}} shared tabs",
     "title": "Your own browser"
+  },
+  "browserPage": {
+    "title": "Browser",
+    "description": "The browser your agents can use: profiles, your own browsers and what needed your approval.",
+    "descriptionDesktop": "The in-app browser: its saved logins and whether agents may use it.",
+    "approvalsLog": {
+      "title": "Approvals log",
+      "description": "Agent actions on sign-in, mail, bank and payment pages in your own browsers that waited for you, and how each ended.",
+      "empty": "Nothing has needed your approval yet.",
+      "pending_one": "{{count}} action is waiting for your answer",
+      "pending_other": "{{count}} actions are waiting for your answer"
+    },
+    "install": {
+      "title": "Install on your computer",
+      "description": "Add the AionUi Browser Bridge to Chrome or Arc on your computer. It takes about a minute and does not need the Chrome Web Store.",
+      "download": "Download version {{version}}",
+      "sha256": "SHA-256",
+      "copySha": "Copy the SHA-256",
+      "shaCopied": "SHA-256 copied.",
+      "copyFailed": "Could not copy.",
+      "unavailable": "This build does not include the extension download.",
+      "stepUnzip": "Download the zip and unzip it somewhere permanent, for example your Documents folder.",
+      "stepOpen": "Open the extensions page: copy its address and paste it into the address bar. A web page is not allowed to open it for you.",
+      "copyAddress": "Copy {{address}}",
+      "addressCopied": "{{address}} copied. Paste it into the address bar.",
+      "stepLoad": "Turn on “Developer mode” (top right), click “Load unpacked” and pick the unzipped folder.",
+      "stepPair": "Pair it: click “{{button}}” below, then click the AionUi icon in your browser and type the code.",
+      "update": "Version {{version}} is available. Still on an older one: {{names}}. Download it, replace the files in the folder, then press the reload arrow on the extension's card."
+    }
   }
 }

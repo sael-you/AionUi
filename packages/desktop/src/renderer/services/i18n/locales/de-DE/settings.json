@@ -1630,5 +1630,34 @@
     "sharedTabs_one": "{{count}} geteilter Tab",
     "sharedTabs_other": "{{count}} geteilte Tabs",
     "title": "Dein eigener Browser"
+  },
+  "browserPage": {
+    "title": "Browser",
+    "description": "Der Browser für deine Agenten: Profile, deine eigenen Browser und was deine Freigabe brauchte.",
+    "descriptionDesktop": "Der integrierte Browser: gespeicherte Anmeldungen und ob Agenten ihn nutzen dürfen.",
+    "approvalsLog": {
+      "title": "Freigabeprotokoll",
+      "description": "Agentenaktionen auf Anmelde-, Mail-, Bank- und Bezahlseiten in deinen eigenen Browsern, die auf dich gewartet haben, und wie sie endeten.",
+      "empty": "Bisher brauchte nichts deine Freigabe.",
+      "pending_one": "{{count}} Aktion wartet auf deine Antwort",
+      "pending_other": "{{count}} Aktionen warten auf deine Antwort"
+    },
+    "install": {
+      "title": "Auf deinem Computer installieren",
+      "description": "Füge die AionUi Browser Bridge zu Chrome oder Arc auf deinem Computer hinzu. Das dauert etwa eine Minute und braucht keinen Chrome Web Store.",
+      "download": "Version {{version}} herunterladen",
+      "sha256": "SHA-256",
+      "copySha": "SHA-256 kopieren",
+      "shaCopied": "SHA-256 kopiert.",
+      "copyFailed": "Kopieren fehlgeschlagen.",
+      "unavailable": "Dieser Build enthält den Erweiterungs-Download nicht.",
+      "stepUnzip": "Lade die ZIP-Datei herunter und entpacke sie an einem festen Ort, zum Beispiel im Ordner „Dokumente“.",
+      "stepOpen": "Öffne die Erweiterungsseite: Adresse kopieren und in die Adressleiste einfügen. Eine Webseite darf sie nicht für dich öffnen.",
+      "copyAddress": "{{address}} kopieren",
+      "addressCopied": "{{address}} kopiert. Füge sie in die Adressleiste ein.",
+      "stepLoad": "Schalte den „Entwicklermodus“ ein (oben rechts), klicke auf „Entpackte Erweiterung laden“ und wähle den entpackten Ordner.",
+      "stepPair": "Koppeln: Klicke unten auf „{{button}}“, dann auf das AionUi-Symbol im Browser und gib den Code ein.",
+      "update": "Version {{version}} ist verfügbar. Noch auf einer älteren: {{names}}. Lade sie herunter, ersetze die Dateien im Ordner und drücke dann den Neu-laden-Pfeil auf der Karte der Erweiterung."
+    }
   }
 }
