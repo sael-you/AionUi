@@ -1598,7 +1598,10 @@
       "errors": {
         "nameTooLong": "No máximo {{max}} caracteres.",
         "emojiTooLong": "O emoji é longo demais."
-      }
+      },
+      "engine": "Navegador",
+      "engineHint": "Vale na próxima vez que este perfil iniciar.",
+      "engineNotDownloaded": "não baixado"
     }
   },
   "browserDevices": {
@@ -1661,6 +1664,193 @@
       "stepLoad": "Ative o “Modo do desenvolvedor” (canto superior direito), clique em “Carregar sem compactação” e escolha a pasta descompactada.",
       "stepPair": "Pareie: clique em “{{button}}” abaixo, depois no ícone do AionUi no navegador e digite o código.",
       "update": "A versão {{version}} está disponível. Ainda em uma anterior: {{names}}. Baixe-a, substitua os arquivos da pasta e pressione a seta de recarregar no cartão da extensão."
+    }
+  },
+  "devices": {
+    "title": "Dispositivos",
+    "description": "Tudo o que seus agentes podem usar: navegadores do servidor, seus próprios navegadores, celulares, complementos e seu Mac. Cada um fica desligado até você ligar.",
+    "search": "Buscar dispositivos",
+    "categories": {
+      "server_browser": "Navegadores do servidor",
+      "my_browser": "Meus navegadores",
+      "phone": "Celulares",
+      "addon": "Complementos",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Ligado",
+      "off": "Desligado",
+      "offline": "Offline",
+      "needs_pairing": "Precisa parear",
+      "installing": "Instalando",
+      "removing": "Removendo",
+      "error": "Erro"
+    },
+    "later": "Depois",
+    "laterHint": "Ainda não disponível: chega em uma atualização futura.",
+    "agentSwitch": "Agentes podem usar",
+    "version": "v{{version}}",
+    "disk": "{{size}} em disco",
+    "details": "Detalhes",
+    "remove": "Remover",
+    "install": "Instalar",
+    "installing": "Instalando {{name}}",
+    "removing": "Removendo {{name}}",
+    "jobFailed": "Falhou: {{error}}",
+    "jobLost": "interrompido por uma reinicialização",
+    "installStarted": "Instalando {{name}}…",
+    "jobStartFailed": "Não foi possível iniciar para {{name}}.",
+    "removeTitle": "Remover {{name}}?",
+    "removeFrees": "Isso libera {{size}} em disco.",
+    "removeContent": "Ele é removido do servidor.",
+    "removeInUse": "{{name}} ainda é usado por um perfil do navegador do servidor: mude esse perfil para outro navegador primeiro.",
+    "turnedOn": "Agentes podem usar {{name}}.",
+    "turnedOff": "Agentes não podem mais usar {{name}}.",
+    "saveFailed": "Não foi possível salvar. Tente novamente.",
+    "browseLibrary": "Ver a biblioteca",
+    "summaryDisk": "{{size}} em disco",
+    "empty": {
+      "active": {
+        "server_browser": "Nenhum navegador do servidor instalado ainda.",
+        "my_browser": "Nenhum navegador pareado ainda.",
+        "phone": "Nenhum celular conectado ainda.",
+        "addon": "Nenhum complemento instalado ainda.",
+        "mac": "Seu Mac ainda não está conectado."
+      },
+      "library": {
+        "server_browser": "Nenhum navegador do servidor para instalar.",
+        "my_browser": "Instale a extensão abaixo.",
+        "phone": "Nenhum celular ainda.",
+        "addon": "Nenhum complemento disponível.",
+        "mac": "Ainda não disponível."
+      }
+    },
+    "drawer": {
+      "about": "Sobre",
+      "status": "Status",
+      "version": "Versão",
+      "disk": "Disco",
+      "lastSeen": "Visto por último",
+      "until": "Desliga às"
+    },
+    "offIn_one": "desliga em {{count}} min",
+    "offIn_other": "desliga em {{count}} min",
+    "summaryOn_one": "{{count}} ligado",
+    "summaryOn_other": "{{count}} ligados",
+    "addPhone": "Adicionar um celular",
+    "access": {
+      "title": "Acesso dos agentes",
+      "timeout": "Desliga após",
+      "hint": "O celular se desliga sozinho após esse tempo e após reiniciar o AionUi. Desligar interrompe os agentes na hora.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "routes": {
+      "title": "Opções de conexão",
+      "experimental": "Experimental — precisa de um teste",
+      "pair": "Parear",
+      "repair": "Parear de novo",
+      "mac_relay": {
+        "name": "Depuração USB / Wi-Fi pelo meu Mac",
+        "desc": "O celular está conectado ao seu Mac por cabo ou na mesma rede Wi-Fi. A chave de depuração fica no Mac; precisa do auxiliar do AionUi para Mac em execução. Também permite que os agentes inspecionem o Chrome no celular."
+      },
+      "companion": {
+        "name": "App complementar do AionUi",
+        "desc": "Um app no celular que se conecta sozinho ao AionUi, em qualquer lugar, sem computador. Ele mostra “O AionUi está controlando este celular · Parar” enquanto os agentes trabalham."
+      },
+      "wifi_direct": {
+        "name": "Depuração Wi-Fi direta",
+        "desc": "O servidor do AionUi se conecta à depuração sem fio do celular pela sua rede privada. Só é oferecida depois que o teste passar."
+      }
+    },
+    "audit": {
+      "title": "Atividade",
+      "hint": "Cada ação dos agentes: o quê, em qual app ou site e como terminou. Nenhuma captura de tela ou texto digitado é guardado.",
+      "empty": "Nada ainda.",
+      "more": "Mostrar anteriores",
+      "failed": "Não foi possível carregar mais.",
+      "error": "erro"
+    },
+    "approval": {
+      "title": "Um agente quer agir em “{{device}}”",
+      "titleTask": "Um complemento quer executar uma tarefa em “{{device}}”",
+      "target": "Em {{target}}:",
+      "taskHint": "Você aprova a tarefa inteira: o complemento decide os próprios toques. Parar e o tempo limite ainda a encerram.",
+      "allow": "Permitir",
+      "allowed": "Permitido."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Parear o auxiliar para Mac",
+        "companion": "Parear o app complementar",
+        "wifi_direct": "Parear a depuração Wi-Fi"
+      },
+      "address": "Seu endereço do AionUi:",
+      "companion": {
+        "stepInstall": "No celular, escaneie o primeiro código para baixar o app do AionUi e instale-o (o Android pede para permitir instalações pelo seu navegador).",
+        "stepPair": "Abra o app e escaneie o segundo código, ou digite o endereço e o código abaixo.",
+        "qrInstall": "1 · Baixar o app",
+        "qrPair": "2 · Parear",
+        "limitsTitle": "Bom saber antes de instalar",
+        "limits": {
+          "notPlay": "Não está no Google Play: o Play só permite esse tipo de controle para ferramentas de acessibilidade.",
+          "restricted": "Android 13 e posteriores: permita as “configurações restritas” para o app antes de ativar o serviço de acessibilidade dele.",
+          "consent": "O Android pede seu consentimento para compartilhar a tela no início de cada sessão.",
+          "protection": "Pode ser bloqueado enquanto a Proteção avançada estiver ativa.",
+          "verification": "Em alguns países o Android adiciona uma espera de 24 horas para apps instalados assim.",
+          "noChrome": "Ele não inspeciona o Chrome; use a rota do Mac para isso."
+        }
+      },
+      "mac": {
+        "stepDownload": "Baixe o auxiliar do AionUi para Mac e mova-o para Aplicativos.",
+        "stepGatekeeper": "Primeira abertura: o macOS diz que não pode verificar o app. Abra Ajustes do Sistema → Privacidade e Segurança e clique em “Abrir Mesmo Assim”.",
+        "stepPair": "No auxiliar, digite o endereço e o código abaixo.",
+        "stepPhone": "Ative a depuração USB ou sem fio no celular (Opções do desenvolvedor) e conecte-o ao Mac; o celular aparece aqui.",
+        "download": "Baixar o auxiliar para Mac"
+      },
+      "wifi": {
+        "steps": "No celular, abra Opções do desenvolvedor → Depuração sem fio e digite o código abaixo quando o AionUi pedir."
+      }
+    },
+    "addons": {
+      "title": "Sobre este complemento",
+      "generic": {
+        "desc": "Executa fluxos inteiros no seu celular com o próprio ciclo de modelo."
+      },
+      "artemis": {
+        "desc": "Artemis: dê uma tarefa e ele percorre o celular sozinho, com chaves de modelo dos seus provedores.",
+        "licence": "Apache-2.0, do Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: executa um fluxo inteiro no celular pelo app Portal, que você baixa das versões dele e o AionUi instala via adb.",
+        "licence": "Framework MIT; o app Portal é AGPL-3.0: apenas uso pessoal."
+      },
+      "approval": "Os agentes recebem uma ferramenta: “executar este fluxo no celular”. Você aprova o texto de cada tarefa antes de começar; o interruptor do celular, o tempo limite e Parar ainda a encerram. Ações simples continuam sendo o padrão.",
+      "runsOn": "Executa em {{name}}.",
+      "needsRoute": "Precisa de um celular conectado pelo seu Mac ou pela depuração Wi-Fi."
+    },
+    "mac": {
+      "title": "Seu Mac",
+      "desc": "Os agentes podem ver a tela do seu Mac e clicar, digitar e abrir apps, só enquanto isto estiver ligado.",
+      "permissions": "O macOS pede uma vez Gravação de Tela e Acessibilidade para o auxiliar do AionUi para Mac."
+    },
+    "engine": {
+      "signed": "Assinado",
+      "signedTip": "O download foi verificado com a assinatura e a soma de verificação do fornecedor.",
+      "tlsOnly": "Só TLS",
+      "tlsOnlyTip": "O fornecedor não publica assinatura nem soma de verificação: baixado por HTTPS do fornecedor; a soma do que foi baixado fica registrada.",
+      "agentsOnly": "Só agentes",
+      "agentsOnlyTip": "Sem janela e com User-Agent headless: para trabalho de agentes, não para o painel nem logins.",
+      "update": "Atualizar",
+      "failed": "O download falhou: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

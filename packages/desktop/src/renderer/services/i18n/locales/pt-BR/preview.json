@@ -210,7 +210,7 @@
       "startFailed": "O navegador não iniciou.",
       "notRunning": "O navegador não está em execução.",
       "urlBlocked": "Este endereço está bloqueado no navegador do servidor.",
-      "agentsDisabled": "Agentes não podem usar o navegador (Configurações → Navegador).",
+      "agentsDisabled": "Agentes não podem usar o navegador (Configurações → Dispositivos).",
       "methodBlocked": "Essa ação não é permitida.",
       "tabLimit": "Limite de abas atingido. Feche uma aba primeiro.",
       "instanceLimit": "Esse número de navegador está acima do seu limite.",
@@ -225,11 +225,25 @@
       "stopped": "O navegador está parado.",
       "error": "O navegador parou com um erro."
     },
-    "profileLabel": "Perfil do navegador"
+    "profileLabel": "Perfil do navegador",
+    "vnc": {
+      "viewOnly": "Somente ver",
+      "connect": "Conectar",
+      "stop": "Parar o navegador",
+      "stopFailed": "Não foi possível parar o navegador.",
+      "connecting": "Iniciando o navegador…",
+      "surfaceLabel": "Visualização ao vivo do navegador do servidor. Desative “Somente ver” para usar o mouse e o teclado nele.",
+      "closed": {
+        "ended": "A visualização ao vivo terminou. Conecte para iniciar o navegador de novo.",
+        "notCamoufox": "Este perfil não tem uma visualização ao vivo deste tipo.",
+        "notAllowed": "A visualização ao vivo não é permitida: os agentes não podem usar o navegador ou o painel está desligado.",
+        "startFailed": "O navegador não pôde iniciar ({{reason}})."
+      }
+    }
   },
   "browserDevices": {
     "activity": "Ações recentes dos agentes",
-    "agentsOff": "Os agentes ainda não podem usar este navegador: ative “Agentes podem usar o navegador do meu Mac” em Configurações → Navegador.",
+    "agentsOff": "Os agentes ainda não podem usar este navegador: ative “Agentes podem usar o navegador do meu Mac” em Configurações → Dispositivos.",
     "approval": {
       "allow": "Permitir por 60 s",
       "allowed": "Permitido por 60 segundos.",

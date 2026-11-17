@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "En fazla {{max}} karakter.",
         "emojiTooLong": "Emoji çok uzun."
-      }
+      },
+      "engine": "Tarayıcı",
+      "engineHint": "Bu profil bir sonraki başlatıldığında geçerli olur.",
+      "engineNotDownloaded": "indirilmedi"
     }
   },
   "browserDevices": {
@@ -1658,6 +1661,193 @@
       "stepLoad": "“Geliştirici modu”nu açın (sağ üst), “Paketlenmemiş öğe yükle”ye tıklayın ve çıkarılan klasörü seçin.",
       "stepPair": "Eşleyin: aşağıdaki “{{button}}” düğmesine, ardından tarayıcınızdaki AionUi simgesine tıklayın ve kodu yazın.",
       "update": "{{version}} sürümü hazır. Hâlâ eski sürümde: {{names}}. İndirin, klasördeki dosyaları değiştirin, ardından uzantı kartındaki yeniden yükle okuna basın."
+    }
+  },
+  "devices": {
+    "title": "Cihazlar",
+    "description": "Ajanlarınızın kullanabileceği her şey: sunucu tarayıcıları, kendi tarayıcılarınız, telefonlar, eklentiler ve Mac'iniz. Her biri siz açana kadar kapalı kalır.",
+    "search": "Cihaz ara",
+    "categories": {
+      "server_browser": "Sunucu tarayıcıları",
+      "my_browser": "Tarayıcılarım",
+      "phone": "Telefonlar",
+      "addon": "Eklentiler",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Açık",
+      "off": "Kapalı",
+      "offline": "Çevrimdışı",
+      "needs_pairing": "Eşleme gerekli",
+      "installing": "Kuruluyor",
+      "removing": "Kaldırılıyor",
+      "error": "Hata"
+    },
+    "later": "Sonra",
+    "laterHint": "Henüz yok: sonraki bir güncellemeyle gelecek.",
+    "agentSwitch": "Ajanlar kullanabilir",
+    "version": "v{{version}}",
+    "disk": "Diskte {{size}}",
+    "details": "Ayrıntılar",
+    "remove": "Kaldır",
+    "install": "Kur",
+    "installing": "{{name}} kuruluyor",
+    "removing": "{{name}} kaldırılıyor",
+    "jobFailed": "Başarısız: {{error}}",
+    "jobLost": "yeniden başlatma nedeniyle kesildi",
+    "installStarted": "{{name}} kuruluyor…",
+    "jobStartFailed": "{{name}} için başlatılamadı.",
+    "removeTitle": "{{name}} kaldırılsın mı?",
+    "removeFrees": "Bu, diskte {{size}} yer açar.",
+    "removeContent": "Sunucudan kaldırılır.",
+    "removeInUse": "{{name}} hâlâ bir sunucu tarayıcı profili tarafından kullanılıyor: önce o profili başka bir tarayıcıya geçirin.",
+    "turnedOn": "Ajanlar {{name}} kullanabilir.",
+    "turnedOff": "Ajanlar artık {{name}} kullanamaz.",
+    "saveFailed": "Kaydedilemedi. Yeniden deneyin.",
+    "browseLibrary": "Kütüphaneye göz at",
+    "summaryDisk": "Diskte {{size}}",
+    "empty": {
+      "active": {
+        "server_browser": "Henüz kurulu sunucu tarayıcısı yok.",
+        "my_browser": "Henüz eşlenmiş tarayıcı yok.",
+        "phone": "Henüz bağlı telefon yok.",
+        "addon": "Henüz kurulu eklenti yok.",
+        "mac": "Mac'iniz henüz bağlı değil."
+      },
+      "library": {
+        "server_browser": "Kurulacak sunucu tarayıcısı yok.",
+        "my_browser": "Uzantıyı aşağıdan kurun.",
+        "phone": "Henüz telefon yok.",
+        "addon": "Kullanılabilir eklenti yok.",
+        "mac": "Henüz yok."
+      }
+    },
+    "drawer": {
+      "about": "Hakkında",
+      "status": "Durum",
+      "version": "Sürüm",
+      "disk": "Disk",
+      "lastSeen": "Son görülme",
+      "until": "Kapanma zamanı"
+    },
+    "offIn_one": "{{count}} dk sonra kapanır",
+    "offIn_other": "{{count}} dk sonra kapanır",
+    "summaryOn_one": "{{count}} açık",
+    "summaryOn_other": "{{count}} açık",
+    "addPhone": "Telefon ekle",
+    "access": {
+      "title": "Ajan erişimi",
+      "timeout": "Şu süre sonra kapanır",
+      "hint": "Telefon bu süreden sonra ve AionUi yeniden başlatıldığında kendiliğinden kapanır. Kapatmak ajanları anında durdurur.",
+      "minutes_one": "{{count}} dk",
+      "minutes_other": "{{count}} dk"
+    },
+    "routes": {
+      "title": "Bağlantı seçenekleri",
+      "experimental": "Deneysel — test gerekli",
+      "pair": "Eşle",
+      "repair": "Yeniden eşle",
+      "mac_relay": {
+        "name": "Mac'im üzerinden USB / Wi-Fi hata ayıklama",
+        "desc": "Telefon Mac'inize kabloyla veya aynı Wi-Fi üzerinden bağlıdır. Hata ayıklama anahtarı Mac'te kalır; AionUi Mac yardımcısının çalışması gerekir. Ajanların telefondaki Chrome'u incelemesine de olanak tanır."
+      },
+      "companion": {
+        "name": "AionUi yardımcı uygulaması",
+        "desc": "Telefonda, AionUi'ye kendiliğinden, her yerden ve bilgisayar olmadan bağlanan bir uygulama. Ajanlar çalışırken “AionUi bu telefonu kontrol ediyor · Durdur” gösterir."
+      },
+      "wifi_direct": {
+        "name": "Doğrudan Wi-Fi hata ayıklama",
+        "desc": "AionUi sunucusu, özel ağınız üzerinden telefonun kablosuz hata ayıklamasına bağlanır. Test geçene kadar sunulmaz."
+      }
+    },
+    "audit": {
+      "title": "Etkinlik",
+      "hint": "Ajanların yaptığı her işlem: ne, hangi uygulama veya sitede ve nasıl sonuçlandı. Ekran görüntüsü veya yazılan metin saklanmaz.",
+      "empty": "Henüz bir şey yok.",
+      "more": "Daha eskileri göster",
+      "failed": "Daha fazlası yüklenemedi.",
+      "error": "hata"
+    },
+    "approval": {
+      "title": "Bir ajan “{{device}}” üzerinde işlem yapmak istiyor",
+      "titleTask": "Bir eklenti “{{device}}” üzerinde bir görev çalıştırmak istiyor",
+      "target": "{{target}} içinde:",
+      "taskHint": "Görevin tamamını onaylıyorsunuz: eklenti dokunuşlarına kendi karar verir. Durdur ve zaman aşımı onu yine de sonlandırır.",
+      "allow": "İzin ver",
+      "allowed": "İzin verildi."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Mac yardımcısını eşle",
+        "companion": "Yardımcı uygulamayı eşle",
+        "wifi_direct": "Wi-Fi hata ayıklamayı eşle"
+      },
+      "address": "AionUi adresiniz:",
+      "companion": {
+        "stepInstall": "Telefonda, AionUi uygulamasını indirmek için ilk kodu tarayın ve kurun (Android, tarayıcınızdan kuruluma izin vermenizi ister).",
+        "stepPair": "Uygulamayı açıp ikinci kodu tarayın veya aşağıdaki adresi ve kodu yazın.",
+        "qrInstall": "1 · Uygulamayı indir",
+        "qrPair": "2 · Eşle",
+        "limitsTitle": "Kurmadan önce bilmeniz gerekenler",
+        "limits": {
+          "notPlay": "Google Play'de yok: Play bu tür kontrole yalnızca erişilebilirlik araçları için izin verir.",
+          "restricted": "Android 13 ve sonrası: erişilebilirlik hizmetini açmadan önce uygulama için “kısıtlanmış ayarlar”a izin verin.",
+          "consent": "Android her oturumun başında ekran paylaşımı için onayınızı ister.",
+          "protection": "Gelişmiş Koruma açıkken engellenebilir.",
+          "verification": "Bazı ülkelerde Android, bu şekilde kurulan uygulamalar için 24 saatlik bekleme ekler.",
+          "noChrome": "Chrome'u inceleyemez; bunun için Mac yolunu kullanın."
+        }
+      },
+      "mac": {
+        "stepDownload": "AionUi Mac yardımcısını indirin ve Uygulamalar'a taşıyın.",
+        "stepGatekeeper": "İlk açılış: macOS uygulamayı doğrulayamadığını söyler. Sistem Ayarları → Gizlilik ve Güvenlik'i açın ve “Yine de Aç”a tıklayın.",
+        "stepPair": "Yardımcıda aşağıdaki adresi ve kodu yazın.",
+        "stepPhone": "Telefonda USB veya kablosuz hata ayıklamayı açın (Geliştirici seçenekleri) ve Mac'e bağlayın; telefon burada görünür.",
+        "download": "Mac yardımcısını indir"
+      },
+      "wifi": {
+        "steps": "Telefonda Geliştirici seçenekleri → Kablosuz hata ayıklama'yı açın ve AionUi istediğinde aşağıdaki kodu yazın."
+      }
+    },
+    "addons": {
+      "title": "Bu eklenti hakkında",
+      "generic": {
+        "desc": "Telefonunuzda kendi model döngüsüyle tüm akışları çalıştırır."
+      },
+      "artemis": {
+        "desc": "Artemis: bir görev verin, sağlayıcılarınızın model anahtarlarıyla telefonda kendi kendine ilerlesin.",
+        "licence": "Apache-2.0, Google tarafından."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: sürümlerinden indirdiğiniz ve AionUi'nin adb ile kurduğu Portal uygulaması üzerinden telefonda tüm bir akışı çalıştırır.",
+        "licence": "Çerçeve MIT; Portal uygulaması AGPL-3.0: yalnızca kişisel kullanım."
+      },
+      "approval": "Ajanlar tek bir araç alır: “bu akışı telefonda çalıştır”. Her görev metnini başlamadan önce siz onaylarsınız; telefon anahtarı, zaman aşımı ve Durdur yine de sonlandırır. Basit telefon işlemleri varsayılan kalır.",
+      "runsOn": "{{name}} üzerinde çalışır.",
+      "needsRoute": "Mac'iniz veya Wi-Fi hata ayıklama üzerinden bağlı bir telefon gerekir."
+    },
+    "mac": {
+      "title": "Mac'iniz",
+      "desc": "Ajanlar yalnızca bu açıkken Mac'inizin ekranını görebilir, tıklayabilir, yazabilir ve uygulama açabilir.",
+      "permissions": "macOS, AionUi Mac yardımcısı için bir kez Ekran Kaydı ve Erişilebilirlik izni ister."
+    },
+    "engine": {
+      "signed": "İmzalı",
+      "signedTip": "İndirme, satıcının imzası ve sağlama toplamıyla doğrulandı.",
+      "tlsOnly": "Yalnızca TLS",
+      "tlsOnlyTip": "Satıcı imza veya sağlama toplamı yayımlamıyor: satıcıdan HTTPS ile indirildi; indirilenin sağlama toplamı kaydedildi.",
+      "agentsOnly": "Yalnızca ajanlar",
+      "agentsOnlyTip": "Pencere yok ve headless User-Agent: ajan işleri için, panel veya oturum açma için değil.",
+      "update": "Güncelle",
+      "failed": "İndirme başarısız: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

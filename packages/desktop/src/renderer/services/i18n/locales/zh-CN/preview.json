@@ -210,7 +210,7 @@
       "startFailed": "浏览器未能启动。",
       "notRunning": "浏览器未运行。",
       "urlBlocked": "此地址在服务器浏览器中被屏蔽。",
-      "agentsDisabled": "代理不得使用浏览器（设置 → 浏览器）。",
+      "agentsDisabled": "代理不得使用浏览器（设置 → 设备）。",
       "methodBlocked": "不允许该操作。",
       "tabLimit": "已达到标签页上限，请先关闭一个标签页。",
       "instanceLimit": "此浏览器编号超出你的上限。",
@@ -225,11 +225,25 @@
       "stopped": "浏览器已停止。",
       "error": "浏览器因错误而停止。"
     },
-    "profileLabel": "浏览器配置"
+    "profileLabel": "浏览器配置",
+    "vnc": {
+      "viewOnly": "仅查看",
+      "connect": "连接",
+      "stop": "停止浏览器",
+      "stopFailed": "无法停止浏览器。",
+      "connecting": "正在启动浏览器…",
+      "surfaceLabel": "服务器浏览器的实时画面。关闭“仅查看”即可在其中使用鼠标和键盘。",
+      "closed": {
+        "ended": "实时画面已结束。连接即可重新启动浏览器。",
+        "notCamoufox": "此配置文件没有这种实时画面。",
+        "notAllowed": "不允许实时画面：智能体不得使用浏览器，或面板已关闭。",
+        "startFailed": "浏览器无法启动（{{reason}}）。"
+      }
+    }
   },
   "browserDevices": {
     "activity": "智能体最近的操作",
-    "agentsOff": "智能体暂时无法使用此浏览器：请在 设置 → 浏览器 中打开“允许智能体使用我的 Mac 浏览器”。",
+    "agentsOff": "智能体暂时无法使用此浏览器：请在 设置 → 设备 中打开“允许智能体使用我的 Mac 浏览器”。",
     "approval": {
       "allow": "允许 60 秒",
       "allowed": "已允许 60 秒。",

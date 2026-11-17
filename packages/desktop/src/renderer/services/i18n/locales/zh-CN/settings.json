@@ -1596,7 +1596,10 @@
       "errors": {
         "nameTooLong": "最多 {{max}} 个字符。",
         "emojiTooLong": "表情过长。"
-      }
+      },
+      "engine": "浏览器",
+      "engineHint": "在此配置文件下次启动时生效。",
+      "engineNotDownloaded": "未下载"
     }
   },
   "browserDevices": {
@@ -1659,6 +1662,193 @@
       "stepLoad": "打开右上角的“开发者模式”，点击“加载已解压的扩展程序”，选择解压后的文件夹。",
       "stepPair": "配对：点击下方的“{{button}}”，然后点击浏览器中的 AionUi 图标并输入配对码。",
       "update": "版本 {{version}} 已可用。仍在使用旧版本：{{names}}。下载后替换文件夹中的文件，然后点击扩展卡片上的重新加载箭头。"
+    }
+  },
+  "devices": {
+    "title": "设备",
+    "description": "智能体可以使用的一切：服务器浏览器、你自己的浏览器、手机、附加组件和你的 Mac。在你打开之前，每一项都保持关闭。",
+    "search": "搜索设备",
+    "categories": {
+      "server_browser": "服务器浏览器",
+      "my_browser": "我的浏览器",
+      "phone": "手机",
+      "addon": "附加组件",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "开启",
+      "off": "关闭",
+      "offline": "离线",
+      "needs_pairing": "需要配对",
+      "installing": "正在安装",
+      "removing": "正在移除",
+      "error": "错误"
+    },
+    "later": "以后",
+    "laterHint": "暂不可用：会在之后的更新中提供。",
+    "agentSwitch": "允许智能体使用",
+    "version": "v{{version}}",
+    "disk": "占用 {{size}}",
+    "details": "详情",
+    "remove": "移除",
+    "install": "安装",
+    "installing": "正在安装 {{name}}",
+    "removing": "正在移除 {{name}}",
+    "jobFailed": "失败：{{error}}",
+    "jobLost": "被重启中断",
+    "installStarted": "正在安装 {{name}}…",
+    "jobStartFailed": "无法为 {{name}} 启动该操作。",
+    "removeTitle": "移除 {{name}}？",
+    "removeFrees": "将释放 {{size}} 磁盘空间。",
+    "removeContent": "它会从服务器上移除。",
+    "removeInUse": "{{name}} 仍被某个服务器浏览器配置文件使用：请先把该配置文件切换到其他浏览器。",
+    "turnedOn": "智能体可以使用 {{name}}。",
+    "turnedOff": "智能体不能再使用 {{name}}。",
+    "saveFailed": "保存失败，请重试。",
+    "browseLibrary": "浏览资源库",
+    "summaryDisk": "占用 {{size}}",
+    "empty": {
+      "active": {
+        "server_browser": "还没有安装服务器浏览器。",
+        "my_browser": "还没有配对的浏览器。",
+        "phone": "还没有连接手机。",
+        "addon": "还没有安装附加组件。",
+        "mac": "你的 Mac 还没有连接。"
+      },
+      "library": {
+        "server_browser": "没有可安装的服务器浏览器。",
+        "my_browser": "请在下方安装扩展。",
+        "phone": "还没有手机。",
+        "addon": "没有可用的附加组件。",
+        "mac": "暂不可用。"
+      }
+    },
+    "drawer": {
+      "about": "概览",
+      "status": "状态",
+      "version": "版本",
+      "disk": "磁盘",
+      "lastSeen": "最后在线",
+      "until": "关闭时间"
+    },
+    "offIn_one": "{{count}} 分钟后关闭",
+    "offIn_other": "{{count}} 分钟后关闭",
+    "summaryOn_one": "{{count}} 项开启",
+    "summaryOn_other": "{{count}} 项开启",
+    "addPhone": "添加手机",
+    "access": {
+      "title": "智能体访问",
+      "timeout": "在此时间后关闭",
+      "hint": "超过这段时间以及 AionUi 重启后，手机会自动关闭。关闭会立即停止智能体。",
+      "minutes_one": "{{count}} 分钟",
+      "minutes_other": "{{count}} 分钟"
+    },
+    "routes": {
+      "title": "连接方式",
+      "experimental": "实验性 — 需要测试",
+      "pair": "配对",
+      "repair": "重新配对",
+      "mac_relay": {
+        "name": "通过我的 Mac 进行 USB / Wi-Fi 调试",
+        "desc": "手机通过数据线或同一 Wi-Fi 连接到你的 Mac。调试密钥留在 Mac 上；需要运行 AionUi Mac 助手。也可让智能体检查手机上的 Chrome。"
+      },
+      "companion": {
+        "name": "AionUi 伴侣应用",
+        "desc": "手机上的应用会自行连接 AionUi，随时随地，无需电脑。智能体工作时会显示“AionUi 正在控制这台手机 · 停止”。"
+      },
+      "wifi_direct": {
+        "name": "直接 Wi-Fi 调试",
+        "desc": "AionUi 服务器通过你的私有网络连接手机的无线调试。测试通过之前不提供。"
+      }
+    },
+    "audit": {
+      "title": "活动",
+      "hint": "智能体执行的每个操作：做了什么、在哪个应用或网站、结果如何。不保存截图或输入的文字。",
+      "empty": "暂无内容。",
+      "more": "显示更早的",
+      "failed": "无法加载更多。",
+      "error": "错误"
+    },
+    "approval": {
+      "title": "智能体想在“{{device}}”上操作",
+      "titleTask": "附加组件想在“{{device}}”上运行任务",
+      "target": "在 {{target}} 中：",
+      "taskHint": "你批准的是整个任务：附加组件自行决定每次点按。停止和超时仍会结束它。",
+      "allow": "允许",
+      "allowed": "已允许。"
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "配对 Mac 助手",
+        "companion": "配对伴侣应用",
+        "wifi_direct": "配对 Wi-Fi 调试"
+      },
+      "address": "你的 AionUi 地址：",
+      "companion": {
+        "stepInstall": "在手机上扫描第一个二维码下载 AionUi 应用并安装（Android 会询问是否允许从浏览器安装）。",
+        "stepPair": "打开应用并扫描第二个二维码，或输入下方的地址和配对码。",
+        "qrInstall": "1 · 下载应用",
+        "qrPair": "2 · 配对",
+        "limitsTitle": "安装前须知",
+        "limits": {
+          "notPlay": "它不在 Google Play 上：Play 只允许无障碍工具进行这类控制。",
+          "restricted": "Android 13 及以上：开启其无障碍服务前，请先为该应用允许“受限制的设置”。",
+          "consent": "每次会话开始时，Android 都会征求你同意共享屏幕。",
+          "protection": "开启高级保护时可能被拦截。",
+          "verification": "在部分国家，Android 会对以这种方式安装的应用增加 24 小时等待。",
+          "noChrome": "它无法检查 Chrome；如需检查请使用 Mac 方式。"
+        }
+      },
+      "mac": {
+        "stepDownload": "下载 AionUi Mac 助手并移到“应用程序”。",
+        "stepGatekeeper": "首次启动：macOS 会提示无法验证该应用。打开 系统设置 → 隐私与安全性，点击“仍要打开”。",
+        "stepPair": "在助手中输入下方的地址和配对码。",
+        "stepPhone": "在手机上开启 USB 或无线调试（开发者选项）并连接到 Mac；手机随后会出现在这里。",
+        "download": "下载 Mac 助手"
+      },
+      "wifi": {
+        "steps": "在手机上打开 开发者选项 → 无线调试，并在 AionUi 询问时输入下方的配对码。"
+      }
+    },
+    "addons": {
+      "title": "关于此附加组件",
+      "generic": {
+        "desc": "用自己的模型循环在你的手机上运行完整流程。"
+      },
+      "artemis": {
+        "desc": "Artemis：给它一个任务，它会使用你的提供商的模型密钥自行在手机上完成。",
+        "licence": "Apache-2.0，来自 Google。"
+      },
+      "mobilerun": {
+        "desc": "Mobilerun：通过它的 Portal 应用在手机上运行完整流程；Portal 由你从其发布页下载，AionUi 通过 adb 安装。",
+        "licence": "框架为 MIT；Portal 应用为 AGPL-3.0：仅限个人使用。"
+      },
+      "approval": "智能体只有一个工具：“在手机上运行此流程”。每个任务的文字都要先经你批准才开始；手机开关、超时和停止仍会结束它。普通手机操作仍是默认方式。",
+      "runsOn": "运行于 {{name}}。",
+      "needsRoute": "需要一台通过你的 Mac 或 Wi-Fi 调试连接的手机。"
+    },
+    "mac": {
+      "title": "你的 Mac",
+      "desc": "仅在此项开启时，智能体可以查看你的 Mac 屏幕并点击、输入和打开应用。",
+      "permissions": "macOS 会为 AionUi Mac 助手请求一次“屏幕录制”和“辅助功能”权限。"
+    },
+    "engine": {
+      "signed": "已签名",
+      "signedTip": "下载内容已通过厂商的签名和校验和验证。",
+      "tlsOnly": "仅 TLS",
+      "tlsOnlyTip": "厂商未发布签名或校验和：通过 HTTPS 从厂商下载，并记录了所下载内容的校验和。",
+      "agentsOnly": "仅限智能体",
+      "agentsOnlyTip": "没有窗口，User-Agent 为无头模式：用于智能体工作，不用于面板或登录。",
+      "update": "更新",
+      "failed": "下载失败：{{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

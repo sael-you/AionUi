@@ -210,7 +210,7 @@
       "startFailed": "El navegador no se inició.",
       "notRunning": "El navegador no está en marcha.",
       "urlBlocked": "Esta dirección está bloqueada en el navegador del servidor.",
-      "agentsDisabled": "Los agentes no pueden usar el navegador (Ajustes → Navegador).",
+      "agentsDisabled": "Los agentes no pueden usar el navegador (Ajustes → Dispositivos).",
       "methodBlocked": "Esa acción no está permitida.",
       "tabLimit": "Límite de pestañas alcanzado. Cierra una pestaña primero.",
       "instanceLimit": "Ese número de navegador supera tu límite.",
@@ -225,11 +225,25 @@
       "stopped": "El navegador está detenido.",
       "error": "El navegador se detuvo con un error."
     },
-    "profileLabel": "Perfil del navegador"
+    "profileLabel": "Perfil del navegador",
+    "vnc": {
+      "viewOnly": "Solo ver",
+      "connect": "Conectar",
+      "stop": "Detener el navegador",
+      "stopFailed": "No se pudo detener el navegador.",
+      "connecting": "Iniciando el navegador…",
+      "surfaceLabel": "Vista en directo del navegador del servidor. Desactiva «Solo ver» para usar allí el ratón y el teclado.",
+      "closed": {
+        "ended": "La vista en directo terminó. Conecta para iniciar de nuevo el navegador.",
+        "notCamoufox": "Este perfil no tiene una vista en directo de este tipo.",
+        "notAllowed": "La vista en directo no está permitida: los agentes no pueden usar el navegador o el panel está desactivado.",
+        "startFailed": "El navegador no pudo iniciarse ({{reason}})."
+      }
+    }
   },
   "browserDevices": {
     "activity": "Acciones recientes de los agentes",
-    "agentsOff": "Los agentes aún no pueden usar este navegador: activa «Los agentes pueden usar el navegador de mi Mac» en Configuración → Navegador.",
+    "agentsOff": "Los agentes aún no pueden usar este navegador: activa «Los agentes pueden usar el navegador de mi Mac» en Configuración → Dispositivos.",
     "approval": {
       "allow": "Permitir 60 s",
       "allowed": "Permitido durante 60 segundos.",

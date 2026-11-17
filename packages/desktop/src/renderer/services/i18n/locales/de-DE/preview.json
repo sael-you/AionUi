@@ -210,7 +210,7 @@
       "startFailed": "Der Browser ist nicht gestartet.",
       "notRunning": "Der Browser läuft nicht.",
       "urlBlocked": "Diese Adresse ist im Server-Browser gesperrt.",
-      "agentsDisabled": "Agenten dürfen den Browser nicht nutzen (Einstellungen → Browser).",
+      "agentsDisabled": "Agenten dürfen den Browser nicht nutzen (Einstellungen → Geräte).",
       "methodBlocked": "Diese Aktion ist nicht erlaubt.",
       "tabLimit": "Tab-Limit erreicht. Schließen Sie zuerst einen Tab.",
       "instanceLimit": "Diese Browsernummer liegt über Ihrem Limit.",
@@ -225,11 +225,25 @@
       "stopped": "Der Browser ist gestoppt.",
       "error": "Der Browser wurde mit einem Fehler beendet."
     },
-    "profileLabel": "Browserprofil"
+    "profileLabel": "Browserprofil",
+    "vnc": {
+      "viewOnly": "Nur ansehen",
+      "connect": "Verbinden",
+      "stop": "Browser stoppen",
+      "stopFailed": "Der Browser konnte nicht gestoppt werden.",
+      "connecting": "Browser wird gestartet …",
+      "surfaceLabel": "Live-Ansicht des Server-Browsers. Schalte „Nur ansehen“ aus, um dort Maus und Tastatur zu nutzen.",
+      "closed": {
+        "ended": "Die Live-Ansicht wurde beendet. Verbinde dich, um den Browser wieder zu starten.",
+        "notCamoufox": "Dieses Profil hat keine Live-Ansicht dieser Art.",
+        "notAllowed": "Die Live-Ansicht ist nicht erlaubt: Agenten dürfen den Browser nicht nutzen, oder das Panel ist aus.",
+        "startFailed": "Der Browser konnte nicht starten ({{reason}})."
+      }
+    }
   },
   "browserDevices": {
     "activity": "Letzte Aktionen der Agenten",
-    "agentsOff": "Agenten können diesen Browser noch nicht nutzen: Schalte „Agenten dürfen meinen Mac-Browser nutzen“ unter Einstellungen → Browser ein.",
+    "agentsOff": "Agenten können diesen Browser noch nicht nutzen: Schalte „Agenten dürfen meinen Mac-Browser nutzen“ unter Einstellungen → Geräte ein.",
     "approval": {
       "allow": "60 s erlauben",
       "allowed": "Für 60 Sekunden erlaubt.",

@@ -31,6 +31,19 @@ import type {
   BrowserStatusResponse,
 } from '../types/platform/serverBrowser';
 import type {
+  Device,
+  DeviceApproval,
+  DeviceApprovalDecision,
+  DeviceApprovalEvent,
+  DeviceAuditPage,
+  DeviceJob,
+  DevicePairingCode,
+  DevicePairingKind,
+  DeviceRouteKind,
+  DevicesChangedEvent,
+  DeviceUpdate,
+} from '../types/platform/devices';
+import type {
   AttachKitItemRequest,
   CreateKitRequest,
   ICssTheme,
@@ -1021,6 +1034,45 @@ export const serverBrowser = {
   approvalRequested: wsEmitter<BrowserApproval>('browser.approvalRequested'),
   approvalResolved: wsEmitter<BrowserApprovalResolved>('browser.approvalResolved'),
   devicesChanged: wsEmitter<Record<string, never>>('browser.devicesChanged'),
+};
+
+/** Settings → Devices (C38 W1, TASK-136): AionCore's device registry. */
+export const devices = {
+  list: httpGet<Device[], void>('/api/devices'),
+  /** The agent switch; phones and the Mac also take a timeout (15 / 30 / 60 min). */
+  update: httpPut<Device, { id: string } & DeviceUpdate>(
+    (p) => `/api/devices/${encodeURIComponent(p.id)}`,
+    (p) => (p.timeout_minutes ? { enabled: p.enabled, timeout_minutes: p.timeout_minutes } : { enabled: p.enabled })
+  ),
+  setRoute: httpPut<Device, { id: string; route: DeviceRouteKind; enabled: boolean }>(
+    (p) => `/api/devices/${encodeURIComponent(p.id)}/routes/${encodeURIComponent(p.route)}`,
+    (p) => ({ enabled: p.enabled })
+  ),
+  install: httpPost<{ job_id: string }, { id: string }>(
+    (p) => `/api/devices/${encodeURIComponent(p.id)}/install`,
+    () => ({})
+  ),
+  /** 409 DEVICE_IN_USE when a server browser profile still uses that engine. */
+  remove: httpPost<{ job_id: string }, { id: string }>(
+    (p) => `/api/devices/${encodeURIComponent(p.id)}/remove`,
+    () => ({})
+  ),
+  job: httpGet<DeviceJob, { job_id: string }>((p) => `/api/devices/jobs/${encodeURIComponent(p.job_id)}`),
+  createPairingCode: httpPost<DevicePairingCode, { kind: DevicePairingKind }>('/api/devices/pairing-codes'),
+  listApprovals: httpGet<DeviceApproval[], void>('/api/devices/approvals'),
+  decideApproval: httpPost<void, { id: string; decision: DeviceApprovalDecision }>(
+    (p) => `/api/devices/approvals/${encodeURIComponent(p.id)}`,
+    (p) => ({ decision: p.decision })
+  ),
+  audit: httpGet<DeviceAuditPage, { id: string; cursor?: string | null; limit?: number }>((p) => {
+    const query = new URLSearchParams();
+    if (p.cursor) query.set('cursor', p.cursor);
+    if (p.limit) query.set('limit', String(p.limit));
+    const qs = query.toString();
+    return `/api/devices/${encodeURIComponent(p.id)}/audit${qs ? `?${qs}` : ''}`;
+  }),
+  changed: wsEmitter<DevicesChangedEvent>('devices.changed'),
+  approval: wsEmitter<DeviceApprovalEvent>('devices.approval'),
 };
 
 // ---------------------------------------------------------------------------

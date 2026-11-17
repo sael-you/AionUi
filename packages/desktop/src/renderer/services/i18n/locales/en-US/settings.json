@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "At most {{max}} characters.",
         "emojiTooLong": "The emoji is too long."
-      }
+      },
+      "engine": "Browser",
+      "engineHint": "Applies the next time this profile starts.",
+      "engineNotDownloaded": "not downloaded"
     }
   },
   "browserDevices": {
@@ -1658,6 +1661,193 @@
       "stepLoad": "Turn on “Developer mode” (top right), click “Load unpacked” and pick the unzipped folder.",
       "stepPair": "Pair it: click “{{button}}” below, then click the AionUi icon in your browser and type the code.",
       "update": "Version {{version}} is available. Still on an older one: {{names}}. Download it, replace the files in the folder, then press the reload arrow on the extension's card."
+    }
+  },
+  "devices": {
+    "title": "Devices",
+    "description": "Everything your agents can use: server browsers, your own browsers, phones, add-ons and your Mac. Each one stays off until you switch it on.",
+    "search": "Search devices",
+    "categories": {
+      "server_browser": "Server browsers",
+      "my_browser": "My browsers",
+      "phone": "Phones",
+      "addon": "Add-ons",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "On",
+      "off": "Off",
+      "offline": "Offline",
+      "needs_pairing": "Needs pairing",
+      "installing": "Installing",
+      "removing": "Removing",
+      "error": "Error"
+    },
+    "later": "Later",
+    "laterHint": "Not available yet: it comes with a later update.",
+    "agentSwitch": "Agents may use it",
+    "version": "v{{version}}",
+    "disk": "{{size}} on disk",
+    "details": "Details",
+    "remove": "Remove",
+    "install": "Install",
+    "installing": "Installing {{name}}",
+    "removing": "Removing {{name}}",
+    "jobFailed": "Failed: {{error}}",
+    "jobLost": "interrupted by a restart",
+    "installStarted": "Installing {{name}}…",
+    "jobStartFailed": "Could not start that for {{name}}.",
+    "removeTitle": "Remove {{name}}?",
+    "removeFrees": "This frees {{size}} on disk.",
+    "removeContent": "It is removed from the server.",
+    "removeInUse": "{{name}} is still used by a server browser profile: switch that profile to another browser first.",
+    "turnedOn": "Agents may use {{name}}.",
+    "turnedOff": "Agents can no longer use {{name}}.",
+    "saveFailed": "Could not save. Try again.",
+    "browseLibrary": "Browse the Library",
+    "summaryDisk": "{{size}} on disk",
+    "empty": {
+      "active": {
+        "server_browser": "No server browser is installed yet.",
+        "my_browser": "No browser paired yet.",
+        "phone": "No phone connected yet.",
+        "addon": "No add-on installed yet.",
+        "mac": "Your Mac is not connected yet."
+      },
+      "library": {
+        "server_browser": "No server browsers to install.",
+        "my_browser": "Install the extension below.",
+        "phone": "No phones yet.",
+        "addon": "No add-ons available.",
+        "mac": "Not available yet."
+      }
+    },
+    "drawer": {
+      "about": "About",
+      "status": "Status",
+      "version": "Version",
+      "disk": "Disk",
+      "lastSeen": "Last seen",
+      "until": "Switches off at"
+    },
+    "offIn_one": "off in {{count}} min",
+    "offIn_other": "off in {{count}} min",
+    "summaryOn_one": "{{count}} on",
+    "summaryOn_other": "{{count}} on",
+    "addPhone": "Add a phone",
+    "access": {
+      "title": "Agent access",
+      "timeout": "Switches off after",
+      "hint": "The phone switches itself off after this time and after a restart of AionUi. Off stops agents at once.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "routes": {
+      "title": "Connection options",
+      "experimental": "Experimental — needs a test",
+      "pair": "Pair",
+      "repair": "Pair again",
+      "mac_relay": {
+        "name": "USB / Wi-Fi debugging via my Mac",
+        "desc": "The phone is connected to your Mac by cable or on the same Wi-Fi. The debugging key stays on the Mac; it needs the AionUi Mac helper running. Also lets agents inspect Chrome on the phone."
+      },
+      "companion": {
+        "name": "AionUi companion app",
+        "desc": "An app on the phone that connects to AionUi by itself, anywhere, without a computer. It shows “AionUi is controlling this phone · Stop” while agents work."
+      },
+      "wifi_direct": {
+        "name": "Wi-Fi debugging direct",
+        "desc": "AionUi's server connects to the phone's wireless debugging over your private network. Not offered until the test passes."
+      }
+    },
+    "audit": {
+      "title": "Activity",
+      "hint": "Every action agents took: what, in which app or site, and how it ended. No screenshots or typed text are kept.",
+      "empty": "Nothing yet.",
+      "more": "Show older",
+      "failed": "Could not load more.",
+      "error": "error"
+    },
+    "approval": {
+      "title": "An agent wants to act on “{{device}}”",
+      "titleTask": "An add-on wants to run a task on “{{device}}”",
+      "target": "In {{target}}:",
+      "taskHint": "You approve the whole task: the add-on decides its own taps. Stop and the timeout still end it.",
+      "allow": "Allow",
+      "allowed": "Allowed."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Pair the Mac helper",
+        "companion": "Pair the companion app",
+        "wifi_direct": "Pair Wi-Fi debugging"
+      },
+      "address": "Your AionUi address:",
+      "companion": {
+        "stepInstall": "On the phone, scan the first code to download the AionUi app, then install it (Android asks to allow installs from your browser).",
+        "stepPair": "Open the app and scan the second code, or type the address and the code below.",
+        "qrInstall": "1 · Download the app",
+        "qrPair": "2 · Pair",
+        "limitsTitle": "Good to know before you install",
+        "limits": {
+          "notPlay": "It is not on Google Play: Play allows this kind of control only for accessibility tools.",
+          "restricted": "Android 13 and later: allow “restricted settings” for the app before turning on its accessibility service.",
+          "consent": "Android asks for your consent to share the screen at the start of every session.",
+          "protection": "It may be blocked while Advanced Protection is on.",
+          "verification": "In some countries Android adds a 24-hour wait for apps installed this way.",
+          "noChrome": "It cannot inspect Chrome; use the Mac route for that."
+        }
+      },
+      "mac": {
+        "stepDownload": "Download the AionUi Mac helper and move it to Applications.",
+        "stepGatekeeper": "First start: macOS says it cannot check the app. Open System Settings → Privacy & Security and click “Open Anyway”.",
+        "stepPair": "In the helper, type the address and the code below.",
+        "stepPhone": "Turn on USB or Wireless debugging on the phone (Developer options) and connect it to the Mac; the phone then appears here.",
+        "download": "Download the Mac helper"
+      },
+      "wifi": {
+        "steps": "On the phone open Developer options → Wireless debugging, then type the code below when AionUi asks."
+      }
+    },
+    "addons": {
+      "title": "About this add-on",
+      "generic": {
+        "desc": "Runs whole flows on your phone with its own model loop."
+      },
+      "artemis": {
+        "desc": "Artemis: give it a task and it works through the phone by itself, with model keys from your providers.",
+        "licence": "Apache-2.0, by Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: runs a whole flow on the phone through its Portal app, which you download from its releases and AionUi installs over adb.",
+        "licence": "Framework MIT; the Portal app is AGPL-3.0: personal use only."
+      },
+      "approval": "Agents get one tool, “run this flow on the phone”. You approve each task text before it starts; the phone switch, its timeout and Stop still end it. Plain phone actions stay the default.",
+      "runsOn": "Runs on {{name}}.",
+      "needsRoute": "Needs a phone connected through your Mac or Wi-Fi debugging."
+    },
+    "mac": {
+      "title": "Your Mac",
+      "desc": "Agents can see your Mac's screen and click, type and open apps, only while this is on.",
+      "permissions": "macOS asks once for Screen Recording and Accessibility for the AionUi Mac helper."
+    },
+    "engine": {
+      "signed": "Signed",
+      "signedTip": "The download was checked against the vendor's signature and checksum.",
+      "tlsOnly": "TLS only",
+      "tlsOnlyTip": "The vendor publishes no signature or checksum: downloaded over HTTPS from the vendor; the checksum of what was downloaded is recorded.",
+      "agentsOnly": "Agents only",
+      "agentsOnlyTip": "No window and a headless User-Agent: for agent work, not for the panel or sign-ins.",
+      "update": "Update",
+      "failed": "Download failed: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

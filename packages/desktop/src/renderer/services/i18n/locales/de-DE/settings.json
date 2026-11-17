@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "Höchstens {{max}} Zeichen.",
         "emojiTooLong": "Das Emoji ist zu lang."
-      }
+      },
+      "engine": "Browser",
+      "engineHint": "Gilt ab dem nächsten Start dieses Profils.",
+      "engineNotDownloaded": "nicht heruntergeladen"
     }
   },
   "browserDevices": {
@@ -1658,6 +1661,193 @@
       "stepLoad": "Schalte den „Entwicklermodus“ ein (oben rechts), klicke auf „Entpackte Erweiterung laden“ und wähle den entpackten Ordner.",
       "stepPair": "Koppeln: Klicke unten auf „{{button}}“, dann auf das AionUi-Symbol im Browser und gib den Code ein.",
       "update": "Version {{version}} ist verfügbar. Noch auf einer älteren: {{names}}. Lade sie herunter, ersetze die Dateien im Ordner und drücke dann den Neu-laden-Pfeil auf der Karte der Erweiterung."
+    }
+  },
+  "devices": {
+    "title": "Geräte",
+    "description": "Alles, was deine Agenten nutzen können: Server-Browser, deine eigenen Browser, Telefone, Add-ons und dein Mac. Alles bleibt aus, bis du es einschaltest.",
+    "search": "Geräte suchen",
+    "categories": {
+      "server_browser": "Server-Browser",
+      "my_browser": "Meine Browser",
+      "phone": "Telefone",
+      "addon": "Add-ons",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "An",
+      "off": "Aus",
+      "offline": "Offline",
+      "needs_pairing": "Kopplung nötig",
+      "installing": "Wird installiert",
+      "removing": "Wird entfernt",
+      "error": "Fehler"
+    },
+    "later": "Später",
+    "laterHint": "Noch nicht verfügbar: kommt mit einem späteren Update.",
+    "agentSwitch": "Agenten dürfen es nutzen",
+    "version": "v{{version}}",
+    "disk": "{{size}} belegt",
+    "details": "Details",
+    "remove": "Entfernen",
+    "install": "Installieren",
+    "installing": "{{name}} wird installiert",
+    "removing": "{{name}} wird entfernt",
+    "jobFailed": "Fehlgeschlagen: {{error}}",
+    "jobLost": "durch einen Neustart unterbrochen",
+    "installStarted": "{{name}} wird installiert …",
+    "jobStartFailed": "Konnte für {{name}} nicht gestartet werden.",
+    "removeTitle": "{{name}} entfernen?",
+    "removeFrees": "Das gibt {{size}} Speicher frei.",
+    "removeContent": "Es wird vom Server entfernt.",
+    "removeInUse": "{{name}} wird noch von einem Server-Browser-Profil genutzt: Stelle dieses Profil zuerst auf einen anderen Browser um.",
+    "turnedOn": "Agenten dürfen {{name}} nutzen.",
+    "turnedOff": "Agenten können {{name}} nicht mehr nutzen.",
+    "saveFailed": "Speichern fehlgeschlagen. Versuche es erneut.",
+    "browseLibrary": "Bibliothek ansehen",
+    "summaryDisk": "{{size}} belegt",
+    "empty": {
+      "active": {
+        "server_browser": "Noch kein Server-Browser installiert.",
+        "my_browser": "Noch kein Browser gekoppelt.",
+        "phone": "Noch kein Telefon verbunden.",
+        "addon": "Noch kein Add-on installiert.",
+        "mac": "Dein Mac ist noch nicht verbunden."
+      },
+      "library": {
+        "server_browser": "Keine Server-Browser zum Installieren.",
+        "my_browser": "Installiere unten die Erweiterung.",
+        "phone": "Noch keine Telefone.",
+        "addon": "Keine Add-ons verfügbar.",
+        "mac": "Noch nicht verfügbar."
+      }
+    },
+    "drawer": {
+      "about": "Info",
+      "status": "Status",
+      "version": "Version",
+      "disk": "Speicher",
+      "lastSeen": "Zuletzt gesehen",
+      "until": "Schaltet sich aus um"
+    },
+    "offIn_one": "aus in {{count}} Min.",
+    "offIn_other": "aus in {{count}} Min.",
+    "summaryOn_one": "{{count}} an",
+    "summaryOn_other": "{{count}} an",
+    "addPhone": "Telefon hinzufügen",
+    "access": {
+      "title": "Agentenzugriff",
+      "timeout": "Schaltet sich aus nach",
+      "hint": "Das Telefon schaltet sich nach dieser Zeit und nach einem Neustart von AionUi selbst aus. Aus stoppt Agenten sofort.",
+      "minutes_one": "{{count}} Min.",
+      "minutes_other": "{{count}} Min."
+    },
+    "routes": {
+      "title": "Verbindungsoptionen",
+      "experimental": "Experimentell – Test nötig",
+      "pair": "Koppeln",
+      "repair": "Erneut koppeln",
+      "mac_relay": {
+        "name": "USB-/WLAN-Debugging über meinen Mac",
+        "desc": "Das Telefon ist per Kabel oder im selben WLAN mit deinem Mac verbunden. Der Debugging-Schlüssel bleibt auf dem Mac; der AionUi-Mac-Helfer muss laufen. Agenten können so auch Chrome auf dem Telefon untersuchen."
+      },
+      "companion": {
+        "name": "AionUi-Begleit-App",
+        "desc": "Eine App auf dem Telefon, die sich selbst mit AionUi verbindet – überall, ohne Computer. Sie zeigt „AionUi steuert dieses Telefon · Stopp“, solange Agenten arbeiten."
+      },
+      "wifi_direct": {
+        "name": "WLAN-Debugging direkt",
+        "desc": "Der AionUi-Server verbindet sich über dein privates Netzwerk mit dem WLAN-Debugging des Telefons. Erst verfügbar, wenn der Test bestanden ist."
+      }
+    },
+    "audit": {
+      "title": "Aktivität",
+      "hint": "Jede Aktion der Agenten: was, in welcher App oder Website und wie sie endete. Es werden keine Screenshots oder eingegebenen Texte gespeichert.",
+      "empty": "Noch nichts.",
+      "more": "Ältere anzeigen",
+      "failed": "Weitere konnten nicht geladen werden.",
+      "error": "Fehler"
+    },
+    "approval": {
+      "title": "Ein Agent möchte auf „{{device}}“ handeln",
+      "titleTask": "Ein Add-on möchte auf „{{device}}“ eine Aufgabe ausführen",
+      "target": "In {{target}}:",
+      "taskHint": "Du gibst die ganze Aufgabe frei: Das Add-on entscheidet seine Tipps selbst. Stopp und das Zeitlimit beenden sie trotzdem.",
+      "allow": "Erlauben",
+      "allowed": "Erlaubt."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Mac-Helfer koppeln",
+        "companion": "Begleit-App koppeln",
+        "wifi_direct": "WLAN-Debugging koppeln"
+      },
+      "address": "Deine AionUi-Adresse:",
+      "companion": {
+        "stepInstall": "Scanne auf dem Telefon den ersten Code, um die AionUi-App herunterzuladen, und installiere sie (Android fragt, ob Installationen aus deinem Browser erlaubt sind).",
+        "stepPair": "Öffne die App und scanne den zweiten Code oder gib unten Adresse und Code ein.",
+        "qrInstall": "1 · App herunterladen",
+        "qrPair": "2 · Koppeln",
+        "limitsTitle": "Gut zu wissen vor der Installation",
+        "limits": {
+          "notPlay": "Sie ist nicht bei Google Play: Play erlaubt diese Art der Steuerung nur für Bedienungshilfen.",
+          "restricted": "Android 13 und neuer: Erlaube der App „eingeschränkte Einstellungen“, bevor du ihren Bedienungshilfen-Dienst einschaltest.",
+          "consent": "Android fragt zu Beginn jeder Sitzung nach deiner Zustimmung zur Bildschirmfreigabe.",
+          "protection": "Sie kann blockiert sein, solange der erweiterte Schutz aktiv ist.",
+          "verification": "In manchen Ländern verlangt Android für so installierte Apps eine Wartezeit von 24 Stunden.",
+          "noChrome": "Sie kann Chrome nicht untersuchen; nutze dafür den Weg über den Mac."
+        }
+      },
+      "mac": {
+        "stepDownload": "Lade den AionUi-Mac-Helfer herunter und verschiebe ihn in „Programme“.",
+        "stepGatekeeper": "Erster Start: macOS meldet, dass die App nicht überprüft werden kann. Öffne Systemeinstellungen → Datenschutz & Sicherheit und klicke auf „Dennoch öffnen“.",
+        "stepPair": "Gib im Helfer unten stehende Adresse und den Code ein.",
+        "stepPhone": "Schalte auf dem Telefon USB- oder WLAN-Debugging ein (Entwickleroptionen) und verbinde es mit dem Mac; das Telefon erscheint dann hier.",
+        "download": "Mac-Helfer herunterladen"
+      },
+      "wifi": {
+        "steps": "Öffne auf dem Telefon Entwickleroptionen → Debugging über WLAN und gib den Code unten ein, wenn AionUi danach fragt."
+      }
+    },
+    "addons": {
+      "title": "Über dieses Add-on",
+      "generic": {
+        "desc": "Führt ganze Abläufe auf deinem Telefon mit eigener Modellschleife aus."
+      },
+      "artemis": {
+        "desc": "Artemis: Gib ihm eine Aufgabe, und es arbeitet sich selbst durch das Telefon – mit Modellschlüsseln deiner Anbieter.",
+        "licence": "Apache-2.0, von Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: führt einen ganzen Ablauf auf dem Telefon über seine Portal-App aus, die du aus den Releases herunterlädst und AionUi per adb installiert.",
+        "licence": "Framework MIT; die Portal-App ist AGPL-3.0: nur für den persönlichen Gebrauch."
+      },
+      "approval": "Agenten erhalten ein Werkzeug: „diesen Ablauf auf dem Telefon ausführen“. Du gibst jeden Aufgabentext vor dem Start frei; der Telefonschalter, sein Zeitlimit und Stopp beenden ihn trotzdem. Einfache Telefonaktionen bleiben der Standard.",
+      "runsOn": "Läuft auf {{name}}.",
+      "needsRoute": "Benötigt ein Telefon, das über deinen Mac oder WLAN-Debugging verbunden ist."
+    },
+    "mac": {
+      "title": "Dein Mac",
+      "desc": "Agenten können den Bildschirm deines Macs sehen, klicken, tippen und Apps öffnen – nur solange dies an ist.",
+      "permissions": "macOS fragt einmal nach Bildschirmaufnahme und Bedienungshilfen für den AionUi-Mac-Helfer."
+    },
+    "engine": {
+      "signed": "Signiert",
+      "signedTip": "Der Download wurde mit Signatur und Prüfsumme des Herstellers geprüft.",
+      "tlsOnly": "Nur TLS",
+      "tlsOnlyTip": "Der Hersteller veröffentlicht weder Signatur noch Prüfsumme: per HTTPS vom Hersteller geladen; die Prüfsumme des Downloads wird festgehalten.",
+      "agentsOnly": "Nur für Agenten",
+      "agentsOnlyTip": "Kein Fenster und ein Headless-User-Agent: für Agentenarbeit, nicht für das Panel oder Anmeldungen.",
+      "update": "Aktualisieren",
+      "failed": "Download fehlgeschlagen: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

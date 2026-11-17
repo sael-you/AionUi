@@ -13,9 +13,7 @@ const AssistantSettings = React.lazy(() => import('@renderer/pages/settings/Assi
 const SkillsSettings = React.lazy(() => import('@renderer/pages/settings/SkillsSettings/SkillsHubSettings'));
 const SkillDetailPage = React.lazy(() => import('@renderer/pages/settings/SkillsSettings/SkillDetailPage'));
 const ToolsSettings = React.lazy(() => import('@renderer/pages/settings/ToolsSettings'));
-const BrowserSettingsPage = React.lazy(
-  () => import('@renderer/pages/conversation/Preview/browser/BrowserSettingsPage')
-);
+const DevicesSettings = React.lazy(() => import('@renderer/pages/settings/DevicesSettings'));
 const AppearanceSettings = React.lazy(() => import('@renderer/pages/settings/AppearanceSettings'));
 const ModeSettings = React.lazy(() => import('@renderer/pages/settings/ModeSettings'));
 const SystemSettings = React.lazy(() => import('@renderer/pages/settings/SystemSettings'));
@@ -98,7 +96,9 @@ const PanelRoute: React.FC<{ layout: React.ReactElement }> = ({ layout }) => {
           <Route path='/settings/skills/import-history' element={withRouteFallback(SkillsSettings)} />
           <Route path='/settings/skills/detail/:skillName' element={withRouteFallback(SkillDetailPage)} />
           <Route path='/settings/tools' element={withRouteFallback(ToolsSettings)} />
-          <Route path='/settings/browser' element={withRouteFallback(BrowserSettingsPage)} />
+          <Route path='/settings/devices' element={withRouteFallback(DevicesSettings)} />
+          {/* Settings → Browser became Settings → Devices (C38, TASK-136). */}
+          <Route path='/settings/browser' element={<Navigate to='/settings/devices' replace />} />
           {/* Legacy routes — the previous combined "Capabilities" page is now two pages. */}
           <Route path='/settings/capabilities' element={<CapabilitiesRedirect />} />
           <Route

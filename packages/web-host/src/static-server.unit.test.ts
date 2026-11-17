@@ -500,6 +500,20 @@ describe('peekWsRoute (which request lines are spliced to the backend)', () => {
     expect(peekWsRoute(line('GET /api/browser/extension/pair HTTP/1.1'))).toBe(false);
     expect(peekWsRoute(line('POST /api/browser/extension HTTP/1.1'))).toBe(false);
     expect(peekWsRoute(line('GET /api/browser/settings HTTP/1.1'))).toBe(false);
+    // The Mac helper and the Android companion app (C38 W2, TASK-136).
+    expect(peekWsRoute(line('GET /api/devices/relay HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/devices/relay?v=1 HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/devices/relays HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('GET /api/devices/relay/x HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('POST /api/devices/relay HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('GET /api/devices HTTP/1.1'))).toBe(false);
+    // The VNC live view of a Camoufox profile (TASK-136 U4).
+    expect(peekWsRoute(line('GET /api/browser/instances/2/vnc HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/browser/instances/12/vnc?x=1 HTTP/1.1'))).toBe(true);
+    expect(peekWsRoute(line('GET /api/browser/instances/x/vnc HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('GET /api/browser/instances/2/vncx HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('GET /api/browser/instances/2/stop HTTP/1.1'))).toBe(false);
+    expect(peekWsRoute(line('POST /api/browser/instances/2/vnc HTTP/1.1'))).toBe(false);
   });
 
   it('does not splice look-alike voice paths or other methods', () => {

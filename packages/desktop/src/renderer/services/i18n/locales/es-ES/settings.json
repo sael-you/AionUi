@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "Como máximo {{max}} caracteres.",
         "emojiTooLong": "El emoji es demasiado largo."
-      }
+      },
+      "engine": "Navegador",
+      "engineHint": "Se aplica la próxima vez que se inicie este perfil.",
+      "engineNotDownloaded": "sin descargar"
     }
   },
   "browserDevices": {
@@ -1658,6 +1661,193 @@
       "stepLoad": "Activa el «Modo de desarrollador» (arriba a la derecha), haz clic en «Cargar descomprimida» y elige la carpeta descomprimida.",
       "stepPair": "Vincúlala: haz clic en «{{button}}» abajo, luego en el icono de AionUi en tu navegador y escribe el código.",
       "update": "La versión {{version}} está disponible. Aún con una anterior: {{names}}. Descárgala, sustituye los archivos de la carpeta y pulsa la flecha de recarga en la tarjeta de la extensión."
+    }
+  },
+  "devices": {
+    "title": "Dispositivos",
+    "description": "Todo lo que tus agentes pueden usar: navegadores del servidor, tus propios navegadores, teléfonos, complementos y tu Mac. Cada uno sigue apagado hasta que lo actives.",
+    "search": "Buscar dispositivos",
+    "categories": {
+      "server_browser": "Navegadores del servidor",
+      "my_browser": "Mis navegadores",
+      "phone": "Teléfonos",
+      "addon": "Complementos",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Activado",
+      "off": "Desactivado",
+      "offline": "Sin conexión",
+      "needs_pairing": "Falta vincular",
+      "installing": "Instalando",
+      "removing": "Eliminando",
+      "error": "Error"
+    },
+    "later": "Más adelante",
+    "laterHint": "Aún no disponible: llegará con una actualización posterior.",
+    "agentSwitch": "Los agentes pueden usarlo",
+    "version": "v{{version}}",
+    "disk": "{{size}} en disco",
+    "details": "Detalles",
+    "remove": "Eliminar",
+    "install": "Instalar",
+    "installing": "Instalando {{name}}",
+    "removing": "Eliminando {{name}}",
+    "jobFailed": "Error: {{error}}",
+    "jobLost": "interrumpido por un reinicio",
+    "installStarted": "Instalando {{name}}…",
+    "jobStartFailed": "No se pudo iniciar para {{name}}.",
+    "removeTitle": "¿Eliminar {{name}}?",
+    "removeFrees": "Esto libera {{size}} en disco.",
+    "removeContent": "Se elimina del servidor.",
+    "removeInUse": "{{name}} aún lo usa un perfil del navegador del servidor: cambia primero ese perfil a otro navegador.",
+    "turnedOn": "Los agentes pueden usar {{name}}.",
+    "turnedOff": "Los agentes ya no pueden usar {{name}}.",
+    "saveFailed": "No se pudo guardar. Inténtalo de nuevo.",
+    "browseLibrary": "Ver la biblioteca",
+    "summaryDisk": "{{size}} en disco",
+    "empty": {
+      "active": {
+        "server_browser": "Aún no hay ningún navegador del servidor instalado.",
+        "my_browser": "Aún no hay ningún navegador vinculado.",
+        "phone": "Aún no hay ningún teléfono conectado.",
+        "addon": "Aún no hay ningún complemento instalado.",
+        "mac": "Tu Mac aún no está conectado."
+      },
+      "library": {
+        "server_browser": "No hay navegadores del servidor para instalar.",
+        "my_browser": "Instala la extensión abajo.",
+        "phone": "Aún no hay teléfonos.",
+        "addon": "No hay complementos disponibles.",
+        "mac": "Aún no disponible."
+      }
+    },
+    "drawer": {
+      "about": "Información",
+      "status": "Estado",
+      "version": "Versión",
+      "disk": "Disco",
+      "lastSeen": "Visto por última vez",
+      "until": "Se apaga a las"
+    },
+    "offIn_one": "se apaga en {{count}} min",
+    "offIn_other": "se apaga en {{count}} min",
+    "summaryOn_one": "{{count}} activado",
+    "summaryOn_other": "{{count}} activados",
+    "addPhone": "Añadir un teléfono",
+    "access": {
+      "title": "Acceso de agentes",
+      "timeout": "Se apaga tras",
+      "hint": "El teléfono se apaga solo tras este tiempo y tras reiniciar AionUi. Apagarlo detiene a los agentes al instante.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "routes": {
+      "title": "Opciones de conexión",
+      "experimental": "Experimental: necesita una prueba",
+      "pair": "Vincular",
+      "repair": "Vincular de nuevo",
+      "mac_relay": {
+        "name": "Depuración USB / Wi-Fi a través de mi Mac",
+        "desc": "El teléfono está conectado a tu Mac por cable o en la misma Wi-Fi. La clave de depuración se queda en el Mac; necesita el asistente de AionUi para Mac en ejecución. También permite a los agentes inspeccionar Chrome en el teléfono."
+      },
+      "companion": {
+        "name": "App complementaria de AionUi",
+        "desc": "Una app en el teléfono que se conecta sola a AionUi, en cualquier lugar y sin ordenador. Muestra «AionUi está controlando este teléfono · Detener» mientras los agentes trabajan."
+      },
+      "wifi_direct": {
+        "name": "Depuración Wi-Fi directa",
+        "desc": "El servidor de AionUi se conecta a la depuración inalámbrica del teléfono por tu red privada. No se ofrece hasta que la prueba pase."
+      }
+    },
+    "audit": {
+      "title": "Actividad",
+      "hint": "Cada acción de los agentes: qué, en qué app o sitio y cómo terminó. No se guardan capturas ni texto escrito.",
+      "empty": "Nada todavía.",
+      "more": "Mostrar anteriores",
+      "failed": "No se pudo cargar más.",
+      "error": "error"
+    },
+    "approval": {
+      "title": "Un agente quiere actuar en «{{device}}»",
+      "titleTask": "Un complemento quiere ejecutar una tarea en «{{device}}»",
+      "target": "En {{target}}:",
+      "taskHint": "Apruebas la tarea completa: el complemento decide sus propios toques. Detener y el tiempo límite la terminan igualmente.",
+      "allow": "Permitir",
+      "allowed": "Permitido."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Vincular el asistente para Mac",
+        "companion": "Vincular la app complementaria",
+        "wifi_direct": "Vincular la depuración Wi-Fi"
+      },
+      "address": "Tu dirección de AionUi:",
+      "companion": {
+        "stepInstall": "En el teléfono, escanea el primer código para descargar la app de AionUi e instálala (Android pide permitir instalaciones desde tu navegador).",
+        "stepPair": "Abre la app y escanea el segundo código, o escribe la dirección y el código de abajo.",
+        "qrInstall": "1 · Descargar la app",
+        "qrPair": "2 · Vincular",
+        "limitsTitle": "Conviene saberlo antes de instalar",
+        "limits": {
+          "notPlay": "No está en Google Play: Play solo permite este tipo de control a herramientas de accesibilidad.",
+          "restricted": "Android 13 y posteriores: permite los «ajustes restringidos» para la app antes de activar su servicio de accesibilidad.",
+          "consent": "Android pide tu consentimiento para compartir la pantalla al inicio de cada sesión.",
+          "protection": "Puede quedar bloqueada mientras la Protección avanzada esté activa.",
+          "verification": "En algunos países Android añade una espera de 24 horas para apps instaladas así.",
+          "noChrome": "No puede inspeccionar Chrome; usa la ruta del Mac para eso."
+        }
+      },
+      "mac": {
+        "stepDownload": "Descarga el asistente de AionUi para Mac y muévelo a Aplicaciones.",
+        "stepGatekeeper": "Primer inicio: macOS dice que no puede comprobar la app. Abre Ajustes del Sistema → Privacidad y seguridad y haz clic en «Abrir igualmente».",
+        "stepPair": "En el asistente, escribe la dirección y el código de abajo.",
+        "stepPhone": "Activa la depuración USB o inalámbrica en el teléfono (Opciones de desarrollador) y conéctalo al Mac; el teléfono aparecerá aquí.",
+        "download": "Descargar el asistente para Mac"
+      },
+      "wifi": {
+        "steps": "En el teléfono abre Opciones de desarrollador → Depuración inalámbrica y escribe el código de abajo cuando AionUi lo pida."
+      }
+    },
+    "addons": {
+      "title": "Acerca de este complemento",
+      "generic": {
+        "desc": "Ejecuta flujos completos en tu teléfono con su propio bucle de modelo."
+      },
+      "artemis": {
+        "desc": "Artemis: dale una tarea y recorre el teléfono por sí solo, con claves de modelo de tus proveedores.",
+        "licence": "Apache-2.0, de Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: ejecuta un flujo completo en el teléfono mediante su app Portal, que descargas de sus versiones y AionUi instala por adb.",
+        "licence": "Framework MIT; la app Portal es AGPL-3.0: solo uso personal."
+      },
+      "approval": "Los agentes reciben una herramienta: «ejecutar este flujo en el teléfono». Apruebas el texto de cada tarea antes de que empiece; el interruptor del teléfono, su tiempo límite y Detener la terminan igualmente. Las acciones simples siguen siendo lo predeterminado.",
+      "runsOn": "Se ejecuta en {{name}}.",
+      "needsRoute": "Necesita un teléfono conectado mediante tu Mac o la depuración Wi-Fi."
+    },
+    "mac": {
+      "title": "Tu Mac",
+      "desc": "Los agentes pueden ver la pantalla de tu Mac y hacer clic, escribir y abrir apps, solo mientras esto esté activado.",
+      "permissions": "macOS pide una vez Grabación de pantalla y Accesibilidad para el asistente de AionUi para Mac."
+    },
+    "engine": {
+      "signed": "Firmado",
+      "signedTip": "La descarga se comprobó con la firma y la suma de verificación del proveedor.",
+      "tlsOnly": "Solo TLS",
+      "tlsOnlyTip": "El proveedor no publica firma ni suma de verificación: se descarga por HTTPS desde el proveedor y se registra la suma de lo descargado.",
+      "agentsOnly": "Solo agentes",
+      "agentsOnlyTip": "Sin ventana y con User-Agent headless: para trabajo de agentes, no para el panel ni inicios de sesión.",
+      "update": "Actualizar",
+      "failed": "La descarga falló: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

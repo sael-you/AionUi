@@ -210,7 +210,7 @@
       "startFailed": "The browser did not start.",
       "notRunning": "The browser is not running.",
       "urlBlocked": "This address is blocked in the server browser.",
-      "agentsDisabled": "Agents may not use the browser (Settings → Browser).",
+      "agentsDisabled": "Agents may not use the browser (Settings → Devices).",
       "methodBlocked": "That action is not allowed.",
       "tabLimit": "Tab limit reached. Close a tab first.",
       "instanceLimit": "This browser number is above your limit.",
@@ -225,11 +225,25 @@
       "stopped": "The browser is stopped.",
       "error": "The browser stopped with an error."
     },
-    "profileLabel": "Browser profile"
+    "profileLabel": "Browser profile",
+    "vnc": {
+      "viewOnly": "View only",
+      "connect": "Connect",
+      "stop": "Stop browser",
+      "stopFailed": "Could not stop the browser.",
+      "connecting": "Starting the browser…",
+      "surfaceLabel": "Live view of the server browser. Turn off “View only” to use your mouse and keyboard there.",
+      "closed": {
+        "ended": "The live view ended. Connect to start the browser again.",
+        "notCamoufox": "This profile has no live view of this kind.",
+        "notAllowed": "The live view is not allowed: agents may not use the browser, or the panel is off.",
+        "startFailed": "The browser could not start ({{reason}})."
+      }
+    }
   },
   "browserDevices": {
     "activity": "Recent agent actions",
-    "agentsOff": "Agents can't use this browser yet: turn on “Agents may use my Mac browser” in Settings → Browser.",
+    "agentsOff": "Agents can't use this browser yet: turn on “Agents may use my Mac browser” in Settings → Devices.",
     "approval": {
       "allow": "Allow for 60 s",
       "allowed": "Allowed for 60 seconds.",

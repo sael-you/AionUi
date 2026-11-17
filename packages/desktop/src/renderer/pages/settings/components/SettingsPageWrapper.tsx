@@ -10,7 +10,7 @@ import { type IExtensionSettingsTab } from '@/common/adapter/ipcBridge';
 import { useExtensionSettingsTabs } from '@/renderer/hooks/system/useExtensionSettingsTabs';
 import {
   Brain,
-  Browser,
+  Devices,
   Cat,
   Communication,
   Computer,
@@ -80,11 +80,11 @@ export function getBuiltinSettingsNavItems(isDesktop: boolean, t: TranslateFn): 
       icon: isDesktop ? <Earth theme='outline' size='16' /> : <Communication theme='outline' size='16' />,
       path: 'webui',
     },
-    browser: {
-      id: 'browser',
-      label: t('settings.browserPage.title'),
-      icon: <Browser theme='outline' size='16' />,
-      path: 'browser',
+    devices: {
+      id: 'devices',
+      label: t('settings.devices.title'),
+      icon: <Devices theme='outline' size='16' />,
+      path: 'devices',
     },
     voice: { id: 'voice', label: t('voice.settings.title'), icon: <Voice theme='outline' size='16' />, path: 'voice' },
     memory: { id: 'memory', label: t('memory.title'), icon: <Brain theme='outline' size='16' />, path: 'memory' },

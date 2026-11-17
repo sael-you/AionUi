@@ -210,7 +210,7 @@
       "startFailed": "Tarayıcı başlamadı.",
       "notRunning": "Tarayıcı çalışmıyor.",
       "urlBlocked": "Bu adres sunucu tarayıcısında engellendi.",
-      "agentsDisabled": "Ajanlar tarayıcıyı kullanamaz (Ayarlar → Tarayıcı).",
+      "agentsDisabled": "Ajanlar tarayıcıyı kullanamaz (Ayarlar → Cihazlar).",
       "methodBlocked": "Bu işleme izin verilmiyor.",
       "tabLimit": "Sekme sınırına ulaşıldı. Önce bir sekmeyi kapatın.",
       "instanceLimit": "Bu tarayıcı numarası sınırınızın üzerinde.",
@@ -225,11 +225,25 @@
       "stopped": "Tarayıcı durduruldu.",
       "error": "Tarayıcı bir hatayla durdu."
     },
-    "profileLabel": "Tarayıcı profili"
+    "profileLabel": "Tarayıcı profili",
+    "vnc": {
+      "viewOnly": "Yalnızca izle",
+      "connect": "Bağlan",
+      "stop": "Tarayıcıyı durdur",
+      "stopFailed": "Tarayıcı durdurulamadı.",
+      "connecting": "Tarayıcı başlatılıyor…",
+      "surfaceLabel": "Sunucu tarayıcısının canlı görünümü. Orada fare ve klavyenizi kullanmak için “Yalnızca izle”yi kapatın.",
+      "closed": {
+        "ended": "Canlı görünüm sona erdi. Tarayıcıyı yeniden başlatmak için bağlanın.",
+        "notCamoufox": "Bu profilin bu türde bir canlı görünümü yok.",
+        "notAllowed": "Canlı görünüme izin verilmiyor: ajanlar tarayıcıyı kullanamaz veya panel kapalı.",
+        "startFailed": "Tarayıcı başlatılamadı ({{reason}})."
+      }
+    }
   },
   "browserDevices": {
     "activity": "Son ajan işlemleri",
-    "agentsOff": "Ajanlar bu tarayıcıyı henüz kullanamaz: Ayarlar → Tarayıcı’da “Ajanlar Mac tarayıcımı kullanabilir”i açın.",
+    "agentsOff": "Ajanlar bu tarayıcıyı henüz kullanamaz: Ayarlar → Cihazlar’da “Ajanlar Mac tarayıcımı kullanabilir”i açın.",
     "approval": {
       "allow": "60 sn izin ver",
       "allowed": "60 saniyeliğine izin verildi.",

@@ -73,6 +73,8 @@ export type BrowserInstanceSettings = {
   emoji?: string;
   /** "Hide that the browser is automated" (default false); applies at the next start. */
   hide_automation: boolean;
+  /** The browser engine of the profile (C35); its panel kind comes from `BrowserStatusResponse.engines`. */
+  engine?: string;
 };
 
 /** Optional profile fields; `""` for `color`/`emoji` clears them, absent = unchanged. */
@@ -81,6 +83,8 @@ export type BrowserInstanceFields = {
   color?: string;
   emoji?: string;
   hide_automation?: boolean;
+  /** Applies at the profile's next start. */
+  engine?: string;
 };
 
 /** A row of `PUT /api/browser/settings` `instances` (existing instances only). */
@@ -136,6 +140,29 @@ export type BrowserStatusResponse = {
   chrome_version?: string;
   instances: BrowserInstanceStatus[];
   idle_timeout_secs: number;
+  /** Installed engines (C35); a profile's panel is its engine's. Absent on older AionCore. */
+  engines?: BrowserEngineStatus[];
+};
+
+/** How a profile is shown live: the CDP screencast, or a VNC view (Camoufox has no screencast). */
+export type BrowserPanelKind = 'screencast' | 'vnc';
+
+/** What AionCore could verify about an engine download (C35). */
+export type BrowserEngineVerification = 'signed-repository' | 'tls-only' | 'pinned-sha256';
+
+/** One engine in `BrowserStatusResponse.engines` (C35, TASK-134), in display order. */
+export type BrowserEngineStatus = {
+  /** `chrome`, `chrome-for-testing`, `brave`, `edge`, `headless-shell`, `camoufox`. */
+  engine: string;
+  /** Absent = not downloaded. */
+  installed_version?: string;
+  installing?: boolean;
+  /** Why the last download failed (cleared by the next success). */
+  error?: string;
+  verification?: BrowserEngineVerification;
+  /** No window and a headless User-Agent: for agent work, not for the panel or sign-ins. */
+  agents_only?: boolean;
+  panel?: BrowserPanelKind;
 };
 
 /** JSON header of a binary frame: `[u32 BE meta_len][meta JSON][JPEG]`, CSS pixels. */

@@ -69,6 +69,20 @@ declare module 'wavedrom/skins/default.js' {
   export default skin;
 }
 
+/** noVNC ships no types; this is the part the Camoufox live view uses (TASK-136 U4). */
+declare module '@novnc/novnc' {
+  export default class RFB extends EventTarget {
+    constructor(target: HTMLElement, urlOrChannel: string | WebSocket, options?: { wsProtocols?: string[] });
+    viewOnly: boolean;
+    scaleViewport: boolean;
+    resizeSession: boolean;
+    clipViewport: boolean;
+    focusOnClick: boolean;
+    disconnect(): void;
+    focus(): void;
+  }
+}
+
 declare module 'wavedrom/skins/dark.js' {
   const skin: import('wavedrom').WaveSkin;
   export default skin;

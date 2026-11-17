@@ -1597,7 +1597,10 @@
       "errors": {
         "nameTooLong": "最大 {{max}} 文字です。",
         "emojiTooLong": "絵文字が長すぎます。"
-      }
+      },
+      "engine": "ブラウザ",
+      "engineHint": "このプロファイルの次回起動時に適用されます。",
+      "engineNotDownloaded": "未ダウンロード"
     }
   },
   "browserDevices": {
@@ -1660,6 +1663,193 @@
       "stepLoad": "右上の「デベロッパー モード」をオンにし、「パッケージ化されていない拡張機能を読み込む」をクリックして、展開したフォルダを選びます。",
       "stepPair": "ペアリング: 下の「{{button}}」をクリックし、ブラウザの AionUi アイコンをクリックしてコードを入力します。",
       "update": "バージョン {{version}} が利用可能です。古いバージョンのまま: {{names}}。ダウンロードしてフォルダ内のファイルを置き換え、拡張機能カードの再読み込み矢印を押してください。"
+    }
+  },
+  "devices": {
+    "title": "デバイス",
+    "description": "エージェントが使えるものすべて: サーバーのブラウザ、あなたのブラウザ、スマートフォン、アドオン、Mac。オンにするまでどれもオフのままです。",
+    "search": "デバイスを検索",
+    "categories": {
+      "server_browser": "サーバーのブラウザ",
+      "my_browser": "自分のブラウザ",
+      "phone": "スマートフォン",
+      "addon": "アドオン",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "オン",
+      "off": "オフ",
+      "offline": "オフライン",
+      "needs_pairing": "ペアリングが必要",
+      "installing": "インストール中",
+      "removing": "削除中",
+      "error": "エラー"
+    },
+    "later": "今後",
+    "laterHint": "まだ利用できません。今後のアップデートで追加されます。",
+    "agentSwitch": "エージェントの使用を許可",
+    "version": "v{{version}}",
+    "disk": "ディスク {{size}}",
+    "details": "詳細",
+    "remove": "削除",
+    "install": "インストール",
+    "installing": "{{name}} をインストール中",
+    "removing": "{{name}} を削除中",
+    "jobFailed": "失敗: {{error}}",
+    "jobLost": "再起動により中断されました",
+    "installStarted": "{{name}} をインストール中…",
+    "jobStartFailed": "{{name}} の処理を開始できませんでした。",
+    "removeTitle": "{{name}} を削除しますか？",
+    "removeFrees": "ディスクの {{size}} が空きます。",
+    "removeContent": "サーバーから削除されます。",
+    "removeInUse": "{{name}} はまだサーバーのブラウザのプロファイルで使われています。先にそのプロファイルを別のブラウザに切り替えてください。",
+    "turnedOn": "エージェントが {{name}} を使えるようになりました。",
+    "turnedOff": "エージェントは {{name}} を使えなくなりました。",
+    "saveFailed": "保存できませんでした。もう一度お試しください。",
+    "browseLibrary": "ライブラリを見る",
+    "summaryDisk": "ディスク {{size}}",
+    "empty": {
+      "active": {
+        "server_browser": "サーバーのブラウザはまだインストールされていません。",
+        "my_browser": "ペアリング済みのブラウザはまだありません。",
+        "phone": "接続済みのスマートフォンはまだありません。",
+        "addon": "インストール済みのアドオンはまだありません。",
+        "mac": "Mac はまだ接続されていません。"
+      },
+      "library": {
+        "server_browser": "インストールできるサーバーのブラウザはありません。",
+        "my_browser": "下で拡張機能をインストールしてください。",
+        "phone": "スマートフォンはまだありません。",
+        "addon": "利用できるアドオンはありません。",
+        "mac": "まだ利用できません。"
+      }
+    },
+    "drawer": {
+      "about": "概要",
+      "status": "状態",
+      "version": "バージョン",
+      "disk": "ディスク",
+      "lastSeen": "最終接続",
+      "until": "オフになる時刻"
+    },
+    "offIn_one": "{{count}} 分後にオフ",
+    "offIn_other": "{{count}} 分後にオフ",
+    "summaryOn_one": "{{count}} 件オン",
+    "summaryOn_other": "{{count}} 件オン",
+    "addPhone": "スマートフォンを追加",
+    "access": {
+      "title": "エージェントのアクセス",
+      "timeout": "オフになるまでの時間",
+      "hint": "この時間が過ぎたとき、および AionUi の再起動後に、スマートフォンは自動的にオフになります。オフにするとエージェントは直ちに止まります。",
+      "minutes_one": "{{count}} 分",
+      "minutes_other": "{{count}} 分"
+    },
+    "routes": {
+      "title": "接続方法",
+      "experimental": "試験的 — テストが必要",
+      "pair": "ペアリング",
+      "repair": "再ペアリング",
+      "mac_relay": {
+        "name": "自分の Mac 経由の USB / Wi-Fi デバッグ",
+        "desc": "スマートフォンをケーブルまたは同じ Wi-Fi で Mac に接続します。デバッグ用の鍵は Mac に残り、AionUi Mac ヘルパーの起動が必要です。スマートフォンの Chrome もエージェントが調べられます。"
+      },
+      "companion": {
+        "name": "AionUi コンパニオンアプリ",
+        "desc": "スマートフォン上のアプリが、どこからでもコンピューターなしで AionUi に接続します。エージェントの作業中は「AionUi がこのスマートフォンを操作中 · 停止」を表示します。"
+      },
+      "wifi_direct": {
+        "name": "Wi-Fi デバッグ（直接）",
+        "desc": "AionUi のサーバーがプライベートネットワーク経由でスマートフォンのワイヤレスデバッグに接続します。テストに合格するまで提供されません。"
+      }
+    },
+    "audit": {
+      "title": "アクティビティ",
+      "hint": "エージェントが行ったすべての操作: 何を、どのアプリまたはサイトで、どう終わったか。スクリーンショットや入力した文字は保存されません。",
+      "empty": "まだありません。",
+      "more": "以前の項目を表示",
+      "failed": "これ以上読み込めませんでした。",
+      "error": "エラー"
+    },
+    "approval": {
+      "title": "エージェントが「{{device}}」で操作しようとしています",
+      "titleTask": "アドオンが「{{device}}」でタスクを実行しようとしています",
+      "target": "{{target}} で:",
+      "taskHint": "タスク全体を承認します。個々のタップはアドオンが判断します。停止とタイムアウトでいつでも終了します。",
+      "allow": "許可",
+      "allowed": "許可しました。"
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Mac ヘルパーをペアリング",
+        "companion": "コンパニオンアプリをペアリング",
+        "wifi_direct": "Wi-Fi デバッグをペアリング"
+      },
+      "address": "AionUi のアドレス:",
+      "companion": {
+        "stepInstall": "スマートフォンで 1 つ目のコードを読み取って AionUi アプリをダウンロードし、インストールします（Android がブラウザからのインストール許可を求めます）。",
+        "stepPair": "アプリを開いて 2 つ目のコードを読み取るか、下のアドレスとコードを入力します。",
+        "qrInstall": "1 · アプリをダウンロード",
+        "qrPair": "2 · ペアリング",
+        "limitsTitle": "インストール前に知っておくこと",
+        "limits": {
+          "notPlay": "Google Play にはありません。Play はこの種の操作をユーザー補助ツールにのみ許可しています。",
+          "restricted": "Android 13 以降: ユーザー補助サービスをオンにする前に、アプリの「制限付き設定」を許可してください。",
+          "consent": "Android は毎回のセッション開始時に画面共有の同意を求めます。",
+          "protection": "高度な保護機能がオンの間はブロックされる場合があります。",
+          "verification": "一部の国では、この方法でインストールしたアプリに Android が 24 時間の待機を追加します。",
+          "noChrome": "Chrome は調べられません。その場合は Mac 経由を使ってください。"
+        }
+      },
+      "mac": {
+        "stepDownload": "AionUi Mac ヘルパーをダウンロードして「アプリケーション」に移動します。",
+        "stepGatekeeper": "初回起動時: macOS がアプリを確認できないと表示します。システム設定 → プライバシーとセキュリティ を開き、「このまま開く」をクリックします。",
+        "stepPair": "ヘルパーに下のアドレスとコードを入力します。",
+        "stepPhone": "スマートフォンで USB またはワイヤレスデバッグをオンにし（開発者向けオプション）、Mac に接続します。スマートフォンがここに表示されます。",
+        "download": "Mac ヘルパーをダウンロード"
+      },
+      "wifi": {
+        "steps": "スマートフォンで 開発者向けオプション → ワイヤレスデバッグ を開き、AionUi に求められたら下のコードを入力します。"
+      }
+    },
+    "addons": {
+      "title": "このアドオンについて",
+      "generic": {
+        "desc": "独自のモデルループで、スマートフォン上の一連の操作をまとめて実行します。"
+      },
+      "artemis": {
+        "desc": "Artemis: タスクを渡すと、あなたのプロバイダーのモデルキーを使ってスマートフォンを自分で操作します。",
+        "licence": "Apache-2.0、Google 製。"
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: Portal アプリを通じてスマートフォン上の一連の操作を実行します。Portal はリリースからダウンロードし、AionUi が adb でインストールします。",
+        "licence": "フレームワークは MIT、Portal アプリは AGPL-3.0 です（個人利用のみ）。"
+      },
+      "approval": "エージェントが使えるツールは「この操作をスマートフォンで実行」の 1 つです。開始前にタスクの文面を毎回あなたが承認します。スマートフォンのスイッチ、タイムアウト、停止でいつでも終了します。通常の操作が既定のままです。",
+      "runsOn": "{{name}} で実行されます。",
+      "needsRoute": "Mac または Wi-Fi デバッグで接続したスマートフォンが必要です。"
+    },
+    "mac": {
+      "title": "あなたの Mac",
+      "desc": "これがオンの間だけ、エージェントは Mac の画面を見て、クリック、入力、アプリの起動ができます。",
+      "permissions": "macOS は AionUi Mac ヘルパーに対し、画面収録とアクセシビリティの許可を一度求めます。"
+    },
+    "engine": {
+      "signed": "署名済み",
+      "signedTip": "ダウンロードはベンダーの署名とチェックサムで検証されました。",
+      "tlsOnly": "TLS のみ",
+      "tlsOnlyTip": "ベンダーは署名もチェックサムも公開していません。ベンダーから HTTPS でダウンロードし、そのチェックサムを記録しています。",
+      "agentsOnly": "エージェント専用",
+      "agentsOnlyTip": "ウィンドウがなく、User-Agent がヘッドレスです。エージェントの作業用で、パネルやログインには向きません。",
+      "update": "更新",
+      "failed": "ダウンロードに失敗しました: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

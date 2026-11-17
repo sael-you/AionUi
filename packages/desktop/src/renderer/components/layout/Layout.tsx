@@ -42,6 +42,7 @@ import { IS_DISCONTINUED_BUILD } from '@/renderer/utils/discontinuedBuild';
 import UpdateMigrationDialog from '@/renderer/components/settings/UpdateMigrationDialog';
 import '@renderer/styles/layout.css';
 import BrowserApprovalPrompts from '@/renderer/pages/conversation/Preview/browser/server/BrowserApprovalPrompts';
+import DeviceApprovalPrompts from '@/renderer/pages/settings/DevicesSettings/phones/DeviceApprovalPrompts';
 
 const SidebarIcon: React.FC<{ size?: number; strokeWidth?: number }> = ({ size = 18, strokeWidth = 4 }) => (
   <svg
@@ -582,6 +583,7 @@ const Layout: React.FC<{
           </ArcoLayout>
           {/* Paused agent actions in the owner's own browser (C34): Allow / Deny wherever the owner is. */}
           <BrowserApprovalPrompts />
+          <DeviceApprovalPrompts />
         </div>
       </NavigationHistoryProvider>
     </LayoutContext.Provider>

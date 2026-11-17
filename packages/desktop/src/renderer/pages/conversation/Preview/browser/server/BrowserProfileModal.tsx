@@ -10,13 +10,14 @@
  * checks everything again; its refusals come back as messages here.
  */
 
-import { Input, Modal, Radio } from '@arco-design/web-react';
+import { Input, Modal, Radio, Select } from '@arco-design/web-react';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   BROWSER_PROFILE_COLORS,
   BROWSER_PROFILE_NAME_MAX,
+  type BrowserEngineStatus,
   type BrowserInstanceFields,
   type BrowserInstanceSettings,
 } from '@/common/types/platform/serverBrowser';
@@ -25,7 +26,10 @@ import { useProfileAccent } from './BrowserProfileLabel';
 /** Emoji field limit (the server allows ≤ 16 bytes). */
 const EMOJI_MAX_BYTES = 16;
 
-export type BrowserProfileDraft = { name: string; color: string; emoji: string };
+export type BrowserProfileDraft = { name: string; color: string; emoji: string; engine?: string };
+
+/** Chrome is every profile's engine until another is chosen (C35). */
+export const DEFAULT_ENGINE = 'chrome';
 
 /** The fields to send: `""` clears colour/emoji on an existing profile, a new one just omits them. */
 export const profileFields = (
@@ -34,8 +38,9 @@ export const profileFields = (
 ): BrowserInstanceFields & { name: string } => {
   const name = draft.name.trim();
   const emoji = draft.emoji.trim();
-  if (existing) return { name, color: draft.color, emoji };
-  return { name, ...(draft.color ? { color: draft.color } : {}), ...(emoji ? { emoji } : {}) };
+  const engine = draft.engine ? { engine: draft.engine } : {};
+  if (existing) return { name, color: draft.color, emoji, ...engine };
+  return { name, ...(draft.color ? { color: draft.color } : {}), ...(emoji ? { emoji } : {}), ...engine };
 };
 
 /** Why the draft cannot be saved yet, or `null`. */
@@ -64,11 +69,13 @@ type BrowserProfileModalProps = {
   /** `null` = closed; `'new'` = create; a profile = edit it. */
   target: BrowserInstanceSettings | 'new' | null;
   saving: boolean;
+  /** Engines AionCore knows (C35); absent or empty = no engine choice (older AionCore). */
+  engines?: BrowserEngineStatus[];
   onSave: (draft: BrowserProfileDraft) => void;
   onClose: () => void;
 };
 
-const BrowserProfileModal: React.FC<BrowserProfileModalProps> = ({ target, saving, onSave, onClose }) => {
+const BrowserProfileModal: React.FC<BrowserProfileModalProps> = ({ target, saving, engines, onSave, onClose }) => {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<BrowserProfileDraft>({ name: '', color: '', emoji: '' });
 
@@ -77,7 +84,7 @@ const BrowserProfileModal: React.FC<BrowserProfileModalProps> = ({ target, savin
     setDraft(
       target === 'new'
         ? { name: '', color: '', emoji: '' }
-        : { name: target.name, color: target.color ?? '', emoji: target.emoji ?? '' }
+        : { name: target.name, color: target.color ?? '', emoji: target.emoji ?? '', engine: target.engine }
     );
   }, [target]);
 
@@ -162,6 +169,39 @@ const BrowserProfileModal: React.FC<BrowserProfileModalProps> = ({ target, savin
             onChange={(value) => update({ emoji: value })}
           />
         </label>
+        {engines && engines.length > 0 ? (
+          <div className='flex flex-col gap-6px'>
+            <span id='browser-profile-engine' className='text-13px text-t-secondary'>
+              {t('settings.serverBrowser.profile.engine')}
+            </span>
+            <Select
+              value={draft.engine ?? DEFAULT_ENGINE}
+              aria-labelledby='browser-profile-engine'
+              onChange={(value: string) => update({ engine: value })}
+              data-testid='browser-profile-engine'
+            >
+              {engines.map((entry) => {
+                const current = (draft.engine ?? DEFAULT_ENGINE) === entry.engine;
+                const notes = [
+                  entry.installed_version ? null : t('settings.serverBrowser.profile.engineNotDownloaded'),
+                  entry.agents_only ? t('settings.devices.engine.agentsOnly') : null,
+                ].filter(Boolean);
+                return (
+                  // An engine is downloaded on the Devices page first; the profile's own stays selectable.
+                  <Select.Option
+                    key={entry.engine}
+                    value={entry.engine}
+                    disabled={!entry.installed_version && !current}
+                  >
+                    {t(`settings.devices.engine.names.${entry.engine}`, { defaultValue: entry.engine })}
+                    {notes.length > 0 ? ` (${notes.join(', ')})` : ''}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+            <span className='text-12px text-t-secondary'>{t('settings.serverBrowser.profile.engineHint')}</span>
+          </div>
+        ) : null}
         {problem && problem !== 'nameRequired' ? (
           <span className='text-12px text-t-secondary' role='alert'>
             {t(`settings.serverBrowser.profile.errors.${problem}`, { max: BROWSER_PROFILE_NAME_MAX })}

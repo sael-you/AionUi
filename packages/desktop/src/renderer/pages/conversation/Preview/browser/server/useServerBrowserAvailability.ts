@@ -12,13 +12,19 @@
 
 import useSWR from 'swr';
 import { serverBrowser } from '@/common/adapter/ipcBridge';
-import type { BrowserInstanceSettings } from '@/common/types/platform/serverBrowser';
+import type { BrowserInstanceSettings, BrowserPanelKind } from '@/common/types/platform/serverBrowser';
 import { isElectronDesktop } from '@/renderer/utils/platform';
+import { panelKindOf } from './streamProtocol';
 
 export const SERVER_BROWSER_STATUS_KEY = 'server-browser.status';
 export const SERVER_BROWSER_SETTINGS_KEY = 'server-browser.settings';
 
-export type ServerBrowserProfile = Pick<BrowserInstanceSettings, 'instance' | 'name' | 'color' | 'emoji'>;
+export type ServerBrowserProfile = Pick<BrowserInstanceSettings, 'instance' | 'name' | 'color' | 'emoji' | 'engine'> & {
+  /** `vnc` for engines without a CDP screencast (Camoufox). */
+  panel?: BrowserPanelKind;
+  /** The engine has no window: agents use it, the panel cannot show it. */
+  agentsOnly?: boolean;
+};
 
 export const useServerBrowserAvailability = (): {
   available: boolean;
@@ -33,7 +39,11 @@ export const useServerBrowserAvailability = (): {
   );
   return {
     available: Boolean(web && status?.available),
-    profiles: settings?.instances ?? [],
+    profiles: (settings?.instances ?? []).map((profile) => ({
+      ...profile,
+      panel: panelKindOf(profile.engine, status?.engines),
+      agentsOnly: status?.engines?.find((entry) => entry.engine === profile.engine)?.agents_only === true,
+    })),
     devicesAgentsEnabled: Boolean(settings?.agents_enabled && settings?.devices_agents_enabled),
   };
 };

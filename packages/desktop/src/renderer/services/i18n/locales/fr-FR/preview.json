@@ -210,7 +210,7 @@
       "startFailed": "Le navigateur n’a pas démarré.",
       "notRunning": "Le navigateur n’est pas lancé.",
       "urlBlocked": "Cette adresse est bloquée dans le navigateur du serveur.",
-      "agentsDisabled": "Les agents ne peuvent pas utiliser le navigateur (Paramètres → Navigateur).",
+      "agentsDisabled": "Les agents ne peuvent pas utiliser le navigateur (Paramètres → Appareils).",
       "methodBlocked": "Cette action n’est pas autorisée.",
       "tabLimit": "Limite d’onglets atteinte. Fermez d’abord un onglet.",
       "instanceLimit": "Ce numéro de navigateur dépasse votre limite.",
@@ -225,11 +225,25 @@
       "stopped": "Le navigateur est arrêté.",
       "error": "Le navigateur s’est arrêté sur une erreur."
     },
-    "profileLabel": "Profil du navigateur"
+    "profileLabel": "Profil du navigateur",
+    "vnc": {
+      "viewOnly": "Affichage seul",
+      "connect": "Connecter",
+      "stop": "Arrêter le navigateur",
+      "stopFailed": "Impossible d'arrêter le navigateur.",
+      "connecting": "Démarrage du navigateur…",
+      "surfaceLabel": "Vue en direct du navigateur du serveur. Désactivez « Affichage seul » pour y utiliser la souris et le clavier.",
+      "closed": {
+        "ended": "La vue en direct est terminée. Connectez-vous pour relancer le navigateur.",
+        "notCamoufox": "Ce profil n'a pas de vue en direct de ce type.",
+        "notAllowed": "La vue en direct n'est pas autorisée : les agents ne peuvent pas utiliser le navigateur, ou le panneau est désactivé.",
+        "startFailed": "Le navigateur n'a pas pu démarrer ({{reason}})."
+      }
+    }
   },
   "browserDevices": {
     "activity": "Actions récentes des agents",
-    "agentsOff": "Les agents ne peuvent pas encore utiliser ce navigateur : activez « Les agents peuvent utiliser le navigateur de mon Mac » dans Paramètres → Navigateur.",
+    "agentsOff": "Les agents ne peuvent pas encore utiliser ce navigateur : activez « Les agents peuvent utiliser le navigateur de mon Mac » dans Paramètres → Appareils.",
     "approval": {
       "allow": "Autoriser 60 s",
       "allowed": "Autorisé pendant 60 secondes.",

@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "{{max}} caractères au maximum.",
         "emojiTooLong": "L’emoji est trop long."
-      }
+      },
+      "engine": "Navigateur",
+      "engineHint": "S'applique au prochain démarrage de ce profil.",
+      "engineNotDownloaded": "non téléchargé"
     }
   },
   "browserDevices": {
@@ -1658,6 +1661,193 @@
       "stepLoad": "Activez le « Mode développeur » (en haut à droite), cliquez sur « Charger l'extension non empaquetée » et choisissez le dossier décompressé.",
       "stepPair": "Associez-la : cliquez sur « {{button}} » ci-dessous, puis sur l'icône AionUi dans votre navigateur et saisissez le code.",
       "update": "La version {{version}} est disponible. Encore sur une version antérieure : {{names}}. Téléchargez-la, remplacez les fichiers du dossier, puis appuyez sur la flèche de rechargement de la carte de l'extension."
+    }
+  },
+  "devices": {
+    "title": "Appareils",
+    "description": "Tout ce que vos agents peuvent utiliser : navigateurs du serveur, vos propres navigateurs, téléphones, modules et votre Mac. Chacun reste désactivé tant que vous ne l'activez pas.",
+    "search": "Rechercher des appareils",
+    "categories": {
+      "server_browser": "Navigateurs du serveur",
+      "my_browser": "Mes navigateurs",
+      "phone": "Téléphones",
+      "addon": "Modules",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Activé",
+      "off": "Désactivé",
+      "offline": "Hors ligne",
+      "needs_pairing": "À associer",
+      "installing": "Installation",
+      "removing": "Suppression",
+      "error": "Erreur"
+    },
+    "later": "Plus tard",
+    "laterHint": "Pas encore disponible : arrive avec une prochaine mise à jour.",
+    "agentSwitch": "Les agents peuvent l'utiliser",
+    "version": "v{{version}}",
+    "disk": "{{size}} sur le disque",
+    "details": "Détails",
+    "remove": "Supprimer",
+    "install": "Installer",
+    "installing": "Installation de {{name}}",
+    "removing": "Suppression de {{name}}",
+    "jobFailed": "Échec : {{error}}",
+    "jobLost": "interrompu par un redémarrage",
+    "installStarted": "Installation de {{name}}…",
+    "jobStartFailed": "Impossible de lancer l'opération pour {{name}}.",
+    "removeTitle": "Supprimer {{name}} ?",
+    "removeFrees": "Cela libère {{size}} sur le disque.",
+    "removeContent": "Il est supprimé du serveur.",
+    "removeInUse": "{{name}} est encore utilisé par un profil du navigateur du serveur : passez d'abord ce profil sur un autre navigateur.",
+    "turnedOn": "Les agents peuvent utiliser {{name}}.",
+    "turnedOff": "Les agents ne peuvent plus utiliser {{name}}.",
+    "saveFailed": "Enregistrement impossible. Réessayez.",
+    "browseLibrary": "Parcourir la bibliothèque",
+    "summaryDisk": "{{size}} sur le disque",
+    "empty": {
+      "active": {
+        "server_browser": "Aucun navigateur du serveur installé.",
+        "my_browser": "Aucun navigateur associé.",
+        "phone": "Aucun téléphone connecté.",
+        "addon": "Aucun module installé.",
+        "mac": "Votre Mac n'est pas encore connecté."
+      },
+      "library": {
+        "server_browser": "Aucun navigateur du serveur à installer.",
+        "my_browser": "Installez l'extension ci-dessous.",
+        "phone": "Aucun téléphone pour l'instant.",
+        "addon": "Aucun module disponible.",
+        "mac": "Pas encore disponible."
+      }
+    },
+    "drawer": {
+      "about": "À propos",
+      "status": "État",
+      "version": "Version",
+      "disk": "Disque",
+      "lastSeen": "Vu pour la dernière fois",
+      "until": "S'éteint à"
+    },
+    "offIn_one": "s’éteint dans {{count}} min",
+    "offIn_other": "s’éteint dans {{count}} min",
+    "summaryOn_one": "{{count}} activé",
+    "summaryOn_other": "{{count}} activés",
+    "addPhone": "Ajouter un téléphone",
+    "access": {
+      "title": "Accès des agents",
+      "timeout": "S'éteint après",
+      "hint": "Le téléphone se désactive tout seul après ce délai et après un redémarrage d'AionUi. Désactiver arrête les agents immédiatement.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "routes": {
+      "title": "Options de connexion",
+      "experimental": "Expérimental — test nécessaire",
+      "pair": "Associer",
+      "repair": "Associer de nouveau",
+      "mac_relay": {
+        "name": "Débogage USB / Wi-Fi via mon Mac",
+        "desc": "Le téléphone est relié à votre Mac par câble ou sur le même Wi-Fi. La clé de débogage reste sur le Mac ; l'assistant Mac d'AionUi doit être lancé. Permet aussi aux agents d'inspecter Chrome sur le téléphone."
+      },
+      "companion": {
+        "name": "Application compagnon AionUi",
+        "desc": "Une application sur le téléphone qui se connecte d'elle-même à AionUi, partout, sans ordinateur. Elle affiche « AionUi contrôle ce téléphone · Arrêter » pendant que les agents travaillent."
+      },
+      "wifi_direct": {
+        "name": "Débogage Wi-Fi direct",
+        "desc": "Le serveur d'AionUi se connecte au débogage sans fil du téléphone via votre réseau privé. Proposé seulement une fois le test réussi."
+      }
+    },
+    "audit": {
+      "title": "Activité",
+      "hint": "Chaque action des agents : quoi, dans quelle application ou quel site, et comment elle s'est terminée. Aucune capture d'écran ni texte saisi n'est conservé.",
+      "empty": "Rien pour l'instant.",
+      "more": "Afficher les plus anciennes",
+      "failed": "Impossible d'en charger davantage.",
+      "error": "erreur"
+    },
+    "approval": {
+      "title": "Un agent veut agir sur « {{device}} »",
+      "titleTask": "Un module veut exécuter une tâche sur « {{device}} »",
+      "target": "Dans {{target}} :",
+      "taskHint": "Vous approuvez la tâche entière : le module décide lui-même de ses gestes. Arrêter et le délai y mettent fin malgré tout.",
+      "allow": "Autoriser",
+      "allowed": "Autorisé."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Associer l'assistant Mac",
+        "companion": "Associer l'application compagnon",
+        "wifi_direct": "Associer le débogage Wi-Fi"
+      },
+      "address": "Votre adresse AionUi :",
+      "companion": {
+        "stepInstall": "Sur le téléphone, scannez le premier code pour télécharger l'application AionUi, puis installez-la (Android demande d'autoriser les installations depuis votre navigateur).",
+        "stepPair": "Ouvrez l'application et scannez le second code, ou saisissez l'adresse et le code ci-dessous.",
+        "qrInstall": "1 · Télécharger l'application",
+        "qrPair": "2 · Associer",
+        "limitsTitle": "Bon à savoir avant d'installer",
+        "limits": {
+          "notPlay": "Elle n'est pas sur Google Play : Play n'autorise ce type de contrôle qu'aux outils d'accessibilité.",
+          "restricted": "Android 13 et versions ultérieures : autorisez les « paramètres restreints » pour l'application avant d'activer son service d'accessibilité.",
+          "consent": "Android demande votre accord pour partager l'écran au début de chaque session.",
+          "protection": "Elle peut être bloquée tant que la Protection avancée est active.",
+          "verification": "Dans certains pays, Android ajoute une attente de 24 heures pour les applications installées ainsi.",
+          "noChrome": "Elle ne peut pas inspecter Chrome ; utilisez la voie du Mac pour cela."
+        }
+      },
+      "mac": {
+        "stepDownload": "Téléchargez l'assistant Mac d'AionUi et placez-le dans Applications.",
+        "stepGatekeeper": "Premier lancement : macOS indique qu'il ne peut pas vérifier l'application. Ouvrez Réglages Système → Confidentialité et sécurité et cliquez sur « Ouvrir quand même ».",
+        "stepPair": "Dans l'assistant, saisissez l'adresse et le code ci-dessous.",
+        "stepPhone": "Activez le débogage USB ou sans fil sur le téléphone (Options pour les développeurs) et reliez-le au Mac ; le téléphone apparaît alors ici.",
+        "download": "Télécharger l'assistant Mac"
+      },
+      "wifi": {
+        "steps": "Sur le téléphone, ouvrez Options pour les développeurs → Débogage sans fil, puis saisissez le code ci-dessous quand AionUi le demande."
+      }
+    },
+    "addons": {
+      "title": "À propos de ce module",
+      "generic": {
+        "desc": "Exécute des parcours entiers sur votre téléphone avec sa propre boucle de modèle."
+      },
+      "artemis": {
+        "desc": "Artemis : donnez-lui une tâche et il parcourt le téléphone tout seul, avec les clés de modèle de vos fournisseurs.",
+        "licence": "Apache-2.0, par Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun : exécute un parcours entier sur le téléphone via son application Portal, que vous téléchargez depuis ses versions et qu'AionUi installe par adb.",
+        "licence": "Framework MIT ; l'application Portal est sous AGPL-3.0 : usage personnel uniquement."
+      },
+      "approval": "Les agents disposent d'un outil : « exécuter ce parcours sur le téléphone ». Vous approuvez le texte de chaque tâche avant son démarrage ; l'interrupteur du téléphone, son délai et Arrêter y mettent fin malgré tout. Les actions simples restent la règle.",
+      "runsOn": "S'exécute sur {{name}}.",
+      "needsRoute": "Nécessite un téléphone connecté via votre Mac ou le débogage Wi-Fi."
+    },
+    "mac": {
+      "title": "Votre Mac",
+      "desc": "Les agents peuvent voir l'écran de votre Mac, cliquer, saisir et ouvrir des apps, uniquement tant que ceci est activé.",
+      "permissions": "macOS demande une fois l'Enregistrement de l'écran et l'Accessibilité pour l'assistant Mac d'AionUi."
+    },
+    "engine": {
+      "signed": "Signé",
+      "signedTip": "Le téléchargement a été vérifié avec la signature et la somme de contrôle de l'éditeur.",
+      "tlsOnly": "TLS seul",
+      "tlsOnlyTip": "L'éditeur ne publie ni signature ni somme de contrôle : téléchargé en HTTPS depuis l'éditeur ; la somme de contrôle du téléchargement est consignée.",
+      "agentsOnly": "Agents uniquement",
+      "agentsOnlyTip": "Pas de fenêtre et un User-Agent headless : pour le travail des agents, pas pour le panneau ni les connexions.",
+      "update": "Mettre à jour",
+      "failed": "Échec du téléchargement : {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

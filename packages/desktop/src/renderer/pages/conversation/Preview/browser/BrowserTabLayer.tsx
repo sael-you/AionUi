@@ -10,6 +10,7 @@ import BrowserViewer from './BrowserViewer';
 import BrowserScopeSelect from './server/BrowserScopeSelect';
 import DeviceBrowserView from './server/DeviceBrowserView';
 import ServerBrowserView from './server/ServerBrowserView';
+import VncBrowserView from './VncBrowserView';
 import { useBrowserDevices } from './server/useBrowserDevices';
 import { useServerBrowserAvailability } from './server/useServerBrowserAvailability';
 
@@ -68,6 +69,9 @@ const BrowserTabLayer: React.FC<BrowserTabLayerProps> = ({ browserTabs, activeTa
 
   // WebUI with the server browser (C30): one real Chrome with its own tabs, instead of one iframe per tab.
   if (serverBrowser.available) {
+    const vncProfile = serverBrowser.profiles.find(
+      (profile) => profile.instance === lastInstance && profile.panel === 'vnc'
+    );
     const requested = browserTabs.find((tab) => tab.id === activeTabId) ?? browserTabs.at(-1);
     return (
       <div className='relative flex-1 overflow-hidden' style={{ display: isBrowserActive ? undefined : 'none' }}>
@@ -87,6 +91,23 @@ const BrowserTabLayer: React.FC<BrowserTabLayerProps> = ({ browserTabs, activeTa
                   }
                   setLastInstance(scope.instance);
                   setDeviceId(null);
+                }}
+              />
+            }
+          />
+        ) : vncProfile ? (
+          // Camoufox has no CDP screencast: its panel is the VNC view of the profile's display (U4).
+          <VncBrowserView
+            key={vncProfile.instance}
+            instance={vncProfile.instance}
+            switcher={
+              <BrowserScopeSelect
+                profiles={serverBrowser.profiles}
+                devices={devices}
+                value={{ kind: 'profile', instance: vncProfile.instance }}
+                onChange={(scope) => {
+                  if (scope.kind === 'device') setDeviceId(scope.deviceId);
+                  else setLastInstance(scope.instance);
                 }}
               />
             }
