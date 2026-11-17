@@ -1342,7 +1342,8 @@ describe('BackendLifecycleManager.stop', () => {
     emitListening(child, 22223);
     await startPromise;
 
-    // AionCore gets BACKEND_STOP_TIMEOUT_MS to drain its running turns (TASK-44) before SIGKILL.
+    // AionCore drains running turns for 20 s and its watchdog exits at 40 s (TASK-44): SIGKILL only after 45 s.
+    expect(BACKEND_STOP_TIMEOUT_MS).toBe(45_000);
     vi.useFakeTimers();
     const stopPromise = mgr.stop();
     await vi.advanceTimersByTimeAsync(BACKEND_STOP_TIMEOUT_MS - 1_000);

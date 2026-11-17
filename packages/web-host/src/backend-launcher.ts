@@ -78,10 +78,10 @@ type SpawnConfig = {
 
 /**
  * How long `stop()` waits after SIGTERM before SIGKILL. AionCore drains the
- * running turns for up to 20 s on shutdown (TASK-44), so killing after 5 s cut
+ * running turns for up to 20 s on shutdown (TASK-44, watchdog at 40 s), so killing after 5 s cut
  * them off mid-step.
  */
-export const BACKEND_STOP_TIMEOUT_MS = 30_000;
+export const BACKEND_STOP_TIMEOUT_MS = 45_000;
 
 export type BackendLaunchFlags = {
   recoverCorruptedDatabase?: boolean;
