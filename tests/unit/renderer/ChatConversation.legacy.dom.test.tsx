@@ -33,6 +33,9 @@ vi.mock('@/renderer/pages/conversation/components/ChatLayout', () => ({
   ),
 }));
 
+// The rules badge (C37) has its own suite; it needs a Router this test does not render.
+vi.mock('@/renderer/pages/settings/RulesSettings/ConversationRulesButton', () => ({ default: () => null }));
+
 vi.mock('@/renderer/pages/conversation/platforms/acp/AcpChat', () => ({
   __esModule: true,
   default: (props: unknown) => acpChatMock(props),
