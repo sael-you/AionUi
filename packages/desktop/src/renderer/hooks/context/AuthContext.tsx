@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { PREVIEW_SCOPE_KEY_PREFIX } from '@/renderer/pages/conversation/Preview/context/previewScope';
 import { refreshSession } from '@/common/adapter/sessionRefresh';
 import { STORAGE_KEYS } from '@/common/config/storageKeys';
+import { adoptOfflineOwner } from '@/renderer/services/pendingUploads/offlineOwner';
 import { CSRF_COOKIE_NAMES, expectAuthUserRequest, fetchWithCsrf, noteAuthUserRequest } from '@/common/adapter/csrf';
 
 /** Expire a cookie readable from JavaScript (the CSRF cookie; `__Host-` names need `Secure`). */
@@ -180,6 +181,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
     const currentUser = await fetchCurrentUser(controller.signal);
     if (currentUser) {
+      // Before the pages render: the composer drafts kept in the browser belong to this user.
+      adoptOfflineOwner(currentUser.id);
       setUser(currentUser);
       setStatus('authenticated');
     } else {
@@ -251,6 +254,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         };
       }
 
+      // Another user than the one who left drafts here: those are cleared first.
+      adoptOfflineOwner(data.user.id);
       setUser(data.user);
       setStatus('authenticated');
       setReady(true);
@@ -318,6 +323,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       setStatus('unauthenticated');
       // Clear cache on logout for security
       clearAuthCache();
+      // Drafts, unsent messages, quotes and waiting files kept in this browser go too.
+      adoptOfflineOwner(null);
     }
   }, []);
 

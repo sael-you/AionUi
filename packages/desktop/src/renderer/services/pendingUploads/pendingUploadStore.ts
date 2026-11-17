@@ -6,17 +6,22 @@
 
 /**
  * Files and images attached while there was no connection (TASK-127). Their
- * upload failed, so the bytes are kept in the browser (IndexedDB) per
+ * upload failed, so the bytes are kept in the browser (IndexedDB) per user and
  * conversation until the connection returns; a reload or a crash does not lose
- * them. Size-capped: one file up to 25 MB, 100 MB in total. Where IndexedDB is
- * missing or blocked the files are kept in memory for this page only.
+ * them. Size-capped: one file up to 25 MB, 100 MB in total. Dropped after 14
+ * days, and cleared on logout or when another user signs in (offlineOwner).
+ * Where IndexedDB is missing or blocked the files are kept in memory only.
  */
+
+import { getOfflineOwner, isOfflineDraftExpired, onOfflineDraftsCleared } from './offlineOwner';
 
 export const PENDING_UPLOAD_MAX_FILE_BYTES = 25 * 1024 * 1024;
 export const PENDING_UPLOAD_MAX_TOTAL_BYTES = 100 * 1024 * 1024;
 
 export type PendingUpload = {
   id: string;
+  /** The signed-in user who attached it ('' when none was known: memory only). */
+  owner: string;
   conversationId: string;
   name: string;
   type: string;
@@ -92,10 +97,25 @@ const run = async <T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) =>
   });
 };
 
-const all = async (): Promise<StoredUpload[]> => {
+const everything = async (): Promise<StoredUpload[]> => {
   const db = await openDb();
-  if (!db) return [...memory.values()];
-  return (await run<StoredUpload[]>('readonly', (store) => store.getAll())) ?? [];
+  const stored = db ? ((await run<StoredUpload[]>('readonly', (store) => store.getAll())) ?? []) : [];
+  return [...stored, ...memory.values()];
+};
+
+/** This user's kept files; expired ones (anyone's) are deleted on the way. */
+const all = async (): Promise<StoredUpload[]> => {
+  const owner = getOfflineOwner() ?? '';
+  const kept: StoredUpload[] = [];
+  for (const item of await everything()) {
+    if (isOfflineDraftExpired(item.savedAt)) {
+      memory.delete(item.id);
+      await run('readwrite', (store) => store.delete(item.id));
+      continue;
+    }
+    if (item.owner === owner) kept.push(item);
+  }
+  return kept;
 };
 
 const toMeta = ({ blob: _blob, ...meta }: StoredUpload): PendingUpload => meta;
@@ -110,11 +130,13 @@ export const pendingUploadStore = {
   async save(conversationId: string, file: File): Promise<SavePendingUploadResult> {
     if (file.size > PENDING_UPLOAD_MAX_FILE_BYTES)
       return reject({ conversationId, name: file.name, reason: 'too-large' });
-    const used = (await all()).reduce((sum, item) => sum + item.size, 0);
+    const used = (await everything()).reduce((sum, item) => sum + item.size, 0);
     if (used + file.size > PENDING_UPLOAD_MAX_TOTAL_BYTES)
       return reject({ conversationId, name: file.name, reason: 'full' });
+    const owner = getOfflineOwner();
     const entry: StoredUpload = {
       id: newId(),
+      owner: owner ?? '',
       conversationId,
       name: file.name,
       type: file.type,
@@ -122,7 +144,8 @@ export const pendingUploadStore = {
       savedAt: Date.now(),
       blob: file,
     };
-    const db = await openDb();
+    // No known user: keep it for this page only, never on disk.
+    const db = owner ? await openDb() : null;
     if (!db || (await run('readwrite', (store) => store.put(entry))) === null) memory.set(entry.id, entry);
     notify();
     return 'saved';
@@ -138,7 +161,7 @@ export const pendingUploadStore = {
   /** The kept file, ready to upload again; null when it is gone. */
   async read(id: string): Promise<File | null> {
     const entry = memory.get(id) ?? (await run<StoredUpload | undefined>('readonly', (store) => store.get(id)));
-    if (!entry) return null;
+    if (!entry || entry.owner !== (getOfflineOwner() ?? '') || isOfflineDraftExpired(entry.savedAt)) return null;
     return new File([entry.blob], entry.name, { type: entry.type });
   },
 
@@ -151,6 +174,13 @@ export const pendingUploadStore = {
   subscribe(listener: () => void): () => void {
     listeners.add(listener);
     return () => listeners.delete(listener);
+  },
+
+  /** Delete every kept file of every user (logout or another user signing in). */
+  async clearAll(): Promise<void> {
+    memory.clear();
+    await run('readwrite', (store) => store.clear());
+    notify();
   },
 
   /** A file was refused (over a cap): never a silent drop. */
@@ -171,3 +201,8 @@ export const pendingUploadStore = {
 /** An upload error that means "no connection" (the XHR never got an answer). */
 export const isUploadConnectionError = (error: unknown): boolean =>
   error instanceof Error && error.message === 'Upload failed: network error';
+
+// Logout or another user signing in: the kept files go too.
+onOfflineDraftsCleared(() => {
+  void pendingUploadStore.clearAll();
+});
