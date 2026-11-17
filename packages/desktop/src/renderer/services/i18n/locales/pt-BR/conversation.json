@@ -1012,5 +1012,8 @@
     "notSent": "Não enviado — salvo como rascunho",
     "autoRetry": "será reenviado quando a conexão voltar",
     "retry": "Tentar de novo"
+  },
+  "pendingUpload": {
+    "waiting": "Aguardando a conexão para enviar:"
   }
 }

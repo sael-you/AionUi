@@ -53,6 +53,7 @@ import { useTranslation } from 'react-i18next';
 import { classifyConversationBusyError } from '../conversationBusyError';
 import { buildSendFailureError } from './buildSendFailureError';
 import { useQuoteStack } from '@/renderer/components/chat/SendBox/quoteStack';
+import PendingUploads from '../PendingUploads';
 import UnsentMessageBanner from '../UnsentMessageBanner';
 import { isConnectionFailure, useUnsentMessage, type UnsentMessage } from '../useUnsentMessage';
 import { useAcpInitialMessage } from './useAcpInitialMessage';
@@ -857,6 +858,10 @@ Please check your local CLI tool authentication status`,
         onRetryStart={teamRuntime?.onRetryStart ? () => void teamRuntime.onRetryStart?.() : undefined}
       />
       <CrossSessionDisabledBanner />
+      <PendingUploads
+        conversation_id={conversation_id}
+        onUploaded={(paths) => setUploadFile((previous) => [...previous, ...paths])}
+      />
       {unsentMessage.unsent ? (
         <UnsentMessageBanner
           retrying={unsentMessage.retrying}

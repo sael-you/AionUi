@@ -47,6 +47,7 @@ import { emitter, useAddEventListener } from '@/renderer/utils/emitter';
 import { type ChatFileRef, isChatFileRef, uploadFileRef } from '@/common/types/chatFile';
 import { localSelectionItems, mergeFileSelectionItems } from '@/renderer/utils/file/fileSelection';
 import { useQuoteStack } from '@/renderer/components/chat/SendBox/quoteStack';
+import PendingUploads from '../PendingUploads';
 import UnsentMessageBanner from '../UnsentMessageBanner';
 import { isConnectionFailure, useUnsentMessage, type UnsentMessage } from '../useUnsentMessage';
 import { collectChatFileRefs, splitChatFileRefs } from '@/renderer/utils/file/messageFiles';
@@ -800,6 +801,10 @@ const AionrsSendBox: React.FC<{
         onRetryStart={teamRuntime?.onRetryStart ? () => void teamRuntime.onRetryStart?.() : undefined}
       />
       <CrossSessionDisabledBanner />
+      <PendingUploads
+        conversation_id={conversation_id}
+        onUploaded={(paths) => setUploadFile((previous) => [...previous, ...paths])}
+      />
       {unsentMessage.unsent ? (
         <UnsentMessageBanner
           retrying={unsentMessage.retrying}

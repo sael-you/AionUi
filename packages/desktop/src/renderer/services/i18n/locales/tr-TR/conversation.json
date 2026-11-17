@@ -1008,5 +1008,8 @@
     "notSent": "Gönderilmedi — taslak olarak kaydedildi",
     "autoRetry": "bağlantı gelince yeniden gönderilir",
     "retry": "Yeniden dene"
+  },
+  "pendingUpload": {
+    "waiting": "Yüklemek için bağlantı bekleniyor:"
   }
 }

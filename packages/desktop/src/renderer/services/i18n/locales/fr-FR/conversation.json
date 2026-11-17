@@ -1006,5 +1006,8 @@
     "notSent": "Non envoyé — enregistré comme brouillon",
     "autoRetry": "sera renvoyé au retour de la connexion",
     "retry": "Réessayer"
+  },
+  "pendingUpload": {
+    "waiting": "En attente de la connexion pour envoyer :"
   }
 }

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { isUploadConnectionError, pendingUploadStore } from './pendingUploads/pendingUploadStore';
 import { CSRF_HEADER_NAME, csrfHeaders, isXhrCsrfRejection } from '@/common/adapter/csrf';
 import { getBaseUrl } from '@/common/adapter/httpBridge';
 import { trackUpload, type UploadSource } from '@/renderer/hooks/file/useUploadState';
@@ -356,6 +357,11 @@ class FileServiceClass {
         if (error instanceof Error && error.message === UPLOAD_ABORTED_ERROR) {
           // User-initiated abort: drop this file silently (the UI already reflects it).
           continue;
+        }
+        // No connection (TASK-127): keep the bytes; the composer uploads them when it is back.
+        if (conversation_id && source === 'sendbox' && isUploadConnectionError(error)) {
+          // Over the size cap it cannot be kept: it is dropped like any failed upload.
+          if ((await pendingUploadStore.save(conversation_id, file)) === 'saved') continue;
         }
         console.error('Failed to upload file:', error);
         continue;

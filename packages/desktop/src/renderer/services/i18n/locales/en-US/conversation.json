@@ -1006,5 +1006,8 @@
     "notSent": "Not sent — saved as draft",
     "autoRetry": "sends again when the connection is back",
     "retry": "Retry"
+  },
+  "pendingUpload": {
+    "waiting": "Waiting for the connection to upload:"
   }
 }

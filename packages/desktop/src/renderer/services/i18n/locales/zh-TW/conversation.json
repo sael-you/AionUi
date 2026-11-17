@@ -1006,5 +1006,8 @@
     "notSent": "未傳送 — 已儲存為草稿",
     "autoRetry": "連線恢復後會自動重送",
     "retry": "重試"
+  },
+  "pendingUpload": {
+    "waiting": "等待連線恢復後上傳："
   }
 }

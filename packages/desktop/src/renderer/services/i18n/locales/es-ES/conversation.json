@@ -1007,5 +1007,8 @@
     "notSent": "No enviado: guardado como borrador",
     "autoRetry": "se enviará de nuevo cuando vuelva la conexión",
     "retry": "Reintentar"
+  },
+  "pendingUpload": {
+    "waiting": "Esperando la conexión para subir:"
   }
 }

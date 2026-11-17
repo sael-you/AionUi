@@ -1007,5 +1007,8 @@
     "notSent": "Nicht gesendet — als Entwurf gespeichert",
     "autoRetry": "wird erneut gesendet, sobald die Verbindung zurück ist",
     "retry": "Erneut senden"
+  },
+  "pendingUpload": {
+    "waiting": "Wartet auf die Verbindung zum Hochladen:"
   }
 }

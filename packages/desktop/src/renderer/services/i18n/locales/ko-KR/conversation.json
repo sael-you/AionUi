@@ -1006,5 +1006,8 @@
     "notSent": "전송되지 않음 — 임시 저장됨",
     "autoRetry": "연결이 돌아오면 다시 보냅니다",
     "retry": "다시 시도"
+  },
+  "pendingUpload": {
+    "waiting": "연결되면 업로드합니다:"
   }
 }
