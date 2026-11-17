@@ -30,6 +30,7 @@ import TurnActivity, {
   useDurationUnits,
   useTicker,
 } from '@/renderer/pages/conversation/components/orchestration/TurnActivity';
+import { RestartInterruptedNotice } from '@/renderer/pages/conversation/components/orchestration/RestartResume';
 import type { TurnActivityEntry } from '@/renderer/pages/conversation/components/orchestration/turnActivity';
 import { useConversationContextSafe } from '@/renderer/hooks/context/ConversationContext';
 import { useConversationRuntimeView } from '@/renderer/pages/conversation/runtime/useConversationRuntimeView';
@@ -986,6 +987,11 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
                   />
                 </div>
               )}
+              {conversationId && !isProcessing ? (
+                <div className={`${rowWidthClass} min-w-0 message-item px-8px m-t-6px empty:hidden`}>
+                  <RestartInterruptedNotice conversationId={conversationId} />
+                </div>
+              ) : null}
               <div className='h-20px' />
             </div>
           </div>

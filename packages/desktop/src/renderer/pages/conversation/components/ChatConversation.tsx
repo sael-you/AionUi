@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { AutoContinueButton } from '@/renderer/pages/conversation/components/orchestration/RestartResume';
 import { ipcBridge } from '@/common';
 import type { IConversationMcpStatus, IProvider, TChatConversation, TProviderWithModel } from '@/common/config/storage';
 import { uuid } from '@/common/utils';
@@ -216,6 +217,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
         <BoardKeeperBadge conversation={conversation} />
         <ParentBreadcrumb conversation={conversation} />
         <RunSummaryPill conversationId={conversation.id} />
+        <AutoContinueButton conversation={conversation} />
         <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />
         <ConversationKitsButton conversationId={conversation.id} projectId={conversation.project_id} />
         {!isMobile && (
@@ -420,6 +422,11 @@ const ChatConversation: React.FC<{
       <BoardKeeperBadge conversation={conversation} />
       <ParentBreadcrumb conversation={conversation} />
       {conversation && <RunSummaryPill conversationId={conversation.id} />}
+      {conversation && !isLegacyReadOnlyConversation && (
+        <div className='shrink-0'>
+          <AutoContinueButton conversation={conversation} />
+        </div>
+      )}
       {conversation && (
         <div className='shrink-0'>
           <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />

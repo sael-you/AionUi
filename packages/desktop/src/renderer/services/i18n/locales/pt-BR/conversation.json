@@ -974,7 +974,33 @@
     "pill": {
       "label": "Trabalho delegado: {{summary}}"
     },
-    "breadcrumb": "Caminho da conversa"
+    "breadcrumb": "Caminho da conversa",
+    "restart": {
+      "title": "Interrompida por uma reinicialização",
+      "kind": {
+        "approval": "Ela aguardava sua aprovação. Esse pedido se perdeu; Continuar pergunta de novo.",
+        "approvalNamed": "Ela aguardava sua aprovação de “{{tool}}”. Esse pedido se perdeu; Continuar pergunta de novo.",
+        "tool": "Uma ferramenta estava em execução. Ela pode ter terminado, terminado em parte ou não ter começado.",
+        "toolNamed": "“{{tool}}” estava em execução. Pode ter terminado, terminado em parte ou não ter começado.",
+        "text": "Ela estava escrevendo a resposta."
+      },
+      "blocked": {
+        "sensitive": "Não continuou automaticamente: esta etapa grava em produção, paga, envia e-mail, faz push ou deploy.",
+        "repeat": "Não continuou automaticamente: esta etapa já foi interrompida e continuada uma vez."
+      },
+      "continue": "Continuar",
+      "dismiss": "Dispensar",
+      "failed": "Não foi possível. Tente novamente.",
+      "alreadyHandled": "Já continuada ou dispensada.",
+      "autoContinued": "Continuada automaticamente após uma reinicialização",
+      "auto": {
+        "label": "Continuar automaticamente após reinicializações",
+        "desc": "Se o AionUi reiniciar no meio de um turno, esta conversa continua sozinha. Etapas que gravam em produção, pagam, enviam e-mail, fazem push ou deploy ainda esperam por você.",
+        "on": "A continuação automática está ativada para esta conversa.",
+        "off": "A continuação automática está desativada para esta conversa.",
+        "failed": "Não foi possível alterar a continuação automática."
+      }
+    }
   },
   "quoteReply": {
     "toolbarLabel": "Ações da seleção",

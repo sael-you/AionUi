@@ -9,6 +9,8 @@
  * delegated-work card and the header pill all speak these states. `idle` has
  * no glyph (the tree shows the agent mark instead).
  */
+import type { RestartInterrupted } from '@/common/adapter/ipcBridge';
+
 export type RunState = 'waiting' | 'failed' | 'running' | 'done' | 'queued' | 'stopped' | 'idle';
 
 /** Most urgent first: the roll-up of a parent is the first state any descendant has. */
@@ -56,6 +58,37 @@ export const readLastOutcome = (extra: unknown): LastOutcome | undefined => {
   const value = (extra as { last_outcome?: unknown } | undefined)?.last_outcome;
   return value === 'finished' || value === 'error' || value === 'cancelled' ? value : undefined;
 };
+
+const RESTART_KINDS: ReadonlySet<unknown> = new Set(['approval', 'tool', 'text']);
+const RESTART_STATES: ReadonlySet<unknown> = new Set(['waiting', 'continued', 'auto_continued', 'dismissed']);
+
+/** `extra.restart_interrupted` (AionCore TASK-44), or undefined when absent or malformed. */
+export const readRestartInterrupted = (extra: unknown): RestartInterrupted | undefined => {
+  const value = (extra as { restart_interrupted?: unknown } | undefined)?.restart_interrupted;
+  if (!value || typeof value !== 'object') return undefined;
+  const record = value as Record<string, unknown>;
+  if (typeof record.at !== 'number' || !RESTART_KINDS.has(record.kind) || !RESTART_STATES.has(record.state)) {
+    return undefined;
+  }
+  return {
+    at: record.at,
+    kind: record.kind as RestartInterrupted['kind'],
+    state: record.state as RestartInterrupted['state'],
+    repeat: typeof record.repeat === 'number' ? record.repeat : 0,
+    ...(typeof record.tool === 'string' && record.tool ? { tool: record.tool } : {}),
+    ...(typeof record.summary === 'string' && record.summary ? { summary: record.summary } : {}),
+    ...(record.auto_blocked === 'sensitive' || record.auto_blocked === 'repeat'
+      ? { auto_blocked: record.auto_blocked }
+      : {}),
+  };
+};
+
+/** A restart interrupted the last turn and nobody continued or dismissed it yet: it needs the owner. */
+export const isRestartWaiting = (extra: unknown): boolean => readRestartInterrupted(extra)?.state === 'waiting';
+
+/** `extra.auto_continue_after_restart` (absent = off). */
+export const readAutoContinue = (extra: unknown): boolean =>
+  (extra as { auto_continue_after_restart?: unknown } | undefined)?.auto_continue_after_restart === true;
 
 const numberOf = (value: unknown): number | undefined => (typeof value === 'number' ? value : undefined);
 

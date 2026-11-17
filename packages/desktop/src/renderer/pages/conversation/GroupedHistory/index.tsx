@@ -60,6 +60,7 @@ import { filterConversations, filterProjectGroup, normalizeSidebarQuery } from '
 import {
   conversationRunState,
   isOutcomeSeen,
+  isRestartWaiting,
   readLastOutcome,
   type RunState,
 } from '@/renderer/pages/conversation/components/orchestration/runState';
@@ -124,7 +125,8 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   const runStateOf = useCallback(
     (conversation: TChatConversation): RunState =>
       conversationRunState({
-        waiting: isConversationWaitingConfirmation(conversation.id),
+        // A turn a restart interrupted waits for Continue just like a pending approval (TASK-44).
+        waiting: isConversationWaitingConfirmation(conversation.id) || isRestartWaiting(conversation.extra),
         generating: isConversationGenerating(conversation.id),
         backgroundActive: hasBackgroundActive(conversation.id),
         doneUnread: hasCompletionUnread(conversation.id),
@@ -624,8 +626,9 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
     for (const conversation of [...conversations].toSorted(byRecent)) {
       const state = runStates.get(conversation.id)?.state;
       const where = projectNameById.get(conversation.id);
-      if (state === 'waiting') waiting.push({ conversation, state, where });
-      else if (state === 'failed') failed.push({ conversation, state, where });
+      if (state === 'waiting') {
+        waiting.push({ conversation, state, where, restartInterrupted: isRestartWaiting(conversation.extra) });
+      } else if (state === 'failed') failed.push({ conversation, state, where });
       else if (state === 'running') running.push(conversation);
     }
     return { items: [...waiting, ...failed], running };

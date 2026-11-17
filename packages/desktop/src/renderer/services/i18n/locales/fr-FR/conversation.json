@@ -968,7 +968,33 @@
     "pill": {
       "label": "Travail délégué : {{summary}}"
     },
-    "breadcrumb": "Chemin de la conversation"
+    "breadcrumb": "Chemin de la conversation",
+    "restart": {
+      "title": "Interrompue par un redémarrage",
+      "kind": {
+        "approval": "Elle attendait votre approbation. Cette demande a disparu ; Continuer la repose.",
+        "approvalNamed": "Elle attendait votre approbation de « {{tool}} ». Cette demande a disparu ; Continuer la repose.",
+        "tool": "Un outil était en cours d'exécution. Il a pu se terminer, se terminer en partie ou ne pas démarrer.",
+        "toolNamed": "« {{tool}} » était en cours d'exécution. Il a pu se terminer, se terminer en partie ou ne pas démarrer.",
+        "text": "Elle rédigeait sa réponse."
+      },
+      "blocked": {
+        "sensitive": "Pas de reprise automatique : cette étape écrit en production, paie, envoie des e-mails, pousse ou déploie.",
+        "repeat": "Pas de reprise automatique : cette étape a déjà été interrompue et reprise une fois."
+      },
+      "continue": "Continuer",
+      "dismiss": "Ignorer",
+      "failed": "Action impossible. Réessayez.",
+      "alreadyHandled": "Déjà reprise ou ignorée.",
+      "autoContinued": "Reprise automatiquement après un redémarrage",
+      "auto": {
+        "label": "Reprendre automatiquement après les redémarrages",
+        "desc": "Si AionUi redémarre au milieu d'un tour, cette conversation reprend d'elle-même. Les étapes qui écrivent en production, paient, envoient des e-mails, poussent ou déploient vous attendent toujours.",
+        "on": "La reprise automatique est activée pour cette conversation.",
+        "off": "La reprise automatique est désactivée pour cette conversation.",
+        "failed": "Impossible de modifier la reprise automatique."
+      }
+    }
   },
   "quoteReply": {
     "toolbarLabel": "Actions sur la sélection",

@@ -969,7 +969,33 @@
     "pill": {
       "label": "Trabajo delegado: {{summary}}"
     },
-    "breadcrumb": "Ruta de la conversación"
+    "breadcrumb": "Ruta de la conversación",
+    "restart": {
+      "title": "Interrumpida por un reinicio",
+      "kind": {
+        "approval": "Esperaba tu aprobación. Esa solicitud ya no existe; Continuar vuelve a preguntar.",
+        "approvalNamed": "Esperaba tu aprobación de «{{tool}}». Esa solicitud ya no existe; Continuar vuelve a preguntar.",
+        "tool": "Se estaba ejecutando una herramienta. Puede haber terminado, terminado a medias o no haber empezado.",
+        "toolNamed": "Se estaba ejecutando «{{tool}}». Puede haber terminado, terminado a medias o no haber empezado.",
+        "text": "Estaba escribiendo su respuesta."
+      },
+      "blocked": {
+        "sensitive": "No se continuó automáticamente: este paso escribe en producción, paga, envía correo, hace push o despliega.",
+        "repeat": "No se continuó automáticamente: este paso ya se interrumpió y se continuó una vez."
+      },
+      "continue": "Continuar",
+      "dismiss": "Descartar",
+      "failed": "No se pudo. Inténtalo de nuevo.",
+      "alreadyHandled": "Ya se continuó o se descartó.",
+      "autoContinued": "Continuada automáticamente tras un reinicio",
+      "auto": {
+        "label": "Continuar automáticamente tras los reinicios",
+        "desc": "Si AionUi se reinicia a mitad de un turno, esta conversación sigue por sí sola. Los pasos que escriben en producción, pagan, envían correo, hacen push o despliegan siguen esperándote.",
+        "on": "La continuación automática está activada para esta conversación.",
+        "off": "La continuación automática está desactivada para esta conversación.",
+        "failed": "No se pudo cambiar la continuación automática."
+      }
+    }
   },
   "quoteReply": {
     "toolbarLabel": "Acciones de la selección",

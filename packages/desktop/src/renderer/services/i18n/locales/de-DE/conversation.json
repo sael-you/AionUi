@@ -969,7 +969,33 @@
     "pill": {
       "label": "Delegierte Arbeit: {{summary}}"
     },
-    "breadcrumb": "Pfad der Unterhaltung"
+    "breadcrumb": "Pfad der Unterhaltung",
+    "restart": {
+      "title": "Durch einen Neustart unterbrochen",
+      "kind": {
+        "approval": "Es wartete auf deine Freigabe. Diese Anfrage ist weg; „Fortsetzen“ fragt erneut.",
+        "approvalNamed": "Es wartete auf deine Freigabe für „{{tool}}“. Diese Anfrage ist weg; „Fortsetzen“ fragt erneut.",
+        "tool": "Ein Tool lief gerade. Es kann fertig, teilweise fertig oder nicht gestartet sein.",
+        "toolNamed": "„{{tool}}“ lief gerade. Es kann fertig, teilweise fertig oder nicht gestartet sein.",
+        "text": "Es schrieb gerade seine Antwort."
+      },
+      "blocked": {
+        "sensitive": "Nicht automatisch fortgesetzt: Dieser Schritt schreibt in die Produktion, zahlt, sendet E-Mails, pusht oder deployt.",
+        "repeat": "Nicht automatisch fortgesetzt: Dieser Schritt wurde schon einmal unterbrochen und fortgesetzt."
+      },
+      "continue": "Fortsetzen",
+      "dismiss": "Verwerfen",
+      "failed": "Das hat nicht geklappt. Versuche es erneut.",
+      "alreadyHandled": "Bereits fortgesetzt oder verworfen.",
+      "autoContinued": "Nach einem Neustart automatisch fortgesetzt",
+      "auto": {
+        "label": "Nach Neustarts automatisch fortsetzen",
+        "desc": "Startet AionUi mitten in einem Schritt neu, macht diese Unterhaltung von selbst weiter. Schritte, die in die Produktion schreiben, zahlen, E-Mails senden, pushen oder deployen, warten weiterhin auf dich.",
+        "on": "Automatisches Fortsetzen ist für diese Unterhaltung an.",
+        "off": "Automatisches Fortsetzen ist für diese Unterhaltung aus.",
+        "failed": "Automatisches Fortsetzen konnte nicht geändert werden."
+      }
+    }
   },
   "quoteReply": {
     "toolbarLabel": "Aktionen für die Auswahl",

@@ -436,6 +436,19 @@ export const conversation = {
     (p) => `/api/conversations/${p.conversation_id}/outcome-seen`,
     () => undefined
   ),
+  /** Continue or dismiss a turn that an AionUi restart interrupted (TASK-44). */
+  restartResume: httpPost<
+    { restart_interrupted: RestartInterrupted; msg_id?: string; turn_id?: string },
+    { conversation_id: string; action: 'continue' | 'dismiss' }
+  >(
+    (p) => `/api/conversations/${p.conversation_id}/restart-resume`,
+    (p) => ({ action: p.action })
+  ),
+  /** Per-conversation switch: continue by itself after a restart interrupted it (TASK-44). */
+  setAutoContinue: httpPut<{ enabled: boolean }, { conversation_id: string; enabled: boolean }>(
+    (p) => `/api/conversations/${p.conversation_id}/auto-continue`,
+    (p) => ({ enabled: p.enabled })
+  ),
   stop: httpPost<{ runtime: TConversationRuntimeSummary }, { conversation_id: string; turn_id: string }>(
     (p) => `/api/conversations/${p.conversation_id}/cancel`,
     (p) => ({ turn_id: p.turn_id })
@@ -2393,6 +2406,22 @@ export interface IConversationTurnCompletedEvent {
     created_at: number;
   };
 }
+
+/** `conversation.extra.restart_interrupted` (AionCore TASK-44): the last turn was killed by an AionUi restart. */
+export type RestartInterrupted = {
+  /** Epoch ms of the startup that found it. */
+  at: number;
+  kind: 'approval' | 'tool' | 'text';
+  /** The tool (or approval title) that was running / waiting. */
+  tool?: string;
+  /** At most 200 characters of the command / request. */
+  summary?: string;
+  state: 'waiting' | 'continued' | 'auto_continued' | 'dismissed';
+  /** Times this same step was interrupted in a row (0 = first time). */
+  repeat: number;
+  /** Why AionCore did not continue by itself although the switch is on. */
+  auto_blocked?: 'sensitive' | 'repeat';
+};
 
 export interface IConversationListChangedEvent {
   conversation_id: string;
