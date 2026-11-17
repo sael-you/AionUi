@@ -1766,7 +1766,8 @@
       "empty": "Henüz bir şey yok.",
       "more": "Daha eskileri göster",
       "failed": "Daha fazlası yüklenemedi.",
-      "error": "hata"
+      "error": "hata",
+      "trace": "İzi aç"
     },
     "approval": {
       "title": "Bir ajan “{{device}}” üzerinde işlem yapmak istiyor",

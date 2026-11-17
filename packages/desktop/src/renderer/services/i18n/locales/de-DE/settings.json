@@ -1766,7 +1766,8 @@
       "empty": "Noch nichts.",
       "more": "Ältere anzeigen",
       "failed": "Weitere konnten nicht geladen werden.",
-      "error": "Fehler"
+      "error": "Fehler",
+      "trace": "Ablaufprotokoll öffnen"
     },
     "approval": {
       "title": "Ein Agent möchte auf „{{device}}“ handeln",

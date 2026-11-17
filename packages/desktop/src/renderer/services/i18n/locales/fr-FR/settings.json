@@ -1766,7 +1766,8 @@
       "empty": "Rien pour l'instant.",
       "more": "Afficher les plus anciennes",
       "failed": "Impossible d'en charger davantage.",
-      "error": "erreur"
+      "error": "erreur",
+      "trace": "Ouvrir la trace"
     },
     "approval": {
       "title": "Un agent veut agir sur « {{device}} »",

@@ -10,7 +10,7 @@
  * own switch and Pair — and the audit of what agents did.
  */
 
-import { Button, Message, Radio, Switch, Tag } from '@arco-design/web-react';
+import { Button, Link, Message, Radio, Switch, Tag } from '@arco-design/web-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
@@ -27,7 +27,7 @@ import {
 } from '@/common/types/platform/devices';
 import { DrawerBlock } from '@/renderer/components/settings/SettingsModal/library/LibraryParts';
 import { formatDateTime } from '@/renderer/services/i18n/format';
-import { STATUS_COLORS } from '../devicesModel';
+import { addonRunDetail, STATUS_COLORS } from '../devicesModel';
 
 const KEY = 'settings.devices';
 
@@ -229,24 +229,40 @@ export const DeviceAuditBlock: React.FC<{ device: Device }> = ({ device }) => {
         </p>
       ) : (
         <ul className='m-0 p-0 list-none flex flex-col gap-4px' data-testid='device-audit'>
-          {rows.map((row, index) => (
-            <li
-              key={`${row.at}-${index}`}
-              className='flex flex-wrap items-center gap-6px text-12px'
-              data-testid='device-audit-row'
-            >
-              <span className='text-t-secondary tabular-nums'>
-                {formatDateTime(row.at, i18n.language, { dateStyle: 'short', timeStyle: 'medium' })}
-              </span>
-              <code className='text-t-primary'>{row.verb}</code>
-              {row.package || row.origin ? (
-                <span className='min-w-0 text-t-secondary break-all'>{row.package ?? row.origin}</span>
-              ) : null}
-              <Tag size='small' color={OUTCOME_COLORS[row.outcome]}>
-                {row.outcome === 'error' ? t(`${KEY}.audit.error`) : t(`preview.browserDevices.outcome.${row.outcome}`)}
-              </Tag>
-            </li>
-          ))}
+          {rows.map((row, index) => {
+            const run = row.verb === 'addon_run' ? addonRunDetail(row.detail) : null;
+            return (
+              <li
+                key={`${row.at}-${index}`}
+                className='flex flex-wrap items-center gap-6px text-12px'
+                data-testid='device-audit-row'
+              >
+                <span className='text-t-secondary tabular-nums'>
+                  {formatDateTime(row.at, i18n.language, { dateStyle: 'short', timeStyle: 'medium' })}
+                </span>
+                <code className='text-t-primary'>{row.verb}</code>
+                {row.package || row.origin ? (
+                  <span className='min-w-0 text-t-secondary break-all'>{row.package ?? row.origin}</span>
+                ) : null}
+                <Tag size='small' color={OUTCOME_COLORS[row.outcome]}>
+                  {row.outcome === 'error'
+                    ? t(`${KEY}.audit.error`)
+                    : t(`preview.browserDevices.outcome.${row.outcome}`)}
+                </Tag>
+                {run?.task ? (
+                  <span className='basis-full text-t-primary break-words' data-testid='device-audit-task'>
+                    {run.task}
+                  </span>
+                ) : null}
+                {run?.message ? <span className='basis-full text-t-secondary break-words'>{run.message}</span> : null}
+                {run?.traceUrl ? (
+                  <Link href={run.traceUrl} target='_blank' rel='noreferrer' data-testid='device-audit-trace'>
+                    {t(`${KEY}.audit.trace`)}
+                  </Link>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       )}
       {next ? (

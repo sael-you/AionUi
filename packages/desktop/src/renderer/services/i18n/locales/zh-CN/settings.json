@@ -1767,7 +1767,8 @@
       "empty": "暂无内容。",
       "more": "显示更早的",
       "failed": "无法加载更多。",
-      "error": "错误"
+      "error": "错误",
+      "trace": "打开运行记录"
     },
     "approval": {
       "title": "智能体想在“{{device}}”上操作",

@@ -1766,7 +1766,8 @@
       "empty": "Nothing yet.",
       "more": "Show older",
       "failed": "Could not load more.",
-      "error": "error"
+      "error": "error",
+      "trace": "Open the trace"
     },
     "approval": {
       "title": "An agent wants to act on “{{device}}”",

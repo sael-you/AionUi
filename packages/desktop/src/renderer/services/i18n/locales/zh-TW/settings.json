@@ -1768,7 +1768,8 @@
       "empty": "尚無內容。",
       "more": "顯示較早的",
       "failed": "無法載入更多。",
-      "error": "錯誤"
+      "error": "錯誤",
+      "trace": "開啟執行記錄"
     },
     "approval": {
       "title": "智慧代理想在「{{device}}」上操作",

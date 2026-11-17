@@ -3167,6 +3167,7 @@ export type I18nKey =
   | 'settings.devices.audit.hint'
   | 'settings.devices.audit.more'
   | 'settings.devices.audit.title'
+  | 'settings.devices.audit.trace'
   | 'settings.devices.browseLibrary'
   | 'settings.devices.categories.addon'
   | 'settings.devices.categories.mac'

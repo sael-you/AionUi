@@ -1769,7 +1769,8 @@
       "empty": "Nada ainda.",
       "more": "Mostrar anteriores",
       "failed": "Não foi possível carregar mais.",
-      "error": "erro"
+      "error": "erro",
+      "trace": "Abrir o registro"
     },
     "approval": {
       "title": "Um agente quer agir em “{{device}}”",
