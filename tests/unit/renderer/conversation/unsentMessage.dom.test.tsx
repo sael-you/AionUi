@@ -25,11 +25,12 @@ vi.mock('@/common', () => ({
 }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 
+import { resetOfflineOwnerForTests } from '@/renderer/services/pendingUploads/offlineOwner';
 import { BackendHttpError } from '@/common/adapter/httpBridge';
 import UnsentMessageBanner from '@/renderer/pages/conversation/platforms/UnsentMessageBanner';
 import { isConnectionFailure, useUnsentMessage } from '@/renderer/pages/conversation/platforms/useUnsentMessage';
 
-const KEY = 'aionui.unsentMessage.c1';
+const KEY = 'aionui.unsentMessage.u1.c1';
 const MESSAGE = { input: '> quote\n\nhello', files: [], draftText: 'hello' };
 
 const mount = (options: { idempotent: boolean; resend?: () => Promise<void>; content?: string; keyed?: boolean }) => {
@@ -54,6 +55,7 @@ const mount = (options: { idempotent: boolean; resend?: () => Promise<void>; con
 
 describe('unsent message recovery (TASK-127)', () => {
   beforeEach(() => {
+    resetOfflineOwnerForTests('u1');
     window.localStorage.clear();
     realtime.listeners.clear();
   });
