@@ -650,6 +650,7 @@
   "speechToText": "Voz para Texto",
   "speechToTextDescription": "Configure o provedor de entrada de voz usado pela caixa de bate-papo no desktop e WebUI.",
   "speechToTextApiKey": "Chave de API",
+  "speechToTextOpenAIKeyHint": "Deixe vazio para usar sua chave de modelo da OpenAI",
   "speechToTextBaseUrl": "URL Base",
   "speechToTextModel": "Modelo",
   "speechToTextLanguage": "Idioma Padrão",

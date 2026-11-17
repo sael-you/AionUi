@@ -26,16 +26,20 @@ import {
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
 import { SPEECH_TO_TEXT_CONFIG_CHANGED_EVENT } from '@/renderer/services/SpeechToTextService';
 import { getClientBusinessSetting, setClientBusinessSetting } from '@/renderer/services/clientBusinessSettings';
+import { speechErrorContent } from '@/renderer/components/chat/SpeechInputButton';
 import { getVoiceController } from '@/renderer/voice/core/effects';
 
 /** `ready` = can record; `offConfigured` = off, one click turns it on; `offUnconfigured` = needs Settings. */
 export type ReplyDictationSetup = 'loading' | 'ready' | 'offConfigured' | 'offUnconfigured';
 
-/** Whether the chosen speech provider has its key, i.e. turning Speech to Text on is enough. */
+/**
+ * Whether turning Speech to Text on is enough. Deepgram needs its own key; OpenAI does
+ * not (an empty key makes core use the OpenAI key from Settings → Model).
+ */
 export const hasSpeechProvider = (config?: Partial<SpeechToTextConfig> | null): boolean => {
   if (!config) return false;
-  const key = config.provider === 'deepgram' ? config.deepgram?.api_key : config.openai?.api_key;
-  return Boolean(key?.trim());
+  if (config.provider !== 'deepgram') return true;
+  return Boolean(config.deepgram?.api_key?.trim());
 };
 
 export const dictationSetupOf = (config?: Partial<SpeechToTextConfig> | null): ReplyDictationSetup => {
@@ -106,7 +110,11 @@ export const useReplyDictation = ({ value, onChange }: { value: string; onChange
     const base = t(getSpeechInputErrorMessageKey(errorCode));
     const detail = errorMessage?.trim();
     if (errorCode === 'empty-transcript') Message.warning(base);
-    else Message.error(detail ? `${base}: ${detail}` : base);
+    else
+      Message.error({
+        content: speechErrorContent(t, errorCode, detail),
+        duration: errorCode === 'key-invalid' ? 8000 : 3000,
+      });
     clearError();
   }, [clearError, errorCode, errorMessage, t]);
 

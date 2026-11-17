@@ -650,6 +650,7 @@
   "speechToText": "Преобразование речи в текст",
   "speechToTextDescription": "Настройте провайдера для голосового ввода на десктопе и WebUI.",
   "speechToTextApiKey": "API-ключ",
+  "speechToTextOpenAIKeyHint": "Оставьте пустым, чтобы использовать ключ модели OpenAI",
   "speechToTextBaseUrl": "Базовый URL",
   "speechToTextModel": "Модель",
   "speechToTextLanguage": "Язык по умолчанию",

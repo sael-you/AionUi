@@ -33,10 +33,17 @@ const makeConfig = (overrides?: Partial<SpeechToTextConfig>): SpeechToTextConfig
 });
 
 describe('SpeechTestPanel', () => {
-  it('shows validation error when api key is missing in official mode', async () => {
-    render(<SpeechTestPanel config={makeConfig()} source='openai' />);
+  it('asks for the key only for Deepgram: OpenAI may be empty (core uses the model key)', async () => {
+    const deepgram = makeConfig({ provider: 'deepgram', deepgram: { api_key: '', model: 'nova-3' } });
+    const view = render(<SpeechTestPanel config={deepgram} source='deepgram' />);
     fireEvent.click(screen.getByText('settings.speechToTextTest'));
     await waitFor(() => expect(screen.getByText('settings.speechToTextTestMissingKey')).toBeTruthy());
+    view.unmount();
+
+    render(<SpeechTestPanel config={makeConfig()} source='openai' />);
+    fireEvent.click(screen.getByText('settings.speechToTextTest'));
+    await waitFor(() => expect(speechSettingsMocks.setClientBusinessSetting).toHaveBeenCalled());
+    expect(screen.queryByText('settings.speechToTextTestMissingKey')).toBeNull();
   });
 
   it('shows validation error for invalid custom base_url', async () => {

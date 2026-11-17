@@ -650,6 +650,7 @@
   "speechToText": "音声文字起こし",
   "speechToTextDescription": "デスクトップ版と WebUI のチャット入力欄で使う音声文字起こしサービスを設定します。",
   "speechToTextApiKey": "API キー",
+  "speechToTextOpenAIKeyHint": "空欄にすると OpenAI のモデルキーを使用します",
   "speechToTextBaseUrl": "Base URL",
   "speechToTextModel": "モデル",
   "speechToTextLanguage": "既定の言語",

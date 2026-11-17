@@ -650,6 +650,7 @@
   "speechToText": "Konuşmadan Yazıya",
   "speechToTextDescription": "Masaüstü ve WebUI sohbet kutusunda kullanılacak konuşmadan yazıya servisini yapılandırın.",
   "speechToTextApiKey": "API Key",
+  "speechToTextOpenAIKeyHint": "OpenAI model anahtarınızı kullanmak için boş bırakın",
   "speechToTextBaseUrl": "Base URL",
   "speechToTextModel": "Model",
   "speechToTextLanguage": "Varsayılan Dil",

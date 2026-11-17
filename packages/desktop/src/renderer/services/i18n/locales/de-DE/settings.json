@@ -640,6 +640,7 @@
   "speechToText": "Sprache zu Text",
   "speechToTextDescription": "Konfiguriere den Spracheingabe-Anbieter für das Chat-Feld auf Desktop und WebUI.",
   "speechToTextApiKey": "API-Schlüssel",
+  "speechToTextOpenAIKeyHint": "Leer lassen, um deinen OpenAI-Modellschlüssel zu verwenden",
   "speechToTextBaseUrl": "Basis-URL",
   "speechToTextModel": "Modell",
   "speechToTextLanguage": "Standardsprache",

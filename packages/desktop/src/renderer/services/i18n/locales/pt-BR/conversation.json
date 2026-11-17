@@ -498,6 +498,8 @@
       "permissionDenied": "Permissão para o microfone foi negada",
       "recordingUnsupported": "Gravação ao vivo não é suportada aqui. Faça o upload de um arquivo de áudio no lugar.",
       "transcriptionFailed": "A transcrição de áudio falhou",
+      "keyInvalid": "A chave de fala para texto é inválida",
+      "openSettings": "Configurações",
       "genericError": "Falha na entrada de voz. Por favor, tente novamente"
     }
   },

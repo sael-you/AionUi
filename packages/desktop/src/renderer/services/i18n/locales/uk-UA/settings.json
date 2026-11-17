@@ -656,6 +656,7 @@
   "speechToText": "Перетворення мовлення на текст",
   "speechToTextDescription": "Налаштуйте провайдера для голосового введення на десктопі та WebUI.",
   "speechToTextApiKey": "API-ключ",
+  "speechToTextOpenAIKeyHint": "Залиште порожнім, щоб використати ключ моделі OpenAI",
   "speechToTextBaseUrl": "Base URL",
   "speechToTextModel": "Модель",
   "speechToTextLanguage": "Мова за замовчуванням",

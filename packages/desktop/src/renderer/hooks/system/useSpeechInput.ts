@@ -27,6 +27,7 @@ export type SpeechInputErrorCode =
   | 'audio-capture'
   | 'empty-transcript'
   | 'file-too-large'
+  | 'key-invalid'
   | 'network'
   | 'not-configured'
   | 'permission-denied'
@@ -138,6 +139,8 @@ export const getSpeechInputErrorMessageKey = (errorCode: SpeechInputErrorCode): 
       return 'conversation.chat.speech.emptyTranscript';
     case 'file-too-large':
       return 'conversation.chat.speech.fileTooLarge';
+    case 'key-invalid':
+      return 'conversation.chat.speech.keyInvalid';
     case 'network':
       return 'conversation.chat.speech.networkError';
     case 'not-configured':
@@ -208,7 +211,7 @@ export const pickRecordingMimeType = (): string => {
   return RECORDING_MIME_TYPES.find((mimeType) => MediaRecorder.isTypeSupported(mimeType)) || '';
 };
 
-const mapSpeechInputError = (error: unknown): SpeechInputErrorCode => {
+export const mapSpeechInputError = (error: unknown): SpeechInputErrorCode => {
   if (error instanceof DOMException) {
     switch (error.name) {
       case 'NotAllowedError':
@@ -232,6 +235,10 @@ const mapSpeechInputError = (error: unknown): SpeechInputErrorCode => {
     message.includes('STT_DISABLED')
   ) {
     return 'not-configured';
+  }
+  // The provider refused the key (REST 400 or the stream's error frame).
+  if (message.includes('STT_KEY_INVALID')) {
+    return 'key-invalid';
   }
   if (message.includes('STT_FILE_TOO_LARGE')) {
     return 'file-too-large';

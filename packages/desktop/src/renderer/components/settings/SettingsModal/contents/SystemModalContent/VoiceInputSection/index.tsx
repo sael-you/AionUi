@@ -231,8 +231,10 @@ const VoiceInputSection: React.FC = () => {
 
             <Form.Item
               label={
-                <FieldLabel labelKey='settings.speechToTextApiKey' requirement={isCustom ? 'optional' : 'required'} />
+                <FieldLabel labelKey='settings.speechToTextApiKey' requirement={isDeepgram ? 'required' : 'optional'} />
               }
+              // OpenAI: an empty key makes core use the OpenAI key from Settings → Model.
+              extra={source === 'openai' ? t('settings.speechToTextOpenAIKeyHint') : undefined}
             >
               <Input.Password value={activeApiKey} visibilityToggle onChange={handleApiKeyChange} />
             </Form.Item>

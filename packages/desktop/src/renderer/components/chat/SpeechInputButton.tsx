@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Message, Button, Tooltip } from '@arco-design/web-react';
+import { Message, Button, Link, Tooltip } from '@arco-design/web-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SPEECH_TO_TEXT_CONFIG_CHANGED_EVENT } from '@/renderer/services/SpeechToTextService';
@@ -13,12 +13,37 @@ import {
   getSpeechInputErrorMessageKey,
   useSpeechInput,
   type SpeechInputAvailability,
+  type SpeechInputErrorCode,
 } from '@/renderer/hooks/system/useSpeechInput';
 
 type SpeechInputButtonProps = {
   /** Live transcript of the active streaming session; `null` clears it. */
   onLiveTranscript?: (text: string | null) => void;
   onTranscript: (transcript: string) => void;
+};
+
+/** Settings page that holds Voice input (HashRouter path). */
+const SPEECH_SETTINGS_HREF = '#/settings/system';
+
+/**
+ * What to show for a dictation error. An invalid key gets a link to the voice-input
+ * settings instead of a bare failure; other errors keep their text (+ detail).
+ */
+export const speechErrorContent = (
+  t: (key: string) => string,
+  errorCode: SpeechInputErrorCode,
+  detail?: string | null
+): React.ReactNode => {
+  const base = t(getSpeechInputErrorMessageKey(errorCode));
+  if (errorCode === 'key-invalid') {
+    return (
+      <span data-testid='speech-key-invalid'>
+        {base} — <Link href={SPEECH_SETTINGS_HREF}>{t('conversation.chat.speech.openSettings')}</Link>
+      </span>
+    );
+  }
+  const trimmed = detail?.trim();
+  return trimmed ? `${base}: ${trimmed}` : base;
 };
 
 let activeSpeechInputOwner: symbol | null = null;
@@ -156,7 +181,10 @@ const SpeechInputButton: React.FC<SpeechInputButtonProps> = ({ onLiveTranscript,
       clearError();
       return;
     }
-    Message.error(detail ? `${baseMessage}: ${detail}` : baseMessage);
+    Message.error({
+      content: speechErrorContent(t, errorCode, detail),
+      duration: errorCode === 'key-invalid' ? 8000 : 3000,
+    });
     clearError();
   }, [clearError, errorCode, errorMessage, t]);
 

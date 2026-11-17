@@ -497,6 +497,8 @@
       "permissionDenied": "Доступ до мікрофона відхилено",
       "recordingUnsupported": "Запис у реальному часі не підтримується. Будь ласка, завантажте аудіофайл",
       "transcriptionFailed": "Не вдалося транскрибувати аудіо",
+      "keyInvalid": "Ключ розпізнавання мовлення недійсний",
+      "openSettings": "Налаштування",
       "genericError": "Помилка голосового введення. Спробуйте ще раз",
       "emptyTranscript": "No speech was detected"
     }

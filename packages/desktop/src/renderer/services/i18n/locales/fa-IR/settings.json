@@ -650,6 +650,7 @@
   "speechToText": "تبدیل گفتار به متن",
   "speechToTextDescription": "ارائه‌دهنده ورودی صوتی استفاده‌شده در جعبه چت دسکتاپ و WebUI را پیکربندی کنید.",
   "speechToTextApiKey": "کلید API",
+  "speechToTextOpenAIKeyHint": "برای استفاده از کلید مدل OpenAI خود، خالی بگذارید",
   "speechToTextBaseUrl": "آدرس پایه",
   "speechToTextModel": "مدل",
   "speechToTextLanguage": "زبان پیش‌فرض",

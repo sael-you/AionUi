@@ -650,6 +650,7 @@
   "speechToText": "语音转文字",
   "speechToTextDescription": "配置桌面端和 WebUI 聊天输入框使用的语音转写服务。",
   "speechToTextApiKey": "API Key",
+  "speechToTextOpenAIKeyHint": "留空则使用你的 OpenAI 模型密钥",
   "speechToTextBaseUrl": "Base URL",
   "speechToTextModel": "模型",
   "speechToTextLanguage": "默认语言",

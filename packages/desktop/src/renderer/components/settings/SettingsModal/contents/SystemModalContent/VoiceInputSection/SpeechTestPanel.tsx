@@ -68,8 +68,8 @@ const SpeechTestPanel: React.FC<SpeechTestPanelProps> = ({ config, source }) => 
       }
       return null;
     }
-    const apiKey = source === 'deepgram' ? config.deepgram?.api_key : config.openai?.api_key;
-    if (!apiKey?.trim()) {
+    // Only Deepgram needs its own key; OpenAI falls back to the OpenAI key from Settings → Model.
+    if (source === 'deepgram' && !config.deepgram?.api_key?.trim()) {
       return t('settings.speechToTextTestMissingKey');
     }
     return null;

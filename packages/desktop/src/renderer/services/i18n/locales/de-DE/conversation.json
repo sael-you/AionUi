@@ -493,6 +493,8 @@
       "permissionDenied": "Mikrofonberechtigung verweigert",
       "recordingUnsupported": "Live-Aufnahme wird hier nicht unterstützt. Bitte lade stattdessen eine Audiodatei hoch",
       "transcriptionFailed": "Audio-Transkription fehlgeschlagen",
+      "keyInvalid": "Der Sprache-zu-Text-Schlüssel ist ungültig",
+      "openSettings": "Einstellungen",
       "genericError": "Spracheingabe fehlgeschlagen. Bitte erneut versuchen"
     }
   },

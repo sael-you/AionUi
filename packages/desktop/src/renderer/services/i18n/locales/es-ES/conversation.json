@@ -493,6 +493,8 @@
       "permissionDenied": "Se denegó el permiso del micrófono",
       "recordingUnsupported": "La grabación en vivo no está disponible aquí. Por favor sube un archivo de audio",
       "transcriptionFailed": "Error en la transcripción de audio",
+      "keyInvalid": "La clave de voz a texto no es válida",
+      "openSettings": "Ajustes",
       "genericError": "Error en la entrada de voz. Por favor intenta de nuevo"
     }
   },

@@ -650,6 +650,7 @@
   "speechToText": "Reconnaissance vocale",
   "speechToTextDescription": "Configurer le fournisseur de saisie vocale utilisé par la boîte de chat sur bureau et WebUI.",
   "speechToTextApiKey": "Clé API",
+  "speechToTextOpenAIKeyHint": "Laissez vide pour utiliser votre clé de modèle OpenAI",
   "speechToTextBaseUrl": "URL de base",
   "speechToTextModel": "Modèle",
   "speechToTextLanguage": "Langue par défaut",

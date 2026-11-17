@@ -638,6 +638,7 @@
   "speechToText": "Voz a texto",
   "speechToTextDescription": "Configura el proveedor de entrada de voz utilizado por el cuadro de chat en escritorio y WebUI.",
   "speechToTextApiKey": "Clave API",
+  "speechToTextOpenAIKeyHint": "Déjalo vacío para usar tu clave de modelo de OpenAI",
   "speechToTextBaseUrl": "URL base",
   "speechToTextModel": "Modelo",
   "speechToTextLanguage": "Idioma predeterminado",

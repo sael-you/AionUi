@@ -73,7 +73,9 @@ import ReplyPopover from '@/renderer/components/chat/SendBox/ReplyPopover';
 
 const ON = { enabled: true, provider: 'openai', openai: { api_key: 'k', model: 'whisper-1' } };
 const OFF_WITH_PROVIDER = { ...ON, enabled: false };
-const OFF_NO_PROVIDER = { enabled: false, provider: 'openai', openai: { api_key: '', model: 'whisper-1' } };
+// Deepgram needs its own key; OpenAI with an empty key counts as set up (core uses the model key).
+const OFF_NO_PROVIDER = { enabled: false, provider: 'deepgram', deepgram: { api_key: '', model: 'nova-3' } };
+const OFF_OPENAI_NO_KEY = { enabled: false, provider: 'openai', openai: { api_key: '', model: 'whisper-1' } };
 
 const composerTranscript = vi.fn();
 const onAdd = vi.fn();
@@ -202,6 +204,12 @@ describe('reply dictation is bound to the reply field (TASK-126)', () => {
     );
     await waitFor(() => expect(reply().start).toHaveBeenCalledTimes(1));
     expect(composerTranscript).not.toHaveBeenCalled();
+  });
+
+  it('OpenAI with an empty key still offers the one-click turn on (core uses the model key)', async () => {
+    settings.current = OFF_OPENAI_NO_KEY;
+    renderScene();
+    expect(await mic('offConfigured')).toBeInTheDocument();
   });
 
   it('Speech to Text off without a provider: the mic opens Settings', async () => {

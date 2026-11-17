@@ -492,6 +492,8 @@
       "permissionDenied": "Permission microphone refusée",
       "recordingUnsupported": "L'enregistrement en direct n'est pas pris en charge ici. Veuillez téléverser un fichier audio à la place",
       "transcriptionFailed": "Échec de la transcription audio",
+      "keyInvalid": "La clé de reconnaissance vocale est invalide",
+      "openSettings": "Réglages",
       "genericError": "Échec de la saisie vocale. Veuillez réessayer"
     }
   },

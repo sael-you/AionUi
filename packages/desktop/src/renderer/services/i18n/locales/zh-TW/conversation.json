@@ -492,6 +492,8 @@
       "permissionDenied": "麥克風權限被拒絕",
       "recordingUnsupported": "目前環境不支援直接錄音，請改為上傳音訊檔案",
       "transcriptionFailed": "音訊轉寫失敗",
+      "keyInvalid": "語音轉文字金鑰無效",
+      "openSettings": "設定",
       "genericError": "語音輸入失敗，請再試一次"
     }
   },

@@ -650,6 +650,7 @@
   "speechToText": "Speech to Text",
   "speechToTextDescription": "Configure the voice input provider used by the chat box on desktop and WebUI.",
   "speechToTextApiKey": "API Key",
+  "speechToTextOpenAIKeyHint": "Leave empty to use your OpenAI model key",
   "speechToTextBaseUrl": "Base URL",
   "speechToTextModel": "Model",
   "speechToTextLanguage": "Default Language",
