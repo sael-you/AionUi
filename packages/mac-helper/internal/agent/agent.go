@@ -48,7 +48,23 @@ type phoneInfo struct {
 	dev            adb.Device
 	androidVersion string
 	chrome         bool
+	companionID    string
+	companionAt    time.Time
 }
+
+// visibleState drops the refresh timestamps: only what the inventory shows
+// counts as a change.
+func visibleState(m map[string]phoneInfo) map[string]phoneInfo {
+	out := make(map[string]phoneInfo, len(m))
+	for k, v := range m {
+		v.companionAt = time.Time{}
+		out[k] = v
+	}
+	return out
+}
+
+// companionRefresh is how often a phone's companion client id is re-read.
+const companionRefresh = 60 * time.Second
 
 // Agent implements relay.Handler.
 type Agent struct {
@@ -146,6 +162,10 @@ func (a *Agent) Inventory() wire.Inventory {
 		}
 		transport := p.dev.Transport
 		phone.Transport = &transport
+		if p.companionID != "" {
+			id := p.companionID
+			phone.CompanionClientID = &id
+		}
 		phones = append(phones, phone)
 	}
 	macOn := a.cfg.DeviceEnabled(wire.DeviceMac)
@@ -210,6 +230,7 @@ func (a *Agent) refreshPhones(ctx context.Context) {
 		info := phoneInfo{dev: d}
 		if old, ok := prev[d.Serial]; ok {
 			info.androidVersion, info.chrome = old.androidVersion, old.chrome
+			info.companionID, info.companionAt = old.companionID, old.companionAt
 		}
 		if d.Ready() {
 			phone := adb.Phone{R: a.R, Serial: d.Serial}
@@ -217,11 +238,15 @@ func (a *Agent) refreshPhones(ctx context.Context) {
 				info.androidVersion = phone.Prop(lctx, "ro.build.version.release")
 			}
 			info.chrome = phone.ChromeDevtools(lctx)
+			if time.Since(info.companionAt) >= companionRefresh {
+				info.companionID = phone.CompanionClientID(lctx)
+				info.companionAt = time.Now()
+			}
 		}
 		next[d.Serial] = info
 	}
 	a.mu.Lock()
-	same := reflect.DeepEqual(prev, next)
+	same := reflect.DeepEqual(visibleState(prev), visibleState(next))
 	a.phones = next
 	a.mu.Unlock()
 	for serial := range prev {

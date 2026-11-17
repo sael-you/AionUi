@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -73,6 +74,11 @@ func setup(t *testing.T, enabled ...string) (*Agent, *scriptRunner, *[]any) {
 			return "16\n", nil
 		case strings.HasSuffix(line, "'cat' '/proc/net/unix'"):
 			return "0000: 00000002 ... @chrome_devtools_remote\n", nil
+		case strings.Contains(line, "'content' 'query' '--uri' 'content://com.aionui.companion.pairing/client'"):
+			if strings.HasPrefix(line, "-s S1 ") {
+				return "Row: 0 client_id=cmp_42\n", nil
+			}
+			return "", fmt.Errorf("no provider")
 		case strings.HasSuffix(line, "exec-out screencap -p"):
 			return string(shot), nil
 		case strings.Contains(line, " install -r "):
@@ -251,5 +257,44 @@ func TestStopCancelsRunningVerb(t *testing.T) {
 	a.Stop("S1")
 	if ctx.Err() == nil {
 		t.Fatal("stop did not cancel")
+	}
+}
+
+func TestInventoryCarriesTheCompanionClientIDWithoutResendingOnRefresh(t *testing.T) {
+	a, r, _ := setup(t, "S1")
+	inv := a.Inventory()
+	if inv.Phones[0].CompanionClientID == nil || *inv.Phones[0].CompanionClientID != "cmp_42" {
+		t.Fatalf("companion id: %+v", inv.Phones[0])
+	}
+	raw, _ := json.Marshal(inv)
+	if !strings.Contains(string(raw), `"companion_client_id":"cmp_42"`) {
+		t.Fatalf("frame %s", raw)
+	}
+	// Drain the change from setup; a refresh inside the cache window neither
+	// re-queries nor reports a change.
+	select {
+	case <-a.Changes():
+	default:
+	}
+	queries := func() int {
+		n := 0
+		r.mu.Lock()
+		defer r.mu.Unlock()
+		for _, c := range r.calls {
+			if strings.Contains(c, "content://com.aionui.companion.pairing") {
+				n++
+			}
+		}
+		return n
+	}
+	before := queries()
+	a.refreshPhones(context.Background())
+	if queries() != before {
+		t.Fatal("re-queried inside the 60 s cache")
+	}
+	select {
+	case <-a.Changes():
+		t.Fatal("refresh without a visible change signalled one")
+	default:
 	}
 }

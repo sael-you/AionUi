@@ -230,3 +230,36 @@ func (p Phone) ChromeDevtools(ctx context.Context) bool {
 	out, err := p.shell(ctx, shortTimeout, "cat", "/proc/net/unix")
 	return err == nil && strings.Contains(string(out), "@chrome_devtools_remote")
 }
+
+// CompanionAuthority is the AionUi companion app's pairing provider
+// (agreed with the Android lane, C38 §7): one row, column client_id, empty
+// when the app is not paired. It answers only the shell user.
+const CompanionAuthority = "com.aionui.companion.pairing"
+
+var clientIDPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
+
+// CompanionClientID reads the companion app's client id ("" when the app is
+// absent, not paired or the answer is malformed).
+func (p Phone) CompanionClientID(ctx context.Context) string {
+	out, err := p.shell(ctx, shortTimeout, "content", "query", "--uri", "content://"+CompanionAuthority+"/client")
+	if err != nil {
+		return ""
+	}
+	return ParseCompanionClientID(string(out))
+}
+
+// ParseCompanionClientID reads `Row: 0 client_id=<id>` from `content query`.
+func ParseCompanionClientID(out string) string {
+	for _, line := range strings.Split(out, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "Row: 0 ") {
+			continue
+		}
+		for _, field := range strings.Split(strings.TrimPrefix(line, "Row: 0 "), ", ") {
+			if v, ok := strings.CutPrefix(field, "client_id="); ok && clientIDPattern.MatchString(v) {
+				return v
+			}
+		}
+	}
+	return ""
+}

@@ -147,3 +147,20 @@ func TestParseForeground(t *testing.T) {
 		t.Fatal("no activity accepted")
 	}
 }
+
+func TestParseCompanionClientID(t *testing.T) {
+	cases := map[string]string{
+		"Row: 0 client_id=dev_8f2a1c\n":                                 "dev_8f2a1c",
+		"Row: 0 client_id=abc-123, other=x\n":                           "abc-123",
+		"Row: 0 client_id=\n":                                           "",
+		"No result found.\n":                                            "",
+		"Row: 0 client_id=a b; rm -rf /\n":                              "",
+		"Row: 0 client_id=" + strings.Repeat("a", 65) + "\n":            "",
+		"Error while accessing provider:com.aionui.companion.pairing\n": "",
+	}
+	for in, want := range cases {
+		if got := ParseCompanionClientID(in); got != want {
+			t.Errorf("ParseCompanionClientID(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

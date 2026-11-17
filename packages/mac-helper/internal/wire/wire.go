@@ -67,6 +67,9 @@ type Phone struct {
 	Transport      *string `json:"transport,omitempty"`
 	Chrome         bool    `json:"chrome"`
 	Enabled        bool    `json:"enabled"`
+	// The AionUi companion app's client id on this phone, when paired: core
+	// merges the Mac-relay phone into that companion's card.
+	CompanionClientID *string `json:"companion_client_id,omitempty"`
 }
 
 type Mac struct {
