@@ -121,11 +121,31 @@ describe('memory list', () => {
 describe('Review with AI', () => {
   it('the brief asks for an audit table, names the selected files and changes nothing', () => {
     const brief = reviewBrief(['deploy.md', 'use-bun.md']);
-    expect(brief).toContain('wrong, outdated, contradictory or duplicated rules');
-    expect(brief).toContain('deploy.md, use-bun.md');
-    expect(brief).toContain('file, problem, proposed fix');
-    expect(brief).toContain('Change nothing until the owner approves.');
-    expect(reviewBrief([])).toContain('Review all memory files');
+    // Scope: the selected files are the focus, the rest is still read for conflicts and duplicates.
+    expect(brief).toContain('Focus on these memory files: deploy.md, use-bun.md.');
+    expect(brief).toContain('Still read the others and MEMORY.md');
+    // The seven steps, in order.
+    const steps = [
+      '1. Read every memory file and MEMORY.md.',
+      '2. Check each memory against reality: the code, the git log and history, and the docs',
+      '3. Check for conflicts with the project rules (AGENTS.md, CLAUDE.md, GEMINI.md',
+      '4. Find duplicates and overlaps, and propose one merged text',
+      '5. Rank the findings by impact',
+      '6. Report one table with the columns: file · problem · evidence (file:line or commit) · impact (high / med / low) · proposed fix',
+      '7. Wait for the owner to say which rows to apply. Then apply only those',
+    ];
+    const positions = steps.map((step) => brief.indexOf(step));
+    expect(positions.every((position) => position >= 0)).toBe(true);
+    expect(positions).toEqual(positions.toSorted((a, b) => a - b));
+    expect(brief).toContain('old paths, commands or versions, and dates that have passed');
+    expect(brief).toContain('"Safe to apply now" list');
+    expect(brief).toContain('keep MEMORY.md in sync');
+    expect(brief).toContain('Never quote secrets');
+    // Nothing is changed before the owner approves: the last line.
+    expect(brief.trimEnd().endsWith('Change nothing until the owner approves.')).toBe(true);
+    const all = reviewBrief([]);
+    expect(all).toContain('Review all memory files and the MEMORY.md index.');
+    expect(all).not.toContain('Focus on these memory files');
   });
 
   it('runs on the enabled Claude Code assistant, the generated one first', () => {
