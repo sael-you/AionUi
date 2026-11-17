@@ -1799,5 +1799,148 @@
       "sessionRequired": "Melde dich erneut an, um Server zu ändern.",
       "csrf": "Die Seite ist veraltet; lade sie neu und versuche es erneut."
     }
+  },
+  "rules": {
+    "title": "Regeln",
+    "description": "Regeln, denen jede Agenten-Sitzung von Beginn an folgt. Eine Regel erreicht ein Gespräch nur dort, wo du sie einschaltest.",
+    "add": "Regel hinzufügen",
+    "addTitle": "Regel schreiben",
+    "search": "Regeln suchen",
+    "loading": "Regeln werden geladen",
+    "empty": "Noch keine Regel. Schreibe eine oder importiere deine vorhandene AGENTS.md.",
+    "nothingOn": "In {{scope}} ist keine Regel eingeschaltet.",
+    "browseLibrary": "Regeln durchsuchen",
+    "switchedOff": "Ausgeschaltet",
+    "fromGlobalToggle": "Aus Global",
+    "fromGlobalHint": "In Global an. Um eine für dieses Projekt auszulassen, öffne sie und entferne sie hier unter „Verwendet in“.",
+    "offHereHint": "In Global an, in diesem Projekt ausgelassen.",
+    "saved": "{{name}} gespeichert",
+    "created": "{{name}} hinzugefügt",
+    "deleted": "{{name}} gelöscht",
+    "deleteTitle": "{{name}} löschen?",
+    "deleteBody": "Sie gilt ab der nächsten Sitzung nirgends mehr.",
+    "namePlaceholder": "z. B. Commit-Nachrichten",
+    "descriptionPlaceholder": "Eine Zeile: worum es in dieser Regel geht",
+    "bodyPlaceholder": "Schreibe die Regel in Markdown. Kurz, konkret, überprüfbar.",
+    "edit": "Bearbeiten",
+    "preview": "Vorschau",
+    "previewEmpty": "Noch nichts für die Vorschau.",
+    "enabledHint": "Aus = sie gilt nirgends, egal wo sie angehängt ist.",
+    "importedFrom": "Importiert aus {{path}}",
+    "group": {
+      "here": "An in {{scope}}",
+      "offHere": "Hier ausgelassen"
+    },
+    "summary": {
+      "on": "{{count}} an",
+      "on_one": "{{count}} an",
+      "on_other": "{{count}} an",
+      "fromGlobal": "{{count}} aus Global",
+      "fromGlobal_one": "{{count}} aus Global",
+      "fromGlobal_other": "{{count}} aus Global",
+      "cap": "bis zu {{max}} pro Sitzung"
+    },
+    "source": {
+      "mine": "Meine",
+      "imported": "Importiert"
+    },
+    "chips": {
+      "off": "Aus"
+    },
+    "menu": {
+      "edit": "Bearbeiten",
+      "switchOff": "Überall ausschalten",
+      "switchOn": "Einschalten"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Beschreibung",
+      "body": "Regel",
+      "enabled": "Diese Regel anwenden"
+    },
+    "problems": {
+      "nameRequired": "Gib einen Namen ein",
+      "nameTooLong": "Höchstens 80 Zeichen",
+      "descriptionTooLong": "Höchstens 300 Zeichen",
+      "bodyRequired": "Schreibe die Regel",
+      "bodyTooLarge": "Eine Regel darf höchstens {{max}} KB haben; teile sie oder lege lange Inhalte in einen Skill"
+    },
+    "size": {
+      "label": "{{used}} von {{max}}"
+    },
+    "effective": {
+      "title": "Was {{scope}} bekommt",
+      "loadFailed": "Was dieser Bereich bekommt, konnte nicht geladen werden.",
+      "none": "Hier gilt keine Regel.",
+      "capped": "Über dem Limit, in den Sitzungen ausgelassen: {{names}}",
+      "leftOut": "Ausgelassen",
+      "exactText": "Genauer Text, mit dem die Sitzungen beginnen",
+      "nextSession": "Laufende Gespräche übernehmen eine Änderung ab ihrer nächsten Sitzung."
+    },
+    "header": {
+      "label": "{{count}} Regeln",
+      "label_one": "{{count}} Regel",
+      "label_other": "{{count}} Regeln",
+      "capped": "Einige Regeln sind über dem Größenlimit und werden ausgelassen",
+      "title": "Regeln dieses Gesprächs",
+      "manage": "Regeln verwalten"
+    },
+    "usedIn": {
+      "conversation": "Gespräch {{id}}",
+      "nowhere": "Noch nirgends eingeschaltet.",
+      "drop": "Entfernen",
+      "dropLabel": "Regelzuordnung für {{scope}} entfernen",
+      "levelLabel": "Ebene",
+      "targetLabel": "Wo",
+      "targetPlaceholder": "Auswählen…",
+      "opLabel": "An oder aus",
+      "apply": "Anwenden",
+      "hint": "Hinzufügen schaltet die Regel auf dieser Ebene ein, Entfernen lässt eine geerbte aus. Für ein einzelnes Gespräch nutze den Kits-Knopf in dessen Kopfzeile."
+    },
+    "import": {
+      "open": "AGENTS.md importieren",
+      "title": "Vorhandene Regeln importieren",
+      "intro": "Mach aus deiner bisherigen AGENTS.md Regeln. Prüfe zuerst, was importiert würde; nichts wird geschrieben, bevor du importierst.",
+      "scopeLabel": "Importieren für",
+      "projectPlaceholder": "Projekt wählen",
+      "projectLabel": "Projekt",
+      "noFiles": "Hier wurde keine Regeldatei gefunden.",
+      "nameTaken": "Eine Regel mit diesem Namen existiert",
+      "blocked": "Einige Namen sind schon vergeben. Benenne diese Regeln zuerst um und importiere dann.",
+      "importHint": "Erstellt die Regeln und schaltet sie hier ein. Die Dateien bleiben unverändert.",
+      "run": "{{count}} Regeln importieren",
+      "run_one": "{{count}} Regel importieren",
+      "run_other": "{{count}} Regeln importieren",
+      "imported": "{{count}} Regeln importiert",
+      "imported_one": "{{count}} Regel importiert",
+      "imported_other": "{{count}} Regeln importiert",
+      "handOverTitle": "Dateien an AionUi übergeben",
+      "handOverGlobal": "Ab jetzt wird die globale Datei aus deinen Global-Regeln geschrieben, nach jeder Änderung neu – so gibt es nur eine Stelle zum Bearbeiten.",
+      "handOverProject": "Jede Datei im Repository wird zu einem einzeiligen Verweis auf die Regeln in AionUi. AionUi committet oder pusht nichts; prüfe die Änderung selbst in git.",
+      "ackGlobal": "Mir ist klar, dass die globale Datei aus meinen Global-Regeln erzeugt wird",
+      "ackProject": "Mir ist klar, dass diese Dateien durch einen einzeiligen Verweis ersetzt werden",
+      "handOver": "Übergeben",
+      "handedOver": "{{count}} Dateien übergeben",
+      "handedOver_one": "{{count}} Datei übergeben",
+      "handedOver_other": "{{count}} Dateien übergeben",
+      "status": {
+        "new": "Neu",
+        "imported": "Importiert",
+        "managed": "Übergeben",
+        "pointer": "Nur Verweis",
+        "missing": "Nicht gefunden"
+      }
+    },
+    "errors": {
+      "generic": "Bei den Regeln ist etwas schiefgelaufen.",
+      "invalid": "Nicht gespeichert: {{detail}}",
+      "nameTaken": "Eine andere Regel hat schon diesen Namen.",
+      "stale": "Diese Regel wurde anderswo geändert und neu geladen. Prüfe sie und speichere erneut.",
+      "alreadyImported": "Diese Datei wurde schon importiert.",
+      "confirmRequired": "Bestätige zuerst den Schritt.",
+      "notFound": "Diese Regel gibt es nicht mehr.",
+      "sessionRequired": "Melde dich erneut an, um Regeln zu ändern.",
+      "csrf": "Die Seite ist veraltet; lade sie neu und versuche es erneut."
+    }
   }
 }

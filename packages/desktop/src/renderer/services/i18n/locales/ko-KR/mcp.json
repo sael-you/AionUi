@@ -359,7 +359,8 @@
       "kit": "키트",
       "skill": "스킬",
       "mcp": "MCP 서버",
-      "server": "서버"
+      "server": "서버",
+      "rule": "규칙"
     },
     "op": {
       "add": "추가",
@@ -528,6 +529,7 @@
       "testOk_one": "연결됨 · 도구 {{count}}개",
       "testOk_other": "연결됨 · 도구 {{count}}개"
     },
-    "servers": "서버"
+    "servers": "서버",
+    "rules": "규칙"
   }
 }

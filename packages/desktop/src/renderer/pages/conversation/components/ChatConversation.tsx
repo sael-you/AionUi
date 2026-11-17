@@ -10,6 +10,7 @@ import type { IConversationMcpStatus, IProvider, TChatConversation, TProviderWit
 import { uuid } from '@/common/utils';
 import addChatIcon from '@/renderer/assets/icons/add-chat.svg';
 import { CronJobManager } from '@/renderer/pages/cron';
+import ConversationRulesButton from '@/renderer/pages/settings/RulesSettings/ConversationRulesButton';
 import ConversationKitsButton from '@/renderer/pages/settings/ToolsSettings/kits/ConversationKitsButton';
 import { resolveCronJobId } from '@/renderer/pages/cron/cronUtils';
 import { classifyConfigSetError, useAcpConfigOptions } from '@/renderer/hooks/agent/useAcpConfigOptions';
@@ -219,6 +220,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
         <RunSummaryPill conversationId={conversation.id} />
         <AutoContinueButton conversation={conversation} />
         <CronJobManager conversation_id={conversation.id} cron_job_id={cronJobId} />
+        <ConversationRulesButton conversationId={conversation.id} />
         <ConversationKitsButton conversationId={conversation.id} projectId={conversation.project_id} />
         {!isMobile && (
           <AionrsModelSelector
@@ -434,6 +436,7 @@ const ChatConversation: React.FC<{
       )}
       {conversation && (
         <div className='shrink-0'>
+          <ConversationRulesButton conversationId={conversation.id} />
           <ConversationKitsButton conversationId={conversation.id} projectId={conversation.project_id} />
         </div>
       )}

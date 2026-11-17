@@ -1801,5 +1801,148 @@
       "sessionRequired": "サーバーを変更するには再度サインインしてください。",
       "csrf": "ページが古くなっています。再読み込みしてもう一度お試しください。"
     }
+  },
+  "rules": {
+    "title": "ルール",
+    "description": "すべてのエージェントセッションが開始時から従うルールです。オンにした場所の会話にだけ届きます。",
+    "add": "ルールを追加",
+    "addTitle": "ルールを書く",
+    "search": "ルールを検索",
+    "loading": "ルールを読み込み中",
+    "empty": "ルールはまだありません。書くか、既存の AGENTS.md をインポートしてください。",
+    "nothingOn": "{{scope}} でオンのルールはありません。",
+    "browseLibrary": "ルールを見る",
+    "switchedOff": "オフ",
+    "fromGlobalToggle": "グローバルから",
+    "fromGlobalHint": "グローバルでオンです。このプロジェクトから外すには、ルールを開いて「使用先」でここから削除してください。",
+    "offHereHint": "グローバルではオン、このプロジェクトでは除外。",
+    "saved": "{{name}} を保存しました",
+    "created": "{{name}} を追加しました",
+    "deleted": "{{name}} を削除しました",
+    "deleteTitle": "{{name}} を削除しますか？",
+    "deleteBody": "次のセッションから、どこにも適用されなくなります。",
+    "namePlaceholder": "例：コミットメッセージ",
+    "descriptionPlaceholder": "1 行で：このルールの内容",
+    "bodyPlaceholder": "ルールを Markdown で書いてください。短く、具体的に、確かめられる形で。",
+    "edit": "編集",
+    "preview": "プレビュー",
+    "previewEmpty": "プレビューする内容はまだありません。",
+    "enabledHint": "オフ = どこに割り当てられていても適用されません。",
+    "importedFrom": "{{path}} からインポート",
+    "group": {
+      "here": "{{scope}} でオン",
+      "offHere": "ここでは除外"
+    },
+    "summary": {
+      "on": "{{count}} 件オン",
+      "on_one": "{{count}} 件オン",
+      "on_other": "{{count}} 件オン",
+      "fromGlobal": "グローバルから {{count}} 件",
+      "fromGlobal_one": "グローバルから {{count}} 件",
+      "fromGlobal_other": "グローバルから {{count}} 件",
+      "cap": "セッションあたり最大 {{max}}"
+    },
+    "source": {
+      "mine": "自分",
+      "imported": "インポート"
+    },
+    "chips": {
+      "off": "オフ"
+    },
+    "menu": {
+      "edit": "編集",
+      "switchOff": "すべての場所でオフ",
+      "switchOn": "オンにする"
+    },
+    "fields": {
+      "name": "名前",
+      "description": "説明",
+      "body": "ルール",
+      "enabled": "このルールを適用する"
+    },
+    "problems": {
+      "nameRequired": "名前を入力してください",
+      "nameTooLong": "80 文字以内",
+      "descriptionTooLong": "300 文字以内",
+      "bodyRequired": "ルールを書いてください",
+      "bodyTooLarge": "ルールは最大 {{max}} KB です。分割するか、長い内容はスキルにしてください"
+    },
+    "size": {
+      "label": "{{used}} / {{max}}"
+    },
+    "effective": {
+      "title": "{{scope}} が受け取るもの",
+      "loadFailed": "このスコープが受け取る内容を読み込めませんでした。",
+      "none": "ここに適用されるルールはありません。",
+      "capped": "上限を超えたためセッションから除外：{{names}}",
+      "leftOut": "除外",
+      "exactText": "セッション開始時の正確なテキスト",
+      "nextSession": "進行中の会話は、次のセッションから変更を反映します。"
+    },
+    "header": {
+      "label": "ルール {{count}} 件",
+      "label_one": "ルール {{count}} 件",
+      "label_other": "ルール {{count}} 件",
+      "capped": "サイズ上限を超えて除外されたルールがあります",
+      "title": "この会話のルール",
+      "manage": "ルールを管理"
+    },
+    "usedIn": {
+      "conversation": "会話 {{id}}",
+      "nowhere": "まだどこでもオンになっていません。",
+      "drop": "削除",
+      "dropLabel": "{{scope}} の割り当てを削除",
+      "levelLabel": "レベル",
+      "targetLabel": "対象",
+      "targetPlaceholder": "選択…",
+      "opLabel": "オンまたは除外",
+      "apply": "適用",
+      "hint": "追加はそのレベルでルールをオンにし、削除は継承されたものを除外します。1 つの会話だけなら、その会話のヘッダーのキットボタンを使ってください。"
+    },
+    "import": {
+      "open": "AGENTS.md をインポート",
+      "title": "既存のルールをインポート",
+      "intro": "今使っている AGENTS.md をルールに変換します。まずインポートされる内容を確認してください。インポートするまで何も書き込まれません。",
+      "scopeLabel": "インポート先",
+      "projectPlaceholder": "プロジェクトを選択",
+      "projectLabel": "プロジェクト",
+      "noFiles": "ここにルールファイルは見つかりませんでした。",
+      "nameTaken": "同じ名前のルールがあります",
+      "blocked": "一部の名前は既存のルールで使われています。先にそのルールの名前を変えてからインポートしてください。",
+      "importHint": "ルールを作成してここでオンにします。ファイルはそのままです。",
+      "run": "{{count}} 件のルールをインポート",
+      "run_one": "{{count}} 件のルールをインポート",
+      "run_other": "{{count}} 件のルールをインポート",
+      "imported": "{{count}} 件のルールをインポートしました",
+      "imported_one": "{{count}} 件のルールをインポートしました",
+      "imported_other": "{{count}} 件のルールをインポートしました",
+      "handOverTitle": "ファイルを AionUi に引き継ぐ",
+      "handOverGlobal": "今後、グローバルファイルはグローバルのルールから書き出され、変更のたびに更新されます。編集する場所は 1 か所になります。",
+      "handOverProject": "リポジトリ内の各ファイルは、AionUi のルールを指す 1 行の参照になります。AionUi はコミットもプッシュもしません。変更は git でご自身で確認してください。",
+      "ackGlobal": "グローバルファイルがグローバルのルールから生成されることを理解しました",
+      "ackProject": "これらのファイルが 1 行の参照に置き換えられることを理解しました",
+      "handOver": "引き継ぐ",
+      "handedOver": "{{count}} 件のファイルを引き継ぎました",
+      "handedOver_one": "{{count}} 件のファイルを引き継ぎました",
+      "handedOver_other": "{{count}} 件のファイルを引き継ぎました",
+      "status": {
+        "new": "新規",
+        "imported": "インポート済み",
+        "managed": "引き継ぎ済み",
+        "pointer": "参照のみ",
+        "missing": "見つかりません"
+      }
+    },
+    "errors": {
+      "generic": "ルールで問題が発生しました。",
+      "invalid": "保存されませんでした：{{detail}}",
+      "nameTaken": "同じ名前のルールがすでにあります。",
+      "stale": "このルールは別の場所で変更されたため再読み込みしました。確認してもう一度保存してください。",
+      "alreadyImported": "このファイルはすでにインポートされています。",
+      "confirmRequired": "先に手順を確認してください。",
+      "notFound": "このルールはもう存在しません。",
+      "sessionRequired": "ルールを変更するには再度サインインしてください。",
+      "csrf": "ページが古くなっています。再読み込みしてもう一度お試しください。"
+    }
   }
 }

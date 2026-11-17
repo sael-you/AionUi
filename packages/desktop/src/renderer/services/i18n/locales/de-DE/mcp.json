@@ -359,7 +359,8 @@
       "kit": "Kit",
       "skill": "Skill",
       "mcp": "MCP-Server",
-      "server": "Server"
+      "server": "Server",
+      "rule": "Regel"
     },
     "op": {
       "add": "Hinzufügen",
@@ -528,6 +529,7 @@
       "testOk_one": "Verbunden · {{count}} Tool",
       "testOk_other": "Verbunden · {{count}} Tools"
     },
-    "servers": "Server"
+    "servers": "Server",
+    "rules": "Regeln"
   }
 }

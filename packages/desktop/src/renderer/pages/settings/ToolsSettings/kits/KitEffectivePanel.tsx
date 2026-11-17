@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import type { KitEffectiveItem, KitEffectiveQuery } from '@/common/config/storage';
 import { sortEffectiveItems, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
 import { useKitEffective } from '@/renderer/hooks/mcp/market/useKits';
+import { useRuleList } from '../../RulesSettings/useRules';
 import { useServerList } from '../../ServersSettings/useServers';
 import { MarketErrorNotice, MarketStatusTag } from '../market/shared';
 import { KitOpTag } from './KitAttachPanel';
@@ -125,6 +126,11 @@ const KitEffectivePanel: React.FC<{ query: KitEffectiveQuery }> = ({ query }) =>
     const names = new Map(serverList.servers.map((server) => [server.id, server.name]));
     return (ref: string) => names.get(ref);
   }, [serverList.servers]);
+  const ruleList = useRuleList();
+  const ruleName = useMemo(() => {
+    const names = new Map(ruleList.rules.map((rule) => [rule.id, rule.name]));
+    return (ref: string) => names.get(ref);
+  }, [ruleList.rules]);
 
   if (error) {
     return <MarketErrorNotice message={describeKitError(t, error)} onRetry={() => void reload()} />;
@@ -134,7 +140,10 @@ const KitEffectivePanel: React.FC<{ query: KitEffectiveQuery }> = ({ query }) =>
   }
 
   const nothingDecided =
-    effective.skills.length === 0 && effective.mcps.length === 0 && (effective.servers ?? []).length === 0;
+    effective.skills.length === 0 &&
+    effective.mcps.length === 0 &&
+    (effective.servers ?? []).length === 0 &&
+    (effective.rules ?? []).length === 0;
 
   return (
     <div className='flex flex-col gap-16px' data-testid='kit-effective-panel'>
@@ -149,6 +158,15 @@ const KitEffectivePanel: React.FC<{ query: KitEffectiveQuery }> = ({ query }) =>
           items={effective.servers}
           testId='kit-effective-servers'
           nameOf={serverName}
+        />
+      ) : null}
+      {/* Absent on a core without rules (C37). */}
+      {effective.rules ? (
+        <EffectiveList
+          title={t('mcp.kits.rules')}
+          items={effective.rules}
+          testId='kit-effective-rules'
+          nameOf={ruleName}
         />
       ) : null}
       {effective.conversation_skills ? (

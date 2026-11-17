@@ -1802,5 +1802,148 @@
       "sessionRequired": "Entre de novo para alterar servidores.",
       "csrf": "A página está desatualizada; recarregue e tente de novo."
     }
+  },
+  "rules": {
+    "title": "Regras",
+    "description": "Regras que toda sessão de agentes segue desde o início. Uma regra só chega a uma conversa onde você a ativa.",
+    "add": "Adicionar regra",
+    "addTitle": "Escrever uma regra",
+    "search": "Buscar regras",
+    "loading": "Carregando regras",
+    "empty": "Nenhuma regra ainda. Escreva uma ou importe seu AGENTS.md atual.",
+    "nothingOn": "Nenhuma regra está ativa em {{scope}}.",
+    "browseLibrary": "Ver regras",
+    "switchedOff": "Desligada",
+    "fromGlobalToggle": "Do Global",
+    "fromGlobalHint": "Ativa no Global. Para deixá-la fora deste projeto, abra-a e remova aqui em \"Usada em\".",
+    "offHereHint": "Ativa no Global, fora deste projeto.",
+    "saved": "{{name}} salva",
+    "created": "{{name}} adicionada",
+    "deleted": "{{name}} excluída",
+    "deleteTitle": "Excluir {{name}}?",
+    "deleteBody": "Ela deixa de valer em todo lugar a partir da próxima sessão.",
+    "namePlaceholder": "ex.: Mensagens de commit",
+    "descriptionPlaceholder": "Uma linha: do que trata esta regra",
+    "bodyPlaceholder": "Escreva a regra em Markdown. Curta, concreta, verificável.",
+    "edit": "Editar",
+    "preview": "Visualizar",
+    "previewEmpty": "Nada para visualizar ainda.",
+    "enabledHint": "Desligada = não vale em lugar nenhum, onde quer que esteja anexada.",
+    "importedFrom": "Importada de {{path}}",
+    "group": {
+      "here": "Ativas em {{scope}}",
+      "offHere": "Fora daqui"
+    },
+    "summary": {
+      "on": "{{count}} ativas",
+      "on_one": "{{count}} ativa",
+      "on_other": "{{count}} ativas",
+      "fromGlobal": "{{count}} do Global",
+      "fromGlobal_one": "{{count}} do Global",
+      "fromGlobal_other": "{{count}} do Global",
+      "cap": "até {{max}} por sessão"
+    },
+    "source": {
+      "mine": "Minhas",
+      "imported": "Importadas"
+    },
+    "chips": {
+      "off": "Desligada"
+    },
+    "menu": {
+      "edit": "Editar",
+      "switchOff": "Desligar em todo lugar",
+      "switchOn": "Ligar"
+    },
+    "fields": {
+      "name": "Nome",
+      "description": "Descrição",
+      "body": "Regra",
+      "enabled": "Aplicar esta regra"
+    },
+    "problems": {
+      "nameRequired": "Digite um nome",
+      "nameTooLong": "No máximo 80 caracteres",
+      "descriptionTooLong": "No máximo 300 caracteres",
+      "bodyRequired": "Escreva a regra",
+      "bodyTooLarge": "Uma regra pode ter no máximo {{max}} KB; divida-a ou guarde material longo em uma skill"
+    },
+    "size": {
+      "label": "{{used}} de {{max}}"
+    },
+    "effective": {
+      "title": "O que {{scope}} recebe",
+      "loadFailed": "Não foi possível carregar o que este escopo recebe.",
+      "none": "Nenhuma regra vale aqui.",
+      "capped": "Acima do limite, fora das sessões: {{names}}",
+      "leftOut": "Fora",
+      "exactText": "Texto exato com que as sessões começam",
+      "nextSession": "Conversas em andamento aplicam uma mudança na próxima sessão."
+    },
+    "header": {
+      "label": "{{count}} regras",
+      "label_one": "{{count}} regra",
+      "label_other": "{{count}} regras",
+      "capped": "Algumas regras passam do limite de tamanho e ficam de fora",
+      "title": "Regras desta conversa",
+      "manage": "Gerenciar regras"
+    },
+    "usedIn": {
+      "conversation": "Conversa {{id}}",
+      "nowhere": "Ainda não está ativa em lugar nenhum.",
+      "drop": "Remover",
+      "dropLabel": "Remover a atribuição de {{scope}}",
+      "levelLabel": "Nível",
+      "targetLabel": "Onde",
+      "targetPlaceholder": "Escolha…",
+      "opLabel": "Ativar ou deixar de fora",
+      "apply": "Aplicar",
+      "hint": "Adicionar ativa a regra nesse nível; Remover deixa de fora uma herdada. Para uma única conversa, use o botão de kits no cabeçalho dela."
+    },
+    "import": {
+      "open": "Importar AGENTS.md",
+      "title": "Importar regras existentes",
+      "intro": "Transforme seu AGENTS.md atual em regras. Primeiro confira o que seria importado; nada é gravado até você importar.",
+      "scopeLabel": "Importar para",
+      "projectPlaceholder": "Escolha um projeto",
+      "projectLabel": "Projeto",
+      "noFiles": "Nenhum arquivo de regras encontrado aqui.",
+      "nameTaken": "Já existe uma regra com este nome",
+      "blocked": "Alguns nomes já são usados pelas suas regras. Renomeie essas regras primeiro e depois importe.",
+      "importHint": "Cria as regras e as ativa aqui. Os arquivos ficam como estão.",
+      "run": "Importar {{count}} regras",
+      "run_one": "Importar {{count}} regra",
+      "run_other": "Importar {{count}} regras",
+      "imported": "{{count}} regras importadas",
+      "imported_one": "{{count}} regra importada",
+      "imported_other": "{{count}} regras importadas",
+      "handOverTitle": "Entregar os arquivos ao AionUi",
+      "handOverGlobal": "A partir de agora o arquivo global é gravado a partir das suas regras Global, de novo após cada mudança, para haver um só lugar de edição.",
+      "handOverProject": "Cada arquivo do repositório vira um ponteiro de uma linha para as regras do AionUi. O AionUi não faz commit nem push; revise a mudança no git você mesmo.",
+      "ackGlobal": "Entendo que o arquivo global será gerado das minhas regras Global",
+      "ackProject": "Entendo que estes arquivos serão substituídos por um ponteiro de uma linha",
+      "handOver": "Entregar",
+      "handedOver": "{{count}} arquivos entregues",
+      "handedOver_one": "{{count}} arquivo entregue",
+      "handedOver_other": "{{count}} arquivos entregues",
+      "status": {
+        "new": "Novo",
+        "imported": "Importado",
+        "managed": "Entregue",
+        "pointer": "Só ponteiro",
+        "missing": "Não encontrado"
+      }
+    },
+    "errors": {
+      "generic": "Algo deu errado com as regras.",
+      "invalid": "Não salva: {{detail}}",
+      "nameTaken": "Outra regra já tem este nome.",
+      "stale": "Esta regra mudou em outro lugar e foi recarregada. Confira e salve de novo.",
+      "alreadyImported": "Este arquivo já foi importado.",
+      "confirmRequired": "Confirme o passo primeiro.",
+      "notFound": "Esta regra não existe mais.",
+      "sessionRequired": "Entre de novo para alterar regras.",
+      "csrf": "A página está desatualizada; recarregue e tente de novo."
+    }
   }
 }

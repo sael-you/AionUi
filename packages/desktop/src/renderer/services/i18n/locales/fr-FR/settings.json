@@ -1799,5 +1799,148 @@
       "sessionRequired": "Reconnectez-vous pour modifier les serveurs.",
       "csrf": "La page n'est plus à jour ; rechargez-la et réessayez."
     }
+  },
+  "rules": {
+    "title": "Règles",
+    "description": "Les règles que chaque session d'agent suit dès son début. Une règle n'atteint une conversation que là où vous l'activez.",
+    "add": "Ajouter une règle",
+    "addTitle": "Écrire une règle",
+    "search": "Rechercher des règles",
+    "loading": "Chargement des règles",
+    "empty": "Aucune règle pour l'instant. Écrivez-en une ou importez votre AGENTS.md actuel.",
+    "nothingOn": "Aucune règle n'est activée dans {{scope}}.",
+    "browseLibrary": "Parcourir les règles",
+    "switchedOff": "Désactivée",
+    "fromGlobalToggle": "De Global",
+    "fromGlobalHint": "Activée dans Global. Pour l'exclure de ce projet, ouvrez-la et retirez-la ici sous « Utilisée dans ».",
+    "offHereHint": "Activée dans Global, exclue de ce projet.",
+    "saved": "{{name}} enregistrée",
+    "created": "{{name}} ajoutée",
+    "deleted": "{{name}} supprimée",
+    "deleteTitle": "Supprimer {{name}} ?",
+    "deleteBody": "Elle cesse de s'appliquer partout dès la prochaine session.",
+    "namePlaceholder": "ex. Messages de commit",
+    "descriptionPlaceholder": "Une ligne : de quoi parle cette règle",
+    "bodyPlaceholder": "Écrivez la règle en Markdown. Courte, concrète, vérifiable.",
+    "edit": "Modifier",
+    "preview": "Aperçu",
+    "previewEmpty": "Rien à prévisualiser pour l'instant.",
+    "enabledHint": "Désactivée = elle ne s'applique nulle part, où qu'elle soit attachée.",
+    "importedFrom": "Importée depuis {{path}}",
+    "group": {
+      "here": "Activées dans {{scope}}",
+      "offHere": "Exclues ici"
+    },
+    "summary": {
+      "on": "{{count}} activées",
+      "on_one": "{{count}} activée",
+      "on_other": "{{count}} activées",
+      "fromGlobal": "{{count}} de Global",
+      "fromGlobal_one": "{{count}} de Global",
+      "fromGlobal_other": "{{count}} de Global",
+      "cap": "jusqu'à {{max}} par session"
+    },
+    "source": {
+      "mine": "Les miennes",
+      "imported": "Importées"
+    },
+    "chips": {
+      "off": "Désactivée"
+    },
+    "menu": {
+      "edit": "Modifier",
+      "switchOff": "Désactiver partout",
+      "switchOn": "Activer"
+    },
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "body": "Règle",
+      "enabled": "Appliquer cette règle"
+    },
+    "problems": {
+      "nameRequired": "Saisissez un nom",
+      "nameTooLong": "80 caractères au maximum",
+      "descriptionTooLong": "300 caractères au maximum",
+      "bodyRequired": "Écrivez la règle",
+      "bodyTooLarge": "Une règle fait au plus {{max}} Ko ; découpez-la ou gardez le contenu long dans une skill"
+    },
+    "size": {
+      "label": "{{used}} sur {{max}}"
+    },
+    "effective": {
+      "title": "Ce que reçoit {{scope}}",
+      "loadFailed": "Impossible de charger ce que reçoit cette portée.",
+      "none": "Aucune règle ne s'applique ici.",
+      "capped": "Au-delà de la limite, exclues des sessions : {{names}}",
+      "leftOut": "Exclue",
+      "exactText": "Texte exact au début des sessions",
+      "nextSession": "Les conversations en cours appliquent un changement à leur prochaine session."
+    },
+    "header": {
+      "label": "{{count}} règles",
+      "label_one": "{{count}} règle",
+      "label_other": "{{count}} règles",
+      "capped": "Certaines règles dépassent la limite de taille et sont exclues",
+      "title": "Règles de cette conversation",
+      "manage": "Gérer les règles"
+    },
+    "usedIn": {
+      "conversation": "Conversation {{id}}",
+      "nowhere": "Activée nulle part pour l'instant.",
+      "drop": "Retirer",
+      "dropLabel": "Retirer l'attribution pour {{scope}}",
+      "levelLabel": "Niveau",
+      "targetLabel": "Où",
+      "targetPlaceholder": "Choisir…",
+      "opLabel": "Activer ou exclure",
+      "apply": "Appliquer",
+      "hint": "Ajouter active la règle à ce niveau, Retirer exclut une règle héritée. Pour une seule conversation, utilisez le bouton des kits dans son en-tête."
+    },
+    "import": {
+      "open": "Importer AGENTS.md",
+      "title": "Importer des règles existantes",
+      "intro": "Transformez votre AGENTS.md actuel en règles. Vérifiez d'abord ce qui serait importé ; rien n'est écrit avant l'import.",
+      "scopeLabel": "Importer pour",
+      "projectPlaceholder": "Choisir un projet",
+      "projectLabel": "Projet",
+      "noFiles": "Aucun fichier de règles trouvé ici.",
+      "nameTaken": "Une règle porte déjà ce nom",
+      "blocked": "Certains noms sont déjà utilisés par vos règles. Renommez d'abord ces règles, puis importez.",
+      "importHint": "Crée les règles et les active ici. Les fichiers restent tels quels.",
+      "run": "Importer {{count}} règles",
+      "run_one": "Importer {{count}} règle",
+      "run_other": "Importer {{count}} règles",
+      "imported": "{{count}} règles importées",
+      "imported_one": "{{count}} règle importée",
+      "imported_other": "{{count}} règles importées",
+      "handOverTitle": "Confier les fichiers à AionUi",
+      "handOverGlobal": "Désormais, le fichier global est écrit à partir de vos règles Global, de nouveau après chaque changement : un seul endroit où modifier.",
+      "handOverProject": "Chaque fichier du dépôt devient un renvoi d'une ligne vers les règles d'AionUi. AionUi ne fait ni commit ni push ; vérifiez le changement dans git vous-même.",
+      "ackGlobal": "Je comprends que le fichier global sera généré à partir de mes règles Global",
+      "ackProject": "Je comprends que ces fichiers seront remplacés par un renvoi d'une ligne",
+      "handOver": "Confier",
+      "handedOver": "{{count}} fichiers confiés",
+      "handedOver_one": "{{count}} fichier confié",
+      "handedOver_other": "{{count}} fichiers confiés",
+      "status": {
+        "new": "Nouveau",
+        "imported": "Importé",
+        "managed": "Confié",
+        "pointer": "Renvoi seul",
+        "missing": "Introuvable"
+      }
+    },
+    "errors": {
+      "generic": "Un problème est survenu avec les règles.",
+      "invalid": "Non enregistrée : {{detail}}",
+      "nameTaken": "Une autre règle porte déjà ce nom.",
+      "stale": "Cette règle a changé ailleurs et a été rechargée. Vérifiez-la et enregistrez à nouveau.",
+      "alreadyImported": "Ce fichier a déjà été importé.",
+      "confirmRequired": "Confirmez d'abord l'étape.",
+      "notFound": "Cette règle n'existe plus.",
+      "sessionRequired": "Reconnectez-vous pour modifier les règles.",
+      "csrf": "La page n'est plus à jour ; rechargez-la et réessayez."
+    }
   }
 }

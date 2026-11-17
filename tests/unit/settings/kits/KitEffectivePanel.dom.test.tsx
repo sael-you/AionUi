@@ -27,11 +27,14 @@ const api = vi.hoisted(() => {
     market: { listInstances: fn(), listTemplates: fn() },
     listSkills: fn(),
     servers: { list: fn() },
+    rules: { list: fn() },
   };
 });
 
 vi.mock('@/common/adapter/ipcBridge', () => ({ kits: api.kits, mcpService: { market: api.market } }));
-vi.mock('@/common', () => ({ ipcBridge: { fs: { listAvailableSkills: api.listSkills }, servers: api.servers } }));
+vi.mock('@/common', () => ({
+  ipcBridge: { fs: { listAvailableSkills: api.listSkills }, servers: api.servers, rules: api.rules },
+}));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: fakeT }) }));
 vi.mock('@/renderer/hooks/context/LayoutContext', () => ({ useLayoutContext: () => ({ isMobile: false }) }));
 
@@ -49,6 +52,10 @@ describe('What this conversation gets (C27 effective set)', () => {
     api.servers.list.invoke.mockResolvedValue([
       { id: 'srv-1', name: 'db-prod', enabled: true },
       { id: 'srv-2', name: 'old-box', enabled: false },
+    ]);
+    api.rules.list.invoke.mockResolvedValue([
+      { id: 'rule-1', name: 'Commit messages', enabled: true },
+      { id: 'rule-2', name: 'Old rule', enabled: false },
     ]);
     api.listSkills.invoke.mockResolvedValue([{ name: 'pf-ui' }]);
     vi.spyOn(Message, 'success').mockImplementation(() => ({}) as never);
@@ -105,6 +112,22 @@ describe('What this conversation gets (C27 effective set)', () => {
     renderWithSwr(<KitEffectivePanel query={{ conversation_id: 'conv-2' }} />);
     await screen.findByTestId('kit-effective-mcps');
     expect(screen.queryByTestId('kit-effective-servers')).toBeNull();
+  });
+
+  it('lists the rules a conversation gets by name (C37), and none on an older core', async () => {
+    api.kits.effective.invoke.mockResolvedValue({
+      ...EFFECTIVE,
+      rules: [{ kind: 'rule', item_ref: 'rule-1', included: true, provenance: { level: 'global', op: 'add' } }],
+    });
+    const view = renderWithSwr(<KitEffectivePanel query={{ conversation_id: 'conv-1' }} />);
+    const section = await screen.findByTestId('kit-effective-rules');
+    expect(await within(section).findByText('Commit messages')).toBeInTheDocument();
+    view.unmount();
+
+    api.kits.effective.invoke.mockResolvedValue(EFFECTIVE);
+    renderWithSwr(<KitEffectivePanel query={{ conversation_id: 'conv-2' }} />);
+    await screen.findByTestId('kit-effective-mcps');
+    expect(screen.queryByTestId('kit-effective-rules')).toBeNull();
   });
 
   it('shows the frozen skill snapshot and wanted templates without an instance', async () => {

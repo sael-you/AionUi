@@ -1801,5 +1801,148 @@
       "sessionRequired": "請重新登入後再修改伺服器。",
       "csrf": "頁面已過期，請重新整理後再試一次。"
     }
+  },
+  "rules": {
+    "title": "規則",
+    "description": "每個代理工作階段從開始就遵守的規則。規則只會出現在你開啟它的範圍內的對話中。",
+    "add": "新增規則",
+    "addTitle": "撰寫規則",
+    "search": "搜尋規則",
+    "loading": "正在載入規則",
+    "empty": "還沒有規則。撰寫一條，或匯入現有的 AGENTS.md。",
+    "nothingOn": "{{scope}} 中沒有開啟的規則。",
+    "browseLibrary": "瀏覽規則",
+    "switchedOff": "已關閉",
+    "fromGlobalToggle": "來自全域",
+    "fromGlobalHint": "在全域中開啟。要在此專案中排除，請開啟該規則，在「使用位置」中移除此處。",
+    "offHereHint": "在全域中開啟，在此專案中排除。",
+    "saved": "已儲存 {{name}}",
+    "created": "已新增 {{name}}",
+    "deleted": "已刪除 {{name}}",
+    "deleteTitle": "要刪除 {{name}} 嗎？",
+    "deleteBody": "從下一個工作階段起，它在任何地方都不再生效。",
+    "namePlaceholder": "例如：提交訊息",
+    "descriptionPlaceholder": "一行：這條規則是關於什麼",
+    "bodyPlaceholder": "用 Markdown 撰寫規則。簡短、具體、可檢驗。",
+    "edit": "編輯",
+    "preview": "預覽",
+    "previewEmpty": "還沒有可預覽的內容。",
+    "enabledHint": "關閉 = 無論掛載在哪裡都不生效。",
+    "importedFrom": "匯入自 {{path}}",
+    "group": {
+      "here": "在 {{scope}} 中開啟",
+      "offHere": "在此排除"
+    },
+    "summary": {
+      "on": "{{count}} 條已開啟",
+      "on_one": "{{count}} 條已開啟",
+      "on_other": "{{count}} 條已開啟",
+      "fromGlobal": "{{count}} 條來自全域",
+      "fromGlobal_one": "{{count}} 條來自全域",
+      "fromGlobal_other": "{{count}} 條來自全域",
+      "cap": "每個工作階段最多 {{max}}"
+    },
+    "source": {
+      "mine": "我的",
+      "imported": "已匯入"
+    },
+    "chips": {
+      "off": "已關閉"
+    },
+    "menu": {
+      "edit": "編輯",
+      "switchOff": "在所有地方關閉",
+      "switchOn": "開啟"
+    },
+    "fields": {
+      "name": "名稱",
+      "description": "說明",
+      "body": "規則",
+      "enabled": "套用此規則"
+    },
+    "problems": {
+      "nameRequired": "請輸入名稱",
+      "nameTooLong": "最多 80 個字元",
+      "descriptionTooLong": "最多 300 個字元",
+      "bodyRequired": "請撰寫規則",
+      "bodyTooLarge": "一條規則最多 {{max}} KB；請拆分，或把長內容放進技能"
+    },
+    "size": {
+      "label": "{{used}} / {{max}}"
+    },
+    "effective": {
+      "title": "{{scope}} 會收到什麼",
+      "loadFailed": "無法載入此範圍會收到的內容。",
+      "none": "這裡沒有生效的規則。",
+      "capped": "超出上限，已從工作階段中排除：{{names}}",
+      "leftOut": "已排除",
+      "exactText": "工作階段開始時的確切文字",
+      "nextSession": "進行中的對話會在下一個工作階段套用變更。"
+    },
+    "header": {
+      "label": "{{count}} 條規則",
+      "label_one": "{{count}} 條規則",
+      "label_other": "{{count}} 條規則",
+      "capped": "部分規則超出大小上限而被排除",
+      "title": "此對話的規則",
+      "manage": "管理規則"
+    },
+    "usedIn": {
+      "conversation": "對話 {{id}}",
+      "nowhere": "尚未在任何地方開啟。",
+      "drop": "移除",
+      "dropLabel": "移除 {{scope}} 的指派",
+      "levelLabel": "層級",
+      "targetLabel": "位置",
+      "targetPlaceholder": "選擇…",
+      "opLabel": "開啟或排除",
+      "apply": "套用",
+      "hint": "新增會在該層級開啟規則，移除會排除繼承的規則。若只針對一個對話，請使用該對話標題列中的套件按鈕。"
+    },
+    "import": {
+      "open": "匯入 AGENTS.md",
+      "title": "匯入現有規則",
+      "intro": "把正在使用的 AGENTS.md 轉換為規則。請先檢查將匯入的內容；匯入前不會寫入任何東西。",
+      "scopeLabel": "匯入到",
+      "projectPlaceholder": "選擇專案",
+      "projectLabel": "專案",
+      "noFiles": "這裡沒有找到規則檔案。",
+      "nameTaken": "已有同名規則",
+      "blocked": "部分名稱已被你的規則使用。請先重新命名那些規則，再匯入。",
+      "importHint": "建立規則並在此開啟。檔案保持不變。",
+      "run": "匯入 {{count}} 條規則",
+      "run_one": "匯入 {{count}} 條規則",
+      "run_other": "匯入 {{count}} 條規則",
+      "imported": "已匯入 {{count}} 條規則",
+      "imported_one": "已匯入 {{count}} 條規則",
+      "imported_other": "已匯入 {{count}} 條規則",
+      "handOverTitle": "將檔案交給 AionUi 管理",
+      "handOverGlobal": "從現在起，全域檔案依你的全域規則寫入，每次變更後重新寫入，只需在一個地方編輯。",
+      "handOverProject": "儲存庫中的每個檔案都會變成指向 AionUi 規則的一行參照。AionUi 不會提交或推送；請自行在 git 中檢查變更。",
+      "ackGlobal": "我了解全域檔案將依我的全域規則產生",
+      "ackProject": "我了解這些檔案將被取代為一行參照",
+      "handOver": "交給 AionUi",
+      "handedOver": "已交出 {{count}} 個檔案",
+      "handedOver_one": "已交出 {{count}} 個檔案",
+      "handedOver_other": "已交出 {{count}} 個檔案",
+      "status": {
+        "new": "新",
+        "imported": "已匯入",
+        "managed": "已交出",
+        "pointer": "僅參照",
+        "missing": "找不到"
+      }
+    },
+    "errors": {
+      "generic": "規則發生問題。",
+      "invalid": "未儲存：{{detail}}",
+      "nameTaken": "已有其他規則使用這個名稱。",
+      "stale": "這條規則已在別處變更並已重新載入。請檢查後再次儲存。",
+      "alreadyImported": "這個檔案之前已匯入。",
+      "confirmRequired": "請先確認該步驟。",
+      "notFound": "這條規則已不存在。",
+      "sessionRequired": "請重新登入後再修改規則。",
+      "csrf": "頁面已過期，請重新整理後再試一次。"
+    }
   }
 }

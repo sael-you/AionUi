@@ -4,6 +4,7 @@ import { type IExtensionSettingsTab } from '@/common/adapter/ipcBridge';
 import { useExtI18n } from '@/renderer/hooks/system/useExtI18n';
 import { useExtensionSettingsTabs } from '@/renderer/hooks/system/useExtensionSettingsTabs';
 import {
+  BookOpen,
   Brain,
   Browser,
   Cat,
@@ -33,6 +34,7 @@ export const BUILTIN_TAB_IDS = [
   'agent',
   'model',
   'skills',
+  'rules',
   'tools',
   'browser',
   'servers',
@@ -106,6 +108,7 @@ const SettingsSider: React.FC<{ collapsed?: boolean; tooltipEnabled?: boolean }>
         icon: <Lightning />,
         path: 'skills',
       },
+      rules: { id: 'rules', label: t('settings.rules.title'), icon: <BookOpen />, path: 'rules' },
       tools: {
         id: 'tools',
         label: t('settings.tools', { defaultValue: 'Tools' }),

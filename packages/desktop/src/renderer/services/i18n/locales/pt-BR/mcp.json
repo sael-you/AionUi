@@ -359,7 +359,8 @@
       "kit": "Kit",
       "skill": "Skill",
       "mcp": "Servidor MCP",
-      "server": "Servidor"
+      "server": "Servidor",
+      "rule": "Regra"
     },
     "op": {
       "add": "Adicionar",
@@ -528,6 +529,7 @@
       "testOk_one": "Conectado · {{count}} ferramenta",
       "testOk_other": "Conectado · {{count}} ferramentas"
     },
-    "servers": "Servidores"
+    "servers": "Servidores",
+    "rules": "Regras"
   }
 }
