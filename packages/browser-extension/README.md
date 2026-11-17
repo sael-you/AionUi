@@ -28,6 +28,12 @@ Writes `packages/browser-extension/dist/unpacked/` (load this folder) and
 
 Google sign-in, Gmail, banks and payment pages pause the agent until you tap **Allow** in AionUi.
 
+## Local network
+
+Shared tabs cannot reach your local network: requests to private, loopback and link-local IPs,
+`localhost` and `*.local` are blocked in the browser while a tab is shared, and such pages cannot be
+shared (TASK-121). Tabs you have not shared are untouched.
+
 ## Update
 
 Rebuild, replace the folder contents, then press the reload arrow on the extension card in

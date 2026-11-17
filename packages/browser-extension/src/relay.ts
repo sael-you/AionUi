@@ -30,6 +30,7 @@ import {
   type ExtensionFrame,
   type SharedTab,
 } from './protocol';
+import { isLanUrl } from './lanGuard';
 
 export type RelayStatus = 'unpaired' | 'connecting' | 'online' | 'offline' | 'stopped' | 'error';
 
@@ -77,6 +78,8 @@ export type RelayDeps = {
   savePersisted: (state: PersistedState) => Promise<void>;
   loadShared: () => Promise<number[]>;
   saveShared: (tabIds: number[]) => Promise<void>;
+  /** Block local-network requests for exactly these tabs (declarativeNetRequest session rules). */
+  setLanBlockedTabs: (tabIds: number[]) => Promise<void>;
   browser: string;
   setTimeout: (fn: () => void, ms: number) => unknown;
   clearTimeout: (handle: unknown) => void;
@@ -85,6 +88,9 @@ export type RelayDeps = {
   random?: () => number;
   onChange?: (snapshot: RelaySnapshot) => void;
 };
+
+/** Error code: the address is on the owner's local network (TASK-121). */
+export const LAN_BLOCKED = 'lan_blocked';
 
 export const RECONNECT_MIN_MS = 1_000;
 export const RECONNECT_MAX_MS = 30_000;
@@ -226,9 +232,17 @@ export class Relay {
     if (this.shared.has(tabId)) return;
     const tab = await this.deps.getTab(tabId);
     if (!tab) throw new Error('tab_closed');
-    await this.deps.attach(tabId);
+    if (isLanUrl(tab.url)) throw new Error(LAN_BLOCKED);
+    // The LAN block is in place before the debugger attaches.
     this.shared.set(tabId, { tab_id: tabId, url: tab.url, title: tab.title });
-    await this.persistShared();
+    try {
+      await this.persistShared();
+      await this.deps.attach(tabId);
+    } catch (error) {
+      this.shared.delete(tabId);
+      await this.persistShared();
+      throw error;
+    }
     this.sendState();
     this.changed();
   }
@@ -445,6 +459,10 @@ export class Relay {
       this.send({ type: 'result', id, error: { message: 'tab is not shared', code: 'not_shared' } });
       return;
     }
+    if (method === 'Page.navigate' && isLanUrl(String((params as { url?: unknown } | null)?.url ?? ''))) {
+      this.send({ type: 'result', id, error: { message: 'local network addresses are blocked', code: LAN_BLOCKED } });
+      return;
+    }
     try {
       const result = await this.deps.sendCommand(tabId, method, params ?? {});
       this.send({ type: 'result', id, result: result ?? {} });
@@ -461,6 +479,10 @@ export class Relay {
     }
     if (!/^https?:\/\//i.test(url)) {
       this.send({ type: 'result', id, error: { message: 'only http(s) pages', code: 'restricted_url' } });
+      return;
+    }
+    if (isLanUrl(url)) {
+      this.send({ type: 'result', id, error: { message: 'local network addresses are blocked', code: LAN_BLOCKED } });
       return;
     }
     try {
@@ -500,6 +522,7 @@ export class Relay {
   }
 
   private async persistShared(): Promise<void> {
+    await this.deps.setLanBlockedTabs([...this.shared.keys()]);
     await this.deps.saveShared([...this.shared.keys()]);
   }
 

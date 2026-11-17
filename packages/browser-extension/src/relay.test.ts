@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { browserLabelFrom, normalizePairingCode, originFor, parseCoreFrame, socketUrlFor } from './protocol';
 import { localeFor, MESSAGES, LOCALES, translate } from './i18n';
+import { LAN_REGEX_FILTERS, LAN_RULE_IDS, isLanHost, isLanUrl, lanBlockRules } from './lanGuard';
 import { RECONNECT_MAX_MS, Relay, errorCodeOf, type PersistedState, type RelayDeps, type SocketLike } from './relay';
 
 type FakeSocket = SocketLike & { url: string; sent: Record<string, unknown>[]; closed: boolean };
@@ -23,6 +24,7 @@ const setup = (persisted: Partial<PersistedState> = {}, shared: number[] = []) =
   const timers: Array<{ fn: () => void; ms: number; repeat: boolean; cleared: boolean }> = [];
   let saved: PersistedState | null = null;
   let savedShared: number[] = shared;
+  let lanBlocked: number[] = [];
   const deps: RelayDeps = {
     createSocket: (url) => {
       const socket: FakeSocket = {
@@ -65,6 +67,9 @@ const setup = (persisted: Partial<PersistedState> = {}, shared: number[] = []) =
     saveShared: async (ids) => {
       savedShared = ids;
     },
+    setLanBlockedTabs: vi.fn(async (ids: number[]) => {
+      lanBlocked = ids;
+    }),
     browser: 'Chrome 157',
     setTimeout: (fn, ms) => {
       const timer = { fn, ms, repeat: false, cleared: false };
@@ -105,6 +110,8 @@ const setup = (persisted: Partial<PersistedState> = {}, shared: number[] = []) =
     timers,
     saved: () => saved,
     savedShared: () => savedShared,
+    lanBlocked: () => lanBlocked,
+    tabs,
   };
 };
 
@@ -402,5 +409,131 @@ describe('popup strings', () => {
     expect(localeFor('zh-HK')).toBe('zh-TW');
     expect(localeFor('zh-CN')).toBe('zh-CN');
     expect(localeFor('nl')).toBe('en-US');
+  });
+});
+
+describe('LAN guard (TASK-121)', () => {
+  const LAN = [
+    'http://localhost/',
+    'http://LOCALHOST:8080/x',
+    'https://printer.local/admin',
+    'http://app.localhost/',
+    'http://127.0.0.1:9222/json',
+    'http://10.0.0.5/',
+    'http://192.168.1.1/',
+    'http://172.16.0.1/',
+    'http://172.31.255.255/',
+    'http://169.254.169.254/latest/meta-data/',
+    'http://100.64.0.1/',
+    'http://0.0.0.0:8000/',
+    'http://[::1]:3000/',
+    'http://[fd12:3456::1]/',
+    'http://[fe80::1]/',
+    'http://[::ffff:127.0.0.1]/',
+    'http://[::ffff:192.168.1.1]/',
+    'ws://192.168.0.2:8080/socket',
+    'http://user:pw@10.1.2.3/',
+    'http://2130706433/',
+    'http://0x7f.1/',
+    'http://localhost./',
+  ];
+  const PUBLIC = [
+    'https://example.com/',
+    'https://mail.google.com/mail/u/0/',
+    'http://172.15.0.1/',
+    'http://172.32.0.1/',
+    'http://100.128.0.1/',
+    'http://11.0.0.1/',
+    'http://192.169.1.1/',
+    'https://localhost.example.com/',
+    'https://my.locale.com/',
+    'https://example.com/?next=http://127.0.0.1/',
+    'https://example.com/path/192.168.1.1',
+    'http://[2001:db8::1]/',
+    'chrome://settings',
+  ];
+  // What Chrome matches: the URL after parsing (hosts normalised), as declarativeNetRequest sees it.
+  const matchesRules = (url: string) => {
+    const href = new URL(url).href;
+    return LAN_REGEX_FILTERS.some((filter) => new RegExp(filter, 'i').test(href));
+  };
+
+  it('recognises local-network addresses, in every literal form', () => {
+    for (const url of LAN) expect([url, isLanUrl(url)]).toEqual([url, true]);
+    for (const url of PUBLIC) expect([url, isLanUrl(url)]).toEqual([url, false]);
+    expect(isLanHost('router.local')).toBe(true);
+    expect(isLanHost('')).toBe(false);
+  });
+
+  it('the browser block rules match the same addresses and nothing public', () => {
+    for (const url of LAN) expect([url, matchesRules(url)]).toEqual([url, true]);
+    for (const url of PUBLIC.filter((u) => /^(https?|wss?):/.test(u)))
+      expect([url, matchesRules(url)]).toEqual([url, false]);
+  });
+
+  it('rules are scoped to the shared tabs, cover page loads and sockets, and vanish when nothing is shared', () => {
+    expect(lanBlockRules([])).toEqual([]);
+    const rules = lanBlockRules([4, 9]);
+    expect(rules.map((rule) => rule.id)).toEqual([...LAN_RULE_IDS]);
+    for (const rule of rules) {
+      expect(rule.action).toEqual({ type: 'block' });
+      expect(rule.condition.tabIds).toEqual([4, 9]);
+      expect(rule.condition.resourceTypes).toEqual(
+        expect.arrayContaining(['main_frame', 'xmlhttprequest', 'websocket'])
+      );
+    }
+  });
+
+  it('the relay installs the block for a tab before attaching and removes it on unshare', async () => {
+    const h = await online();
+    const order: string[] = [];
+    (h.deps.setLanBlockedTabs as ReturnType<typeof vi.fn>).mockImplementation(async (ids: number[]) => {
+      order.push(`block:${ids.join(',')}`);
+    });
+    (h.deps.attach as ReturnType<typeof vi.fn>).mockImplementation(async () => {
+      order.push('attach');
+    });
+    await h.relay.share(1);
+    expect(order).toEqual(['block:1', 'attach']);
+    await h.relay.unshare(1);
+    expect(order.at(-1)).toBe('block:');
+  });
+
+  it('a failed attach leaves no block behind', async () => {
+    const h = await online();
+    (h.deps.attach as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Cannot access a chrome:// URL'));
+    await expect(h.relay.share(1)).rejects.toThrow('chrome://');
+    expect(h.lanBlocked()).toEqual([]);
+    expect(h.relay.isShared(1)).toBe(false);
+  });
+
+  it('refuses to share a local-network page, to open one and to navigate to one', async () => {
+    const h = await online();
+    h.tabs.set(3, { url: 'http://192.168.1.1/admin', title: 'Router' });
+    await expect(h.relay.share(3)).rejects.toThrow('lan_blocked');
+    expect(h.deps.attach).not.toHaveBeenCalled();
+
+    await h.receive({ type: 'create_tab', id: 1, url: 'http://127.0.0.1:9222/json' });
+    expect(h.socket().sent.at(-1)).toMatchObject({ id: 1, error: { code: 'lan_blocked' } });
+    expect(h.deps.createTab).not.toHaveBeenCalled();
+
+    await h.relay.share(1);
+    await h.receive({
+      type: 'command',
+      id: 2,
+      tab_id: 1,
+      method: 'Page.navigate',
+      params: { url: 'http://printer.local/' },
+    });
+    expect(h.socket().sent.at(-1)).toMatchObject({ id: 2, error: { code: 'lan_blocked' } });
+    expect(h.deps.sendCommand).not.toHaveBeenCalled();
+    await h.receive({
+      type: 'command',
+      id: 3,
+      tab_id: 1,
+      method: 'Page.navigate',
+      params: { url: 'https://example.com/' },
+    });
+    expect(h.deps.sendCommand).toHaveBeenCalledWith(1, 'Page.navigate', { url: 'https://example.com/' });
   });
 });
