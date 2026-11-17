@@ -1730,6 +1730,81 @@
     "offIn_one": "{{count}} dk sonra kapanır",
     "offIn_other": "{{count}} dk sonra kapanır",
     "summaryOn_one": "{{count}} açık",
-    "summaryOn_other": "{{count}} açık"
+    "summaryOn_other": "{{count}} açık",
+    "addPhone": "Telefon ekle",
+    "access": {
+      "title": "Ajan erişimi",
+      "timeout": "Şu süre sonra kapanır",
+      "hint": "Telefon bu süreden sonra ve AionUi yeniden başlatıldığında kendiliğinden kapanır. Kapatmak ajanları anında durdurur.",
+      "minutes_one": "{{count}} dk",
+      "minutes_other": "{{count}} dk"
+    },
+    "routes": {
+      "title": "Bağlantı seçenekleri",
+      "experimental": "Deneysel — test gerekli",
+      "pair": "Eşle",
+      "repair": "Yeniden eşle",
+      "mac_relay": {
+        "name": "Mac'im üzerinden USB / Wi-Fi hata ayıklama",
+        "desc": "Telefon Mac'inize kabloyla veya aynı Wi-Fi üzerinden bağlıdır. Hata ayıklama anahtarı Mac'te kalır; AionUi Mac yardımcısının çalışması gerekir. Ajanların telefondaki Chrome'u incelemesine de olanak tanır."
+      },
+      "companion": {
+        "name": "AionUi yardımcı uygulaması",
+        "desc": "Telefonda, AionUi'ye kendiliğinden, her yerden ve bilgisayar olmadan bağlanan bir uygulama. Ajanlar çalışırken “AionUi bu telefonu kontrol ediyor · Durdur” gösterir."
+      },
+      "wifi_direct": {
+        "name": "Doğrudan Wi-Fi hata ayıklama",
+        "desc": "AionUi sunucusu, özel ağınız üzerinden telefonun kablosuz hata ayıklamasına bağlanır. Test geçene kadar sunulmaz."
+      }
+    },
+    "audit": {
+      "title": "Etkinlik",
+      "hint": "Ajanların yaptığı her işlem: ne, hangi uygulama veya sitede ve nasıl sonuçlandı. Ekran görüntüsü veya yazılan metin saklanmaz.",
+      "empty": "Henüz bir şey yok.",
+      "more": "Daha eskileri göster",
+      "failed": "Daha fazlası yüklenemedi.",
+      "error": "hata"
+    },
+    "approval": {
+      "title": "Bir ajan “{{device}}” üzerinde işlem yapmak istiyor",
+      "titleTask": "Bir eklenti “{{device}}” üzerinde bir görev çalıştırmak istiyor",
+      "target": "{{target}} içinde:",
+      "taskHint": "Görevin tamamını onaylıyorsunuz: eklenti dokunuşlarına kendi karar verir. Durdur ve zaman aşımı onu yine de sonlandırır.",
+      "allow": "İzin ver",
+      "allowed": "İzin verildi."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Mac yardımcısını eşle",
+        "companion": "Yardımcı uygulamayı eşle",
+        "wifi_direct": "Wi-Fi hata ayıklamayı eşle"
+      },
+      "address": "AionUi adresiniz:",
+      "companion": {
+        "stepInstall": "Telefonda, AionUi uygulamasını indirmek için ilk kodu tarayın ve kurun (Android, tarayıcınızdan kuruluma izin vermenizi ister).",
+        "stepPair": "Uygulamayı açıp ikinci kodu tarayın veya aşağıdaki adresi ve kodu yazın.",
+        "qrInstall": "1 · Uygulamayı indir",
+        "qrPair": "2 · Eşle",
+        "limitsTitle": "Kurmadan önce bilmeniz gerekenler",
+        "limits": {
+          "notPlay": "Google Play'de yok: Play bu tür kontrole yalnızca erişilebilirlik araçları için izin verir.",
+          "restricted": "Android 13 ve sonrası: erişilebilirlik hizmetini açmadan önce uygulama için “kısıtlanmış ayarlar”a izin verin.",
+          "consent": "Android her oturumun başında ekran paylaşımı için onayınızı ister.",
+          "protection": "Gelişmiş Koruma açıkken engellenebilir.",
+          "verification": "Bazı ülkelerde Android, bu şekilde kurulan uygulamalar için 24 saatlik bekleme ekler.",
+          "noChrome": "Chrome'u inceleyemez; bunun için Mac yolunu kullanın."
+        }
+      },
+      "mac": {
+        "stepDownload": "AionUi Mac yardımcısını indirin ve Uygulamalar'a taşıyın.",
+        "stepGatekeeper": "İlk açılış: macOS uygulamayı doğrulayamadığını söyler. Sistem Ayarları → Gizlilik ve Güvenlik'i açın ve “Yine de Aç”a tıklayın.",
+        "stepPair": "Yardımcıda aşağıdaki adresi ve kodu yazın.",
+        "stepPhone": "Telefonda USB veya kablosuz hata ayıklamayı açın (Geliştirici seçenekleri) ve Mac'e bağlayın; telefon burada görünür.",
+        "download": "Mac yardımcısını indir"
+      },
+      "wifi": {
+        "steps": "Telefonda Geliştirici seçenekleri → Kablosuz hata ayıklama'yı açın ve AionUi istediğinde aşağıdaki kodu yazın."
+      }
+    }
   }
 }

@@ -1731,6 +1731,81 @@
     "offIn_one": "{{count}} 分钟后关闭",
     "offIn_other": "{{count}} 分钟后关闭",
     "summaryOn_one": "{{count}} 项开启",
-    "summaryOn_other": "{{count}} 项开启"
+    "summaryOn_other": "{{count}} 项开启",
+    "addPhone": "添加手机",
+    "access": {
+      "title": "智能体访问",
+      "timeout": "在此时间后关闭",
+      "hint": "超过这段时间以及 AionUi 重启后，手机会自动关闭。关闭会立即停止智能体。",
+      "minutes_one": "{{count}} 分钟",
+      "minutes_other": "{{count}} 分钟"
+    },
+    "routes": {
+      "title": "连接方式",
+      "experimental": "实验性 — 需要测试",
+      "pair": "配对",
+      "repair": "重新配对",
+      "mac_relay": {
+        "name": "通过我的 Mac 进行 USB / Wi-Fi 调试",
+        "desc": "手机通过数据线或同一 Wi-Fi 连接到你的 Mac。调试密钥留在 Mac 上；需要运行 AionUi Mac 助手。也可让智能体检查手机上的 Chrome。"
+      },
+      "companion": {
+        "name": "AionUi 伴侣应用",
+        "desc": "手机上的应用会自行连接 AionUi，随时随地，无需电脑。智能体工作时会显示“AionUi 正在控制这台手机 · 停止”。"
+      },
+      "wifi_direct": {
+        "name": "直接 Wi-Fi 调试",
+        "desc": "AionUi 服务器通过你的私有网络连接手机的无线调试。测试通过之前不提供。"
+      }
+    },
+    "audit": {
+      "title": "活动",
+      "hint": "智能体执行的每个操作：做了什么、在哪个应用或网站、结果如何。不保存截图或输入的文字。",
+      "empty": "暂无内容。",
+      "more": "显示更早的",
+      "failed": "无法加载更多。",
+      "error": "错误"
+    },
+    "approval": {
+      "title": "智能体想在“{{device}}”上操作",
+      "titleTask": "附加组件想在“{{device}}”上运行任务",
+      "target": "在 {{target}} 中：",
+      "taskHint": "你批准的是整个任务：附加组件自行决定每次点按。停止和超时仍会结束它。",
+      "allow": "允许",
+      "allowed": "已允许。"
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "配对 Mac 助手",
+        "companion": "配对伴侣应用",
+        "wifi_direct": "配对 Wi-Fi 调试"
+      },
+      "address": "你的 AionUi 地址：",
+      "companion": {
+        "stepInstall": "在手机上扫描第一个二维码下载 AionUi 应用并安装（Android 会询问是否允许从浏览器安装）。",
+        "stepPair": "打开应用并扫描第二个二维码，或输入下方的地址和配对码。",
+        "qrInstall": "1 · 下载应用",
+        "qrPair": "2 · 配对",
+        "limitsTitle": "安装前须知",
+        "limits": {
+          "notPlay": "它不在 Google Play 上：Play 只允许无障碍工具进行这类控制。",
+          "restricted": "Android 13 及以上：开启其无障碍服务前，请先为该应用允许“受限制的设置”。",
+          "consent": "每次会话开始时，Android 都会征求你同意共享屏幕。",
+          "protection": "开启高级保护时可能被拦截。",
+          "verification": "在部分国家，Android 会对以这种方式安装的应用增加 24 小时等待。",
+          "noChrome": "它无法检查 Chrome；如需检查请使用 Mac 方式。"
+        }
+      },
+      "mac": {
+        "stepDownload": "下载 AionUi Mac 助手并移到“应用程序”。",
+        "stepGatekeeper": "首次启动：macOS 会提示无法验证该应用。打开 系统设置 → 隐私与安全性，点击“仍要打开”。",
+        "stepPair": "在助手中输入下方的地址和配对码。",
+        "stepPhone": "在手机上开启 USB 或无线调试（开发者选项）并连接到 Mac；手机随后会出现在这里。",
+        "download": "下载 Mac 助手"
+      },
+      "wifi": {
+        "steps": "在手机上打开 开发者选项 → 无线调试，并在 AionUi 询问时输入下方的配对码。"
+      }
+    }
   }
 }

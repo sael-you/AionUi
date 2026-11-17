@@ -16,12 +16,13 @@
  * Desktop: only the in-app browser's own settings, as before.
  */
 
-import { Message, Modal } from '@arco-design/web-react';
+import { Button, Dropdown, Menu, Message, Modal } from '@arco-design/web-react';
+import { Plus } from '@icon-park/react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import { devices as devicesApi } from '@/common/adapter/ipcBridge';
-import type { Device, DeviceKind } from '@/common/types/platform/devices';
+import type { Device, DeviceKind, DevicePairingKind } from '@/common/types/platform/devices';
 import AionScrollArea from '@/renderer/components/base/AionScrollArea';
 import LibraryLayout from '@/renderer/components/settings/SettingsModal/library/LibraryLayout';
 import { LibraryEmpty } from '@/renderer/components/settings/SettingsModal/library/LibraryParts';
@@ -48,12 +49,11 @@ import {
   takesTimeout,
   type DevicesTab,
 } from './devicesModel';
+import DevicePairingModal from './phones/DevicePairingModal';
+import { DeviceAccessBlock, DeviceAuditBlock, DeviceRoutesBlock, DEFAULT_TIMEOUT } from './phones/PhoneBlocks';
 import { useDevices } from './useDevices';
 
 const KEY = 'settings.devices';
-
-/** Until the owner picks one in the drawer (C38 open item a). */
-const DEFAULT_TIMEOUT_MINUTES = 30;
 
 /** Desktop: the in-app webview's data and agent switch (the devices live on the WebUI's AionCore). */
 const DesktopDevices: React.FC = () => {
@@ -82,6 +82,7 @@ const WebDevices: React.FC = () => {
   const [openId, setOpenId] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [pairingKind, setPairingKind] = useState<DevicePairingKind | null>(null);
   const [modal, modalHolder] = Modal.useModal();
 
   // "Off in N min" stays current.
@@ -106,7 +107,7 @@ const WebDevices: React.FC = () => {
       await devicesApi.update.invoke({
         id: device.id,
         enabled,
-        ...(enabled && takesTimeout(device) ? { timeout_minutes: DEFAULT_TIMEOUT_MINUTES } : {}),
+        ...(enabled && takesTimeout(device) ? { timeout_minutes: DEFAULT_TIMEOUT } : {}),
       });
       await reload();
       Message.success(t(enabled ? `${KEY}.turnedOn` : `${KEY}.turnedOff`, { name: device.name }));
@@ -166,6 +167,24 @@ const WebDevices: React.FC = () => {
       />
     ));
 
+  // A phone appears once something that reaches it is paired: the Mac helper or the companion app.
+  const addPhone = (
+    <Dropdown
+      trigger='click'
+      position='br'
+      droplist={
+        <Menu onClickMenuItem={(key) => setPairingKind(key as DevicePairingKind)} data-testid='devices-add-phone-menu'>
+          <Menu.Item key='mac_helper'>{t(`${KEY}.routes.mac_relay.name`)}</Menu.Item>
+          <Menu.Item key='companion'>{t(`${KEY}.routes.companion.name`)}</Menu.Item>
+        </Menu>
+      }
+    >
+      <Button size='small' icon={<Plus theme='outline' size={14} />} data-testid='devices-add-phone'>
+        {t(`${KEY}.addPhone`)}
+      </Button>
+    </Dropdown>
+  );
+
   const emptyText = tab === 'active' ? t(`${KEY}.empty.active.${category}`) : t(`${KEY}.empty.library.${category}`);
   const deviceSection =
     shown.length > 0 ? (
@@ -174,9 +193,15 @@ const WebDevices: React.FC = () => {
         title={t(`${KEY}.categories.${category}`)}
         count={shown.length}
         visual={category}
+        actions={category === 'phone' ? addPhone : undefined}
       >
         {cards(shown)}
       </LibrarySection>
+    ) : category === 'phone' ? (
+      <div className='flex flex-col items-center gap-8px'>
+        <LibraryEmpty text={emptyText} />
+        {addPhone}
+      </div>
     ) : (
       <LibraryEmpty
         text={emptyText}
@@ -262,7 +287,16 @@ const WebDevices: React.FC = () => {
         onInstall={(target) => void install(target)}
         onRemove={remove}
         onJobFinished={() => void reload()}
-      />
+      >
+        {opened && (opened.kind === 'phone' || opened.kind === 'mac') ? (
+          <>
+            <DeviceAccessBlock device={opened} onChanged={() => void reload()} />
+            <DeviceRoutesBlock device={opened} onChanged={() => void reload()} onPair={setPairingKind} />
+            <DeviceAuditBlock key={opened.id} device={opened} />
+          </>
+        ) : null}
+      </DeviceDrawer>
+      <DevicePairingModal kind={pairingKind} onClose={() => setPairingKind(null)} />
     </SettingsPageWrapper>
   );
 };

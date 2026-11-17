@@ -1730,6 +1730,81 @@
     "offIn_one": "s’éteint dans {{count}} min",
     "offIn_other": "s’éteint dans {{count}} min",
     "summaryOn_one": "{{count}} activé",
-    "summaryOn_other": "{{count}} activés"
+    "summaryOn_other": "{{count}} activés",
+    "addPhone": "Ajouter un téléphone",
+    "access": {
+      "title": "Accès des agents",
+      "timeout": "S'éteint après",
+      "hint": "Le téléphone se désactive tout seul après ce délai et après un redémarrage d'AionUi. Désactiver arrête les agents immédiatement.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "routes": {
+      "title": "Options de connexion",
+      "experimental": "Expérimental — test nécessaire",
+      "pair": "Associer",
+      "repair": "Associer de nouveau",
+      "mac_relay": {
+        "name": "Débogage USB / Wi-Fi via mon Mac",
+        "desc": "Le téléphone est relié à votre Mac par câble ou sur le même Wi-Fi. La clé de débogage reste sur le Mac ; l'assistant Mac d'AionUi doit être lancé. Permet aussi aux agents d'inspecter Chrome sur le téléphone."
+      },
+      "companion": {
+        "name": "Application compagnon AionUi",
+        "desc": "Une application sur le téléphone qui se connecte d'elle-même à AionUi, partout, sans ordinateur. Elle affiche « AionUi contrôle ce téléphone · Arrêter » pendant que les agents travaillent."
+      },
+      "wifi_direct": {
+        "name": "Débogage Wi-Fi direct",
+        "desc": "Le serveur d'AionUi se connecte au débogage sans fil du téléphone via votre réseau privé. Proposé seulement une fois le test réussi."
+      }
+    },
+    "audit": {
+      "title": "Activité",
+      "hint": "Chaque action des agents : quoi, dans quelle application ou quel site, et comment elle s'est terminée. Aucune capture d'écran ni texte saisi n'est conservé.",
+      "empty": "Rien pour l'instant.",
+      "more": "Afficher les plus anciennes",
+      "failed": "Impossible d'en charger davantage.",
+      "error": "erreur"
+    },
+    "approval": {
+      "title": "Un agent veut agir sur « {{device}} »",
+      "titleTask": "Un module veut exécuter une tâche sur « {{device}} »",
+      "target": "Dans {{target}} :",
+      "taskHint": "Vous approuvez la tâche entière : le module décide lui-même de ses gestes. Arrêter et le délai y mettent fin malgré tout.",
+      "allow": "Autoriser",
+      "allowed": "Autorisé."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Associer l'assistant Mac",
+        "companion": "Associer l'application compagnon",
+        "wifi_direct": "Associer le débogage Wi-Fi"
+      },
+      "address": "Votre adresse AionUi :",
+      "companion": {
+        "stepInstall": "Sur le téléphone, scannez le premier code pour télécharger l'application AionUi, puis installez-la (Android demande d'autoriser les installations depuis votre navigateur).",
+        "stepPair": "Ouvrez l'application et scannez le second code, ou saisissez l'adresse et le code ci-dessous.",
+        "qrInstall": "1 · Télécharger l'application",
+        "qrPair": "2 · Associer",
+        "limitsTitle": "Bon à savoir avant d'installer",
+        "limits": {
+          "notPlay": "Elle n'est pas sur Google Play : Play n'autorise ce type de contrôle qu'aux outils d'accessibilité.",
+          "restricted": "Android 13 et versions ultérieures : autorisez les « paramètres restreints » pour l'application avant d'activer son service d'accessibilité.",
+          "consent": "Android demande votre accord pour partager l'écran au début de chaque session.",
+          "protection": "Elle peut être bloquée tant que la Protection avancée est active.",
+          "verification": "Dans certains pays, Android ajoute une attente de 24 heures pour les applications installées ainsi.",
+          "noChrome": "Elle ne peut pas inspecter Chrome ; utilisez la voie du Mac pour cela."
+        }
+      },
+      "mac": {
+        "stepDownload": "Téléchargez l'assistant Mac d'AionUi et placez-le dans Applications.",
+        "stepGatekeeper": "Premier lancement : macOS indique qu'il ne peut pas vérifier l'application. Ouvrez Réglages Système → Confidentialité et sécurité et cliquez sur « Ouvrir quand même ».",
+        "stepPair": "Dans l'assistant, saisissez l'adresse et le code ci-dessous.",
+        "stepPhone": "Activez le débogage USB ou sans fil sur le téléphone (Options pour les développeurs) et reliez-le au Mac ; le téléphone apparaît alors ici.",
+        "download": "Télécharger l'assistant Mac"
+      },
+      "wifi": {
+        "steps": "Sur le téléphone, ouvrez Options pour les développeurs → Débogage sans fil, puis saisissez le code ci-dessous quand AionUi le demande."
+      }
+    }
   }
 }

@@ -1732,6 +1732,81 @@
     "offIn_one": "{{count}} 分鐘後關閉",
     "offIn_other": "{{count}} 分鐘後關閉",
     "summaryOn_one": "{{count}} 項開啟",
-    "summaryOn_other": "{{count}} 項開啟"
+    "summaryOn_other": "{{count}} 項開啟",
+    "addPhone": "新增手機",
+    "access": {
+      "title": "智慧代理存取",
+      "timeout": "在此時間後關閉",
+      "hint": "超過這段時間以及 AionUi 重新啟動後，手機會自動關閉。關閉會立即停止智慧代理。",
+      "minutes_one": "{{count}} 分鐘",
+      "minutes_other": "{{count}} 分鐘"
+    },
+    "routes": {
+      "title": "連線方式",
+      "experimental": "實驗性 — 需要測試",
+      "pair": "配對",
+      "repair": "重新配對",
+      "mac_relay": {
+        "name": "透過我的 Mac 進行 USB / Wi-Fi 偵錯",
+        "desc": "手機透過傳輸線或同一個 Wi-Fi 連接到你的 Mac。偵錯金鑰留在 Mac 上；需要執行 AionUi Mac 輔助程式。也可讓智慧代理檢查手機上的 Chrome。"
+      },
+      "companion": {
+        "name": "AionUi 夥伴 App",
+        "desc": "手機上的 App 會自行連線到 AionUi，隨時隨地，不需要電腦。智慧代理工作時會顯示「AionUi 正在控制這支手機 · 停止」。"
+      },
+      "wifi_direct": {
+        "name": "直接 Wi-Fi 偵錯",
+        "desc": "AionUi 伺服器透過你的私人網路連線到手機的無線偵錯。測試通過之前不提供。"
+      }
+    },
+    "audit": {
+      "title": "活動",
+      "hint": "智慧代理執行的每個動作：做了什麼、在哪個 App 或網站、結果如何。不保存螢幕截圖或輸入的文字。",
+      "empty": "尚無內容。",
+      "more": "顯示較早的",
+      "failed": "無法載入更多。",
+      "error": "錯誤"
+    },
+    "approval": {
+      "title": "智慧代理想在「{{device}}」上操作",
+      "titleTask": "附加元件想在「{{device}}」上執行工作",
+      "target": "在 {{target}} 中：",
+      "taskHint": "你核准的是整個工作：附加元件自行決定每次點按。停止和逾時仍會結束它。",
+      "allow": "允許",
+      "allowed": "已允許。"
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "配對 Mac 輔助程式",
+        "companion": "配對夥伴 App",
+        "wifi_direct": "配對 Wi-Fi 偵錯"
+      },
+      "address": "你的 AionUi 位址：",
+      "companion": {
+        "stepInstall": "在手機上掃描第一個 QR 碼下載 AionUi App 並安裝（Android 會詢問是否允許從瀏覽器安裝）。",
+        "stepPair": "開啟 App 並掃描第二個 QR 碼，或輸入下方的位址和配對碼。",
+        "qrInstall": "1 · 下載 App",
+        "qrPair": "2 · 配對",
+        "limitsTitle": "安裝前須知",
+        "limits": {
+          "notPlay": "它不在 Google Play 上：Play 只允許無障礙工具進行這類控制。",
+          "restricted": "Android 13 以上：開啟其無障礙服務前，請先為該 App 允許「受限制的設定」。",
+          "consent": "每次工作階段開始時，Android 都會徵求你同意分享螢幕。",
+          "protection": "開啟進階保護時可能被封鎖。",
+          "verification": "在部分國家，Android 會對以這種方式安裝的 App 增加 24 小時等待。",
+          "noChrome": "它無法檢查 Chrome；如需檢查請使用 Mac 方式。"
+        }
+      },
+      "mac": {
+        "stepDownload": "下載 AionUi Mac 輔助程式並移到「應用程式」。",
+        "stepGatekeeper": "首次啟動：macOS 會提示無法驗證該 App。打開 系統設定 → 隱私權與安全性，按一下「強制打開」。",
+        "stepPair": "在輔助程式中輸入下方的位址和配對碼。",
+        "stepPhone": "在手機上開啟 USB 或無線偵錯（開發人員選項）並連接到 Mac；手機隨後會出現在這裡。",
+        "download": "下載 Mac 輔助程式"
+      },
+      "wifi": {
+        "steps": "在手機上打開 開發人員選項 → 無線偵錯，並在 AionUi 詢問時輸入下方的配對碼。"
+      }
+    }
   }
 }

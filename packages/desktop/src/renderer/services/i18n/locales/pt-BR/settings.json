@@ -1733,6 +1733,81 @@
     "offIn_one": "desliga em {{count}} min",
     "offIn_other": "desliga em {{count}} min",
     "summaryOn_one": "{{count}} ligado",
-    "summaryOn_other": "{{count}} ligados"
+    "summaryOn_other": "{{count}} ligados",
+    "addPhone": "Adicionar um celular",
+    "access": {
+      "title": "Acesso dos agentes",
+      "timeout": "Desliga após",
+      "hint": "O celular se desliga sozinho após esse tempo e após reiniciar o AionUi. Desligar interrompe os agentes na hora.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "routes": {
+      "title": "Opções de conexão",
+      "experimental": "Experimental — precisa de um teste",
+      "pair": "Parear",
+      "repair": "Parear de novo",
+      "mac_relay": {
+        "name": "Depuração USB / Wi-Fi pelo meu Mac",
+        "desc": "O celular está conectado ao seu Mac por cabo ou na mesma rede Wi-Fi. A chave de depuração fica no Mac; precisa do auxiliar do AionUi para Mac em execução. Também permite que os agentes inspecionem o Chrome no celular."
+      },
+      "companion": {
+        "name": "App complementar do AionUi",
+        "desc": "Um app no celular que se conecta sozinho ao AionUi, em qualquer lugar, sem computador. Ele mostra “O AionUi está controlando este celular · Parar” enquanto os agentes trabalham."
+      },
+      "wifi_direct": {
+        "name": "Depuração Wi-Fi direta",
+        "desc": "O servidor do AionUi se conecta à depuração sem fio do celular pela sua rede privada. Só é oferecida depois que o teste passar."
+      }
+    },
+    "audit": {
+      "title": "Atividade",
+      "hint": "Cada ação dos agentes: o quê, em qual app ou site e como terminou. Nenhuma captura de tela ou texto digitado é guardado.",
+      "empty": "Nada ainda.",
+      "more": "Mostrar anteriores",
+      "failed": "Não foi possível carregar mais.",
+      "error": "erro"
+    },
+    "approval": {
+      "title": "Um agente quer agir em “{{device}}”",
+      "titleTask": "Um complemento quer executar uma tarefa em “{{device}}”",
+      "target": "Em {{target}}:",
+      "taskHint": "Você aprova a tarefa inteira: o complemento decide os próprios toques. Parar e o tempo limite ainda a encerram.",
+      "allow": "Permitir",
+      "allowed": "Permitido."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Parear o auxiliar para Mac",
+        "companion": "Parear o app complementar",
+        "wifi_direct": "Parear a depuração Wi-Fi"
+      },
+      "address": "Seu endereço do AionUi:",
+      "companion": {
+        "stepInstall": "No celular, escaneie o primeiro código para baixar o app do AionUi e instale-o (o Android pede para permitir instalações pelo seu navegador).",
+        "stepPair": "Abra o app e escaneie o segundo código, ou digite o endereço e o código abaixo.",
+        "qrInstall": "1 · Baixar o app",
+        "qrPair": "2 · Parear",
+        "limitsTitle": "Bom saber antes de instalar",
+        "limits": {
+          "notPlay": "Não está no Google Play: o Play só permite esse tipo de controle para ferramentas de acessibilidade.",
+          "restricted": "Android 13 e posteriores: permita as “configurações restritas” para o app antes de ativar o serviço de acessibilidade dele.",
+          "consent": "O Android pede seu consentimento para compartilhar a tela no início de cada sessão.",
+          "protection": "Pode ser bloqueado enquanto a Proteção avançada estiver ativa.",
+          "verification": "Em alguns países o Android adiciona uma espera de 24 horas para apps instalados assim.",
+          "noChrome": "Ele não inspeciona o Chrome; use a rota do Mac para isso."
+        }
+      },
+      "mac": {
+        "stepDownload": "Baixe o auxiliar do AionUi para Mac e mova-o para Aplicativos.",
+        "stepGatekeeper": "Primeira abertura: o macOS diz que não pode verificar o app. Abra Ajustes do Sistema → Privacidade e Segurança e clique em “Abrir Mesmo Assim”.",
+        "stepPair": "No auxiliar, digite o endereço e o código abaixo.",
+        "stepPhone": "Ative a depuração USB ou sem fio no celular (Opções do desenvolvedor) e conecte-o ao Mac; o celular aparece aqui.",
+        "download": "Baixar o auxiliar para Mac"
+      },
+      "wifi": {
+        "steps": "No celular, abra Opções do desenvolvedor → Depuração sem fio e digite o código abaixo quando o AionUi pedir."
+      }
+    }
   }
 }

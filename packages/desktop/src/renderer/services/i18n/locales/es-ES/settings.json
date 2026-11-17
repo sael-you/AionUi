@@ -1730,6 +1730,81 @@
     "offIn_one": "se apaga en {{count}} min",
     "offIn_other": "se apaga en {{count}} min",
     "summaryOn_one": "{{count}} activado",
-    "summaryOn_other": "{{count}} activados"
+    "summaryOn_other": "{{count}} activados",
+    "addPhone": "Añadir un teléfono",
+    "access": {
+      "title": "Acceso de agentes",
+      "timeout": "Se apaga tras",
+      "hint": "El teléfono se apaga solo tras este tiempo y tras reiniciar AionUi. Apagarlo detiene a los agentes al instante.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "routes": {
+      "title": "Opciones de conexión",
+      "experimental": "Experimental: necesita una prueba",
+      "pair": "Vincular",
+      "repair": "Vincular de nuevo",
+      "mac_relay": {
+        "name": "Depuración USB / Wi-Fi a través de mi Mac",
+        "desc": "El teléfono está conectado a tu Mac por cable o en la misma Wi-Fi. La clave de depuración se queda en el Mac; necesita el asistente de AionUi para Mac en ejecución. También permite a los agentes inspeccionar Chrome en el teléfono."
+      },
+      "companion": {
+        "name": "App complementaria de AionUi",
+        "desc": "Una app en el teléfono que se conecta sola a AionUi, en cualquier lugar y sin ordenador. Muestra «AionUi está controlando este teléfono · Detener» mientras los agentes trabajan."
+      },
+      "wifi_direct": {
+        "name": "Depuración Wi-Fi directa",
+        "desc": "El servidor de AionUi se conecta a la depuración inalámbrica del teléfono por tu red privada. No se ofrece hasta que la prueba pase."
+      }
+    },
+    "audit": {
+      "title": "Actividad",
+      "hint": "Cada acción de los agentes: qué, en qué app o sitio y cómo terminó. No se guardan capturas ni texto escrito.",
+      "empty": "Nada todavía.",
+      "more": "Mostrar anteriores",
+      "failed": "No se pudo cargar más.",
+      "error": "error"
+    },
+    "approval": {
+      "title": "Un agente quiere actuar en «{{device}}»",
+      "titleTask": "Un complemento quiere ejecutar una tarea en «{{device}}»",
+      "target": "En {{target}}:",
+      "taskHint": "Apruebas la tarea completa: el complemento decide sus propios toques. Detener y el tiempo límite la terminan igualmente.",
+      "allow": "Permitir",
+      "allowed": "Permitido."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Vincular el asistente para Mac",
+        "companion": "Vincular la app complementaria",
+        "wifi_direct": "Vincular la depuración Wi-Fi"
+      },
+      "address": "Tu dirección de AionUi:",
+      "companion": {
+        "stepInstall": "En el teléfono, escanea el primer código para descargar la app de AionUi e instálala (Android pide permitir instalaciones desde tu navegador).",
+        "stepPair": "Abre la app y escanea el segundo código, o escribe la dirección y el código de abajo.",
+        "qrInstall": "1 · Descargar la app",
+        "qrPair": "2 · Vincular",
+        "limitsTitle": "Conviene saberlo antes de instalar",
+        "limits": {
+          "notPlay": "No está en Google Play: Play solo permite este tipo de control a herramientas de accesibilidad.",
+          "restricted": "Android 13 y posteriores: permite los «ajustes restringidos» para la app antes de activar su servicio de accesibilidad.",
+          "consent": "Android pide tu consentimiento para compartir la pantalla al inicio de cada sesión.",
+          "protection": "Puede quedar bloqueada mientras la Protección avanzada esté activa.",
+          "verification": "En algunos países Android añade una espera de 24 horas para apps instaladas así.",
+          "noChrome": "No puede inspeccionar Chrome; usa la ruta del Mac para eso."
+        }
+      },
+      "mac": {
+        "stepDownload": "Descarga el asistente de AionUi para Mac y muévelo a Aplicaciones.",
+        "stepGatekeeper": "Primer inicio: macOS dice que no puede comprobar la app. Abre Ajustes del Sistema → Privacidad y seguridad y haz clic en «Abrir igualmente».",
+        "stepPair": "En el asistente, escribe la dirección y el código de abajo.",
+        "stepPhone": "Activa la depuración USB o inalámbrica en el teléfono (Opciones de desarrollador) y conéctalo al Mac; el teléfono aparecerá aquí.",
+        "download": "Descargar el asistente para Mac"
+      },
+      "wifi": {
+        "steps": "En el teléfono abre Opciones de desarrollador → Depuración inalámbrica y escribe el código de abajo cuando AionUi lo pida."
+      }
+    }
   }
 }

@@ -1730,6 +1730,81 @@
     "offIn_one": "aus in {{count}} Min.",
     "offIn_other": "aus in {{count}} Min.",
     "summaryOn_one": "{{count}} an",
-    "summaryOn_other": "{{count}} an"
+    "summaryOn_other": "{{count}} an",
+    "addPhone": "Telefon hinzufügen",
+    "access": {
+      "title": "Agentenzugriff",
+      "timeout": "Schaltet sich aus nach",
+      "hint": "Das Telefon schaltet sich nach dieser Zeit und nach einem Neustart von AionUi selbst aus. Aus stoppt Agenten sofort.",
+      "minutes_one": "{{count}} Min.",
+      "minutes_other": "{{count}} Min."
+    },
+    "routes": {
+      "title": "Verbindungsoptionen",
+      "experimental": "Experimentell – Test nötig",
+      "pair": "Koppeln",
+      "repair": "Erneut koppeln",
+      "mac_relay": {
+        "name": "USB-/WLAN-Debugging über meinen Mac",
+        "desc": "Das Telefon ist per Kabel oder im selben WLAN mit deinem Mac verbunden. Der Debugging-Schlüssel bleibt auf dem Mac; der AionUi-Mac-Helfer muss laufen. Agenten können so auch Chrome auf dem Telefon untersuchen."
+      },
+      "companion": {
+        "name": "AionUi-Begleit-App",
+        "desc": "Eine App auf dem Telefon, die sich selbst mit AionUi verbindet – überall, ohne Computer. Sie zeigt „AionUi steuert dieses Telefon · Stopp“, solange Agenten arbeiten."
+      },
+      "wifi_direct": {
+        "name": "WLAN-Debugging direkt",
+        "desc": "Der AionUi-Server verbindet sich über dein privates Netzwerk mit dem WLAN-Debugging des Telefons. Erst verfügbar, wenn der Test bestanden ist."
+      }
+    },
+    "audit": {
+      "title": "Aktivität",
+      "hint": "Jede Aktion der Agenten: was, in welcher App oder Website und wie sie endete. Es werden keine Screenshots oder eingegebenen Texte gespeichert.",
+      "empty": "Noch nichts.",
+      "more": "Ältere anzeigen",
+      "failed": "Weitere konnten nicht geladen werden.",
+      "error": "Fehler"
+    },
+    "approval": {
+      "title": "Ein Agent möchte auf „{{device}}“ handeln",
+      "titleTask": "Ein Add-on möchte auf „{{device}}“ eine Aufgabe ausführen",
+      "target": "In {{target}}:",
+      "taskHint": "Du gibst die ganze Aufgabe frei: Das Add-on entscheidet seine Tipps selbst. Stopp und das Zeitlimit beenden sie trotzdem.",
+      "allow": "Erlauben",
+      "allowed": "Erlaubt."
+    },
+    "pair": {
+      "title": {
+        "mac_helper": "Mac-Helfer koppeln",
+        "companion": "Begleit-App koppeln",
+        "wifi_direct": "WLAN-Debugging koppeln"
+      },
+      "address": "Deine AionUi-Adresse:",
+      "companion": {
+        "stepInstall": "Scanne auf dem Telefon den ersten Code, um die AionUi-App herunterzuladen, und installiere sie (Android fragt, ob Installationen aus deinem Browser erlaubt sind).",
+        "stepPair": "Öffne die App und scanne den zweiten Code oder gib unten Adresse und Code ein.",
+        "qrInstall": "1 · App herunterladen",
+        "qrPair": "2 · Koppeln",
+        "limitsTitle": "Gut zu wissen vor der Installation",
+        "limits": {
+          "notPlay": "Sie ist nicht bei Google Play: Play erlaubt diese Art der Steuerung nur für Bedienungshilfen.",
+          "restricted": "Android 13 und neuer: Erlaube der App „eingeschränkte Einstellungen“, bevor du ihren Bedienungshilfen-Dienst einschaltest.",
+          "consent": "Android fragt zu Beginn jeder Sitzung nach deiner Zustimmung zur Bildschirmfreigabe.",
+          "protection": "Sie kann blockiert sein, solange der erweiterte Schutz aktiv ist.",
+          "verification": "In manchen Ländern verlangt Android für so installierte Apps eine Wartezeit von 24 Stunden.",
+          "noChrome": "Sie kann Chrome nicht untersuchen; nutze dafür den Weg über den Mac."
+        }
+      },
+      "mac": {
+        "stepDownload": "Lade den AionUi-Mac-Helfer herunter und verschiebe ihn in „Programme“.",
+        "stepGatekeeper": "Erster Start: macOS meldet, dass die App nicht überprüft werden kann. Öffne Systemeinstellungen → Datenschutz & Sicherheit und klicke auf „Dennoch öffnen“.",
+        "stepPair": "Gib im Helfer unten stehende Adresse und den Code ein.",
+        "stepPhone": "Schalte auf dem Telefon USB- oder WLAN-Debugging ein (Entwickleroptionen) und verbinde es mit dem Mac; das Telefon erscheint dann hier.",
+        "download": "Mac-Helfer herunterladen"
+      },
+      "wifi": {
+        "steps": "Öffne auf dem Telefon Entwickleroptionen → Debugging über WLAN und gib den Code unten ein, wenn AionUi danach fragt."
+      }
+    }
   }
 }

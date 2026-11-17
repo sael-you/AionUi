@@ -15,7 +15,7 @@ import { useEffect } from 'react';
 import useSWR from 'swr';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import { devices as devicesApi } from '@/common/adapter/ipcBridge';
-import type { Device, DeviceJob } from '@/common/types/platform/devices';
+import type { Device, DeviceApproval, DeviceJob } from '@/common/types/platform/devices';
 
 export const DEVICES_KEY = 'devices.list';
 
@@ -73,4 +73,38 @@ export const useDeviceJob = (jobId: string | null, deviceId: string, onFinished:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finished, jobId]);
   return data ?? null;
+};
+
+export const DEVICE_APPROVALS_KEY = 'devices.approvals';
+
+/** Pending approvals, oldest first; expired rows drop out on their own. */
+export const pendingDeviceApprovals = (approvals: readonly DeviceApproval[], now: number): DeviceApproval[] =>
+  approvals.filter((approval) => approval.expires_at > now).toSorted((a, b) => a.created_at - b.created_at);
+
+/** Agent actions on a device that wait for the owner (C38 §3), kept fresh by `devices.approval`. */
+export const useDeviceApprovals = (enabled = true) => {
+  const { data, mutate } = useSWR<DeviceApproval[]>(
+    enabled ? DEVICE_APPROVALS_KEY : null,
+    async () => {
+      try {
+        return await devicesApi.listApprovals.invoke();
+      } catch {
+        return [];
+      }
+    },
+    { refreshInterval: REFRESH_MS }
+  );
+  useEffect(() => {
+    if (!enabled) return undefined;
+    return devicesApi.approval.on((event) => {
+      void mutate(
+        (current) => {
+          const others = (current ?? []).filter((row) => row.id !== event.approval.id);
+          return event.state === 'requested' ? [...others, event.approval] : others;
+        },
+        { revalidate: false }
+      );
+    });
+  }, [enabled, mutate]);
+  return { approvals: data ?? [], reload: mutate };
 };
