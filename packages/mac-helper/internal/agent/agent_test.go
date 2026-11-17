@@ -298,3 +298,49 @@ func TestInventoryCarriesTheCompanionClientIDWithoutResendingOnRefresh(t *testin
 	default:
 	}
 }
+
+type fakeAddons struct{ calls []string }
+
+func (f *fakeAddons) Installed() []wire.Addon { return nil }
+func (f *fakeAddons) Handle(_ context.Context, verb string, _ []byte) (any, error) {
+	f.calls = append(f.calls, verb)
+	return map[string]string{}, nil
+}
+func (f *fakeAddons) StopDevice(string) {}
+
+func TestEveryAddonVerbNeedsTheOwnersSwitch(t *testing.T) {
+	a, _, _ := setup(t, "S1")
+	host := &fakeAddons{}
+	a.Addons = host
+	ctx := context.Background()
+	for _, verb := range []string{"addon_install", "addon_remove", "addon_run"} {
+		if _, err := a.Handle(ctx, "mac", verb, json.RawMessage(`{"name":"artemis"}`)); code(err) != wire.ErrSwitchOff {
+			t.Errorf("%s without the switch: %v", verb, err)
+		}
+	}
+	if len(host.calls) != 0 {
+		t.Fatalf("reached the add-on host: %v", host.calls)
+	}
+	// Stopping is always allowed.
+	if _, err := a.Handle(ctx, "mac", "addon_stop", json.RawMessage(`{"run_id":"r"}`)); err != nil {
+		t.Fatalf("addon_stop: %v", err)
+	}
+	a.mu.Lock()
+	a.cfg.Addons = map[string]bool{"artemis": true}
+	a.mu.Unlock()
+	if _, err := a.Handle(ctx, "mac", "addon_install", json.RawMessage(`{"name":"artemis"}`)); err != nil {
+		t.Fatalf("allowed: %v", err)
+	}
+	if _, err := a.Handle(ctx, "mac", "addon_install", json.RawMessage(`{"name":"mobilerun"}`)); code(err) != wire.ErrSwitchOff {
+		t.Fatalf("other add-on: %v", err)
+	}
+	a.mu.Lock()
+	a.cfg.Paused = true
+	a.mu.Unlock()
+	if _, err := a.Handle(ctx, "mac", "addon_run", json.RawMessage(`{"name":"artemis"}`)); code(err) != wire.ErrSwitchOff {
+		t.Fatalf("stop-all must gate add-ons: %v", err)
+	}
+	if strings.Join(host.calls, ",") != "addon_stop,addon_install" {
+		t.Fatalf("host calls %v", host.calls)
+	}
+}

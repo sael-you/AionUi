@@ -126,8 +126,6 @@ func decode(args []byte, v any) error {
 	return nil
 }
 
-var versionPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$`)
-
 // MaxTaskLen bounds a task text.
 const MaxTaskLen = 4000
 
@@ -145,14 +143,11 @@ func (h *Host) Handle(ctx context.Context, verb string, args []byte) (any, error
 		if !known(in.Name) {
 			return nil, bad("unknown add-on %q", in.Name)
 		}
-		version := ""
-		if in.Version != nil {
-			version = *in.Version
-			if !versionPattern.MatchString(version) {
-				return nil, bad("invalid version")
-			}
+		// Only the version pinned in this binary; the relay cannot name refs.
+		if in.Version != nil && *in.Version != PinnedVersion(in.Name) {
+			return nil, wire.Errorf(wire.ErrRefused, "only %s %s can be installed by this helper", in.Name, PinnedVersion(in.Name))
 		}
-		installed, err := h.install(ctx, in.Name, version)
+		installed, err := h.install(ctx, in.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -191,6 +186,10 @@ func (h *Host) Handle(ctx context.Context, verb string, args []byte) (any, error
 		task := strings.TrimSpace(in.Task)
 		if task == "" || len([]rune(task)) > MaxTaskLen {
 			return nil, bad("task must be 1–%d characters", MaxTaskLen)
+		}
+		// A task is never read as an option (it is also passed after "--").
+		if strings.HasPrefix(task, "-") {
+			return nil, bad("task must not start with '-'")
 		}
 		if in.MaxMinutes < 1 || in.MaxMinutes > 60 {
 			return nil, bad("max_minutes must be 1–60")

@@ -139,6 +139,19 @@ func (a *Agent) Ready(serial string) bool {
 	return ok && p.dev.Ready()
 }
 
+// addonAllowed checks stop-all and the owner's switch for an add-on.
+func (a *Agent) addonAllowed(name string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if a.cfg.Paused {
+		return wire.Errorf(wire.ErrSwitchOff, "everything is stopped on this Mac (aionui-mac-helper resume)")
+	}
+	if !a.cfg.Addons[name] {
+		return wire.Errorf(wire.ErrSwitchOff, "add-on %q is not allowed on this Mac (aionui-mac-helper allow-addon %s)", name, name)
+	}
+	return nil
+}
+
 // Inventory implements relay.Handler.
 func (a *Agent) Inventory() wire.Inventory {
 	a.mu.Lock()

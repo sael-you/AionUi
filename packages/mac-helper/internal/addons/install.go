@@ -13,8 +13,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
-	"runtime"
 	"strings"
 	"time"
 )
@@ -24,8 +22,6 @@ var httpClient = &http.Client{Timeout: 15 * time.Minute}
 // PythonVersion is the managed Python both add-ons run on (Artemis needs
 // ≥ 3.12, Mobilerun < 3.14; newer Pythons lack wheels some deps need).
 const PythonVersion = "3.12"
-
-var commitPattern = regexp.MustCompile(`^[0-9a-f]{40}$`)
 
 // download is the default Fetch: GET url into dest (https only).
 func download(ctx context.Context, url, dest string) error {
@@ -66,20 +62,8 @@ func (h *Host) fetch(ctx context.Context, url, dest string) error {
 	return download(ctx, url, dest)
 }
 
-// uvAsset names astral-sh/uv's release asset for this Mac.
-func uvAsset() string {
-	arch := "aarch64"
-	if runtime.GOARCH == "amd64" {
-		arch = "x86_64"
-	}
-	if runtime.GOOS == "linux" {
-		return "uv-" + arch + "-unknown-linux-gnu.tar.gz"
-	}
-	return "uv-" + arch + "-apple-darwin.tar.gz"
-}
-
-// ensureUV returns uv: the override, the helper's own copy, or a fresh
-// download from astral-sh/uv's latest release checked against its .sha256.
+// ensureUV returns uv: the override (tests), the helper's own copy, or
+// UVVersion downloaded and checked against the sha256 pinned in this binary.
 func (h *Host) ensureUV(ctx context.Context) (string, error) {
 	if h.UV != "" {
 		return h.UV, nil
@@ -92,21 +76,18 @@ func (h *Host) ensureUV(ctx context.Context) (string, error) {
 		return "", err
 	}
 	asset := uvAsset()
-	base := "https://github.com/astral-sh/uv/releases/latest/download/" + asset
-	sumFile := filepath.Join(h.StateDir, "uv", asset+".sha256")
-	tarFile := filepath.Join(h.StateDir, "uv", asset)
-	defer os.Remove(sumFile)
-	defer os.Remove(tarFile)
-	if err := h.fetch(ctx, base+".sha256", sumFile); err != nil {
-		return "", fmtErr("uv checksum", err)
+	want, ok := uvSHA256[asset]
+	if !ok {
+		return "", fmt.Errorf("no pinned uv for %s", asset)
 	}
-	if err := h.fetch(ctx, base, tarFile); err != nil {
+	tarFile := filepath.Join(h.StateDir, "uv", asset)
+	defer os.Remove(tarFile)
+	url := "https://github.com/astral-sh/uv/releases/download/" + UVVersion + "/" + asset
+	if err := h.fetch(ctx, url, tarFile); err != nil {
 		return "", fmtErr("uv download", err)
 	}
-	want, _ := os.ReadFile(sumFile)
-	fields := strings.Fields(string(want))
-	if len(fields) == 0 || !strings.EqualFold(fields[0], fileSHA256(tarFile)) {
-		return "", fmt.Errorf("uv download does not match its published sha256: not installed")
+	if fileSHA256(tarFile) != want {
+		return "", fmt.Errorf("uv download does not match the pinned sha256: not installed")
 	}
 	if err := extractTarGz(tarFile, filepath.Dir(bin), true); err != nil {
 		return "", err
@@ -234,7 +215,7 @@ func (h *Host) runUV(ctx context.Context, uv, name, dir string, args ...string) 
 
 // install puts an add-on into <root>/<name>, replacing an older copy only
 // after the new one is ready.
-func (h *Host) install(ctx context.Context, name, version string) (string, error) {
+func (h *Host) install(ctx context.Context, name string) (string, error) {
 	if h.busy(name) {
 		return "", fmt.Errorf("%s is running a task", name)
 	}
@@ -257,58 +238,57 @@ func (h *Host) install(ctx context.Context, name, version string) (string, error
 	}
 	ictx, cancel := context.WithTimeout(ctx, 20*time.Minute)
 	defer cancel()
-	installed := version
+	installed := PinnedVersion(name)
 	switch name {
 	case Artemis:
-		// Pinned source of google/artemis (not on PyPI): a commit tarball.
-		ref := version
-		if ref == "" {
-			ref = "main"
-		}
-		// Resolve the ref to a commit so the install is reproducible.
-		shaFile := filepath.Join(staging, "commit")
-		if err := h.fetch(ictx, "https://api.github.com/repos/google/artemis/commits/"+ref+"?format=sha", shaFile); err != nil {
-			return "", fmtErr("artemis version", err)
-		}
-		shaRaw, _ := os.ReadFile(shaFile)
-		_ = os.Remove(shaFile)
-		sha := strings.TrimSpace(string(shaRaw))
-		if !commitPattern.MatchString(sha) {
-			return "", fmt.Errorf("artemis: %q is not a known version", ref)
-		}
-		ref = sha
+		// The pinned commit's tarball, checked against its pinned sha256.
 		tarball := filepath.Join(staging, "src.tar.gz")
-		if err := h.fetch(ictx, "https://codeload.github.com/google/artemis/tar.gz/"+ref, tarball); err != nil {
+		if err := h.fetch(ictx, "https://codeload.github.com/google/artemis/tar.gz/"+ArtemisCommit, tarball); err != nil {
 			return "", fmtErr("artemis download", err)
+		}
+		if fileSHA256(tarball) != artemisTarballSHA256 {
+			return "", fmt.Errorf("artemis download does not match the pinned sha256: not installed")
 		}
 		src := filepath.Join(staging, "src")
 		if err := extractTarGz(tarball, src, true); err != nil {
 			return "", err
 		}
 		_ = os.Remove(tarball)
+		if _, err := os.Stat(filepath.Join(src, "uv.lock")); err != nil {
+			return "", fmt.Errorf("artemis: the pinned source has no uv.lock")
+		}
 		// The project must sync where it will live: install in place.
 		if err := h.swap(staging, final); err != nil {
 			return "", err
 		}
-		if err := h.runUV(ictx, uv, name, filepath.Join(final, "src"), "sync", "--python", PythonVersion, "--project", filepath.Join(final, "src")); err != nil {
+		// --frozen: exactly the lockfile (hashes included), no re-resolution.
+		if err := h.runUV(ictx, uv, name, filepath.Join(final, "src"),
+			"sync", "--frozen", "--python", PythonVersion, "--project", filepath.Join(final, "src")); err != nil {
 			_ = os.RemoveAll(final)
 			return "", err
 		}
-		installed = ref[:12]
 	case Mobilerun:
-		spec := "mobilerun[anthropic]"
-		if version != "" {
-			spec += "==" + version
+		if err := os.WriteFile(filepath.Join(staging, "requirements.txt"), []byte(mobilerunRequirements), 0o600); err != nil {
+			return "", err
+		}
+		if err := os.WriteFile(filepath.Join(staging, "build-constraints.txt"), []byte(mobilerunBuildConstraints), 0o600); err != nil {
+			return "", err
 		}
 		if err := h.swap(staging, final); err != nil {
 			return "", err
 		}
-		if err := h.runUV(ictx, uv, name, final, "tool", "install", "--force", "--python", PythonVersion, spec); err != nil {
+		venv := filepath.Join(final, "venv")
+		if err := h.runUV(ictx, uv, name, final, "venv", "--python", PythonVersion, venv); err != nil {
 			_ = os.RemoveAll(final)
 			return "", err
 		}
-		if installed == "" {
-			installed = "latest"
+		if err := h.runUV(ictx, uv, name, final, "pip", "install",
+			"--python", filepath.Join(venv, "bin", "python"),
+			"--require-hashes", "--only-binary", ":all:", "--no-binary", "apkutils2",
+			"--build-constraints", filepath.Join(final, "build-constraints.txt"),
+			"-r", filepath.Join(final, "requirements.txt")); err != nil {
+			_ = os.RemoveAll(final)
+			return "", err
 		}
 	}
 	m := manifest{Name: name, Version: installed, InstalledAt: time.Now().UTC()}

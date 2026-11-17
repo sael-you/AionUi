@@ -87,13 +87,18 @@ helper reaches: **Artemis** (google/artemis, Apache-2.0) and **Mobilerun** (droi
 app on the phone is AGPL-3.0 — fine for personal use). Install/remove them from AionUi → Devices → Add-ons, or:
 
 ```sh
-aionui-mac-helper addon-install artemis        # pinned to the current commit of google/artemis
-aionui-mac-helper addon-install mobilerun      # from PyPI
+aionui-mac-helper allow-addon artemis          # default: AionUi may NOT install, remove or run an add-on here
+aionui-mac-helper addon-install artemis        # always the version pinned in the helper (google/artemis 351ca8422f7b)
+aionui-mac-helper addon-install mobilerun      # Mobilerun 0.7.4, every package hash-pinned
 aionui-mac-helper addon-key artemis GEMINI_API_KEY      # their own model key, typed, not shown
 aionui-mac-helper addons                       # what is installed, size, stored key names
 aionui-mac-helper addon-remove mobilerun       # frees the disk (Python/uv go with the last add-on)
+aionui-mac-helper deny-addon artemis           # AionUi can no longer touch it (a running task can still be stopped)
 ```
 
+- **Off by default.** Until you `allow-addon` one, AionUi cannot install, remove or run it on this Mac, and
+  `stop-all` blocks every add-on action except stopping. AionUi can only install the exact versions pinned in the
+  helper (uv 0.13.9, Artemis commit 351ca8422f7b with its lockfile, Mobilerun 0.7.4 with hashes for every package).
 - They use **their own LLM loop and key** (Artemis: `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, …;
   Mobilerun: `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `MINIMAX_API_KEY`, …). Keys stay in the
   helper folder (file mode 0600) and are never sent anywhere else or logged.

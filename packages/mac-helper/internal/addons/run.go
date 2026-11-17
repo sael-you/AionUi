@@ -32,13 +32,30 @@ var progressEvery = 2 * time.Second
 
 var envKey = regexp.MustCompile(`^[A-Z][A-Z0-9_]{1,63}$`)
 
+// Names an add-on key may never set: the helper's own variables and what
+// steers the process itself.
+var reservedEnv = regexp.MustCompile(`^(AIONUI|UV_|PATH$|HOME$|LD_|DYLD_|PYTHON|ADB_|ARTEMIS_STANDALONE$)`)
+
+// scrubEnv drops anything of the helper's own (AIONUI_*), whatever put it
+// there: an add-on never sees the helper's token or state paths.
+func scrubEnv(env []string) []string {
+	out := env[:0:0]
+	for _, kv := range env {
+		if strings.HasPrefix(kv, "AIONUI") {
+			continue
+		}
+		out = append(out, kv)
+	}
+	return out
+}
+
 // SetKey stores one environment value for an add-on (an API key) in its
 // 0600 keys.env. Values never leave the Mac and are never logged.
 func (h *Host) SetKey(name, key, value string) error {
 	if !known(name) {
 		return fmt.Errorf("unknown add-on %q", name)
 	}
-	if !envKey.MatchString(key) || strings.ContainsAny(value, "\r\n") {
+	if !envKey.MatchString(key) || reservedEnv.MatchString(key) || strings.ContainsAny(value, "\r\n") {
 		return fmt.Errorf("invalid key name or value")
 	}
 	if err := os.MkdirAll(h.dir(name), 0o700); err != nil {
@@ -108,15 +125,19 @@ func (h *Host) command(name, task, device string) (string, []string, []string, e
 	for k, v := range h.keys(name) {
 		env = append(env, k+"="+v)
 	}
+	// The task always comes after "--": never read as an option.
 	switch name {
 	case Artemis:
 		src := filepath.Join(h.dir(name), "src")
 		// Standalone: no Artemis daemon / web console listening on the Mac.
-		env = append(env, "ARTEMIS_STANDALONE=1", "ADB_DEVICE_SERIAL="+device)
-		return uv, []string{"run", "--project", src, "artemis", "run", task, "--device-serial", device, "--standalone"}, env, nil
+		env = scrubEnv(append(env, "ARTEMIS_STANDALONE=1", "ADB_DEVICE_SERIAL="+device))
+		return uv, []string{
+			"run", "--frozen", "--no-sync", "--project", src,
+			"artemis", "run", "--device-serial", device, "--standalone", "--", task,
+		}, env, nil
 	case Mobilerun:
-		bin := filepath.Join(h.dir(name), "bin", "mobilerun")
-		return bin, []string{"run", task, "--device", device}, env, nil
+		bin := filepath.Join(h.dir(name), "venv", "bin", "mobilerun")
+		return bin, []string{"run", "--device", device, "--", task}, scrubEnv(env), nil
 	}
 	return "", nil, nil, fmt.Errorf("unknown add-on %q", name)
 }

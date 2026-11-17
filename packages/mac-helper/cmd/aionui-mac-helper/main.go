@@ -47,6 +47,7 @@ const usage = `aionui-mac-helper — lets AionUi agents use your phones (and thi
   logs [N]                                 last N lines of the local audit log (default 20)
   addons                                   installed add-ons (Artemis, Mobilerun), size, stored key names
   addon-install <artemis|mobilerun> [version] / addon-remove <name>   (AionUi can do this too)
+  allow-addon <name> / deny-addon <name>   let AionUi install, remove and run that add-on here (default: no)
   addon-key <name> <ENV_NAME>              store an API key for an add-on (typed, not echoed; empty = delete)
   forget                                   delete the pairing and token
   version
@@ -92,6 +93,11 @@ func runCommand(cmd string, args []string) error {
 		return cmdAddonInstall(cmd, args)
 	case "addon-key":
 		return cmdAddonKey(args)
+	case "allow-addon", "deny-addon":
+		if len(args) != 1 || addons.PinnedVersion(args[0]) == "" {
+			return fmt.Errorf("usage: %s <artemis|mobilerun>", cmd)
+		}
+		return setAddonSwitch(args[0], cmd == "allow-addon")
 	case "forget":
 		return config.Forget()
 	case "version", "--version":
@@ -511,4 +517,24 @@ func readSecret() (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(line), nil
+}
+
+func setAddonSwitch(name string, on bool) error {
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	if cfg.Addons == nil {
+		cfg.Addons = map[string]bool{}
+	}
+	if on {
+		cfg.Addons[name] = true
+	} else {
+		delete(cfg.Addons, name)
+	}
+	if err := cfg.Save(); err != nil {
+		return err
+	}
+	fmt.Printf("%s: AionUi may %sinstall, remove and run it on this Mac (pinned version %s)\n", name, map[bool]string{true: "", false: "not "}[on], addons.PinnedVersion(name))
+	return nil
 }

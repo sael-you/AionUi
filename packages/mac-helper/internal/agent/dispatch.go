@@ -61,6 +61,16 @@ func (a *Agent) Handle(ctx context.Context, device, verb string, args json.RawMe
 		if a.Addons == nil {
 			return nil, wire.Errorf(wire.ErrRefused, "no add-on host on this Mac")
 		}
+		// Installing, removing or running an add-on executes code on the Mac:
+		// only with the owner's local switch for that add-on (stop-all off).
+		// Stopping is always allowed.
+		if verb != "addon_stop" {
+			var in struct{ Name string }
+			_ = json.Unmarshal(args, &in)
+			if err := a.addonAllowed(in.Name); err != nil {
+				return nil, err
+			}
+		}
 		result, err := a.Addons.Handle(ctx, verb, args)
 		if err == nil && (verb == "addon_install" || verb == "addon_remove") {
 			a.changed()

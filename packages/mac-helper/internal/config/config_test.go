@@ -73,3 +73,18 @@ func TestSaveLoadTokenAndModes(t *testing.T) {
 		t.Fatalf("after forget: %+v", after)
 	}
 }
+
+func TestAddonSwitchDefaultsOffAndStopAllWins(t *testing.T) {
+	c := &Config{}
+	if c.AddonAllowed("artemis") {
+		t.Fatal("default must be off")
+	}
+	c.Addons = map[string]bool{"artemis": true}
+	if !c.AddonAllowed("artemis") || c.AddonAllowed("mobilerun") {
+		t.Fatal("per add-on switch")
+	}
+	c.Paused = true
+	if c.AddonAllowed("artemis") {
+		t.Fatal("stop-all must win")
+	}
+}

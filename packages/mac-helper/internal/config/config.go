@@ -34,6 +34,9 @@ type Config struct {
 	Enabled map[string]bool `json:"enabled"`
 	// Paused stops every device at once until cleared ("Stop all").
 	Paused bool `json:"paused"`
+	// Addons lists the add-ons (artemis, mobilerun) the owner allows AionUi
+	// to install, remove and run on this Mac. Default: none.
+	Addons map[string]bool `json:"addons,omitempty"`
 }
 
 // Dir is the state directory: $AIONUI_MAC_HELPER_DIR, else
@@ -111,6 +114,11 @@ func (c *Config) Save() error {
 // DeviceEnabled reports the owner's local switch for one device key.
 func (c *Config) DeviceEnabled(key string) bool {
 	return !c.Paused && c.Enabled[key]
+}
+
+// AddonAllowed reports the owner's local switch for an add-on (and stop-all).
+func (c *Config) AddonAllowed(name string) bool {
+	return !c.Paused && c.Addons[name]
 }
 
 // Paired reports whether pairing completed (server, id and a token).
