@@ -209,3 +209,24 @@ func errorsJoin(errs ...error) error {
 	}
 	return nil
 }
+
+var propPattern = regexp.MustCompile(`^[a-z0-9_.]{1,90}$`)
+
+// Prop reads one system property ("" when unknown).
+func (p Phone) Prop(ctx context.Context, name string) string {
+	if !propPattern.MatchString(name) {
+		return ""
+	}
+	out, err := p.shell(ctx, shortTimeout, "getprop", name)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// ChromeDevtools reports whether Chrome's DevTools socket is open (Chrome
+// running, USB/Wi-Fi debugging on).
+func (p Phone) ChromeDevtools(ctx context.Context) bool {
+	out, err := p.shell(ctx, shortTimeout, "cat", "/proc/net/unix")
+	return err == nil && strings.Contains(string(out), "@chrome_devtools_remote")
+}
