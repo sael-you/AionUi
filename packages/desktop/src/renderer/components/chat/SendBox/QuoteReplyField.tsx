@@ -99,7 +99,9 @@ const ReplyMic: React.FC<{ dictation: ReplyDictation; onBeforeStart: () => void 
         content={t('conversation.quoteReply.dictation.offContent')}
         okText={t('conversation.quoteReply.dictation.turnOn')}
         cancelText={t('common.cancel')}
-        position='tr'
+        position='top'
+        // Inside the reply card / sheet, so it stacks above them (they sit over everything).
+        getPopupContainer={(node) => node.closest<HTMLElement>('[role="dialog"]') ?? document.body}
         onOk={() => {
           onBeforeStart();
           return dictation.enableAndStart();
