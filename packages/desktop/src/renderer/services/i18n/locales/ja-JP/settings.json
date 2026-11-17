@@ -1661,5 +1661,78 @@
       "stepPair": "ペアリング: 下の「{{button}}」をクリックし、ブラウザの AionUi アイコンをクリックしてコードを入力します。",
       "update": "バージョン {{version}} が利用可能です。古いバージョンのまま: {{names}}。ダウンロードしてフォルダ内のファイルを置き換え、拡張機能カードの再読み込み矢印を押してください。"
     }
+  },
+  "devices": {
+    "title": "デバイス",
+    "description": "エージェントが使えるものすべて: サーバーのブラウザ、あなたのブラウザ、スマートフォン、アドオン、Mac。オンにするまでどれもオフのままです。",
+    "search": "デバイスを検索",
+    "categories": {
+      "server_browser": "サーバーのブラウザ",
+      "my_browser": "自分のブラウザ",
+      "phone": "スマートフォン",
+      "addon": "アドオン",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "オン",
+      "off": "オフ",
+      "offline": "オフライン",
+      "needs_pairing": "ペアリングが必要",
+      "installing": "インストール中",
+      "removing": "削除中",
+      "error": "エラー"
+    },
+    "later": "今後",
+    "laterHint": "まだ利用できません。今後のアップデートで追加されます。",
+    "agentSwitch": "エージェントの使用を許可",
+    "version": "v{{version}}",
+    "disk": "ディスク {{size}}",
+    "details": "詳細",
+    "remove": "削除",
+    "install": "インストール",
+    "installing": "{{name}} をインストール中",
+    "removing": "{{name}} を削除中",
+    "jobFailed": "失敗: {{error}}",
+    "jobLost": "再起動により中断されました",
+    "installStarted": "{{name}} をインストール中…",
+    "jobStartFailed": "{{name}} の処理を開始できませんでした。",
+    "removeTitle": "{{name}} を削除しますか？",
+    "removeFrees": "ディスクの {{size}} が空きます。",
+    "removeContent": "サーバーから削除されます。",
+    "removeInUse": "{{name}} はまだサーバーのブラウザのプロファイルで使われています。先にそのプロファイルを別のブラウザに切り替えてください。",
+    "turnedOn": "エージェントが {{name}} を使えるようになりました。",
+    "turnedOff": "エージェントは {{name}} を使えなくなりました。",
+    "saveFailed": "保存できませんでした。もう一度お試しください。",
+    "browseLibrary": "ライブラリを見る",
+    "summaryDisk": "ディスク {{size}}",
+    "empty": {
+      "active": {
+        "server_browser": "サーバーのブラウザはまだインストールされていません。",
+        "my_browser": "ペアリング済みのブラウザはまだありません。",
+        "phone": "接続済みのスマートフォンはまだありません。",
+        "addon": "インストール済みのアドオンはまだありません。",
+        "mac": "Mac はまだ接続されていません。"
+      },
+      "library": {
+        "server_browser": "インストールできるサーバーのブラウザはありません。",
+        "my_browser": "下で拡張機能をインストールしてください。",
+        "phone": "スマートフォンはまだありません。",
+        "addon": "利用できるアドオンはありません。",
+        "mac": "まだ利用できません。"
+      }
+    },
+    "drawer": {
+      "about": "概要",
+      "kind": "種類",
+      "status": "状態",
+      "version": "バージョン",
+      "disk": "ディスク",
+      "lastSeen": "最終接続",
+      "until": "オフになる時刻"
+    },
+    "offIn_one": "{{count}} 分後にオフ",
+    "offIn_other": "{{count}} 分後にオフ",
+    "summaryOn_one": "{{count}} 件オン",
+    "summaryOn_other": "{{count}} 件オン"
   }
 }

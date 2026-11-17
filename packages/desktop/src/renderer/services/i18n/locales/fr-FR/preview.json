@@ -210,7 +210,7 @@
       "startFailed": "Le navigateur n’a pas démarré.",
       "notRunning": "Le navigateur n’est pas lancé.",
       "urlBlocked": "Cette adresse est bloquée dans le navigateur du serveur.",
-      "agentsDisabled": "Les agents ne peuvent pas utiliser le navigateur (Paramètres → Navigateur).",
+      "agentsDisabled": "Les agents ne peuvent pas utiliser le navigateur (Paramètres → Appareils).",
       "methodBlocked": "Cette action n’est pas autorisée.",
       "tabLimit": "Limite d’onglets atteinte. Fermez d’abord un onglet.",
       "instanceLimit": "Ce numéro de navigateur dépasse votre limite.",
@@ -229,7 +229,7 @@
   },
   "browserDevices": {
     "activity": "Actions récentes des agents",
-    "agentsOff": "Les agents ne peuvent pas encore utiliser ce navigateur : activez « Les agents peuvent utiliser le navigateur de mon Mac » dans Paramètres → Navigateur.",
+    "agentsOff": "Les agents ne peuvent pas encore utiliser ce navigateur : activez « Les agents peuvent utiliser le navigateur de mon Mac » dans Paramètres → Appareils.",
     "approval": {
       "allow": "Autoriser 60 s",
       "allowed": "Autorisé pendant 60 secondes.",

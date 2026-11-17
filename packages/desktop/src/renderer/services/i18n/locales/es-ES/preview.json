@@ -210,7 +210,7 @@
       "startFailed": "El navegador no se inició.",
       "notRunning": "El navegador no está en marcha.",
       "urlBlocked": "Esta dirección está bloqueada en el navegador del servidor.",
-      "agentsDisabled": "Los agentes no pueden usar el navegador (Ajustes → Navegador).",
+      "agentsDisabled": "Los agentes no pueden usar el navegador (Ajustes → Dispositivos).",
       "methodBlocked": "Esa acción no está permitida.",
       "tabLimit": "Límite de pestañas alcanzado. Cierra una pestaña primero.",
       "instanceLimit": "Ese número de navegador supera tu límite.",
@@ -229,7 +229,7 @@
   },
   "browserDevices": {
     "activity": "Acciones recientes de los agentes",
-    "agentsOff": "Los agentes aún no pueden usar este navegador: activa «Los agentes pueden usar el navegador de mi Mac» en Configuración → Navegador.",
+    "agentsOff": "Los agentes aún no pueden usar este navegador: activa «Los agentes pueden usar el navegador de mi Mac» en Configuración → Dispositivos.",
     "approval": {
       "allow": "Permitir 60 s",
       "allowed": "Permitido durante 60 segundos.",

@@ -1659,5 +1659,78 @@
       "stepPair": "Eşleyin: aşağıdaki “{{button}}” düğmesine, ardından tarayıcınızdaki AionUi simgesine tıklayın ve kodu yazın.",
       "update": "{{version}} sürümü hazır. Hâlâ eski sürümde: {{names}}. İndirin, klasördeki dosyaları değiştirin, ardından uzantı kartındaki yeniden yükle okuna basın."
     }
+  },
+  "devices": {
+    "title": "Cihazlar",
+    "description": "Ajanlarınızın kullanabileceği her şey: sunucu tarayıcıları, kendi tarayıcılarınız, telefonlar, eklentiler ve Mac'iniz. Her biri siz açana kadar kapalı kalır.",
+    "search": "Cihaz ara",
+    "categories": {
+      "server_browser": "Sunucu tarayıcıları",
+      "my_browser": "Tarayıcılarım",
+      "phone": "Telefonlar",
+      "addon": "Eklentiler",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Açık",
+      "off": "Kapalı",
+      "offline": "Çevrimdışı",
+      "needs_pairing": "Eşleme gerekli",
+      "installing": "Kuruluyor",
+      "removing": "Kaldırılıyor",
+      "error": "Hata"
+    },
+    "later": "Sonra",
+    "laterHint": "Henüz yok: sonraki bir güncellemeyle gelecek.",
+    "agentSwitch": "Ajanlar kullanabilir",
+    "version": "v{{version}}",
+    "disk": "Diskte {{size}}",
+    "details": "Ayrıntılar",
+    "remove": "Kaldır",
+    "install": "Kur",
+    "installing": "{{name}} kuruluyor",
+    "removing": "{{name}} kaldırılıyor",
+    "jobFailed": "Başarısız: {{error}}",
+    "jobLost": "yeniden başlatma nedeniyle kesildi",
+    "installStarted": "{{name}} kuruluyor…",
+    "jobStartFailed": "{{name}} için başlatılamadı.",
+    "removeTitle": "{{name}} kaldırılsın mı?",
+    "removeFrees": "Bu, diskte {{size}} yer açar.",
+    "removeContent": "Sunucudan kaldırılır.",
+    "removeInUse": "{{name}} hâlâ bir sunucu tarayıcı profili tarafından kullanılıyor: önce o profili başka bir tarayıcıya geçirin.",
+    "turnedOn": "Ajanlar {{name}} kullanabilir.",
+    "turnedOff": "Ajanlar artık {{name}} kullanamaz.",
+    "saveFailed": "Kaydedilemedi. Yeniden deneyin.",
+    "browseLibrary": "Kütüphaneye göz at",
+    "summaryDisk": "Diskte {{size}}",
+    "empty": {
+      "active": {
+        "server_browser": "Henüz kurulu sunucu tarayıcısı yok.",
+        "my_browser": "Henüz eşlenmiş tarayıcı yok.",
+        "phone": "Henüz bağlı telefon yok.",
+        "addon": "Henüz kurulu eklenti yok.",
+        "mac": "Mac'iniz henüz bağlı değil."
+      },
+      "library": {
+        "server_browser": "Kurulacak sunucu tarayıcısı yok.",
+        "my_browser": "Uzantıyı aşağıdan kurun.",
+        "phone": "Henüz telefon yok.",
+        "addon": "Kullanılabilir eklenti yok.",
+        "mac": "Henüz yok."
+      }
+    },
+    "drawer": {
+      "about": "Hakkında",
+      "kind": "Tür",
+      "status": "Durum",
+      "version": "Sürüm",
+      "disk": "Disk",
+      "lastSeen": "Son görülme",
+      "until": "Kapanma zamanı"
+    },
+    "offIn_one": "{{count}} dk sonra kapanır",
+    "offIn_other": "{{count}} dk sonra kapanır",
+    "summaryOn_one": "{{count}} açık",
+    "summaryOn_other": "{{count}} açık"
   }
 }

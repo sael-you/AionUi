@@ -210,7 +210,7 @@
       "startFailed": "The browser did not start.",
       "notRunning": "The browser is not running.",
       "urlBlocked": "This address is blocked in the server browser.",
-      "agentsDisabled": "Agents may not use the browser (Settings → Browser).",
+      "agentsDisabled": "Agents may not use the browser (Settings → Devices).",
       "methodBlocked": "That action is not allowed.",
       "tabLimit": "Tab limit reached. Close a tab first.",
       "instanceLimit": "This browser number is above your limit.",
@@ -229,7 +229,7 @@
   },
   "browserDevices": {
     "activity": "Recent agent actions",
-    "agentsOff": "Agents can't use this browser yet: turn on “Agents may use my Mac browser” in Settings → Browser.",
+    "agentsOff": "Agents can't use this browser yet: turn on “Agents may use my Mac browser” in Settings → Devices.",
     "approval": {
       "allow": "Allow for 60 s",
       "allowed": "Allowed for 60 seconds.",

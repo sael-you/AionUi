@@ -1659,5 +1659,78 @@
       "stepPair": "Koppeln: Klicke unten auf „{{button}}“, dann auf das AionUi-Symbol im Browser und gib den Code ein.",
       "update": "Version {{version}} ist verfügbar. Noch auf einer älteren: {{names}}. Lade sie herunter, ersetze die Dateien im Ordner und drücke dann den Neu-laden-Pfeil auf der Karte der Erweiterung."
     }
+  },
+  "devices": {
+    "title": "Geräte",
+    "description": "Alles, was deine Agenten nutzen können: Server-Browser, deine eigenen Browser, Telefone, Add-ons und dein Mac. Alles bleibt aus, bis du es einschaltest.",
+    "search": "Geräte suchen",
+    "categories": {
+      "server_browser": "Server-Browser",
+      "my_browser": "Meine Browser",
+      "phone": "Telefone",
+      "addon": "Add-ons",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "An",
+      "off": "Aus",
+      "offline": "Offline",
+      "needs_pairing": "Kopplung nötig",
+      "installing": "Wird installiert",
+      "removing": "Wird entfernt",
+      "error": "Fehler"
+    },
+    "later": "Später",
+    "laterHint": "Noch nicht verfügbar: kommt mit einem späteren Update.",
+    "agentSwitch": "Agenten dürfen es nutzen",
+    "version": "v{{version}}",
+    "disk": "{{size}} belegt",
+    "details": "Details",
+    "remove": "Entfernen",
+    "install": "Installieren",
+    "installing": "{{name}} wird installiert",
+    "removing": "{{name}} wird entfernt",
+    "jobFailed": "Fehlgeschlagen: {{error}}",
+    "jobLost": "durch einen Neustart unterbrochen",
+    "installStarted": "{{name}} wird installiert …",
+    "jobStartFailed": "Konnte für {{name}} nicht gestartet werden.",
+    "removeTitle": "{{name}} entfernen?",
+    "removeFrees": "Das gibt {{size}} Speicher frei.",
+    "removeContent": "Es wird vom Server entfernt.",
+    "removeInUse": "{{name}} wird noch von einem Server-Browser-Profil genutzt: Stelle dieses Profil zuerst auf einen anderen Browser um.",
+    "turnedOn": "Agenten dürfen {{name}} nutzen.",
+    "turnedOff": "Agenten können {{name}} nicht mehr nutzen.",
+    "saveFailed": "Speichern fehlgeschlagen. Versuche es erneut.",
+    "browseLibrary": "Bibliothek ansehen",
+    "summaryDisk": "{{size}} belegt",
+    "empty": {
+      "active": {
+        "server_browser": "Noch kein Server-Browser installiert.",
+        "my_browser": "Noch kein Browser gekoppelt.",
+        "phone": "Noch kein Telefon verbunden.",
+        "addon": "Noch kein Add-on installiert.",
+        "mac": "Dein Mac ist noch nicht verbunden."
+      },
+      "library": {
+        "server_browser": "Keine Server-Browser zum Installieren.",
+        "my_browser": "Installiere unten die Erweiterung.",
+        "phone": "Noch keine Telefone.",
+        "addon": "Keine Add-ons verfügbar.",
+        "mac": "Noch nicht verfügbar."
+      }
+    },
+    "drawer": {
+      "about": "Info",
+      "kind": "Art",
+      "status": "Status",
+      "version": "Version",
+      "disk": "Speicher",
+      "lastSeen": "Zuletzt gesehen",
+      "until": "Schaltet sich aus um"
+    },
+    "offIn_one": "aus in {{count}} Min.",
+    "offIn_other": "aus in {{count}} Min.",
+    "summaryOn_one": "{{count}} an",
+    "summaryOn_other": "{{count}} an"
   }
 }

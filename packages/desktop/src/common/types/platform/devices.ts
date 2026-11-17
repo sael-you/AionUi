@@ -14,14 +14,7 @@
 
 export type DeviceKind = 'server_browser' | 'my_browser' | 'phone' | 'mac' | 'addon';
 
-export type DeviceStatus =
-  | 'on'
-  | 'off'
-  | 'offline'
-  | 'needs_pairing'
-  | 'installing'
-  | 'removing'
-  | 'error';
+export type DeviceStatus = 'on' | 'off' | 'offline' | 'needs_pairing' | 'installing' | 'removing' | 'error';
 
 /** How a phone is reached (C38 §1): via the paired Mac, the companion app, or Wi-Fi debugging from the server. */
 export type DeviceRouteKind = 'mac_relay' | 'companion' | 'wifi_direct';

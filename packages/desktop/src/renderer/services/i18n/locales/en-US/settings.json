@@ -1659,5 +1659,78 @@
       "stepPair": "Pair it: click “{{button}}” below, then click the AionUi icon in your browser and type the code.",
       "update": "Version {{version}} is available. Still on an older one: {{names}}. Download it, replace the files in the folder, then press the reload arrow on the extension's card."
     }
+  },
+  "devices": {
+    "title": "Devices",
+    "description": "Everything your agents can use: server browsers, your own browsers, phones, add-ons and your Mac. Each one stays off until you switch it on.",
+    "search": "Search devices",
+    "categories": {
+      "server_browser": "Server browsers",
+      "my_browser": "My browsers",
+      "phone": "Phones",
+      "addon": "Add-ons",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "On",
+      "off": "Off",
+      "offline": "Offline",
+      "needs_pairing": "Needs pairing",
+      "installing": "Installing",
+      "removing": "Removing",
+      "error": "Error"
+    },
+    "later": "Later",
+    "laterHint": "Not available yet: it comes with a later update.",
+    "agentSwitch": "Agents may use it",
+    "version": "v{{version}}",
+    "disk": "{{size}} on disk",
+    "details": "Details",
+    "remove": "Remove",
+    "install": "Install",
+    "installing": "Installing {{name}}",
+    "removing": "Removing {{name}}",
+    "jobFailed": "Failed: {{error}}",
+    "jobLost": "interrupted by a restart",
+    "installStarted": "Installing {{name}}…",
+    "jobStartFailed": "Could not start that for {{name}}.",
+    "removeTitle": "Remove {{name}}?",
+    "removeFrees": "This frees {{size}} on disk.",
+    "removeContent": "It is removed from the server.",
+    "removeInUse": "{{name}} is still used by a server browser profile: switch that profile to another browser first.",
+    "turnedOn": "Agents may use {{name}}.",
+    "turnedOff": "Agents can no longer use {{name}}.",
+    "saveFailed": "Could not save. Try again.",
+    "browseLibrary": "Browse the Library",
+    "summaryDisk": "{{size}} on disk",
+    "empty": {
+      "active": {
+        "server_browser": "No server browser is installed yet.",
+        "my_browser": "No browser paired yet.",
+        "phone": "No phone connected yet.",
+        "addon": "No add-on installed yet.",
+        "mac": "Your Mac is not connected yet."
+      },
+      "library": {
+        "server_browser": "No server browsers to install.",
+        "my_browser": "Install the extension below.",
+        "phone": "No phones yet.",
+        "addon": "No add-ons available.",
+        "mac": "Not available yet."
+      }
+    },
+    "drawer": {
+      "about": "About",
+      "kind": "Kind",
+      "status": "Status",
+      "version": "Version",
+      "disk": "Disk",
+      "lastSeen": "Last seen",
+      "until": "Switches off at"
+    },
+    "offIn_one": "off in {{count}} min",
+    "offIn_other": "off in {{count}} min",
+    "summaryOn_one": "{{count}} on",
+    "summaryOn_other": "{{count}} on"
   }
 }

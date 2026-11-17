@@ -1659,5 +1659,78 @@
       "stepPair": "Associez-la : cliquez sur « {{button}} » ci-dessous, puis sur l'icône AionUi dans votre navigateur et saisissez le code.",
       "update": "La version {{version}} est disponible. Encore sur une version antérieure : {{names}}. Téléchargez-la, remplacez les fichiers du dossier, puis appuyez sur la flèche de rechargement de la carte de l'extension."
     }
+  },
+  "devices": {
+    "title": "Appareils",
+    "description": "Tout ce que vos agents peuvent utiliser : navigateurs du serveur, vos propres navigateurs, téléphones, modules et votre Mac. Chacun reste désactivé tant que vous ne l'activez pas.",
+    "search": "Rechercher des appareils",
+    "categories": {
+      "server_browser": "Navigateurs du serveur",
+      "my_browser": "Mes navigateurs",
+      "phone": "Téléphones",
+      "addon": "Modules",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Activé",
+      "off": "Désactivé",
+      "offline": "Hors ligne",
+      "needs_pairing": "À associer",
+      "installing": "Installation",
+      "removing": "Suppression",
+      "error": "Erreur"
+    },
+    "later": "Plus tard",
+    "laterHint": "Pas encore disponible : arrive avec une prochaine mise à jour.",
+    "agentSwitch": "Les agents peuvent l'utiliser",
+    "version": "v{{version}}",
+    "disk": "{{size}} sur le disque",
+    "details": "Détails",
+    "remove": "Supprimer",
+    "install": "Installer",
+    "installing": "Installation de {{name}}",
+    "removing": "Suppression de {{name}}",
+    "jobFailed": "Échec : {{error}}",
+    "jobLost": "interrompu par un redémarrage",
+    "installStarted": "Installation de {{name}}…",
+    "jobStartFailed": "Impossible de lancer l'opération pour {{name}}.",
+    "removeTitle": "Supprimer {{name}} ?",
+    "removeFrees": "Cela libère {{size}} sur le disque.",
+    "removeContent": "Il est supprimé du serveur.",
+    "removeInUse": "{{name}} est encore utilisé par un profil du navigateur du serveur : passez d'abord ce profil sur un autre navigateur.",
+    "turnedOn": "Les agents peuvent utiliser {{name}}.",
+    "turnedOff": "Les agents ne peuvent plus utiliser {{name}}.",
+    "saveFailed": "Enregistrement impossible. Réessayez.",
+    "browseLibrary": "Parcourir la bibliothèque",
+    "summaryDisk": "{{size}} sur le disque",
+    "empty": {
+      "active": {
+        "server_browser": "Aucun navigateur du serveur installé.",
+        "my_browser": "Aucun navigateur associé.",
+        "phone": "Aucun téléphone connecté.",
+        "addon": "Aucun module installé.",
+        "mac": "Votre Mac n'est pas encore connecté."
+      },
+      "library": {
+        "server_browser": "Aucun navigateur du serveur à installer.",
+        "my_browser": "Installez l'extension ci-dessous.",
+        "phone": "Aucun téléphone pour l'instant.",
+        "addon": "Aucun module disponible.",
+        "mac": "Pas encore disponible."
+      }
+    },
+    "drawer": {
+      "about": "À propos",
+      "kind": "Type",
+      "status": "État",
+      "version": "Version",
+      "disk": "Disque",
+      "lastSeen": "Vu pour la dernière fois",
+      "until": "S'éteint à"
+    },
+    "offIn_one": "s’éteint dans {{count}} min",
+    "offIn_other": "s’éteint dans {{count}} min",
+    "summaryOn_one": "{{count}} activé",
+    "summaryOn_other": "{{count}} activés"
   }
 }

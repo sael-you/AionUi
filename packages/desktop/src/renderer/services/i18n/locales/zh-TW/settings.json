@@ -1661,5 +1661,78 @@
       "stepPair": "配對：按一下下方的「{{button}}」，然後按一下瀏覽器中的 AionUi 圖示並輸入配對碼。",
       "update": "版本 {{version}} 已可使用。仍在使用舊版本：{{names}}。下載後取代資料夾中的檔案，然後按一下擴充功能卡片上的重新載入箭頭。"
     }
+  },
+  "devices": {
+    "title": "裝置",
+    "description": "智慧代理可以使用的一切：伺服器瀏覽器、你自己的瀏覽器、手機、附加元件和你的 Mac。在你開啟之前，每一項都保持關閉。",
+    "search": "搜尋裝置",
+    "categories": {
+      "server_browser": "伺服器瀏覽器",
+      "my_browser": "我的瀏覽器",
+      "phone": "手機",
+      "addon": "附加元件",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "開啟",
+      "off": "關閉",
+      "offline": "離線",
+      "needs_pairing": "需要配對",
+      "installing": "正在安裝",
+      "removing": "正在移除",
+      "error": "錯誤"
+    },
+    "later": "之後",
+    "laterHint": "暫不可用：會在之後的更新中提供。",
+    "agentSwitch": "允許智慧代理使用",
+    "version": "v{{version}}",
+    "disk": "佔用 {{size}}",
+    "details": "詳細資料",
+    "remove": "移除",
+    "install": "安裝",
+    "installing": "正在安裝 {{name}}",
+    "removing": "正在移除 {{name}}",
+    "jobFailed": "失敗：{{error}}",
+    "jobLost": "被重新啟動中斷",
+    "installStarted": "正在安裝 {{name}}…",
+    "jobStartFailed": "無法為 {{name}} 啟動該操作。",
+    "removeTitle": "移除 {{name}}？",
+    "removeFrees": "將釋放 {{size}} 磁碟空間。",
+    "removeContent": "它會從伺服器上移除。",
+    "removeInUse": "{{name}} 仍被某個伺服器瀏覽器設定檔使用：請先把該設定檔切換到其他瀏覽器。",
+    "turnedOn": "智慧代理可以使用 {{name}}。",
+    "turnedOff": "智慧代理不能再使用 {{name}}。",
+    "saveFailed": "儲存失敗，請再試一次。",
+    "browseLibrary": "瀏覽資源庫",
+    "summaryDisk": "佔用 {{size}}",
+    "empty": {
+      "active": {
+        "server_browser": "還沒有安裝伺服器瀏覽器。",
+        "my_browser": "還沒有配對的瀏覽器。",
+        "phone": "還沒有連接手機。",
+        "addon": "還沒有安裝附加元件。",
+        "mac": "你的 Mac 還沒有連接。"
+      },
+      "library": {
+        "server_browser": "沒有可安裝的伺服器瀏覽器。",
+        "my_browser": "請在下方安裝擴充功能。",
+        "phone": "還沒有手機。",
+        "addon": "沒有可用的附加元件。",
+        "mac": "暫不可用。"
+      }
+    },
+    "drawer": {
+      "about": "概覽",
+      "kind": "類型",
+      "status": "狀態",
+      "version": "版本",
+      "disk": "磁碟",
+      "lastSeen": "最後上線",
+      "until": "關閉時間"
+    },
+    "offIn_one": "{{count}} 分鐘後關閉",
+    "offIn_other": "{{count}} 分鐘後關閉",
+    "summaryOn_one": "{{count}} 項開啟",
+    "summaryOn_other": "{{count}} 項開啟"
   }
 }

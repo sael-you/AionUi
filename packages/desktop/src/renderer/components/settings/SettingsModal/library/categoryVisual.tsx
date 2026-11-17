@@ -14,16 +14,20 @@
 import { Tag } from '@arco-design/web-react';
 import {
   Announcement,
+  Apple,
   BookOpen,
   Box,
+  Browser,
   ChartLine,
   Code,
   Data,
   Earth,
   FolderOpen,
+  Laptop,
   Lightning,
   Mail,
   Microscope,
+  Phone,
   Picture,
   Platte,
   Puzzle,
@@ -56,7 +60,13 @@ export type CategoryVisualId =
   | 'builtin'
   | 'project'
   | 'global'
-  | 'other';
+  | 'other'
+  // Settings → Devices (C38): one per device kind.
+  | 'server_browser'
+  | 'my_browser'
+  | 'phone'
+  | 'addon'
+  | 'mac';
 
 type IconComponent = typeof Code;
 
@@ -79,6 +89,11 @@ const VISUALS: Record<CategoryVisualId, { icon: IconComponent; tone: CategoryTon
   project: { icon: FolderOpen, tone: 'green' },
   global: { icon: Earth, tone: 'arcoblue' },
   other: { icon: Puzzle, tone: 'purple' },
+  server_browser: { icon: Browser, tone: 'cyan' },
+  my_browser: { icon: Laptop, tone: 'arcoblue' },
+  phone: { icon: Phone, tone: 'green' },
+  addon: { icon: Puzzle, tone: 'purple' },
+  mac: { icon: Apple, tone: 'gold' },
 };
 
 /** Seeded kits (C27/C28) by builtin key. */

@@ -22,9 +22,10 @@ import { GLOBAL_SCOPE_KEY } from './libraryModel';
 import styles from './Library.module.css';
 
 export type LibraryRailProps = {
-  scopes: RailScopes;
-  selectedScope: string;
-  onScope: (key: string) => void;
+  /** Omitted on pages without scopes (Devices): the rail shows only the categories. */
+  scopes?: RailScopes;
+  selectedScope?: string;
+  onScope?: (key: string) => void;
   categories: RailCategory[];
   selectedCategory: string;
   onCategory: (key: string) => void;
@@ -78,7 +79,7 @@ const RailItem: React.FC<{
   );
 };
 
-const ScopeList: React.FC<Pick<LibraryRailProps, 'scopes' | 'selectedScope' | 'onScope'>> = ({
+const ScopeList: React.FC<{ scopes: RailScopes; selectedScope?: string; onScope: (key: string) => void }> = ({
   scopes,
   selectedScope,
   onScope,
@@ -170,22 +171,25 @@ const LibraryRail: React.FC<LibraryRailProps> = (props) => {
   const { scopes, selectedScope, categories, selectedCategory, isMobile } = props;
 
   if (isMobile) {
-    const scopeLabel =
-      [...scopes.shown, ...scopes.empty].find((scope) => scope.key === selectedScope)?.label ??
-      t('settings.library.scopeGlobal');
+    const scopeLabel = scopes
+      ? ([...scopes.shown, ...scopes.empty].find((scope) => scope.key === selectedScope)?.label ??
+        t('settings.library.scopeGlobal'))
+      : '';
     const categoryLabel = categories.find((category) => category.key === selectedCategory)?.label ?? '';
     return (
       <div className={styles.mobileRail} data-testid='library-rail-mobile'>
-        <Button
-          shape='round'
-          className={styles.mobileChip}
-          aria-haspopup='dialog'
-          onClick={() => setSheet('scope')}
-          data-testid='library-rail-scope-chip'
-        >
-          <span className={styles.mobileChipLabel}>{t('settings.library.scopeChip', { name: scopeLabel })}</span>
-          <Down theme='outline' size={12} />
-        </Button>
+        {scopes ? (
+          <Button
+            shape='round'
+            className={styles.mobileChip}
+            aria-haspopup='dialog'
+            onClick={() => setSheet('scope')}
+            data-testid='library-rail-scope-chip'
+          >
+            <span className={styles.mobileChipLabel}>{t('settings.library.scopeChip', { name: scopeLabel })}</span>
+            <Down theme='outline' size={12} />
+          </Button>
+        ) : null}
         <Button
           shape='round'
           className={styles.mobileChip}
@@ -206,12 +210,12 @@ const LibraryRail: React.FC<LibraryRailProps> = (props) => {
           bodyStyle={{ maxHeight: '70vh', overflowY: 'auto', paddingBottom: 16 }}
           unmountOnExit
         >
-          {sheet === 'scope' ? (
+          {sheet === 'scope' && scopes ? (
             <ScopeList
               scopes={scopes}
               selectedScope={selectedScope}
               onScope={(key) => {
-                props.onScope(key);
+                props.onScope?.(key);
                 setSheet(null);
               }}
             />
@@ -233,12 +237,16 @@ const LibraryRail: React.FC<LibraryRailProps> = (props) => {
 
   return (
     <nav className={styles.rail} aria-label={t('settings.library.railLabel')} data-testid='library-rail'>
-      <h2 id={scopeHeadingId} className={styles.railHeading}>
-        {t('settings.library.scope')}
-      </h2>
-      <div role='group' aria-labelledby={scopeHeadingId}>
-        <ScopeList scopes={scopes} selectedScope={selectedScope} onScope={props.onScope} />
-      </div>
+      {scopes ? (
+        <>
+          <h2 id={scopeHeadingId} className={styles.railHeading}>
+            {t('settings.library.scope')}
+          </h2>
+          <div role='group' aria-labelledby={scopeHeadingId}>
+            <ScopeList scopes={scopes} selectedScope={selectedScope} onScope={(key) => props.onScope?.(key)} />
+          </div>
+        </>
+      ) : null}
       <h2 id={categoryHeadingId} className={styles.railHeading}>
         {t('settings.library.categories')}
       </h2>

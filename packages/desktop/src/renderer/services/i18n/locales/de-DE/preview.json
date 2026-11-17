@@ -210,7 +210,7 @@
       "startFailed": "Der Browser ist nicht gestartet.",
       "notRunning": "Der Browser läuft nicht.",
       "urlBlocked": "Diese Adresse ist im Server-Browser gesperrt.",
-      "agentsDisabled": "Agenten dürfen den Browser nicht nutzen (Einstellungen → Browser).",
+      "agentsDisabled": "Agenten dürfen den Browser nicht nutzen (Einstellungen → Geräte).",
       "methodBlocked": "Diese Aktion ist nicht erlaubt.",
       "tabLimit": "Tab-Limit erreicht. Schließen Sie zuerst einen Tab.",
       "instanceLimit": "Diese Browsernummer liegt über Ihrem Limit.",
@@ -229,7 +229,7 @@
   },
   "browserDevices": {
     "activity": "Letzte Aktionen der Agenten",
-    "agentsOff": "Agenten können diesen Browser noch nicht nutzen: Schalte „Agenten dürfen meinen Mac-Browser nutzen“ unter Einstellungen → Browser ein.",
+    "agentsOff": "Agenten können diesen Browser noch nicht nutzen: Schalte „Agenten dürfen meinen Mac-Browser nutzen“ unter Einstellungen → Geräte ein.",
     "approval": {
       "allow": "60 s erlauben",
       "allowed": "Für 60 Sekunden erlaubt.",

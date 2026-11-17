@@ -1662,5 +1662,78 @@
       "stepPair": "Pareie: clique em “{{button}}” abaixo, depois no ícone do AionUi no navegador e digite o código.",
       "update": "A versão {{version}} está disponível. Ainda em uma anterior: {{names}}. Baixe-a, substitua os arquivos da pasta e pressione a seta de recarregar no cartão da extensão."
     }
+  },
+  "devices": {
+    "title": "Dispositivos",
+    "description": "Tudo o que seus agentes podem usar: navegadores do servidor, seus próprios navegadores, celulares, complementos e seu Mac. Cada um fica desligado até você ligar.",
+    "search": "Buscar dispositivos",
+    "categories": {
+      "server_browser": "Navegadores do servidor",
+      "my_browser": "Meus navegadores",
+      "phone": "Celulares",
+      "addon": "Complementos",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Ligado",
+      "off": "Desligado",
+      "offline": "Offline",
+      "needs_pairing": "Precisa parear",
+      "installing": "Instalando",
+      "removing": "Removendo",
+      "error": "Erro"
+    },
+    "later": "Depois",
+    "laterHint": "Ainda não disponível: chega em uma atualização futura.",
+    "agentSwitch": "Agentes podem usar",
+    "version": "v{{version}}",
+    "disk": "{{size}} em disco",
+    "details": "Detalhes",
+    "remove": "Remover",
+    "install": "Instalar",
+    "installing": "Instalando {{name}}",
+    "removing": "Removendo {{name}}",
+    "jobFailed": "Falhou: {{error}}",
+    "jobLost": "interrompido por uma reinicialização",
+    "installStarted": "Instalando {{name}}…",
+    "jobStartFailed": "Não foi possível iniciar para {{name}}.",
+    "removeTitle": "Remover {{name}}?",
+    "removeFrees": "Isso libera {{size}} em disco.",
+    "removeContent": "Ele é removido do servidor.",
+    "removeInUse": "{{name}} ainda é usado por um perfil do navegador do servidor: mude esse perfil para outro navegador primeiro.",
+    "turnedOn": "Agentes podem usar {{name}}.",
+    "turnedOff": "Agentes não podem mais usar {{name}}.",
+    "saveFailed": "Não foi possível salvar. Tente novamente.",
+    "browseLibrary": "Ver a biblioteca",
+    "summaryDisk": "{{size}} em disco",
+    "empty": {
+      "active": {
+        "server_browser": "Nenhum navegador do servidor instalado ainda.",
+        "my_browser": "Nenhum navegador pareado ainda.",
+        "phone": "Nenhum celular conectado ainda.",
+        "addon": "Nenhum complemento instalado ainda.",
+        "mac": "Seu Mac ainda não está conectado."
+      },
+      "library": {
+        "server_browser": "Nenhum navegador do servidor para instalar.",
+        "my_browser": "Instale a extensão abaixo.",
+        "phone": "Nenhum celular ainda.",
+        "addon": "Nenhum complemento disponível.",
+        "mac": "Ainda não disponível."
+      }
+    },
+    "drawer": {
+      "about": "Sobre",
+      "kind": "Tipo",
+      "status": "Status",
+      "version": "Versão",
+      "disk": "Disco",
+      "lastSeen": "Visto por último",
+      "until": "Desliga às"
+    },
+    "offIn_one": "desliga em {{count}} min",
+    "offIn_other": "desliga em {{count}} min",
+    "summaryOn_one": "{{count}} ligado",
+    "summaryOn_other": "{{count}} ligados"
   }
 }

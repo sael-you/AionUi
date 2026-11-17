@@ -1659,5 +1659,78 @@
       "stepPair": "Vincúlala: haz clic en «{{button}}» abajo, luego en el icono de AionUi en tu navegador y escribe el código.",
       "update": "La versión {{version}} está disponible. Aún con una anterior: {{names}}. Descárgala, sustituye los archivos de la carpeta y pulsa la flecha de recarga en la tarjeta de la extensión."
     }
+  },
+  "devices": {
+    "title": "Dispositivos",
+    "description": "Todo lo que tus agentes pueden usar: navegadores del servidor, tus propios navegadores, teléfonos, complementos y tu Mac. Cada uno sigue apagado hasta que lo actives.",
+    "search": "Buscar dispositivos",
+    "categories": {
+      "server_browser": "Navegadores del servidor",
+      "my_browser": "Mis navegadores",
+      "phone": "Teléfonos",
+      "addon": "Complementos",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "Activado",
+      "off": "Desactivado",
+      "offline": "Sin conexión",
+      "needs_pairing": "Falta vincular",
+      "installing": "Instalando",
+      "removing": "Eliminando",
+      "error": "Error"
+    },
+    "later": "Más adelante",
+    "laterHint": "Aún no disponible: llegará con una actualización posterior.",
+    "agentSwitch": "Los agentes pueden usarlo",
+    "version": "v{{version}}",
+    "disk": "{{size}} en disco",
+    "details": "Detalles",
+    "remove": "Eliminar",
+    "install": "Instalar",
+    "installing": "Instalando {{name}}",
+    "removing": "Eliminando {{name}}",
+    "jobFailed": "Error: {{error}}",
+    "jobLost": "interrumpido por un reinicio",
+    "installStarted": "Instalando {{name}}…",
+    "jobStartFailed": "No se pudo iniciar para {{name}}.",
+    "removeTitle": "¿Eliminar {{name}}?",
+    "removeFrees": "Esto libera {{size}} en disco.",
+    "removeContent": "Se elimina del servidor.",
+    "removeInUse": "{{name}} aún lo usa un perfil del navegador del servidor: cambia primero ese perfil a otro navegador.",
+    "turnedOn": "Los agentes pueden usar {{name}}.",
+    "turnedOff": "Los agentes ya no pueden usar {{name}}.",
+    "saveFailed": "No se pudo guardar. Inténtalo de nuevo.",
+    "browseLibrary": "Ver la biblioteca",
+    "summaryDisk": "{{size}} en disco",
+    "empty": {
+      "active": {
+        "server_browser": "Aún no hay ningún navegador del servidor instalado.",
+        "my_browser": "Aún no hay ningún navegador vinculado.",
+        "phone": "Aún no hay ningún teléfono conectado.",
+        "addon": "Aún no hay ningún complemento instalado.",
+        "mac": "Tu Mac aún no está conectado."
+      },
+      "library": {
+        "server_browser": "No hay navegadores del servidor para instalar.",
+        "my_browser": "Instala la extensión abajo.",
+        "phone": "Aún no hay teléfonos.",
+        "addon": "No hay complementos disponibles.",
+        "mac": "Aún no disponible."
+      }
+    },
+    "drawer": {
+      "about": "Información",
+      "kind": "Tipo",
+      "status": "Estado",
+      "version": "Versión",
+      "disk": "Disco",
+      "lastSeen": "Visto por última vez",
+      "until": "Se apaga a las"
+    },
+    "offIn_one": "se apaga en {{count}} min",
+    "offIn_other": "se apaga en {{count}} min",
+    "summaryOn_one": "{{count}} activado",
+    "summaryOn_other": "{{count}} activados"
   }
 }

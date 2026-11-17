@@ -1660,5 +1660,78 @@
       "stepPair": "配对：点击下方的“{{button}}”，然后点击浏览器中的 AionUi 图标并输入配对码。",
       "update": "版本 {{version}} 已可用。仍在使用旧版本：{{names}}。下载后替换文件夹中的文件，然后点击扩展卡片上的重新加载箭头。"
     }
+  },
+  "devices": {
+    "title": "设备",
+    "description": "智能体可以使用的一切：服务器浏览器、你自己的浏览器、手机、附加组件和你的 Mac。在你打开之前，每一项都保持关闭。",
+    "search": "搜索设备",
+    "categories": {
+      "server_browser": "服务器浏览器",
+      "my_browser": "我的浏览器",
+      "phone": "手机",
+      "addon": "附加组件",
+      "mac": "Mac"
+    },
+    "status": {
+      "on": "开启",
+      "off": "关闭",
+      "offline": "离线",
+      "needs_pairing": "需要配对",
+      "installing": "正在安装",
+      "removing": "正在移除",
+      "error": "错误"
+    },
+    "later": "以后",
+    "laterHint": "暂不可用：会在之后的更新中提供。",
+    "agentSwitch": "允许智能体使用",
+    "version": "v{{version}}",
+    "disk": "占用 {{size}}",
+    "details": "详情",
+    "remove": "移除",
+    "install": "安装",
+    "installing": "正在安装 {{name}}",
+    "removing": "正在移除 {{name}}",
+    "jobFailed": "失败：{{error}}",
+    "jobLost": "被重启中断",
+    "installStarted": "正在安装 {{name}}…",
+    "jobStartFailed": "无法为 {{name}} 启动该操作。",
+    "removeTitle": "移除 {{name}}？",
+    "removeFrees": "将释放 {{size}} 磁盘空间。",
+    "removeContent": "它会从服务器上移除。",
+    "removeInUse": "{{name}} 仍被某个服务器浏览器配置文件使用：请先把该配置文件切换到其他浏览器。",
+    "turnedOn": "智能体可以使用 {{name}}。",
+    "turnedOff": "智能体不能再使用 {{name}}。",
+    "saveFailed": "保存失败，请重试。",
+    "browseLibrary": "浏览资源库",
+    "summaryDisk": "占用 {{size}}",
+    "empty": {
+      "active": {
+        "server_browser": "还没有安装服务器浏览器。",
+        "my_browser": "还没有配对的浏览器。",
+        "phone": "还没有连接手机。",
+        "addon": "还没有安装附加组件。",
+        "mac": "你的 Mac 还没有连接。"
+      },
+      "library": {
+        "server_browser": "没有可安装的服务器浏览器。",
+        "my_browser": "请在下方安装扩展。",
+        "phone": "还没有手机。",
+        "addon": "没有可用的附加组件。",
+        "mac": "暂不可用。"
+      }
+    },
+    "drawer": {
+      "about": "概览",
+      "kind": "类型",
+      "status": "状态",
+      "version": "版本",
+      "disk": "磁盘",
+      "lastSeen": "最后在线",
+      "until": "关闭时间"
+    },
+    "offIn_one": "{{count}} 分钟后关闭",
+    "offIn_other": "{{count}} 分钟后关闭",
+    "summaryOn_one": "{{count}} 项开启",
+    "summaryOn_other": "{{count}} 项开启"
   }
 }

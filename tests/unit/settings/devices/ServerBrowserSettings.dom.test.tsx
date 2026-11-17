@@ -39,7 +39,11 @@ const api = vi.hoisted(() => {
   };
 });
 
-vi.mock('@/common/adapter/ipcBridge', () => ({ serverBrowser: api }));
+const devicesApi = vi.hoisted(() => ({
+  list: { invoke: vi.fn(async () => []) },
+  changed: { on: () => () => undefined },
+}));
+vi.mock('@/common/adapter/ipcBridge', () => ({ serverBrowser: api, devices: devicesApi }));
 const platform = vi.hoisted(() => ({ desktop: false }));
 const clipboard = vi.hoisted(() => ({ copyText: vi.fn() }));
 vi.mock('@/renderer/utils/ui/clipboard', () => clipboard);
@@ -71,7 +75,7 @@ import BrowserExtensionInstall, {
   outdatedDevices,
   parseRelease,
 } from '@/renderer/pages/conversation/Preview/browser/BrowserExtensionInstall';
-import BrowserSettingsPage from '@/renderer/pages/conversation/Preview/browser/BrowserSettingsPage';
+import DevicesSettings from '@/renderer/pages/settings/DevicesSettings';
 import { BUILTIN_TAB_IDS } from '@/renderer/pages/settings/components/SettingsSider';
 import BrowserDevicesSettings, {
   formatCountdown,
@@ -429,7 +433,7 @@ describe('BrowserDevicesSettings (C34 Settings > Browser > your own browser)', (
   });
 });
 
-describe('Settings → Browser page (TASK-128)', () => {
+describe('Settings → Devices keeps the browser settings (TASK-128 → TASK-136)', () => {
   const activity = [
     {
       at: 30,
@@ -466,20 +470,24 @@ describe('Settings → Browser page (TASK-128)', () => {
   const renderPage = () =>
     render(
       <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
-        <BrowserSettingsPage />
+        <DevicesSettings />
       </SWRConfig>
     );
 
-  it('is a top-level settings entry right after Tools', () => {
-    expect(BUILTIN_TAB_IDS.indexOf('browser')).toBe(BUILTIN_TAB_IDS.indexOf('tools') + 1);
+  it('is a top-level settings entry right after Tools, in place of Browser', () => {
+    expect(BUILTIN_TAB_IDS.indexOf('devices')).toBe(BUILTIN_TAB_IDS.indexOf('tools') + 1);
+    expect(BUILTIN_TAB_IDS).not.toContain('browser');
   });
 
-  it('WebUI: profiles and limits, your own browsers and the approvals log on one page', async () => {
+  it('WebUI: server browser settings under Server browsers; your own browsers and the approvals log under My browsers', async () => {
     renderPage();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('settings.browserPage.title');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('settings.devices.title');
     expect(await screen.findByTestId('server-browser-settings')).toBeInTheDocument();
-    expect(screen.getByTestId('browser-devices-settings')).toBeInTheDocument();
+    expect(screen.queryByTestId('browser-devices-settings')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /settings\.devices\.categories\.my_browser/ }));
+    expect(await screen.findByTestId('browser-devices-settings')).toBeInTheDocument();
     expect(screen.getByTestId('browser-approvals-log')).toBeInTheDocument();
+    expect(screen.queryByTestId('server-browser-settings')).toBeNull();
     expect(screen.queryByTestId('browser-data-section')).toBeNull();
   });
 

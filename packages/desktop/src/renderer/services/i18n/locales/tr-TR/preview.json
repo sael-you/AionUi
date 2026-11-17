@@ -210,7 +210,7 @@
       "startFailed": "Tarayıcı başlamadı.",
       "notRunning": "Tarayıcı çalışmıyor.",
       "urlBlocked": "Bu adres sunucu tarayıcısında engellendi.",
-      "agentsDisabled": "Ajanlar tarayıcıyı kullanamaz (Ayarlar → Tarayıcı).",
+      "agentsDisabled": "Ajanlar tarayıcıyı kullanamaz (Ayarlar → Cihazlar).",
       "methodBlocked": "Bu işleme izin verilmiyor.",
       "tabLimit": "Sekme sınırına ulaşıldı. Önce bir sekmeyi kapatın.",
       "instanceLimit": "Bu tarayıcı numarası sınırınızın üzerinde.",
@@ -229,7 +229,7 @@
   },
   "browserDevices": {
     "activity": "Son ajan işlemleri",
-    "agentsOff": "Ajanlar bu tarayıcıyı henüz kullanamaz: Ayarlar → Tarayıcı’da “Ajanlar Mac tarayıcımı kullanabilir”i açın.",
+    "agentsOff": "Ajanlar bu tarayıcıyı henüz kullanamaz: Ayarlar → Cihazlar’da “Ajanlar Mac tarayıcımı kullanabilir”i açın.",
     "approval": {
       "allow": "60 sn izin ver",
       "allowed": "60 saniyeliğine izin verildi.",
