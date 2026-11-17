@@ -5,12 +5,18 @@
  */
 
 import userEvent from '@testing-library/user-event';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, configure, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Assistant } from '@/common/types/agent/assistantTypes';
 import type { ICronJob } from '@/common/adapter/ipcBridge';
 import type { TChatConversation } from '@/common/config/storage';
+
+// TASK-122: these tests wait for the UI to be ready (findBy / waitFor), never for a fixed time. The library's default
+// 1 s bound for those waits is itself a wall clock: on a loaded gate machine a dialog can take longer to appear. A wait
+// still returns the moment its condition holds, so the larger bound costs nothing when the UI is fast.
+configure({ asyncUtilTimeout: 15_000 });
+vi.setConfig({ testTimeout: 60_000 });
 
 let currentAssistants: Assistant[] = [];
 
@@ -193,6 +199,8 @@ describe('CreateTaskDialog', () => {
     fireEvent.click(await screen.findByText('cron.page.custom.advanced'));
     const cronInput = await screen.findByTestId('custom-cron-expression');
     await user.type(cronInput, '*/15 9-18 * * MON-FRI');
+    // The typed expression is in the field before the form is submitted.
+    await waitFor(() => expect(cronInput).toHaveValue('*/15 9-18 * * MON-FRI'));
     await user.click(screen.getByTestId('modal-ok'));
 
     await waitFor(() => expect(ipcBridge.cron.updateJob.invoke).toHaveBeenCalledTimes(1));
