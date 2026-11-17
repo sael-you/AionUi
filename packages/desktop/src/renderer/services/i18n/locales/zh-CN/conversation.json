@@ -970,7 +970,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "选中内容操作",
-    "dictateReply": "语音回复",
+    "replyTooltip": "回复 (R)",
+    "dictateReplyTooltip": "语音回复 (D)",
     "popoverLabel": "回复所选内容",
     "replyPlaceholder": "回复…",
     "replyLabel": "你的回复",
@@ -982,7 +983,19 @@
     "withReply": "含回复",
     "stackLabel": "{{count}} 条待发送的引用",
     "stackLabel_one": "{{count}} 条待发送的引用",
-    "stackLabel_other": "{{count}} 条待发送的引用"
+    "stackLabel_other": "{{count}} 条待发送的引用",
+    "dictation": {
+      "start": "听写 (Ctrl/Cmd+M)",
+      "stop": "停止听写",
+      "stopHint": "正在聆听… 按 Enter 或 Esc 停止",
+      "listening": "正在聆听…",
+      "offTitle": "语音转文字已关闭",
+      "offContent": "使用已保存的服务开启并开始听写？",
+      "turnOn": "开启并听写",
+      "offLabel": "听写（语音转文字已关闭）",
+      "setUp": "请在设置中配置语音转文字后再听写",
+      "enableFailed": "无法开启语音转文字"
+    }
   },
   "backgroundTool": {
     "continue": "转到后台继续",

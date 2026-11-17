@@ -970,7 +970,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "Selection actions",
-    "dictateReply": "Reply by voice",
+    "replyTooltip": "Reply (R)",
+    "dictateReplyTooltip": "Reply by voice (D)",
     "popoverLabel": "Reply to the selection",
     "replyPlaceholder": "Reply…",
     "replyLabel": "Your reply",
@@ -982,7 +983,19 @@
     "withReply": "With reply",
     "stackLabel": "{{count}} quotes to send",
     "stackLabel_one": "{{count}} quote to send",
-    "stackLabel_other": "{{count}} quotes to send"
+    "stackLabel_other": "{{count}} quotes to send",
+    "dictation": {
+      "start": "Dictate (Ctrl/Cmd+M)",
+      "stop": "Stop dictation",
+      "stopHint": "Listening… Enter or Esc stops",
+      "listening": "Listening…",
+      "offTitle": "Speech to Text is off",
+      "offContent": "Turn it on with your saved provider and start dictating?",
+      "turnOn": "Turn on and dictate",
+      "offLabel": "Dictate (Speech to Text is off)",
+      "setUp": "Set up Speech to Text in Settings to dictate",
+      "enableFailed": "Could not turn on Speech to Text"
+    }
   },
   "backgroundTool": {
     "continue": "Continue in background",

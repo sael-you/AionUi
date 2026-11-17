@@ -166,7 +166,13 @@ const SpeechInputButton: React.FC<SpeechInputButtonProps> = ({ onLiveTranscript,
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isSpeechShortcut(event) || event.repeat || speechStatusRef.current === 'transcribing') {
+      // defaultPrevented: another field (a quote reply) already took the shortcut for its own mic.
+      if (
+        !isSpeechShortcut(event) ||
+        event.defaultPrevented ||
+        event.repeat ||
+        speechStatusRef.current === 'transcribing'
+      ) {
         return;
       }
       const sendBox = controlRef.current?.closest('.sendbox-panel');

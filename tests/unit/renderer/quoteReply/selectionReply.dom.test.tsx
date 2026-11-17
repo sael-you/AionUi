@@ -18,12 +18,24 @@ vi.mock('@/renderer/hooks/context/LayoutContext', () => ({ useLayoutContext: () 
 vi.mock('@/renderer/pages/conversation/Preview/context/PreviewContext', () => ({
   useOptionalPreviewContext: () => null,
 }));
-vi.mock('@/renderer/components/chat/SpeechInputButton', () => ({
-  default: ({ onTranscript }: { onTranscript: (text: string) => void }) => (
-    <button type='button' data-testid='mic' onClick={() => onTranscript('dictated words')}>
-      mic
-    </button>
-  ),
+// The reply field's own dictation (bound to that field; covered in replyDictation.dom.test.tsx).
+vi.mock('@/renderer/components/chat/SendBox/useReplyDictation', () => ({
+  useReplyDictation: ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
+    const dictate = () => onChange(value ? `${value} dictated words` : 'dictated words');
+    return {
+      setup: 'ready',
+      enabling: false,
+      status: 'idle',
+      live: null,
+      availability: 'record',
+      levels: [],
+      durationMs: 0,
+      start: dictate,
+      stop: () => {},
+      toggle: dictate,
+      enableAndStart: () => {},
+    };
+  },
 }));
 
 import { quoteStackStore } from '@/renderer/components/chat/SendBox/quoteStack';
@@ -87,7 +99,7 @@ describe('select text → reply → stack (C32)', () => {
     await mouseUpOn(message);
 
     const toolbar = await screen.findByRole('toolbar');
-    fireEvent.click(screen.getByRole('button', { name: 'Reply' }));
+    fireEvent.click(screen.getByRole('button', { name: 'conversation.quoteReply.replyTooltip' }));
     expect(toolbar).not.toBeInTheDocument();
 
     const popover = await screen.findByTestId('quote-reply-popover');
@@ -107,7 +119,7 @@ describe('select text → reply → stack (C32)', () => {
     const message = mountMessage('Section seven proposes eight tactics.');
     select(message.firstChild as Node, 0, 13);
     await mouseUpOn(message);
-    fireEvent.click(await screen.findByRole('button', { name: 'conversation.quoteReply.dictateReply' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'conversation.quoteReply.dictateReplyTooltip' }));
 
     // The toolbar's mic starts dictation in the popover at once.
     const popover = await screen.findByTestId('quote-reply-popover');
@@ -118,7 +130,7 @@ describe('select text → reply → stack (C32)', () => {
 
     select(message.firstChild as Node, 0, 13);
     await mouseUpOn(message);
-    fireEvent.click(await screen.findByRole('button', { name: 'Reply' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'conversation.quoteReply.replyTooltip' }));
     fireEvent.click(await screen.findByRole('button', { name: 'conversation.quoteReply.add' }));
     expect(quoteStackStore.get(CONVERSATION)[0]).toMatchObject({ content: 'Section seven', reply: '' });
   });
@@ -178,7 +190,7 @@ describe('select text → reply → stack (C32)', () => {
     document.getSelection()?.removeAllRanges();
     await mouseUpOn(paragraph);
     expect(await screen.findByRole('toolbar')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Reply' }));
+    fireEvent.click(screen.getByRole('button', { name: 'conversation.quoteReply.replyTooltip' }));
     fireEvent.click(await screen.findByRole('button', { name: 'conversation.quoteReply.add' }));
     expect(quoteStackStore.get(CONVERSATION)[0]).toMatchObject({ content: 'Shadow', messageId: 'm1' });
   });
@@ -216,10 +228,92 @@ describe('select text → reply → stack (C32)', () => {
         vi.advanceTimersByTime(400);
       });
       const toolbar = screen.getByRole('toolbar');
-      expect(Number.parseFloat(toolbar.style.top)).toBeGreaterThan(220);
+      // The positioned wrapper holds the place; the toolbar itself only animates.
+      expect(Number.parseFloat((toolbar.parentElement as HTMLElement).style.top)).toBeGreaterThan(220);
     } finally {
       vi.useRealTimers();
     }
     await waitFor(() => expect(screen.getByRole('toolbar')).toBeInTheDocument());
+  });
+
+  it('follows the selection while the list scrolls, and hides while it is off screen (TASK-126)', async () => {
+    const frames: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      frames.push(callback);
+      return frames.length;
+    });
+    render(<SelectionReplyButton messages={messages} />);
+    const message = mountMessage('The hub accepted the three wordings.');
+    select(message.firstChild as Node, 4, 16);
+    await mouseUpOn(message);
+    const place = () => Number.parseFloat((screen.getByRole('toolbar').parentElement as HTMLElement).style.top);
+    expect(place()).toBe(200 - 36 - 8);
+
+    // The toolbar keeps a clone of the range, which reads the prototype's box.
+    const moveTo = (top: number) => {
+      Range.prototype.getBoundingClientRect = () =>
+        ({ top, bottom: top + 20, left: 100, right: 300, width: 200, height: 20 }) as DOMRect;
+      act(() => {
+        document.dispatchEvent(new Event('scroll'));
+        frames.splice(0).forEach((frame) => frame(0));
+      });
+    };
+    const original = Range.prototype.getBoundingClientRect;
+    try {
+      moveTo(150);
+      expect(place()).toBe(150 - 36 - 8);
+      moveTo(-400);
+      expect(screen.queryByRole('toolbar')).toBeNull();
+      moveTo(300);
+      expect(place()).toBe(300 - 36 - 8);
+    } finally {
+      Range.prototype.getBoundingClientRect = original;
+      vi.restoreAllMocks();
+    }
+  });
+
+  it('keyboard: D dictates, Tab enters the toolbar, arrows move, Esc dismisses (TASK-126)', async () => {
+    render(<SelectionReplyButton messages={messages} />);
+    const message = mountMessage('Section seven proposes eight tactics.');
+    select(message.firstChild as Node, 0, 13);
+    await mouseUpOn(message);
+
+    fireEvent.keyDown(document.body, { key: 'Tab' });
+    const reply = screen.getByRole('button', { name: 'conversation.quoteReply.replyTooltip' });
+    const dictate = screen.getByRole('button', { name: 'conversation.quoteReply.dictateReplyTooltip' });
+    expect(document.activeElement).toBe(reply);
+    fireEvent.keyDown(reply, { key: 'ArrowRight' });
+    expect(document.activeElement).toBe(dictate);
+    fireEvent.keyDown(dictate, { key: 'ArrowRight' });
+    expect(document.activeElement).toBe(reply);
+    fireEvent.keyDown(reply, { key: 'Escape' });
+    expect(screen.queryByRole('toolbar')).toBeNull();
+
+    select(message.firstChild as Node, 0, 13);
+    await mouseUpOn(message);
+    fireEvent.keyDown(document.body, { key: 'd' });
+    const popover = await screen.findByTestId('quote-reply-popover');
+    expect((popover.querySelector('textarea') as HTMLTextAreaElement).value).toBe('dictated words');
+  });
+
+  it('phones: the reply opens as a bottom sheet that the scrim closes (TASK-126)', async () => {
+    layout.isMobile = true;
+    vi.useFakeTimers();
+    try {
+      render(<SelectionReplyButton messages={messages} />);
+      const message = mountMessage('Long-press selection on a phone.');
+      select(message.firstChild as Node, 0, 10);
+      act(() => {
+        document.dispatchEvent(new Event('selectionchange'));
+        vi.advanceTimersByTime(400);
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'conversation.quoteReply.replyTooltip' }));
+    } finally {
+      vi.useRealTimers();
+    }
+    const sheet = await screen.findByTestId('quote-reply-popover');
+    expect(sheet).toHaveAttribute('data-variant', 'sheet');
+    fireEvent.click(sheet.previousElementSibling as HTMLElement);
+    expect(screen.queryByTestId('quote-reply-popover')).toBeNull();
   });
 });

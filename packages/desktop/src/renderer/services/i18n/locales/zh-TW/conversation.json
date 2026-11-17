@@ -970,7 +970,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "選取內容操作",
-    "dictateReply": "語音回覆",
+    "replyTooltip": "回覆 (R)",
+    "dictateReplyTooltip": "語音回覆 (D)",
     "popoverLabel": "回覆所選內容",
     "replyPlaceholder": "回覆…",
     "replyLabel": "你的回覆",
@@ -982,7 +983,19 @@
     "withReply": "含回覆",
     "stackLabel": "{{count}} 則待傳送的引用",
     "stackLabel_one": "{{count}} 則待傳送的引用",
-    "stackLabel_other": "{{count}} 則待傳送的引用"
+    "stackLabel_other": "{{count}} 則待傳送的引用",
+    "dictation": {
+      "start": "聽寫 (Ctrl/Cmd+M)",
+      "stop": "停止聽寫",
+      "stopHint": "正在聆聽… 按 Enter 或 Esc 停止",
+      "listening": "正在聆聽…",
+      "offTitle": "語音轉文字已關閉",
+      "offContent": "使用已儲存的服務開啟並開始聽寫？",
+      "turnOn": "開啟並聽寫",
+      "offLabel": "聽寫（語音轉文字已關閉）",
+      "setUp": "請在設定中設定語音轉文字後再聽寫",
+      "enableFailed": "無法開啟語音轉文字"
+    }
   },
   "backgroundTool": {
     "continue": "轉到背景繼續",

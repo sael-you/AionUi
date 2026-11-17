@@ -1002,7 +1002,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "Действия с выделением",
-    "dictateReply": "Ответить голосом",
+    "replyTooltip": "Ответить (R)",
+    "dictateReplyTooltip": "Ответить голосом (D)",
     "popoverLabel": "Ответить на выделенное",
     "replyPlaceholder": "Ответ…",
     "replyLabel": "Ваш ответ",
@@ -1016,7 +1017,19 @@
     "stackLabel_one": "{{count}} цитата к отправке",
     "stackLabel_few": "{{count}} цитаты к отправке",
     "stackLabel_many": "{{count}} цитат к отправке",
-    "stackLabel_other": "{{count}} цитаты к отправке"
+    "stackLabel_other": "{{count}} цитаты к отправке",
+    "dictation": {
+      "start": "Диктовать (Ctrl/Cmd+M)",
+      "stop": "Остановить диктовку",
+      "stopHint": "Слушаю… Enter или Esc — стоп",
+      "listening": "Слушаю…",
+      "offTitle": "Распознавание речи выключено",
+      "offContent": "Включить с сохранённым провайдером и начать диктовку?",
+      "turnOn": "Включить и диктовать",
+      "offLabel": "Диктовать (распознавание речи выключено)",
+      "setUp": "Настройте распознавание речи в настройках, чтобы диктовать",
+      "enableFailed": "Не удалось включить распознавание речи"
+    }
   },
   "backgroundTool": {
     "continue": "Продолжить в фоне",

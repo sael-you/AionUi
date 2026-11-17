@@ -11,8 +11,10 @@ import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useOptionalPreviewContext } from '@/renderer/pages/conversation/Preview/context/PreviewContext';
 import { openExternalUrl } from '@/renderer/utils/platform';
 import { resolveSelectionHttpUrl } from '@/renderer/utils/url';
-import { Button } from '@arco-design/web-react';
+import styles from '@/renderer/components/chat/SendBox/quoteReply.module.css';
+import { Button, Tooltip } from '@arco-design/web-react';
 import { Browser, Earth, Quote, Voice } from '@icon-park/react';
+import classNames from 'classnames';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,6 +28,12 @@ type ReplyPos = {
   msgId: string;
   msgPos: QuotePosition;
   url: string | null;
+  /** Toolbar sits below the selection (touch, or no room above). */
+  below: boolean;
+  touch: boolean;
+  /** The selected range, so the toolbar can follow it while the list scrolls. */
+  range: Range | null;
+  hidden?: boolean;
 };
 
 type PopoverState = {
@@ -96,7 +104,7 @@ function findMessageElement(sel: Selection): Element | null {
   return null;
 }
 
-const BUTTON_HEIGHT = 32;
+const BUTTON_HEIGHT = 36;
 const POPOVER_ESTIMATED_HEIGHT = 170;
 /** Touch: wait for the selection handles to settle before showing the toolbar. */
 const TOUCH_SETTLE_MS = 350;
@@ -105,6 +113,20 @@ const TOUCH_SETTLE_MS = 350;
 const isInQuoteUiOrEditable = (node: Node | null): boolean => {
   const el = node instanceof Element ? node : (node?.parentElement ?? null);
   return Boolean(el?.closest('[data-quote-ui], textarea, input, [contenteditable="true"]'));
+};
+
+/** Where the toolbar goes for a selection box: above it (mouse) or below (touch / no room), never over it. */
+const placeToolbar = (rect: DOMRect, touch: boolean) => {
+  const above = rect.top - BUTTON_HEIGHT - 8;
+  const below = rect.bottom + (touch ? 16 : 8);
+  const isBelow = touch || above < 0;
+  return {
+    top: isBelow ? Math.min(below, window.innerHeight - BUTTON_HEIGHT - 8) : above,
+    left: Math.max(80, Math.min(rect.left + rect.width / 2, window.innerWidth - 80)),
+    selectionTop: rect.top,
+    selectionBottom: rect.bottom,
+    below: isBelow,
+  };
 };
 
 /** Toolbar buttons must not take focus away from (and collapse) the selection. */
@@ -143,19 +165,14 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
 
     const msgId = msgEl.id.slice('message-'.length);
     const msg = messagesRef.current.find((m) => m.id === msgId);
-    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    const range = sel.getRangeAt(0);
 
     // Mouse: above the selection (below when too close to the top). Touch: always below,
     // because the native selection menu sits above it.
-    const above = rect.top - BUTTON_HEIGHT - 8;
-    const below = rect.bottom + (touch ? 16 : 8);
-    const top = !touch && above >= 0 ? above : Math.min(below, window.innerHeight - BUTTON_HEIGHT - 8);
-
     return {
-      top,
-      left: Math.max(60, Math.min(rect.left + rect.width / 2, window.innerWidth - 60)),
-      selectionTop: rect.top,
-      selectionBottom: rect.bottom,
+      ...placeToolbar(range.getBoundingClientRect(), touch),
+      touch,
+      range: range.cloneRange(),
       text,
       msgId,
       msgPos: (msg?.position ?? 'left') as QuotePosition,
@@ -166,7 +183,6 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
 
   useEffect(() => {
     let mounted = true;
-    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
     let touchTimer: ReturnType<typeof setTimeout> | null = null;
 
     const onMouseUp = (e: MouseEvent) => {
@@ -193,11 +209,20 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
       setPos(null);
     };
 
-    // Clear floating button on scroll, debounced to avoid clearing during
-    // the tiny scrolls that happen while selecting text
+    // Follow the selection while the list scrolls (one update per frame); hide while it is off screen.
+    let frame = 0;
     const onScroll = () => {
-      if (scrollTimer) clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => setPos(null), 100);
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        setPos((current) => {
+          if (!current?.range) return current;
+          const rect = current.range.getBoundingClientRect();
+          if (rect.width === 0 && rect.height === 0) return current;
+          const offScreen = rect.bottom < 0 || rect.top > window.innerHeight;
+          return { ...current, ...placeToolbar(rect, current.touch), hidden: offScreen };
+        });
+      });
     };
 
     if (isMobile) {
@@ -209,7 +234,7 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
     document.addEventListener('scroll', onScroll, true);
     return () => {
       mounted = false;
-      if (scrollTimer) clearTimeout(scrollTimer);
+      if (frame) window.cancelAnimationFrame(frame);
       if (touchTimer) clearTimeout(touchTimer);
       document.removeEventListener('selectionchange', onSelectionChange);
       document.removeEventListener('mouseup', onMouseUp);
@@ -228,25 +253,50 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
     setPos(null);
   }, []);
 
-  // Keyboard: R or Ctrl/Cmd+Shift+R replies to the selection while the toolbar shows.
+  const dismiss = useCallback(() => {
+    setPos(null);
+    window.getSelection()?.removeAllRanges();
+  }, []);
+
+  // Keyboard while the toolbar shows: R (or Ctrl/Cmd+Shift+R) replies, D dictates a reply,
+  // Tab moves into the toolbar, Esc dismisses it.
   useEffect(() => {
     if (!pos) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (isEditableTarget(event.target)) return;
-      const plainR =
-        event.key.toLowerCase() === 'r' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey;
-      const shortcut = event.key.toLowerCase() === 'r' && (event.ctrlKey || event.metaKey) && event.shiftKey;
-      if (!plainR && !shortcut) return;
-      event.preventDefault();
-      openPopover(pos, false);
+      if (buttonRef.current?.contains(event.target as Node)) return;
+      const key = event.key.toLowerCase();
+      const bare = !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey;
+      const shortcut = key === 'r' && (event.ctrlKey || event.metaKey) && event.shiftKey;
+      if ((bare && key === 'r') || shortcut) {
+        event.preventDefault();
+        openPopover(pos, false);
+      } else if (bare && key === 'd') {
+        event.preventDefault();
+        openPopover(pos, true);
+      } else if (bare && event.key === 'Tab') {
+        event.preventDefault();
+        buttonRef.current?.querySelector<HTMLElement>('button')?.focus();
+      } else if (bare && event.key === 'Escape') {
+        dismiss();
+      }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [pos, openPopover]);
+  }, [pos, openPopover, dismiss]);
 
-  const dismiss = () => {
-    setPos(null);
-    window.getSelection()?.removeAllRanges();
+  /** Arrow keys move between the toolbar's buttons; Esc closes it. */
+  const onToolbarKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const buttons = [...event.currentTarget.querySelectorAll<HTMLElement>('button')];
+    const index = buttons.indexOf(document.activeElement as HTMLElement);
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      const step = event.key === 'ArrowRight' ? 1 : -1;
+      buttons[(index + step + buttons.length) % buttons.length]?.focus();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      dismiss();
+    }
   };
 
   const popoverNode = popover ? (
@@ -254,6 +304,7 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
       anchor={popover.anchor}
       quote={popover.text}
       autoDictate={popover.dictate}
+      sheet={isMobile}
       onAdd={(reply) => {
         quoteStack.add({ messageId: popover.msgId, position: popover.msgPos, content: popover.text, reply });
         setPopover(null);
@@ -263,71 +314,84 @@ const SelectionReplyButton: React.FC<{ messages: TMessage[] }> = ({ messages }) 
     />
   ) : null;
 
-  if (!pos) return popoverNode;
+  if (!pos || pos.hidden) return popoverNode;
 
   // Resolved http(s) URL for the selection (single URL text, or a link anchor);
   // when present, offer extra open actions.
   const url = pos.url;
+  const action = (
+    label: string,
+    icon: React.ReactNode,
+    onClick: () => void,
+    extra: { shortcut?: string; testId?: string } = {}
+  ) => (
+    <Tooltip content={label} mini position={pos.below ? 'bottom' : 'top'}>
+      <Button
+        type='text'
+        shape='circle'
+        size='small'
+        icon={icon}
+        aria-label={label}
+        aria-keyshortcuts={extra.shortcut}
+        data-testid={extra.testId}
+        onMouseDown={keepSelection}
+        onClick={onClick}
+      />
+    </Tooltip>
+  );
 
   return (
     <>
       {popoverNode}
       <div
-        ref={buttonRef}
-        role='toolbar'
-        aria-label={t('conversation.quoteReply.toolbarLabel')}
-        className='fixed z-9999 flex items-center gap-2px px-4px py-4px rd-8px select-none bg-base border border-solid border-3 shadow-md'
+        className='fixed z-9999'
         style={{ top: pos.top, left: pos.left, transform: 'translateX(-50%)' }}
-        data-testid='selection-toolbar'
         data-quote-ui
       >
-        <Button
-          type='text'
-          size='mini'
-          icon={<Quote theme='outline' size='14' />}
-          aria-keyshortcuts='R Control+Shift+R Meta+Shift+R'
-          onMouseDown={keepSelection}
-          onClick={() => openPopover(pos, false)}
+        <div
+          ref={buttonRef}
+          role='toolbar'
+          aria-label={t('conversation.quoteReply.toolbarLabel')}
+          aria-orientation='horizontal'
+          className={classNames(
+            'flex items-center gap-2px px-4px py-2px rd-full select-none bg-base border border-solid border-3 shadow-md',
+            styles.toolbar,
+            pos.below && styles.toolbarBelow
+          )}
+          data-testid='selection-toolbar'
+          onKeyDown={onToolbarKeyDown}
         >
-          {t('common.reply', { defaultValue: 'Reply' })}
-        </Button>
-        <Button
-          type='text'
-          size='mini'
-          icon={<Voice theme='outline' size='14' />}
-          aria-label={t('conversation.quoteReply.dictateReply')}
-          title={t('conversation.quoteReply.dictateReply')}
-          onMouseDown={keepSelection}
-          onClick={() => openPopover(pos, true)}
-        />
-        {url && preview && (
-          <Button
-            type='text'
-            size='mini'
-            icon={<Browser theme='outline' size='14' />}
-            onMouseDown={keepSelection}
-            onClick={() => {
-              preview.openBrowserTab(url);
-              dismiss();
-            }}
-          >
-            {t('common.openInBuiltinBrowser')}
-          </Button>
-        )}
-        {url && (
-          <Button
-            type='text'
-            size='mini'
-            icon={<Earth theme='outline' size='14' />}
-            onMouseDown={keepSelection}
-            onClick={() => {
-              void openExternalUrl(url).catch(console.error);
-              dismiss();
-            }}
-          >
-            {t('common.openInSystemBrowser')}
-          </Button>
-        )}
+          {action(
+            t('conversation.quoteReply.replyTooltip'),
+            <Quote theme='outline' size='15' />,
+            () => openPopover(pos, false),
+            {
+              shortcut: 'R Control+Shift+R Meta+Shift+R',
+              testId: 'selection-reply',
+            }
+          )}
+          {action(
+            t('conversation.quoteReply.dictateReplyTooltip'),
+            <Voice theme='outline' size='15' />,
+            () => openPopover(pos, true),
+            {
+              shortcut: 'D',
+              testId: 'selection-dictate',
+            }
+          )}
+          {url && preview
+            ? action(t('common.openInBuiltinBrowser'), <Browser theme='outline' size='15' />, () => {
+                preview.openBrowserTab(url);
+                dismiss();
+              })
+            : null}
+          {url
+            ? action(t('common.openInSystemBrowser'), <Earth theme='outline' size='15' />, () => {
+                void openExternalUrl(url).catch(console.error);
+                dismiss();
+              })
+            : null}
+        </div>
       </div>
     </>
   );

@@ -970,7 +970,8 @@
   },
   "quoteReply": {
     "toolbarLabel": "کارهای انتخاب",
-    "dictateReply": "پاسخ صوتی",
+    "replyTooltip": "پاسخ (R)",
+    "dictateReplyTooltip": "پاسخ صوتی (D)",
     "popoverLabel": "پاسخ به متن انتخاب‌شده",
     "replyPlaceholder": "پاسخ…",
     "replyLabel": "پاسخ شما",
@@ -982,7 +983,19 @@
     "withReply": "با پاسخ",
     "stackLabel": "{{count}} نقل‌قول برای ارسال",
     "stackLabel_one": "{{count}} نقل‌قول برای ارسال",
-    "stackLabel_other": "{{count}} نقل‌قول برای ارسال"
+    "stackLabel_other": "{{count}} نقل‌قول برای ارسال",
+    "dictation": {
+      "start": "دیکته (Ctrl/Cmd+M)",
+      "stop": "توقف دیکته",
+      "stopHint": "در حال شنیدن… Enter یا Esc متوقف می‌کند",
+      "listening": "در حال شنیدن…",
+      "offTitle": "گفتار به متن خاموش است",
+      "offContent": "با ارائه‌دهندهٔ ذخیره‌شده روشن شود و دیکته شروع شود؟",
+      "turnOn": "روشن کن و دیکته کن",
+      "offLabel": "دیکته (گفتار به متن خاموش است)",
+      "setUp": "برای دیکته، گفتار به متن را در تنظیمات راه‌اندازی کنید",
+      "enableFailed": "روشن کردن گفتار به متن ممکن نشد"
+    }
   },
   "backgroundTool": {
     "continue": "ادامه در پس‌زمینه",
