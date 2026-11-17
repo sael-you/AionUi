@@ -117,6 +117,7 @@ const relay = new Relay({
     });
   },
   browser: browserLabelFrom(navigator.userAgent),
+  extensionVersion: chrome.runtime.getManifest().version,
   setTimeout: (fn, ms) => setTimeout(fn, ms),
   clearTimeout: (handle) => clearTimeout(handle as ReturnType<typeof setTimeout>),
   setInterval: (fn, ms) => setInterval(fn, ms),

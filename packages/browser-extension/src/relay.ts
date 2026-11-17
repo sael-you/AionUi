@@ -81,6 +81,8 @@ export type RelayDeps = {
   /** Block local-network requests for exactly these tabs (declarativeNetRequest session rules). */
   setLanBlockedTabs: (tabIds: number[]) => Promise<void>;
   browser: string;
+  /** The extension's own version (manifest). */
+  extensionVersion: string;
   setTimeout: (fn: () => void, ms: number) => unknown;
   clearTimeout: (handle: unknown) => void;
   setInterval: (fn: () => void, ms: number) => unknown;
@@ -313,9 +315,16 @@ export class Relay {
           code: this.pairCode,
           device_name: this.state.device_name,
           browser: this.deps.browser,
+          extension_version: this.deps.extensionVersion,
         });
       } else if (this.state.token) {
-        this.rawSend({ type: 'hello', token: this.state.token, browser: this.deps.browser, version: PROTOCOL_VERSION });
+        this.rawSend({
+          type: 'hello',
+          token: this.state.token,
+          browser: this.deps.browser,
+          version: PROTOCOL_VERSION,
+          extension_version: this.deps.extensionVersion,
+        });
       }
     };
     socket.onmessage = (event) => {

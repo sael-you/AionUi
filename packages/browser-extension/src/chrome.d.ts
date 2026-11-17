@@ -22,6 +22,7 @@ type ChromeEvent<T extends (...args: never[]) => unknown> = { addListener(callba
 declare const chrome: {
   runtime: {
     lastError: { message?: string } | undefined;
+    getManifest(): { version: string };
     sendMessage(message: unknown): Promise<unknown>;
     onMessage: ChromeEvent<
       (message: unknown, sender: unknown, sendResponse: (response: unknown) => void) => boolean | void

@@ -71,6 +71,7 @@ const setup = (persisted: Partial<PersistedState> = {}, shared: number[] = []) =
       lanBlocked = ids;
     }),
     browser: 'Chrome 157',
+    extensionVersion: '0.1.2',
     setTimeout: (fn, ms) => {
       const timer = { fn, ms, repeat: false, cleared: false };
       timers.push(timer);
@@ -185,6 +186,7 @@ describe('pairing and hello', () => {
       code: 'ABCD-2345',
       device_name: 'Work Mac',
       browser: 'Chrome 157',
+      extension_version: '0.1.2',
     });
 
     await h.receive({ type: 'welcome', device_id: 'dev_9', token: 'secret-token' });
@@ -201,7 +203,13 @@ describe('pairing and hello', () => {
     const h = setup(PAIRED);
     await h.relay.init();
     h.open();
-    expect(h.socket().sent[0]).toEqual({ type: 'hello', token: 'tok-1', browser: 'Chrome 157', version: 1 });
+    expect(h.socket().sent[0]).toEqual({
+      type: 'hello',
+      token: 'tok-1',
+      browser: 'Chrome 157',
+      version: 1,
+      extension_version: '0.1.2',
+    });
   });
 
   it('a wrong or expired code ends in an error state without reconnecting', async () => {

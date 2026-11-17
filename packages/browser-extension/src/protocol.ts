@@ -24,8 +24,15 @@ export const PING_INTERVAL_MS = 20_000;
 export type SharedTab = { tab_id: number; url: string; title: string };
 
 // ---- extension → core ----
-export type PairFrame = { type: 'pair'; code: string; device_name: string; browser: string };
-export type HelloFrame = { type: 'hello'; token: string; browser: string; version: number };
+/** `extension_version` (TASK-133): lets AionUi say when a newer build is available. */
+export type PairFrame = { type: 'pair'; code: string; device_name: string; browser: string; extension_version: string };
+export type HelloFrame = {
+  type: 'hello';
+  token: string;
+  browser: string;
+  version: number;
+  extension_version: string;
+};
 export type StateFrame = { type: 'state'; new_tabs: boolean; tabs: SharedTab[] };
 export type ResultFrame =
   | { type: 'result'; id: number; result: unknown }
