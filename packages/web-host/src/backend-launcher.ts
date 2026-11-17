@@ -76,6 +76,13 @@ type SpawnConfig = {
   recoverCorruptedDatabase?: boolean;
 };
 
+/**
+ * How long `stop()` waits after SIGTERM before SIGKILL. AionCore drains the
+ * running turns for up to 20 s on shutdown (TASK-44), so killing after 5 s cut
+ * them off mid-step.
+ */
+export const BACKEND_STOP_TIMEOUT_MS = 30_000;
+
 export type BackendLaunchFlags = {
   recoverCorruptedDatabase?: boolean;
 };
@@ -1031,7 +1038,7 @@ export class BackendLifecycleManager {
     await new Promise<void>((resolve) => {
       const timeout = setTimeout(() => {
         void killBackendProcessTree(childProcess, 'SIGKILL').finally(resolve);
-      }, 5000);
+      }, BACKEND_STOP_TIMEOUT_MS);
       childProcess.on('exit', () => {
         clearTimeout(timeout);
         void gracefulKill.finally(resolve);

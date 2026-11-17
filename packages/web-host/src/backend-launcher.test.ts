@@ -48,6 +48,7 @@ import {
   writeIdentityMarker,
   BackendLifecycleManager,
   BackendStartupError,
+  BACKEND_STOP_TIMEOUT_MS,
 } from './backend-launcher.js';
 import type { AppMetadata } from './types.js';
 
@@ -1341,9 +1342,12 @@ describe('BackendLifecycleManager.stop', () => {
     emitListening(child, 22223);
     await startPromise;
 
+    // AionCore gets BACKEND_STOP_TIMEOUT_MS to drain its running turns (TASK-44) before SIGKILL.
+    vi.useFakeTimers();
     const stopPromise = mgr.stop();
-    // Let real timeout happen (5s), then check result
-    await new Promise((r) => setTimeout(r, 5_200));
+    await vi.advanceTimersByTimeAsync(BACKEND_STOP_TIMEOUT_MS - 1_000);
+    expect(killSpy.mock.calls).not.toEqual(expect.arrayContaining([[expect.any(Number), 'SIGKILL']]));
+    await vi.advanceTimersByTimeAsync(1_000);
     await stopPromise;
 
     expect(killSpy.mock.calls).toEqual(expect.arrayContaining([[expect.any(Number), 'SIGTERM']]));
@@ -1421,7 +1425,7 @@ describe('BackendLifecycleManager.stop', () => {
 
     const stopPromise = mgr.stop();
     gracefulTaskkillChild.emit('close', 0);
-    await vi.advanceTimersByTimeAsync(5_000);
+    await vi.advanceTimersByTimeAsync(BACKEND_STOP_TIMEOUT_MS);
     await Promise.resolve();
 
     expect(cleanupRegisteredAgentProcesses).not.toHaveBeenCalledWith('/db');
