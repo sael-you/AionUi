@@ -322,13 +322,18 @@ const RulesLibrary: React.FC = () => {
         headerActions={
           <>
             <Button
-              icon={<FileAddition theme='outline' size='14' />}
+              icon={<FileAddition theme='outline' size='14' fill='currentColor' className='me-6px' />}
               onClick={() => setImporting(true)}
               data-testid='rule-import-open'
             >
               {t('settings.rules.import.open')}
             </Button>
-            <Button type='primary' icon={<Plus theme='outline' size='14' />} onClick={addRule} data-testid='rule-add'>
+            <Button
+              type='primary'
+              icon={<Plus theme='outline' size='14' fill='currentColor' className='me-6px' />}
+              onClick={addRule}
+              data-testid='rule-add'
+            >
               {t('settings.rules.add')}
             </Button>
           </>
