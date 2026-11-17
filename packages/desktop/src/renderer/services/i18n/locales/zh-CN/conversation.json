@@ -657,6 +657,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "无法将该工具调用转到后台。"
       }
+    },
+    "tokenPool": {
+      "hitLimit": "{{provider}} 账号“{{from}}”已达到{{limit}}。",
+      "hitLimitResets": "{{provider}} 账号“{{from}}”已达到{{limit}}（{{time}} 重置）。",
+      "hitRevoked": "{{provider}} 账号“{{from}}”已被撤销。",
+      "hitUnknown": "{{provider}} 账号“{{from}}”已无法使用。",
+      "limitNamed": "{{type}} 限额",
+      "limitUsage": "用量限额",
+      "switched": {
+        "auto": "Token Pool 已自动切换到“{{to}}”。",
+        "answer": "Token Pool 已按你的回答切换到“{{to}}”。",
+        "timeout": "Token Pool 因未收到回答已切换到“{{to}}”。"
+      },
+      "alreadyOn": "账号池已在使用“{{to}}”。",
+      "restarted": "此会话已在该账号上重启（保留上下文）。",
+      "busy": "它仍在工作，因此没有被打断；它的下一个进程会使用新账号。",
+      "next": "你的下一条消息会使用它。",
+      "resent": "你的上一条消息已重新发送。",
+      "notResent": "没有重新发送任何内容：需要时请再发送一次消息。",
+      "exhausted": "Token Pool 中没有其他可用账号：请添加一个或等待重置。",
+      "manual": "你已将 {{provider}} 切换到账号“{{to}}”。此会话已在该账号上重启（保留上下文）。",
+      "ask": "切换到“{{to}}”？在你回答之前不会有任何变化。",
+      "wait": "{{provider}}：继续使用“{{from}}”。重置后再发送，或在 设置 → Token Pool 中切换。",
+      "waitCurrent": "{{provider}}：继续使用当前账号。重置后再发送，或在 设置 → Token Pool 中切换。",
+      "actions": {
+        "label": "你的回答",
+        "switch_resend": "切换并重新发送",
+        "switch": "仅切换",
+        "wait": "等待",
+        "done": {
+          "switch_resend": "正在切换；你的上一条消息会重新发送。",
+          "switch": "正在切换。需要时请再发送一次消息。",
+          "wait": "继续使用此账号。"
+        },
+        "answered": "已经回答过了。",
+        "notOpen": "这个问题已不再开放。",
+        "failed": "无法发送你的回答，请重试。"
+      },
+      "askTimeout_one": "{{count}} 分钟后会自动切换。",
+      "askTimeout_other": "{{count}} 分钟后会自动切换。"
     }
   },
   "notFound": "会话不存在或已被删除",

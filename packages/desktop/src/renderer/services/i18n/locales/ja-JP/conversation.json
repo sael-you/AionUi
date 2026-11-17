@@ -657,6 +657,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "ツール呼び出しをバックグラウンドに移せませんでした。"
       }
+    },
+    "tokenPool": {
+      "hitLimit": "{{provider}} アカウント「{{from}}」が{{limit}}に達しました。",
+      "hitLimitResets": "{{provider}} アカウント「{{from}}」が{{limit}}に達しました（リセット: {{time}}）。",
+      "hitRevoked": "{{provider}} アカウント「{{from}}」は取り消されました。",
+      "hitUnknown": "{{provider}} アカウント「{{from}}」が使えなくなりました。",
+      "limitNamed": "{{type}} の上限",
+      "limitUsage": "使用量の上限",
+      "switched": {
+        "auto": "Token Pool は自動的に「{{to}}」へ切り替えました。",
+        "answer": "Token Pool は回答どおり「{{to}}」へ切り替えました。",
+        "timeout": "Token Pool は回答がなかったため「{{to}}」へ切り替えました。"
+      },
+      "alreadyOn": "プールはすでに「{{to}}」を使っています。",
+      "restarted": "この会話はそのアカウントで再起動しました（コンテキストは保持）。",
+      "busy": "まだ作業中だったため中断していません。次のプロセスから新しいアカウントを使います。",
+      "next": "次のメッセージから使われます。",
+      "resent": "最後のメッセージを再送しました。",
+      "notResent": "再送はしていません。必要なときにメッセージをもう一度送ってください。",
+      "exhausted": "Token Pool に使えるアカウントがほかにありません。追加するか、リセットをお待ちください。",
+      "manual": "{{provider}} をアカウント「{{to}}」に切り替えました。この会話はそのアカウントで再起動しました（コンテキストは保持）。",
+      "ask": "「{{to}}」に切り替えますか？回答するまで何も変わりません。",
+      "wait": "{{provider}}: 「{{from}}」のままにします。リセット後にもう一度送るか、設定 → Token Pool で切り替えてください。",
+      "waitCurrent": "{{provider}}: 現在のアカウントのままにします。リセット後にもう一度送るか、設定 → Token Pool で切り替えてください。",
+      "actions": {
+        "label": "回答",
+        "switch_resend": "切り替えて再送",
+        "switch": "切り替えのみ",
+        "wait": "待つ",
+        "done": {
+          "switch_resend": "切り替え中です。最後のメッセージを再送します。",
+          "switch": "切り替え中です。必要なときにメッセージをもう一度送ってください。",
+          "wait": "このアカウントのままにします。"
+        },
+        "answered": "すでに回答済みです。",
+        "notOpen": "この質問はもう受け付けていません。",
+        "failed": "回答を送信できませんでした。もう一度お試しください。"
+      },
+      "askTimeout_one": "{{count}} 分後に自動で切り替わります。",
+      "askTimeout_other": "{{count}} 分後に自動で切り替わります。"
     }
   },
   "notFound": "会話が存在しないか、削除されました",

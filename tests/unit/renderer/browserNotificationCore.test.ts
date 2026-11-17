@@ -94,6 +94,22 @@ describe('createBrowserNotificationController.onStreamMessage', () => {
     expect(show).toHaveBeenCalledWith({ body: 'confirmation', conversationId: 'c3', kind: 'confirmation' });
   });
 
+  it('notifies when the Token Pool asks whether to switch accounts, not for other tips (TASK-137)', () => {
+    const { show, controller } = makeDeps();
+    controller.onStreamMessage({
+      type: 'tips',
+      conversation_id: 'c5',
+      msg_id: 'm5',
+      data: { code: 'TOKEN_POOL_SWITCHED' },
+    });
+    controller.onStreamMessage({ type: 'tips', conversation_id: 'c5', msg_id: 'm6', data: { content: 'plain' } });
+    expect(show).not.toHaveBeenCalled();
+    controller.onStreamMessage({ type: 'tips', conversation_id: 'c5', msg_id: 'm7', data: { code: 'TOKEN_POOL_ASK' } });
+    controller.onStreamMessage({ type: 'tips', conversation_id: 'c5', msg_id: 'm7', data: { code: 'TOKEN_POOL_ASK' } });
+    expect(show).toHaveBeenCalledTimes(1);
+    expect(show).toHaveBeenCalledWith({ body: 'confirmation', conversationId: 'c5', kind: 'confirmation' });
+  });
+
   it('shows a confirmation notification on an ask stream message', () => {
     const { show, controller } = makeDeps();
     controller.onStreamMessage({ type: 'ask', conversation_id: 'c4', msg_id: 'm4' });

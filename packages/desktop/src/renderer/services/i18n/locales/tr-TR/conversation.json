@@ -659,6 +659,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "Araç çağrısı arka plana alınamadı."
       }
+    },
+    "tokenPool": {
+      "hitLimit": "{{provider}} hesabı “{{from}}” {{limit}} değerine ulaştı.",
+      "hitLimitResets": "{{provider}} hesabı “{{from}}” {{limit}} değerine ulaştı (sıfırlanma: {{time}}).",
+      "hitRevoked": "{{provider}} hesabı “{{from}}” iptal edildi.",
+      "hitUnknown": "{{provider}} hesabı “{{from}}” çalışmayı bıraktı.",
+      "limitNamed": "{{type}} sınırı",
+      "limitUsage": "kullanım sınırı",
+      "switched": {
+        "auto": "Token Pool otomatik olarak “{{to}}” hesabına geçti.",
+        "answer": "Token Pool yanıtınız üzerine “{{to}}” hesabına geçti.",
+        "timeout": "Token Pool yanıt gelmeyince “{{to}}” hesabına geçti."
+      },
+      "alreadyOn": "Havuz zaten “{{to}}” hesabında.",
+      "restarted": "Bu sohbet o hesapla yeniden başlatıldı (bağlam korundu).",
+      "busy": "Hâlâ çalışıyordu, bu yüzden kesilmedi; sonraki işlemi yeni hesabı kullanır.",
+      "next": "Sonraki mesajınız onu kullanır.",
+      "resent": "Son mesajınız yeniden gönderildi.",
+      "notResent": "Hiçbir şey yeniden gönderilmedi: mesajınızı istediğiniz zaman yeniden gönderin.",
+      "exhausted": "Token Pool'da kullanılabilir başka hesap yok: bir tane ekleyin veya sıfırlanmayı bekleyin.",
+      "manual": "{{provider}} için “{{to}}” hesabına geçtiniz. Bu sohbet o hesapla yeniden başlatıldı (bağlam korundu).",
+      "ask": "“{{to}}” hesabına geçilsin mi? Siz yanıtlayana kadar hiçbir şey değişmez.",
+      "wait": "{{provider}}: “{{from}}” hesabında kalıyor. Sıfırlanmadan sonra yeniden gönderin veya Ayarlar → Token Pool'dan geçiş yapın.",
+      "waitCurrent": "{{provider}}: geçerli hesapta kalıyor. Sıfırlanmadan sonra yeniden gönderin veya Ayarlar → Token Pool'dan geçiş yapın.",
+      "actions": {
+        "label": "Yanıtınız",
+        "switch_resend": "Geç ve yeniden gönder",
+        "switch": "Yalnızca geç",
+        "wait": "Bekle",
+        "done": {
+          "switch_resend": "Geçiliyor; son mesajınız yeniden gönderiliyor.",
+          "switch": "Geçiliyor. Mesajınızı istediğiniz zaman yeniden gönderin.",
+          "wait": "Bu hesapta kalınıyor."
+        },
+        "answered": "Zaten yanıtlandı.",
+        "notOpen": "Bu soru artık açık değil.",
+        "failed": "Yanıtınız gönderilemedi. Yeniden deneyin."
+      },
+      "askTimeout_one": "{{count}} dk sonra kendiliğinden geçer.",
+      "askTimeout_other": "{{count}} dk sonra kendiliğinden geçer."
     }
   },
   "notFound": "Konuşma bulunamadı veya silinmiş",

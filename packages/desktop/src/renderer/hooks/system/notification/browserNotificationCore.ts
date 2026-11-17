@@ -86,7 +86,16 @@ export type StreamMessage = {
   /** Stable per-message id, used to dedup repeated confirmation frames
    *  (e.g. a reconnect replay re-delivering the same permission request). */
   msg_id?: string;
+  /** Tips carry their code here (`data.code`). */
+  data?: unknown;
 };
+
+/**
+ * A chat tip that waits for the owner's answer: the Token Pool asking whether
+ * to switch accounts (TASK-137). Notified like a permission request.
+ */
+const isAskTip = (message: StreamMessage): boolean =>
+  message.type === 'tips' && (message.data as { code?: unknown } | null | undefined)?.code === 'TOKEN_POOL_ASK';
 
 // Stream `type` values that represent the agent blocking on the user: a tool
 // permission request (`acp_permission` from ACP; `permission` too from aionrs)
@@ -107,7 +116,7 @@ export const createBrowserNotificationController = (deps: BrowserNotificationDep
   const onStreamMessage = (message: StreamMessage): void => {
     if (!message?.type) return;
 
-    if (CONFIRMATION_TYPES.has(message.type)) {
+    if (CONFIRMATION_TYPES.has(message.type) || isAskTip(message)) {
       const dedupKey = message.msg_id ? `${message.conversation_id ?? ''}:${message.msg_id}` : null;
       if (dedupKey && notifiedConfirmationKeys.has(dedupKey)) return;
       if (!deps.shouldShow()) return;

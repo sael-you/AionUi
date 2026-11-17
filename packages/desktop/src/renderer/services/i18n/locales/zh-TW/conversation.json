@@ -657,6 +657,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "無法將此工具呼叫轉到背景。"
       }
+    },
+    "tokenPool": {
+      "hitLimit": "{{provider}} 帳號「{{from}}」已達到{{limit}}。",
+      "hitLimitResets": "{{provider}} 帳號「{{from}}」已達到{{limit}}（{{time}} 重設）。",
+      "hitRevoked": "{{provider}} 帳號「{{from}}」已被撤銷。",
+      "hitUnknown": "{{provider}} 帳號「{{from}}」已無法使用。",
+      "limitNamed": "{{type}} 限額",
+      "limitUsage": "用量限額",
+      "switched": {
+        "auto": "Token Pool 已自動切換到「{{to}}」。",
+        "answer": "Token Pool 已依你的回答切換到「{{to}}」。",
+        "timeout": "Token Pool 因未收到回答已切換到「{{to}}」。"
+      },
+      "alreadyOn": "帳號池已在使用「{{to}}」。",
+      "restarted": "此對話已在該帳號上重新啟動（保留上下文）。",
+      "busy": "它仍在工作，因此沒有被打斷；它的下一個程序會使用新帳號。",
+      "next": "你的下一則訊息會使用它。",
+      "resent": "你的上一則訊息已重新傳送。",
+      "notResent": "沒有重新傳送任何內容：需要時請再傳送一次訊息。",
+      "exhausted": "Token Pool 中沒有其他可用帳號：請新增一個或等待重設。",
+      "manual": "你已將 {{provider}} 切換到帳號「{{to}}」。此對話已在該帳號上重新啟動（保留上下文）。",
+      "ask": "切換到「{{to}}」？在你回答之前不會有任何變化。",
+      "wait": "{{provider}}：繼續使用「{{from}}」。重設後再傳送，或在 設定 → Token Pool 中切換。",
+      "waitCurrent": "{{provider}}：繼續使用目前帳號。重設後再傳送，或在 設定 → Token Pool 中切換。",
+      "actions": {
+        "label": "你的回答",
+        "switch_resend": "切換並重新傳送",
+        "switch": "僅切換",
+        "wait": "等待",
+        "done": {
+          "switch_resend": "正在切換；你的上一則訊息會重新傳送。",
+          "switch": "正在切換。需要時請再傳送一次訊息。",
+          "wait": "繼續使用此帳號。"
+        },
+        "answered": "已經回答過了。",
+        "notOpen": "這個問題已不再開放。",
+        "failed": "無法傳送你的回答，請再試一次。"
+      },
+      "askTimeout_one": "{{count}} 分鐘後會自動切換。",
+      "askTimeout_other": "{{count}} 分鐘後會自動切換。"
     }
   },
   "notFound": "會話不存在或已被刪除",

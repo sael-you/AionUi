@@ -657,6 +657,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "Impossible de passer l'appel d'outil en arrière-plan."
       }
+    },
+    "tokenPool": {
+      "hitLimit": "Le compte {{provider}} « {{from}} » a atteint sa {{limit}}.",
+      "hitLimitResets": "Le compte {{provider}} « {{from}} » a atteint sa {{limit}} (réinitialisation {{time}}).",
+      "hitRevoked": "Le compte {{provider}} « {{from}} » a été révoqué.",
+      "hitUnknown": "Le compte {{provider}} « {{from}} » ne fonctionne plus.",
+      "limitNamed": "limite {{type}}",
+      "limitUsage": "limite d'utilisation",
+      "switched": {
+        "auto": "Le Token Pool est passé automatiquement à « {{to}} ».",
+        "answer": "Le Token Pool est passé à « {{to}} », selon votre réponse.",
+        "timeout": "Le Token Pool est passé à « {{to}} » faute de réponse."
+      },
+      "alreadyOn": "Le pool est déjà sur « {{to}} ».",
+      "restarted": "Cette conversation a redémarré dessus (contexte conservé).",
+      "busy": "Elle travaillait encore et n'a donc pas été interrompue ; son prochain processus utilisera le nouveau compte.",
+      "next": "Votre prochain message l'utilisera.",
+      "resent": "Votre dernier message a été renvoyé.",
+      "notResent": "Rien n'a été renvoyé : renvoyez votre message quand vous voulez.",
+      "exhausted": "Aucun autre compte du Token Pool n'est utilisable : ajoutez-en un ou attendez la réinitialisation.",
+      "manual": "Vous avez basculé {{provider}} sur le compte « {{to}} ». Cette conversation a redémarré dessus (contexte conservé).",
+      "ask": "Passer à « {{to}} » ? Rien ne change tant que vous n'avez pas répondu.",
+      "wait": "{{provider}} : reste sur « {{from}} ». Renvoyez après la réinitialisation ou changez dans Paramètres → Token Pool.",
+      "waitCurrent": "{{provider}} : reste sur le compte actuel. Renvoyez après la réinitialisation ou changez dans Paramètres → Token Pool.",
+      "actions": {
+        "label": "Votre réponse",
+        "switch_resend": "Changer et renvoyer",
+        "switch": "Changer seulement",
+        "wait": "Attendre",
+        "done": {
+          "switch_resend": "Changement en cours ; votre dernier message est renvoyé.",
+          "switch": "Changement en cours. Renvoyez votre message quand vous voulez.",
+          "wait": "Reste sur ce compte."
+        },
+        "answered": "Déjà répondu.",
+        "notOpen": "Cette question n'est plus ouverte.",
+        "failed": "Impossible d'envoyer votre réponse. Réessayez."
+      },
+      "askTimeout_one": "Le changement se fait tout seul dans {{count}} min.",
+      "askTimeout_other": "Le changement se fait tout seul dans {{count}} min."
     }
   },
   "notFound": "Conversation introuvable ou supprimée",
