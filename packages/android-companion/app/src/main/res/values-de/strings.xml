@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi Companion</string>
+    <string name="accessibility_description">Erlaubt den AionUi-Agenten, die du zulässt, diesen Bildschirm zu lesen und darauf zu tippen, zu wischen und zu schreiben. Nur solange du Agenten in der AionUi-Companion-App einschaltest; Stopp schaltet sie sofort aus.</string>
+    <string name="notification_channel">Agenten-Sitzung</string>
+    <string name="notification_controlling">AionUi-Agenten dürfen dieses Telefon steuern</string>
+    <string name="notification_connected_off">Verbunden · Agenten sind ausgeschaltet</string>
+    <string name="action_stop">Stopp</string>
+    <string name="overlay_label">AionUi steuert dieses Telefon</string>
+    <string name="pair_title">Mit AionUi koppeln</string>
+    <string name="pair_hint">Öffne in AionUi Einstellungen → Geräte → dein Telefon → Companion-App und scanne den QR-Code oder gib Adresse und Code ein.</string>
+    <string name="pair_host">AionUi-Adresse</string>
+    <string name="pair_code">Kopplungscode</string>
+    <string name="pair_scan">QR-Code scannen</string>
+    <string name="pair_button">Koppeln</string>
+    <string name="pair_invalid">Prüfe Adresse und Code</string>
+    <string name="paired_with">Gekoppelt mit %1$s</string>
+    <string name="unpair">Entkoppeln</string>
+    <string name="unpair_confirm">Dieses Telefon entkoppeln? Du brauchst dann einen neuen Kopplungscode aus AionUi.</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="switch_label">Agenten dürfen dieses Telefon nutzen</string>
+    <string name="switch_hint">Standardmäßig aus. Stopp in der Benachrichtigung oder im schwebenden Chip schaltet sofort aus.</string>
+    <string name="session_start">Sitzung starten</string>
+    <string name="session_stop">Stopp</string>
+    <string name="session_consent_hint">Android fragt vor jeder Sitzung, ob AionUi den Bildschirm sehen darf.</string>
+    <string name="status_stopped">Nicht verbunden</string>
+    <string name="status_connecting">Verbinde…</string>
+    <string name="status_connected">Verbunden</string>
+    <string name="status_retrying">Verbindung verloren, neuer Versuch in %1$d s</string>
+    <string name="status_needs_pairing">Diese Kopplung ist nicht mehr gültig: neu koppeln</string>
+    <string name="check_title">Berechtigungen</string>
+    <string name="check_accessibility">Bedienungshilfe</string>
+    <string name="check_accessibility_hint">Android 13 und neuer: Ist der Schalter ausgegraut, öffne zuerst App-Info → ⋮ → Eingeschränkte Einstellungen zulassen.</string>
+    <string name="check_overlay">Über anderen Apps einblenden (schwebender Stopp-Chip)</string>
+    <string name="check_notifications">Benachrichtigungen</string>
+    <string name="check_open">Öffnen</string>
+    <string name="check_app_info">App-Info</string>
+    <string name="check_on">An</string>
+    <string name="check_off">Aus</string>
+    <string name="capture_on">Bildschirmaufnahme für diese Sitzung erlaubt</string>
+    <string name="version_label">Version %1$s (%2$d)</string>
+    <string name="scan_prompt">Scanne den Kopplungs-QR-Code aus AionUi</string>
+    <string name="not_a_pairing_code">Dieser QR-Code ist kein AionUi-Kopplungscode</string>
+</resources>

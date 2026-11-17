@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi companion</string>
+    <string name="accessibility_description">Lets the AionUi agents you allow read this screen and tap, swipe and type on it. Only while you switch agents on in the AionUi companion app; Stop switches them off at once.</string>
+    <string name="notification_channel">Agent session</string>
+    <string name="notification_controlling">AionUi agents may control this phone</string>
+    <string name="notification_connected_off">Connected · agents are switched off</string>
+    <string name="action_stop">Stop</string>
+    <string name="overlay_label">AionUi is controlling this phone</string>
+    <string name="pair_title">Pair with AionUi</string>
+    <string name="pair_hint">In AionUi open Settings → Devices → your phone → Companion app, then scan the QR code or type the address and the code.</string>
+    <string name="pair_host">AionUi address</string>
+    <string name="pair_code">Pairing code</string>
+    <string name="pair_scan">Scan QR code</string>
+    <string name="pair_button">Pair</string>
+    <string name="pair_invalid">Check the address and the code</string>
+    <string name="paired_with">Paired with %1$s</string>
+    <string name="unpair">Unpair</string>
+    <string name="unpair_confirm">Unpair this phone? You will need a new pairing code from AionUi.</string>
+    <string name="cancel">Cancel</string>
+    <string name="switch_label">Agents may use this phone</string>
+    <string name="switch_hint">Off by default. Stop in the notification or on the floating chip switches it off at once.</string>
+    <string name="session_start">Start session</string>
+    <string name="session_stop">Stop</string>
+    <string name="session_consent_hint">Android asks before every session whether AionUi may see the screen.</string>
+    <string name="status_stopped">Not connected</string>
+    <string name="status_connecting">Connecting…</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_retrying">Connection lost, retrying in %1$d s</string>
+    <string name="status_needs_pairing">This pairing is no longer valid: pair again</string>
+    <string name="check_title">Permissions</string>
+    <string name="check_accessibility">Accessibility service</string>
+    <string name="check_accessibility_hint">Android 13 and newer: if the switch is greyed out, open App info → ⋮ → Allow restricted settings first.</string>
+    <string name="check_overlay">Display over other apps (floating Stop chip)</string>
+    <string name="check_notifications">Notifications</string>
+    <string name="check_open">Open</string>
+    <string name="check_app_info">App info</string>
+    <string name="check_on">On</string>
+    <string name="check_off">Off</string>
+    <string name="capture_on">Screen capture allowed for this session</string>
+    <string name="version_label">Version %1$s (%2$d)</string>
+    <string name="scan_prompt">Scan the pairing QR code shown in AionUi</string>
+    <string name="not_a_pairing_code">This QR code is not an AionUi pairing code</string>
+</resources>

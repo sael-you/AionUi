@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi コンパニオン</string>
+    <string name="accessibility_description">許可した AionUi エージェントがこの画面を読み取り、タップ・スワイプ・入力できるようにします。AionUi コンパニオンアプリでエージェントをオンにしている間だけです。停止ですぐにオフになります。</string>
+    <string name="notification_channel">エージェントのセッション</string>
+    <string name="notification_controlling">AionUi エージェントがこのスマートフォンを操作できます</string>
+    <string name="notification_connected_off">接続中 · エージェントはオフ</string>
+    <string name="action_stop">停止</string>
+    <string name="overlay_label">AionUi がこのスマートフォンを操作しています</string>
+    <string name="pair_title">AionUi とペアリング</string>
+    <string name="pair_hint">AionUi で 設定 → デバイス → お使いのスマートフォン → コンパニオンアプリ を開き、QR コードを読み取るか、アドレスとコードを入力してください。</string>
+    <string name="pair_host">AionUi のアドレス</string>
+    <string name="pair_code">ペアリングコード</string>
+    <string name="pair_scan">QR コードを読み取る</string>
+    <string name="pair_button">ペアリング</string>
+    <string name="pair_invalid">アドレスとコードを確認してください</string>
+    <string name="paired_with">%1$s とペアリング済み</string>
+    <string name="unpair">ペアリング解除</string>
+    <string name="unpair_confirm">このスマートフォンのペアリングを解除しますか？AionUi の新しいペアリングコードが必要になります。</string>
+    <string name="cancel">キャンセル</string>
+    <string name="switch_label">エージェントがこのスマートフォンを使用できる</string>
+    <string name="switch_hint">初期設定はオフです。通知またはフローティングチップの停止ですぐにオフになります。</string>
+    <string name="session_start">セッションを開始</string>
+    <string name="session_stop">停止</string>
+    <string name="session_consent_hint">Android はセッションのたびに、AionUi が画面を見てよいか確認します。</string>
+    <string name="status_stopped">未接続</string>
+    <string name="status_connecting">接続中…</string>
+    <string name="status_connected">接続済み</string>
+    <string name="status_retrying">接続が切れました。%1$d 秒後に再試行します</string>
+    <string name="status_needs_pairing">このペアリングは無効になりました。もう一度ペアリングしてください</string>
+    <string name="check_title">権限</string>
+    <string name="check_accessibility">ユーザー補助サービス</string>
+    <string name="check_accessibility_hint">Android 13 以降：スイッチがグレー表示の場合は、先に アプリ情報 → ⋮ → 制限付き設定を許可 を開いてください。</string>
+    <string name="check_overlay">他のアプリの上に重ねて表示（停止チップ）</string>
+    <string name="check_notifications">通知</string>
+    <string name="check_open">開く</string>
+    <string name="check_app_info">アプリ情報</string>
+    <string name="check_on">オン</string>
+    <string name="check_off">オフ</string>
+    <string name="capture_on">このセッションの画面キャプチャは許可されています</string>
+    <string name="version_label">バージョン %1$s (%2$d)</string>
+    <string name="scan_prompt">AionUi に表示されたペアリング QR コードを読み取ってください</string>
+    <string name="not_a_pairing_code">この QR コードは AionUi のペアリングコードではありません</string>
+</resources>

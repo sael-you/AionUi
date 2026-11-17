@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi компаньон</string>
+    <string name="accessibility_description">Позволяет разрешённым агентам AionUi читать этот экран и нажимать, проводить и вводить текст. Только пока вы включили агентов в приложении AionUi компаньон; «Стоп» сразу выключает их.</string>
+    <string name="notification_channel">Сеанс агентов</string>
+    <string name="notification_controlling">Агенты AionUi могут управлять этим телефоном</string>
+    <string name="notification_connected_off">Подключено · агенты выключены</string>
+    <string name="action_stop">Стоп</string>
+    <string name="overlay_label">AionUi управляет этим телефоном</string>
+    <string name="pair_title">Связать с AionUi</string>
+    <string name="pair_hint">В AionUi откройте Настройки → Устройства → ваш телефон → Приложение-компаньон и отсканируйте QR-код или введите адрес и код.</string>
+    <string name="pair_host">Адрес AionUi</string>
+    <string name="pair_code">Код связывания</string>
+    <string name="pair_scan">Сканировать QR-код</string>
+    <string name="pair_button">Связать</string>
+    <string name="pair_invalid">Проверьте адрес и код</string>
+    <string name="paired_with">Связано с %1$s</string>
+    <string name="unpair">Отвязать</string>
+    <string name="unpair_confirm">Отвязать этот телефон? Понадобится новый код связывания из AionUi.</string>
+    <string name="cancel">Отмена</string>
+    <string name="switch_label">Агенты могут использовать этот телефон</string>
+    <string name="switch_hint">По умолчанию выключено. «Стоп» в уведомлении или на плавающей кнопке сразу выключает.</string>
+    <string name="session_start">Начать сеанс</string>
+    <string name="session_stop">Стоп</string>
+    <string name="session_consent_hint">Android перед каждым сеансом спрашивает, может ли AionUi видеть экран.</string>
+    <string name="status_stopped">Не подключено</string>
+    <string name="status_connecting">Подключение…</string>
+    <string name="status_connected">Подключено</string>
+    <string name="status_retrying">Связь потеряна, повтор через %1$d с</string>
+    <string name="status_needs_pairing">Эта связь больше не действует: свяжите заново</string>
+    <string name="check_title">Разрешения</string>
+    <string name="check_accessibility">Служба специальных возможностей</string>
+    <string name="check_accessibility_hint">Android 13 и новее: если переключатель серый, сначала откройте О приложении → ⋮ → Разрешить ограниченные настройки.</string>
+    <string name="check_overlay">Поверх других приложений (плавающая кнопка «Стоп»)</string>
+    <string name="check_notifications">Уведомления</string>
+    <string name="check_open">Открыть</string>
+    <string name="check_app_info">О приложении</string>
+    <string name="check_on">Вкл.</string>
+    <string name="check_off">Выкл.</string>
+    <string name="capture_on">Запись экрана разрешена для этого сеанса</string>
+    <string name="version_label">Версия %1$s (%2$d)</string>
+    <string name="scan_prompt">Отсканируйте QR-код связывания из AionUi</string>
+    <string name="not_a_pairing_code">Этот QR-код не является кодом связывания AionUi</string>
+</resources>

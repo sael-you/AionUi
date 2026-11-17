@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">همراه AionUi</string>
+    <string name="accessibility_description">به عامل‌های AionUi که اجازه می‌دهید امکان خواندن این صفحه و ضربه زدن، کشیدن و تایپ روی آن را می‌دهد. فقط وقتی عامل‌ها را در برنامهٔ همراه AionUi روشن کنید؛ توقف آن‌ها را فوراً خاموش می‌کند.</string>
+    <string name="notification_channel">نشست عامل</string>
+    <string name="notification_controlling">عامل‌های AionUi می‌توانند این تلفن را کنترل کنند</string>
+    <string name="notification_connected_off">متصل · عامل‌ها خاموش‌اند</string>
+    <string name="action_stop">توقف</string>
+    <string name="overlay_label">AionUi در حال کنترل این تلفن است</string>
+    <string name="pair_title">جفت شدن با AionUi</string>
+    <string name="pair_hint">در AionUi تنظیمات → دستگاه‌ها → تلفن شما → برنامهٔ همراه را باز کنید، سپس کد QR را اسکن کنید یا نشانی و کد را وارد کنید.</string>
+    <string name="pair_host">نشانی AionUi</string>
+    <string name="pair_code">کد جفت‌سازی</string>
+    <string name="pair_scan">اسکن کد QR</string>
+    <string name="pair_button">جفت شدن</string>
+    <string name="pair_invalid">نشانی و کد را بررسی کنید</string>
+    <string name="paired_with">جفت‌شده با %1$s</string>
+    <string name="unpair">لغو جفت‌سازی</string>
+    <string name="unpair_confirm">جفت‌سازی این تلفن لغو شود؟ به کد جدیدی از AionUi نیاز خواهید داشت.</string>
+    <string name="cancel">لغو</string>
+    <string name="switch_label">عامل‌ها می‌توانند از این تلفن استفاده کنند</string>
+    <string name="switch_hint">پیش‌فرض خاموش است. توقف در اعلان یا تراشهٔ شناور آن را فوراً خاموش می‌کند.</string>
+    <string name="session_start">شروع نشست</string>
+    <string name="session_stop">توقف</string>
+    <string name="session_consent_hint">اندروید پیش از هر نشست می‌پرسد آیا AionUi می‌تواند صفحه را ببیند.</string>
+    <string name="status_stopped">متصل نیست</string>
+    <string name="status_connecting">در حال اتصال…</string>
+    <string name="status_connected">متصل</string>
+    <string name="status_retrying">اتصال قطع شد، تلاش دوباره تا %1$d ثانیهٔ دیگر</string>
+    <string name="status_needs_pairing">این جفت‌سازی دیگر معتبر نیست: دوباره جفت کنید</string>
+    <string name="check_title">مجوزها</string>
+    <string name="check_accessibility">سرویس دسترس‌پذیری</string>
+    <string name="check_accessibility_hint">اندروید ۱۳ و بالاتر: اگر کلید خاکستری است، ابتدا اطلاعات برنامه → ⋮ → اجازهٔ تنظیمات محدود را باز کنید.</string>
+    <string name="check_overlay">نمایش روی برنامه‌های دیگر (تراشهٔ شناور توقف)</string>
+    <string name="check_notifications">اعلان‌ها</string>
+    <string name="check_open">باز کردن</string>
+    <string name="check_app_info">اطلاعات برنامه</string>
+    <string name="check_on">روشن</string>
+    <string name="check_off">خاموش</string>
+    <string name="capture_on">ضبط صفحه برای این نشست مجاز است</string>
+    <string name="version_label">نسخهٔ %1$s (%2$d)</string>
+    <string name="scan_prompt">کد QR جفت‌سازی نمایش‌داده‌شده در AionUi را اسکن کنید</string>
+    <string name="not_a_pairing_code">این کد QR کد جفت‌سازی AionUi نیست</string>
+</resources>
