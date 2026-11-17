@@ -9,6 +9,7 @@ import { isElectronDesktop, resolveExtensionAssetUrl } from '@/renderer/utils/pl
 import { type IExtensionSettingsTab } from '@/common/adapter/ipcBridge';
 import { useExtensionSettingsTabs } from '@/renderer/hooks/system/useExtensionSettingsTabs';
 import {
+  BookOpen,
   Brain,
   Browser,
   Cat,
@@ -62,6 +63,12 @@ export function getBuiltinSettingsNavItems(isDesktop: boolean, t: TranslateFn): 
       label: t('settings.skills', { defaultValue: 'Skills' }),
       icon: <Lightning theme='outline' size='16' />,
       path: 'skills',
+    },
+    rules: {
+      id: 'rules',
+      label: t('settings.rules.title'),
+      icon: <BookOpen theme='outline' size='16' />,
+      path: 'rules',
     },
     tools: {
       id: 'tools',
