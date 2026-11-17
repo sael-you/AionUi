@@ -658,6 +658,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "No se pudo pasar la llamada a la herramienta a segundo plano."
       }
+    },
+    "tokenPool": {
+      "hitLimit": "La cuenta de {{provider}} «{{from}}» alcanzó su {{limit}}.",
+      "hitLimitResets": "La cuenta de {{provider}} «{{from}}» alcanzó su {{limit}} (se restablece {{time}}).",
+      "hitRevoked": "La cuenta de {{provider}} «{{from}}» fue revocada.",
+      "hitUnknown": "La cuenta de {{provider}} «{{from}}» dejó de funcionar.",
+      "limitNamed": "límite {{type}}",
+      "limitUsage": "límite de uso",
+      "switched": {
+        "auto": "El Token Pool cambió a «{{to}}» automáticamente.",
+        "answer": "El Token Pool cambió a «{{to}}», como respondiste.",
+        "timeout": "El Token Pool cambió a «{{to}}» al no haber respuesta."
+      },
+      "alreadyOn": "El pool ya está en «{{to}}».",
+      "restarted": "Esta conversación se reinició con ella (se conserva el contexto).",
+      "busy": "Seguía trabajando, así que no se interrumpió; su próximo proceso usa la cuenta nueva.",
+      "next": "Tu próximo mensaje la usa.",
+      "resent": "Tu último mensaje se envió de nuevo.",
+      "notResent": "No se reenvió nada: vuelve a enviar tu mensaje cuando quieras.",
+      "exhausted": "No hay otra cuenta utilizable en el Token Pool: añade una o espera al restablecimiento.",
+      "manual": "Cambiaste {{provider}} a la cuenta «{{to}}». Esta conversación se reinició con ella (se conserva el contexto).",
+      "ask": "¿Cambiar a «{{to}}»? Nada cambia hasta que respondas.",
+      "wait": "{{provider}}: se queda en «{{from}}». Vuelve a enviar tras el restablecimiento o cambia en Ajustes → Token Pool.",
+      "waitCurrent": "{{provider}}: se queda en la cuenta actual. Vuelve a enviar tras el restablecimiento o cambia en Ajustes → Token Pool.",
+      "actions": {
+        "label": "Tu respuesta",
+        "switch_resend": "Cambiar y reenviar",
+        "switch": "Solo cambiar",
+        "wait": "Esperar",
+        "done": {
+          "switch_resend": "Cambiando; tu último mensaje se envía de nuevo.",
+          "switch": "Cambiando. Vuelve a enviar tu mensaje cuando quieras.",
+          "wait": "Se queda en esta cuenta."
+        },
+        "answered": "Ya respondida.",
+        "notOpen": "Esta pregunta ya no está abierta.",
+        "failed": "No se pudo enviar tu respuesta. Inténtalo de nuevo."
+      },
+      "askTimeout_one": "Cambia por sí solo en {{count}} min.",
+      "askTimeout_other": "Cambia por sí solo en {{count}} min."
     }
   },
   "notFound": "Conversación no encontrada o ha sido eliminada",

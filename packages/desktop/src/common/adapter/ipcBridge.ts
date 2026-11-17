@@ -1075,6 +1075,26 @@ export const devices = {
   approval: wsEmitter<DeviceApprovalEvent>('devices.approval'),
 };
 
+/** The owner's answer to a Token Pool "switch accounts?" question (TASK-137). */
+export type TokenPoolChoice = 'switch_resend' | 'switch' | 'wait';
+
+/**
+ * Token Pool (the gateway in front of the WebUI serves `/token-pool/api`
+ * same-origin). 409 = already answered, 404 = no longer open.
+ */
+export const tokenPool = {
+  decide: {
+    provider: () => {},
+    invoke: (p: { decision_id: string; choice: TokenPoolChoice }): Promise<unknown> =>
+      httpRequest<unknown>(
+        'POST',
+        `/token-pool/api/decisions/${encodeURIComponent(p.decision_id)}`,
+        { choice: p.choice },
+        { headers: { 'x-token-pool-request': '1' } }
+      ),
+  },
+};
+
 // ---------------------------------------------------------------------------
 // Update — stays IPC (Electron-native auto-updater)
 // ---------------------------------------------------------------------------

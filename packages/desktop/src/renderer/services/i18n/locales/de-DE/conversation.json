@@ -658,6 +658,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "Der Tool-Aufruf konnte nicht in den Hintergrund verschoben werden."
       }
+    },
+    "tokenPool": {
+      "hitLimit": "{{provider}}-Konto „{{from}}“ hat sein {{limit}} erreicht.",
+      "hitLimitResets": "{{provider}}-Konto „{{from}}“ hat sein {{limit}} erreicht (Zurücksetzung {{time}}).",
+      "hitRevoked": "{{provider}}-Konto „{{from}}“ wurde widerrufen.",
+      "hitUnknown": "{{provider}}-Konto „{{from}}“ funktioniert nicht mehr.",
+      "limitNamed": "{{type}}-Limit",
+      "limitUsage": "Nutzungslimit",
+      "switched": {
+        "auto": "Der Token Pool hat automatisch zu „{{to}}“ gewechselt.",
+        "answer": "Der Token Pool hat auf deine Antwort zu „{{to}}“ gewechselt.",
+        "timeout": "Der Token Pool hat ohne Antwort zu „{{to}}“ gewechselt."
+      },
+      "alreadyOn": "Der Pool ist bereits auf „{{to}}“.",
+      "restarted": "Diese Unterhaltung wurde darauf neu gestartet (Kontext bleibt erhalten).",
+      "busy": "Sie arbeitete noch und wurde deshalb nicht unterbrochen; ihr nächster Prozess nutzt das neue Konto.",
+      "next": "Deine nächste Nachricht nutzt es.",
+      "resent": "Deine letzte Nachricht wurde erneut gesendet.",
+      "notResent": "Nichts wurde erneut gesendet: Sende deine Nachricht noch einmal, wann du willst.",
+      "exhausted": "Kein anderes Konto im Token Pool ist nutzbar: Füge eines hinzu oder warte auf die Zurücksetzung.",
+      "manual": "Du hast {{provider}} auf das Konto „{{to}}“ umgestellt. Diese Unterhaltung wurde darauf neu gestartet (Kontext bleibt erhalten).",
+      "ask": "Zu „{{to}}“ wechseln? Nichts ändert sich, bis du antwortest.",
+      "wait": "{{provider}}: bleibt auf „{{from}}“. Sende nach der Zurücksetzung erneut oder wechsle unter Einstellungen → Token Pool.",
+      "waitCurrent": "{{provider}}: bleibt auf dem aktuellen Konto. Sende nach der Zurücksetzung erneut oder wechsle unter Einstellungen → Token Pool.",
+      "actions": {
+        "label": "Deine Antwort",
+        "switch_resend": "Wechseln & erneut senden",
+        "switch": "Nur wechseln",
+        "wait": "Warten",
+        "done": {
+          "switch_resend": "Wird gewechselt; deine letzte Nachricht wird erneut gesendet.",
+          "switch": "Wird gewechselt. Sende deine Nachricht noch einmal, wann du willst.",
+          "wait": "Bleibt auf diesem Konto."
+        },
+        "answered": "Bereits beantwortet.",
+        "notOpen": "Diese Frage ist nicht mehr offen.",
+        "failed": "Antwort konnte nicht gesendet werden. Versuche es erneut."
+      },
+      "askTimeout_one": "Ohne Antwort wird in {{count}} Min. automatisch gewechselt.",
+      "askTimeout_other": "Ohne Antwort wird in {{count}} Min. automatisch gewechselt."
     }
   },
   "notFound": "Unterhaltung nicht gefunden oder wurde gelöscht",

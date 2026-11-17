@@ -657,6 +657,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "도구 호출을 백그라운드로 옮기지 못했습니다."
       }
+    },
+    "tokenPool": {
+      "hitLimit": "{{provider}} 계정 “{{from}}”이(가) {{limit}}에 도달했습니다.",
+      "hitLimitResets": "{{provider}} 계정 “{{from}}”이(가) {{limit}}에 도달했습니다(재설정: {{time}}).",
+      "hitRevoked": "{{provider}} 계정 “{{from}}”이(가) 취소되었습니다.",
+      "hitUnknown": "{{provider}} 계정 “{{from}}”이(가) 작동을 멈췄습니다.",
+      "limitNamed": "{{type}} 한도",
+      "limitUsage": "사용 한도",
+      "switched": {
+        "auto": "Token Pool이 자동으로 “{{to}}”(으)로 전환했습니다.",
+        "answer": "Token Pool이 답변에 따라 “{{to}}”(으)로 전환했습니다.",
+        "timeout": "Token Pool이 답변이 없어 “{{to}}”(으)로 전환했습니다."
+      },
+      "alreadyOn": "풀은 이미 “{{to}}”을(를) 사용 중입니다.",
+      "restarted": "이 대화는 해당 계정으로 다시 시작되었습니다(컨텍스트 유지).",
+      "busy": "아직 작업 중이어서 중단하지 않았습니다. 다음 프로세스부터 새 계정을 사용합니다.",
+      "next": "다음 메시지부터 사용됩니다.",
+      "resent": "마지막 메시지를 다시 보냈습니다.",
+      "notResent": "다시 보낸 것은 없습니다. 원할 때 메시지를 다시 보내세요.",
+      "exhausted": "Token Pool에 사용할 수 있는 다른 계정이 없습니다. 계정을 추가하거나 재설정을 기다리세요.",
+      "manual": "{{provider}}을(를) “{{to}}” 계정으로 전환했습니다. 이 대화는 해당 계정으로 다시 시작되었습니다(컨텍스트 유지).",
+      "ask": "“{{to}}”(으)로 전환할까요? 답변하기 전에는 아무것도 바뀌지 않습니다.",
+      "wait": "{{provider}}: “{{from}}”을(를) 유지합니다. 재설정 후 다시 보내거나 설정 → Token Pool에서 전환하세요.",
+      "waitCurrent": "{{provider}}: 현재 계정을 유지합니다. 재설정 후 다시 보내거나 설정 → Token Pool에서 전환하세요.",
+      "actions": {
+        "label": "답변",
+        "switch_resend": "전환 후 다시 보내기",
+        "switch": "전환만",
+        "wait": "기다리기",
+        "done": {
+          "switch_resend": "전환 중입니다. 마지막 메시지를 다시 보냅니다.",
+          "switch": "전환 중입니다. 원할 때 메시지를 다시 보내세요.",
+          "wait": "이 계정을 유지합니다."
+        },
+        "answered": "이미 답변했습니다.",
+        "notOpen": "이 질문은 더 이상 열려 있지 않습니다.",
+        "failed": "답변을 보내지 못했습니다. 다시 시도하세요."
+      },
+      "askTimeout_one": "{{count}}분 후 자동으로 전환됩니다.",
+      "askTimeout_other": "{{count}}분 후 자동으로 전환됩니다."
     }
   },
   "notFound": "대화를 찾을 수 없거나 삭제되었습니다",

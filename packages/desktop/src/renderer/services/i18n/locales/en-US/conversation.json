@@ -657,6 +657,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "The tool call could not be moved to the background."
       }
+    },
+    "tokenPool": {
+      "hitLimit": "{{provider}} account “{{from}}” hit its {{limit}}.",
+      "hitLimitResets": "{{provider}} account “{{from}}” hit its {{limit}} (resets {{time}}).",
+      "hitRevoked": "{{provider}} account “{{from}}” was revoked.",
+      "hitUnknown": "{{provider}} account “{{from}}” stopped working.",
+      "limitNamed": "{{type}} limit",
+      "limitUsage": "usage limit",
+      "switched": {
+        "auto": "The Token Pool switched to “{{to}}” automatically.",
+        "answer": "The Token Pool switched to “{{to}}”, as you answered.",
+        "timeout": "The Token Pool switched to “{{to}}” after no answer."
+      },
+      "alreadyOn": "The pool is already on “{{to}}”.",
+      "restarted": "This conversation restarted on it (context kept).",
+      "busy": "It was still working, so it was not interrupted; its next process uses the new account.",
+      "next": "Your next message uses it.",
+      "resent": "Your last message was sent again.",
+      "notResent": "Nothing was re-sent: send your message again when you want.",
+      "exhausted": "No other account in the Token Pool is usable: add one or wait for the reset.",
+      "manual": "You switched {{provider}} to the account “{{to}}”. This conversation restarted on it (context kept).",
+      "ask": "Switch to “{{to}}”? Nothing changes until you answer.",
+      "wait": "{{provider}}: staying on “{{from}}”. Send again after the reset, or switch in Settings → Token Pool.",
+      "waitCurrent": "{{provider}}: staying on the current account. Send again after the reset, or switch in Settings → Token Pool.",
+      "actions": {
+        "label": "Your answer",
+        "switch_resend": "Switch & re-send",
+        "switch": "Switch only",
+        "wait": "Wait",
+        "done": {
+          "switch_resend": "Switching; your last message is sent again.",
+          "switch": "Switching. Send your message again when you want.",
+          "wait": "Staying on this account."
+        },
+        "answered": "Already answered.",
+        "notOpen": "This question is no longer open.",
+        "failed": "Could not send your answer. Try again."
+      },
+      "askTimeout_one": "It switches by itself in {{count}} min.",
+      "askTimeout_other": "It switches by itself in {{count}} min."
     }
   },
   "notFound": "Conversation not found or has been deleted",

@@ -15,6 +15,11 @@ import ButlerDiagnoseButton from '@renderer/components/base/ButlerDiagnoseButton
 import FeedbackButton from '@renderer/components/base/FeedbackButton';
 import CollapsibleContent from '@renderer/components/chat/CollapsibleContent';
 import { iconColors } from '@/renderer/styles/colors';
+import {
+  TOKEN_POOL_ASK,
+  TokenPoolAskActions,
+  tokenPoolTipBody,
+} from '@/renderer/pages/conversation/components/orchestration/TokenPoolTip';
 
 // One entry per `IMessageTips['type']`. `info` was missing, and the render
 // falls back to `warning`, so every informational tip was drawn with the alarm
@@ -52,9 +57,13 @@ const resolveAgentTipBody = (
   content: string,
   code: IMessageTips['content']['code'],
   params: IMessageTips['content']['params'],
-  t: ReturnType<typeof useTranslation>['t']
+  t: ReturnType<typeof useTranslation>['t'],
+  language: string
 ) => {
   if (!code) return content;
+  // Token Pool notices are built from several sentences (TASK-137).
+  const tokenPoolBody = tokenPoolTipBody(code, params, t, language);
+  if (tokenPoolBody !== null) return tokenPoolBody;
   return t(`conversation.agentTip.codes.${code}.body`, {
     ...params,
     defaultValue: content,
@@ -62,10 +71,11 @@ const resolveAgentTipBody = (
 };
 
 const MessageTips: React.FC<{ message: IMessageTips }> = ({ message }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { content, type, code, params } = message.content;
   const structuredError = type === 'error' ? message.content.error : undefined;
-  const localizedTipBody = resolveAgentTipBody(content, code, params, t);
+  const localizedTipBody = resolveAgentTipBody(content, code, params, t, i18n.language);
+  const askDecisionId = code === TOKEN_POOL_ASK && typeof params?.decision_id === 'string' ? params.decision_id : null;
   const { json, data } = useFormatContent(localizedTipBody);
 
   const displayContent = json ? '' : localizedTipBody;
@@ -232,11 +242,16 @@ const MessageTips: React.FC<{ message: IMessageTips }> = ({ message }) => {
         <div className='flex items-start gap-4px'>
           {icon[type] || icon.warning}
           <div className='flex-1 min-w-0'>
-            <CollapsibleContent maxHeight={48} defaultCollapsed={true} useMask={true}>
+            <CollapsibleContent maxHeight={48} defaultCollapsed={!askDecisionId} useMask={true}>
               <span className='whitespace-break-spaces text-t-primary [word-break:break-word]'>{displayContent}</span>
             </CollapsibleContent>
           </div>
         </div>
+        {askDecisionId ? (
+          <div className='ps-20px pt-4px'>
+            <TokenPoolAskActions decisionId={askDecisionId} />
+          </div>
+        ) : null}
         {shouldShowButler && (
           <div className='flex justify-end'>
             <ButlerDiagnoseButton errorText={displayContent} />

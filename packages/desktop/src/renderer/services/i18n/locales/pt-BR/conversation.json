@@ -663,6 +663,46 @@
       "TOOL_BACKGROUND_FAILED": {
         "body": "Não foi possível mover a chamada de ferramenta para segundo plano."
       }
+    },
+    "tokenPool": {
+      "hitLimit": "A conta {{provider}} “{{from}}” atingiu seu {{limit}}.",
+      "hitLimitResets": "A conta {{provider}} “{{from}}” atingiu seu {{limit}} (reinicia {{time}}).",
+      "hitRevoked": "A conta {{provider}} “{{from}}” foi revogada.",
+      "hitUnknown": "A conta {{provider}} “{{from}}” parou de funcionar.",
+      "limitNamed": "limite {{type}}",
+      "limitUsage": "limite de uso",
+      "switched": {
+        "auto": "O Token Pool mudou para “{{to}}” automaticamente.",
+        "answer": "O Token Pool mudou para “{{to}}”, como você respondeu.",
+        "timeout": "O Token Pool mudou para “{{to}}” por falta de resposta."
+      },
+      "alreadyOn": "O pool já está em “{{to}}”.",
+      "restarted": "Esta conversa reiniciou nela (contexto mantido).",
+      "busy": "Ela ainda estava trabalhando, então não foi interrompida; o próximo processo usa a nova conta.",
+      "next": "Sua próxima mensagem a usa.",
+      "resent": "Sua última mensagem foi enviada de novo.",
+      "notResent": "Nada foi reenviado: envie sua mensagem de novo quando quiser.",
+      "exhausted": "Nenhuma outra conta do Token Pool está utilizável: adicione uma ou aguarde a reinicialização.",
+      "manual": "Você mudou {{provider}} para a conta “{{to}}”. Esta conversa reiniciou nela (contexto mantido).",
+      "ask": "Mudar para “{{to}}”? Nada muda até você responder.",
+      "wait": "{{provider}}: continua em “{{from}}”. Envie de novo após a reinicialização ou mude em Configurações → Token Pool.",
+      "waitCurrent": "{{provider}}: continua na conta atual. Envie de novo após a reinicialização ou mude em Configurações → Token Pool.",
+      "actions": {
+        "label": "Sua resposta",
+        "switch_resend": "Mudar e reenviar",
+        "switch": "Só mudar",
+        "wait": "Aguardar",
+        "done": {
+          "switch_resend": "Mudando; sua última mensagem é enviada de novo.",
+          "switch": "Mudando. Envie sua mensagem de novo quando quiser.",
+          "wait": "Continua nesta conta."
+        },
+        "answered": "Já respondida.",
+        "notOpen": "Esta pergunta não está mais aberta.",
+        "failed": "Não foi possível enviar sua resposta. Tente novamente."
+      },
+      "askTimeout_one": "Muda sozinho em {{count}} min.",
+      "askTimeout_other": "Muda sozinho em {{count}} min."
     }
   },
   "notFound": "Conversa não encontrada ou foi deletada",
