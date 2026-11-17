@@ -53,5 +53,8 @@ declare const chrome: {
     setBadgeText(details: { text: string }): Promise<void>;
     setBadgeBackgroundColor(details: { color: string | [number, number, number, number] }): Promise<void>;
   };
+  declarativeNetRequest: {
+    updateSessionRules(options: { removeRuleIds?: number[]; addRules?: object[] }): Promise<void>;
+  };
   i18n: { getUILanguage(): string };
 };
