@@ -28,7 +28,9 @@
     "buttonSelected_other": "{{count}} Dateien mit KI prüfen",
     "noClaude": "Der Assistent Claude Code ist nicht verfügbar.",
     "failed": "Die Prüfungsunterhaltung konnte nicht gestartet werden.",
-    "conversationName": "Gedächtnisprüfung"
+    "conversationName": "Gedächtnisprüfung",
+    "failedCode": "Die Prüfunterhaltung konnte nicht gestartet werden ({{code}}).",
+    "noWorkspace": "Dieses Projekt hat keinen Ordner auf diesem Server, daher kann dort keine Prüfung laufen."
   },
   "listLabel": "Gedächtnisdateien",
   "summary": "{{count}} Erinnerungen · Index {{lines}} Zeilen",

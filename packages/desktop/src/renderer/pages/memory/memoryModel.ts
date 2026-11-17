@@ -97,17 +97,33 @@ export function groupMemories(items: MemoryItem[]): Array<{ key: MemoryGroupKey;
 export const fileForLink = (slug: string, items: MemoryItem[]): string | null =>
   items.find((item) => item.file === `${slug}.md` || item.file === slug)?.file ?? null;
 
-/** The fixed brief of "Review with AI" (C29 §3); selected files are named. */
+/**
+ * The fixed brief of "Review with AI" (C29 §3; reworked for the owner,
+ * 2026-11-17): check every memory against the workspace as it is now, against
+ * the project rules and against the other memories, rank what was found by
+ * the harm it does, and change nothing before the owner picks the rows.
+ * Selected files narrow the report, never what is read. Written in English:
+ * it is a prompt for the agent, not UI text.
+ */
 export function reviewBrief(files: string[]): string {
   const scope =
     files.length > 0
-      ? `Focus on these memory files: ${files.join(', ')}.`
+      ? `Focus on these memory files: ${files.join(', ')}. Still read the others and MEMORY.md, to find conflicts and duplicates with them, but report only what concerns the focused files.`
       : 'Review all memory files and the MEMORY.md index.';
   return [
-    "Audit this project's Claude memory (your auto-memory directory for this workspace) for wrong, outdated, " +
-      'contradictory or duplicated rules that hurt development.',
+    "Audit this project's Claude memory (your auto-memory directory for this workspace). The goal: no memory that makes an agent do wrong work.",
     scope,
-    'Report a table with the columns: file, problem, proposed fix.',
+    '',
+    'Steps:',
+    '1. Read every memory file and MEMORY.md.',
+    '2. Check each memory against reality: the code, the git log and history, and the docs of this workspace. Flag memories about things that no longer exist, behaviour that changed, old paths, commands or versions, and dates that have passed.',
+    '3. Check for conflicts with the project rules (AGENTS.md, CLAUDE.md, GEMINI.md, the global rules, and the AionUi rules if present) and between memories.',
+    '4. Find duplicates and overlaps, and propose one merged text for each group.',
+    '5. Rank the findings by impact (how likely the memory causes wrong work), most harmful first.',
+    '6. Report one table with the columns: file · problem · evidence (file:line or commit) · impact (high / med / low) · proposed fix (the exact new text, a merge, or delete). Then a short "Safe to apply now" list.',
+    '7. Wait for the owner to say which rows to apply. Then apply only those with normal file edits (edit or delete the memory files, keep MEMORY.md in sync) and list what changed.',
+    '',
+    'Use plain language. Never quote secrets (tokens, keys, passwords): name them only.',
     'Change nothing until the owner approves.',
   ].join('\n');
 }

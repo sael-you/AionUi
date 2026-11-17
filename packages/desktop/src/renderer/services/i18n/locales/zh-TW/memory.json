@@ -28,7 +28,9 @@
     "buttonSelected_other": "讓 AI 審查 {{count}} 個檔案",
     "noClaude": "Claude Code 助理無法使用。",
     "failed": "無法開始審查對話。",
-    "conversationName": "記憶審查"
+    "conversationName": "記憶審查",
+    "failedCode": "無法開始審查對話（{{code}}）。",
+    "noWorkspace": "此專案在這台伺服器上沒有資料夾，因此無法在其中執行審查。"
   },
   "listLabel": "記憶檔案",
   "summary": "{{count}} 筆記憶 · 索引 {{lines}} 行",

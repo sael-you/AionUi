@@ -28,7 +28,9 @@
     "buttonSelected_other": "Examiner {{count}} fichiers avec l'IA",
     "noClaude": "L'assistant Claude Code n'est pas disponible.",
     "failed": "Impossible de démarrer la conversation d'examen.",
-    "conversationName": "Examen de la mémoire"
+    "conversationName": "Examen de la mémoire",
+    "failedCode": "La conversation de révision n'a pas pu démarrer ({{code}}).",
+    "noWorkspace": "Ce projet n'a pas de dossier sur ce serveur : une révision ne peut pas s'y exécuter."
   },
   "listLabel": "Fichiers de mémoire",
   "summary": "{{count}} souvenirs · index {{lines}} lignes",

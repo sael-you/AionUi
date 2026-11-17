@@ -28,7 +28,9 @@
     "buttonSelected_other": "파일 {{count}}개를 AI로 검토",
     "noClaude": "Claude Code 어시스턴트를 사용할 수 없습니다.",
     "failed": "검토 대화를 시작할 수 없습니다.",
-    "conversationName": "메모리 검토"
+    "conversationName": "메모리 검토",
+    "failedCode": "검토 대화를 시작하지 못했습니다({{code}}).",
+    "noWorkspace": "이 프로젝트는 이 서버에 폴더가 없어 검토를 실행할 수 없습니다."
   },
   "listLabel": "메모리 파일",
   "summary": "메모리 {{count}}개 · 인덱스 {{lines}}줄",
