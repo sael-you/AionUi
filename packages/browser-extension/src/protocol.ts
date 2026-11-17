@@ -86,10 +86,14 @@ export const parseCoreFrame = (data: unknown): CoreFrame | null => {
   }
 };
 
+/** Hosts where plain http/ws is allowed (the token never leaves the computer). */
+const LOOPBACK_HOSTS: ReadonlySet<string> = new Set(['localhost', '127.0.0.1', '[::1]']);
+
 /**
  * The socket URL for an AionUi address the owner typed ("y.example.com",
- * "https://y.example.com/", "http://localhost:8080"): https → wss, http → ws.
- * Null when it is not an http(s) address.
+ * "https://y.example.com/", "http://localhost:8080"): https → wss; http → ws
+ * only for localhost / 127.0.0.1 / [::1]. Null otherwise (the device token must
+ * not travel over plain ws).
  */
 export const socketUrlFor = (address: string): string | null => {
   const trimmed = address.trim();
@@ -102,6 +106,8 @@ export const socketUrlFor = (address: string): string | null => {
     return null;
   }
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+  // The device token travels in the first frame: plain ws only to this computer (local development).
+  if (url.protocol === 'http:' && !LOOPBACK_HOSTS.has(url.hostname)) return null;
   const scheme = url.protocol === 'https:' ? 'wss:' : 'ws:';
   return `${scheme}//${url.host}${EXTENSION_SOCKET_PATH}`;
 };

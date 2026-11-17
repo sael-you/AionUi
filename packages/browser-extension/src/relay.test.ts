@@ -128,6 +128,13 @@ describe('protocol helpers', () => {
     expect(socketUrlFor('aionui.example.com')).toBe('wss://aionui.example.com/api/browser/extension');
     expect(socketUrlFor('https://aionui.example.com/some/page')).toBe('wss://aionui.example.com/api/browser/extension');
     expect(socketUrlFor('http://localhost:8080')).toBe('ws://localhost:8080/api/browser/extension');
+    expect(socketUrlFor('http://127.0.0.1:3000')).toBe('ws://127.0.0.1:3000/api/browser/extension');
+    expect(socketUrlFor('http://[::1]:8080')).toBe('ws://[::1]:8080/api/browser/extension');
+    // Plain http elsewhere would send the device token unencrypted: refused.
+    expect(socketUrlFor('http://aionui.example.com')).toBeNull();
+    expect(socketUrlFor('http://192.168.1.10:8080')).toBeNull();
+    expect(socketUrlFor('http://localhost.evil.com')).toBeNull();
+    expect(originFor('http://aionui.example.com')).toBeNull();
     expect(socketUrlFor('ftp://x')).toBeNull();
     expect(socketUrlFor('  ')).toBeNull();
     expect(originFor('aionui.example.com/')).toBe('https://aionui.example.com');
@@ -201,10 +208,19 @@ describe('pairing and hello', () => {
     expect(h.timers.filter((t) => !t.repeat && !t.cleared)).toHaveLength(0);
   });
 
-  it('rejects an address that is not http(s)', async () => {
+  it('rejects an address that is not http(s), and plain http to another computer', async () => {
     const h = setup();
     await h.relay.init();
     await expect(h.relay.pair('ftp://x', 'ABCD', 'Mac')).rejects.toThrow('invalid_address');
+    await expect(h.relay.pair('http://aionui.example.com', 'ABCD', 'Mac')).rejects.toThrow('invalid_address');
+    expect(h.sockets).toHaveLength(0);
+  });
+
+  it('a stored plain-http address of another computer never opens a socket', async () => {
+    const h = setup({ ...PAIRED, address: 'http://aionui.example.com' });
+    await h.relay.init();
+    h.relay.ensureConnected();
+    expect(h.sockets).toHaveLength(0);
   });
 });
 
