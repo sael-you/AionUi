@@ -1630,5 +1630,17 @@
     "sharedTabs_one": "{{count}} 个共享标签页",
     "sharedTabs_other": "{{count}} 个共享标签页",
     "title": "你自己的浏览器"
+  },
+  "browserPage": {
+    "title": "浏览器",
+    "description": "智能体可用的浏览器：配置文件、你自己的浏览器，以及需要你批准的操作。",
+    "descriptionDesktop": "应用内浏览器：已保存的登录状态，以及是否允许智能体使用。",
+    "approvalsLog": {
+      "title": "批准记录",
+      "description": "智能体在你自己浏览器的登录、邮件、银行和支付页面上等待你回应的操作，以及每次的结果。",
+      "empty": "还没有需要你批准的操作。",
+      "pending_one": "{{count}} 个操作正在等待你的回应",
+      "pending_other": "{{count}} 个操作正在等待你的回应"
+    }
   }
 }

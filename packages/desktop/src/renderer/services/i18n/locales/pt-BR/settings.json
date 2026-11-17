@@ -1632,5 +1632,17 @@
     "sharedTabs_one": "{{count}} aba compartilhada",
     "sharedTabs_other": "{{count}} abas compartilhadas",
     "title": "Seu próprio navegador"
+  },
+  "browserPage": {
+    "title": "Navegador",
+    "description": "O navegador que seus agentes podem usar: perfis, seus próprios navegadores e o que precisou da sua aprovação.",
+    "descriptionDesktop": "O navegador integrado: logins salvos e se os agentes podem usá-lo.",
+    "approvalsLog": {
+      "title": "Registro de aprovações",
+      "description": "Ações de agentes em páginas de login, e-mail, banco e pagamento nos seus próprios navegadores que esperaram por você, e como cada uma terminou.",
+      "empty": "Nada precisou da sua aprovação ainda.",
+      "pending_one": "{{count}} ação aguarda sua resposta",
+      "pending_other": "{{count}} ações aguardam sua resposta"
+    }
   }
 }

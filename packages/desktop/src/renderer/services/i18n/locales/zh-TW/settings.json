@@ -1631,5 +1631,17 @@
     "sharedTabs_one": "{{count}} 個共用分頁",
     "sharedTabs_other": "{{count}} 個共用分頁",
     "title": "你自己的瀏覽器"
+  },
+  "browserPage": {
+    "title": "瀏覽器",
+    "description": "智慧代理可用的瀏覽器：設定檔、你自己的瀏覽器，以及需要你核准的操作。",
+    "descriptionDesktop": "應用程式內瀏覽器：已儲存的登入狀態，以及是否允許智慧代理使用。",
+    "approvalsLog": {
+      "title": "核准記錄",
+      "description": "智慧代理在你自己瀏覽器的登入、郵件、銀行與付款頁面上等待你回應的操作，以及每次的結果。",
+      "empty": "還沒有需要你核准的操作。",
+      "pending_one": "{{count}} 個操作正在等待你的回應",
+      "pending_other": "{{count}} 個操作正在等待你的回應"
+    }
   }
 }

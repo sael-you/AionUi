@@ -1631,5 +1631,17 @@
     "sharedTabs_one": "공유 중인 탭 {{count}}개",
     "sharedTabs_other": "공유 중인 탭 {{count}}개",
     "title": "내 브라우저"
+  },
+  "browserPage": {
+    "title": "브라우저",
+    "description": "에이전트가 사용할 수 있는 브라우저: 프로필, 내 브라우저, 승인이 필요했던 작업.",
+    "descriptionDesktop": "인앱 브라우저: 저장된 로그인과 에이전트 사용 여부.",
+    "approvalsLog": {
+      "title": "승인 기록",
+      "description": "내 브라우저의 로그인, 메일, 은행, 결제 페이지에서 내 응답을 기다린 에이전트 작업과 그 결과.",
+      "empty": "아직 승인이 필요한 작업이 없었습니다.",
+      "pending_one": "작업 {{count}}개가 응답을 기다리고 있습니다",
+      "pending_other": "작업 {{count}}개가 응답을 기다리고 있습니다"
+    }
   }
 }

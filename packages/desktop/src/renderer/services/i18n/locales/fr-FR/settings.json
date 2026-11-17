@@ -1629,5 +1629,17 @@
     "sharedTabs_one": "{{count}} onglet partagé",
     "sharedTabs_other": "{{count}} onglets partagés",
     "title": "Votre propre navigateur"
+  },
+  "browserPage": {
+    "title": "Navigateur",
+    "description": "Le navigateur utilisable par vos agents : profils, vos propres navigateurs et ce qui a demandé votre accord.",
+    "descriptionDesktop": "Le navigateur intégré : ses connexions enregistrées et si les agents peuvent l’utiliser.",
+    "approvalsLog": {
+      "title": "Journal des autorisations",
+      "description": "Actions d’agents sur des pages de connexion, de messagerie, de banque et de paiement dans vos propres navigateurs qui vous ont attendu, et leur issue.",
+      "empty": "Rien n’a encore demandé votre accord.",
+      "pending_one": "{{count}} action attend votre réponse",
+      "pending_other": "{{count}} actions attendent votre réponse"
+    }
   }
 }

@@ -1629,5 +1629,17 @@
     "sharedTabs_one": "{{count}} paylaşılan sekme",
     "sharedTabs_other": "{{count}} paylaşılan sekme",
     "title": "Kendi tarayıcınız"
+  },
+  "browserPage": {
+    "title": "Tarayıcı",
+    "description": "Ajanlarınızın kullanabildiği tarayıcı: profiller, kendi tarayıcılarınız ve onayınızı gerektirenler.",
+    "descriptionDesktop": "Uygulama içi tarayıcı: kayıtlı oturumlar ve ajanların kullanıp kullanamayacağı.",
+    "approvalsLog": {
+      "title": "Onay günlüğü",
+      "description": "Kendi tarayıcılarınızda giriş, e-posta, banka ve ödeme sayfalarında sizi bekleyen ajan işlemleri ve nasıl sonuçlandıkları.",
+      "empty": "Henüz hiçbir şey onayınızı gerektirmedi.",
+      "pending_one": "{{count}} işlem yanıtınızı bekliyor",
+      "pending_other": "{{count}} işlem yanıtınızı bekliyor"
+    }
   }
 }

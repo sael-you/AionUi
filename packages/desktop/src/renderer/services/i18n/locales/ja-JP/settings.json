@@ -1631,5 +1631,17 @@
     "sharedTabs_one": "共有中のタブ {{count}} 件",
     "sharedTabs_other": "共有中のタブ {{count}} 件",
     "title": "あなた自身のブラウザ"
+  },
+  "browserPage": {
+    "title": "ブラウザ",
+    "description": "エージェントが使えるブラウザ: プロファイル、自分のブラウザ、承認が必要だった操作。",
+    "descriptionDesktop": "アプリ内ブラウザ: 保存されたログインと、エージェントが使えるかどうか。",
+    "approvalsLog": {
+      "title": "承認ログ",
+      "description": "自分のブラウザのログイン・メール・銀行・支払いページで、あなたの応答を待ったエージェントの操作とその結果。",
+      "empty": "承認が必要な操作はまだありません。",
+      "pending_one": "{{count}} 件の操作が応答を待っています",
+      "pending_other": "{{count}} 件の操作が応答を待っています"
+    }
   }
 }

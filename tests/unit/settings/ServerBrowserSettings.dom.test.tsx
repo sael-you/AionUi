@@ -24,6 +24,10 @@ const api = vi.hoisted(() => {
     deleteInstance: fn(),
     createPairingCode: fn(),
     listDevices: fn(),
+    deviceActivity: fn(),
+    listApprovals: fn(),
+    approvalRequested: { on: () => () => undefined },
+    approvalResolved: { on: () => () => undefined },
     revokeDevice: fn(),
     listeners: new Map<string, () => void>(),
     devicesChanged: {
@@ -36,6 +40,14 @@ const api = vi.hoisted(() => {
 });
 
 vi.mock('@/common/adapter/ipcBridge', () => ({ serverBrowser: api }));
+const platform = vi.hoisted(() => ({ desktop: false }));
+vi.mock('@/renderer/utils/platform', () => ({ isElectronDesktop: () => platform.desktop }));
+vi.mock('@/renderer/pages/settings/components/SettingsPageWrapper', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+vi.mock('@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserDataSection', () => ({
+  default: () => <div data-testid='browser-data-section' />,
+}));
 vi.mock('@/renderer/hooks/context/ThemeContext', () => ({ useThemeContext: () => ({ theme: 'light' }) }));
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -49,6 +61,11 @@ import {
   profileFields,
 } from '@/renderer/pages/conversation/Preview/browser/server/BrowserProfileModal';
 import ServerBrowserSettings from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/ServerBrowserSettings';
+import BrowserApprovalsLog, {
+  approvalLogRows,
+} from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserApprovalsLog';
+import BrowserSettingsPage from '@/renderer/pages/conversation/Preview/browser/BrowserSettingsPage';
+import { BUILTIN_TAB_IDS } from '@/renderer/pages/settings/components/SettingsSider';
 import BrowserDevicesSettings, {
   formatCountdown,
 } from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserDevicesSettings';
@@ -402,5 +419,106 @@ describe('BrowserDevicesSettings (C34 Settings > Browser > your own browser)', (
   it('formats the countdown', () => {
     expect(formatCountdown(299)).toBe('4:59');
     expect(formatCountdown(5)).toBe('0:05');
+  });
+});
+
+describe('Settings → Browser page (TASK-128)', () => {
+  const activity = [
+    {
+      at: 30,
+      conversation_id: null,
+      tab_id: 1,
+      origin: 'https://mail.google.com',
+      method: 'Input.insertText',
+      outcome: 'approved',
+    },
+    { at: 20, conversation_id: null, tab_id: 1, origin: 'https://example.com', method: 'Page.navigate', outcome: 'ok' },
+    {
+      at: 10,
+      conversation_id: null,
+      tab_id: 1,
+      origin: 'https://accounts.google.com',
+      method: 'Runtime.evaluate',
+      outcome: 'timeout',
+    },
+  ];
+
+  beforeEach(() => {
+    platform.desktop = false;
+    api.getSettings.invoke.mockResolvedValue({ ...SETTINGS, devices_agents_enabled: false });
+    api.getStatus.invoke.mockResolvedValue(STATUS);
+    api.listDevices.invoke.mockResolvedValue([MAC]);
+    api.listApprovals.invoke.mockResolvedValue([]);
+    api.deviceActivity.invoke.mockResolvedValue(activity);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const renderPage = () =>
+    render(
+      <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+        <BrowserSettingsPage />
+      </SWRConfig>
+    );
+
+  it('is a top-level settings entry right after Tools', () => {
+    expect(BUILTIN_TAB_IDS.indexOf('browser')).toBe(BUILTIN_TAB_IDS.indexOf('tools') + 1);
+  });
+
+  it('WebUI: profiles and limits, your own browsers and the approvals log on one page', async () => {
+    renderPage();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('settings.browserPage.title');
+    expect(await screen.findByTestId('server-browser-settings')).toBeInTheDocument();
+    expect(screen.getByTestId('browser-devices-settings')).toBeInTheDocument();
+    expect(screen.getByTestId('browser-approvals-log')).toBeInTheDocument();
+    expect(screen.queryByTestId('browser-data-section')).toBeNull();
+  });
+
+  it('desktop: the in-app browser data section only', () => {
+    platform.desktop = true;
+    renderPage();
+    expect(screen.getByTestId('browser-data-section')).toBeInTheDocument();
+    expect(screen.queryByTestId('server-browser-settings')).toBeNull();
+    expect(screen.queryByTestId('browser-approvals-log')).toBeNull();
+  });
+
+  it('the approvals log lists only approval outcomes, newest first, and says what is pending', async () => {
+    api.listApprovals.invoke.mockResolvedValue([
+      { approval_id: 'a1', expires_at: Date.now() + 60_000, requested_at: Date.now() },
+    ]);
+    render(
+      <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+        <BrowserApprovalsLog />
+      </SWRConfig>
+    );
+    const rows = await screen.findAllByTestId('browser-approvals-row');
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveTextContent('https://mail.google.com');
+    expect(rows[0]).toHaveTextContent('preview.browserDevices.outcome.approved');
+    expect(rows[1]).toHaveTextContent('preview.browserDevices.outcome.timeout');
+    expect(api.deviceActivity.invoke).toHaveBeenCalledWith({ device_id: 'dev_mac', limit: 200 });
+    expect(await screen.findByTestId('browser-approvals-pending')).toHaveTextContent('{"count":1}');
+  });
+
+  it('merges several browsers into one log', () => {
+    const rows = approvalLogRows(
+      [
+        { device_id: 'a', name: 'Mac' },
+        { device_id: 'b', name: 'Work' },
+      ],
+      [
+        [{ at: 5, conversation_id: null, tab_id: 1, origin: 'o1', method: 'm', outcome: 'denied' }],
+        [
+          { at: 9, conversation_id: null, tab_id: 2, origin: 'o2', method: 'm', outcome: 'paused' },
+          { at: 7, conversation_id: null, tab_id: 2, origin: 'o3', method: 'm', outcome: 'refused' },
+        ],
+      ]
+    );
+    expect(rows.map((row) => [row.device_name, row.origin])).toEqual([
+      ['Work', 'o2'],
+      ['Mac', 'o1'],
+    ]);
   });
 });

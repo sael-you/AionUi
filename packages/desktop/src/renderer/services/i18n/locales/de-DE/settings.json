@@ -1629,5 +1629,17 @@
     "sharedTabs_one": "{{count}} geteilter Tab",
     "sharedTabs_other": "{{count}} geteilte Tabs",
     "title": "Dein eigener Browser"
+  },
+  "browserPage": {
+    "title": "Browser",
+    "description": "Der Browser für deine Agenten: Profile, deine eigenen Browser und was deine Freigabe brauchte.",
+    "descriptionDesktop": "Der integrierte Browser: gespeicherte Anmeldungen und ob Agenten ihn nutzen dürfen.",
+    "approvalsLog": {
+      "title": "Freigabeprotokoll",
+      "description": "Agentenaktionen auf Anmelde-, Mail-, Bank- und Bezahlseiten in deinen eigenen Browsern, die auf dich gewartet haben, und wie sie endeten.",
+      "empty": "Bisher brauchte nichts deine Freigabe.",
+      "pending_one": "{{count}} Aktion wartet auf deine Antwort",
+      "pending_other": "{{count}} Aktionen warten auf deine Antwort"
+    }
   }
 }

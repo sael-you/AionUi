@@ -1629,5 +1629,17 @@
     "sharedTabs_one": "{{count}} shared tab",
     "sharedTabs_other": "{{count}} shared tabs",
     "title": "Your own browser"
+  },
+  "browserPage": {
+    "title": "Browser",
+    "description": "The browser your agents can use: profiles, your own browsers and what needed your approval.",
+    "descriptionDesktop": "The in-app browser: its saved logins and whether agents may use it.",
+    "approvalsLog": {
+      "title": "Approvals log",
+      "description": "Agent actions on sign-in, mail, bank and payment pages in your own browsers that waited for you, and how each ended.",
+      "empty": "Nothing has needed your approval yet.",
+      "pending_one": "{{count}} action is waiting for your answer",
+      "pending_other": "{{count}} actions are waiting for your answer"
+    }
   }
 }
