@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi 컴패니언</string>
+    <string name="accessibility_description">허용한 AionUi 에이전트가 이 화면을 읽고 탭·스와이프·입력할 수 있게 합니다. AionUi 컴패니언 앱에서 에이전트를 켠 동안에만 가능하며, 중지하면 즉시 꺼집니다.</string>
+    <string name="notification_channel">에이전트 세션</string>
+    <string name="notification_controlling">AionUi 에이전트가 이 휴대전화를 제어할 수 있습니다</string>
+    <string name="notification_connected_off">연결됨 · 에이전트 꺼짐</string>
+    <string name="action_stop">중지</string>
+    <string name="overlay_label">AionUi가 이 휴대전화를 제어하고 있습니다</string>
+    <string name="pair_title">AionUi와 페어링</string>
+    <string name="pair_hint">AionUi에서 설정 → 기기 → 내 휴대전화 → 컴패니언 앱을 연 다음 QR 코드를 스캔하거나 주소와 코드를 입력하세요.</string>
+    <string name="pair_host">AionUi 주소</string>
+    <string name="pair_code">페어링 코드</string>
+    <string name="pair_scan">QR 코드 스캔</string>
+    <string name="pair_button">페어링</string>
+    <string name="pair_invalid">주소와 코드를 확인하세요</string>
+    <string name="paired_with">%1$s와(과) 페어링됨</string>
+    <string name="unpair">페어링 해제</string>
+    <string name="unpair_confirm">이 휴대전화의 페어링을 해제할까요? AionUi에서 새 페어링 코드가 필요합니다.</string>
+    <string name="cancel">취소</string>
+    <string name="switch_label">에이전트가 이 휴대전화를 사용할 수 있음</string>
+    <string name="switch_hint">기본값은 꺼짐입니다. 알림이나 떠 있는 칩의 중지를 누르면 즉시 꺼집니다.</string>
+    <string name="session_start">세션 시작</string>
+    <string name="session_stop">중지</string>
+    <string name="session_consent_hint">Android는 세션마다 AionUi가 화면을 볼 수 있는지 묻습니다.</string>
+    <string name="status_stopped">연결 안 됨</string>
+    <string name="status_connecting">연결 중…</string>
+    <string name="status_connected">연결됨</string>
+    <string name="status_retrying">연결이 끊겼습니다. %1$d초 후 다시 시도합니다</string>
+    <string name="status_needs_pairing">이 페어링은 더 이상 유효하지 않습니다. 다시 페어링하세요</string>
+    <string name="check_title">권한</string>
+    <string name="check_accessibility">접근성 서비스</string>
+    <string name="check_accessibility_hint">Android 13 이상: 스위치가 회색이면 먼저 앱 정보 → ⋮ → 제한된 설정 허용을 여세요.</string>
+    <string name="check_overlay">다른 앱 위에 표시(떠 있는 중지 칩)</string>
+    <string name="check_notifications">알림</string>
+    <string name="check_open">열기</string>
+    <string name="check_app_info">앱 정보</string>
+    <string name="check_on">켜짐</string>
+    <string name="check_off">꺼짐</string>
+    <string name="capture_on">이 세션의 화면 캡처가 허용됨</string>
+    <string name="version_label">버전 %1$s (%2$d)</string>
+    <string name="scan_prompt">AionUi에 표시된 페어링 QR 코드를 스캔하세요</string>
+    <string name="not_a_pairing_code">이 QR 코드는 AionUi 페어링 코드가 아닙니다</string>
+</resources>

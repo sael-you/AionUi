@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi 夥伴</string>
+    <string name="accessibility_description">允許你授權的 AionUi 代理讀取此螢幕並點按、滑動和輸入。僅在你於 AionUi 夥伴應用程式中開啟代理期間有效；按「停止」立即關閉。</string>
+    <string name="notification_channel">代理工作階段</string>
+    <string name="notification_controlling">AionUi 代理可以控制這支手機</string>
+    <string name="notification_connected_off">已連線 · 代理已關閉</string>
+    <string name="action_stop">停止</string>
+    <string name="overlay_label">AionUi 正在控制這支手機</string>
+    <string name="pair_title">與 AionUi 配對</string>
+    <string name="pair_hint">在 AionUi 開啟 設定 → 裝置 → 你的手機 → 夥伴應用程式，然後掃描 QR 碼或輸入位址和配對碼。</string>
+    <string name="pair_host">AionUi 位址</string>
+    <string name="pair_code">配對碼</string>
+    <string name="pair_scan">掃描 QR 碼</string>
+    <string name="pair_button">配對</string>
+    <string name="pair_invalid">請檢查位址和配對碼</string>
+    <string name="paired_with">已與 %1$s 配對</string>
+    <string name="unpair">取消配對</string>
+    <string name="unpair_confirm">要取消這支手機的配對嗎？之後需要 AionUi 提供的新配對碼。</string>
+    <string name="cancel">取消</string>
+    <string name="switch_label">代理可以使用這支手機</string>
+    <string name="switch_hint">預設關閉。在通知或浮動按鈕上按「停止」會立即關閉。</string>
+    <string name="session_start">開始工作階段</string>
+    <string name="session_stop">停止</string>
+    <string name="session_consent_hint">每次工作階段前，Android 都會詢問 AionUi 能否查看螢幕。</string>
+    <string name="status_stopped">未連線</string>
+    <string name="status_connecting">正在連線…</string>
+    <string name="status_connected">已連線</string>
+    <string name="status_retrying">連線中斷，%1$d 秒後重試</string>
+    <string name="status_needs_pairing">此配對已失效：請重新配對</string>
+    <string name="check_title">權限</string>
+    <string name="check_accessibility">無障礙服務</string>
+    <string name="check_accessibility_hint">Android 13 以上：若開關呈灰色，請先開啟 應用程式資訊 → ⋮ → 允許受限設定。</string>
+    <string name="check_overlay">顯示在其他應用程式上層（浮動停止按鈕）</string>
+    <string name="check_notifications">通知</string>
+    <string name="check_open">開啟</string>
+    <string name="check_app_info">應用程式資訊</string>
+    <string name="check_on">開</string>
+    <string name="check_off">關</string>
+    <string name="capture_on">本次工作階段已允許螢幕錄製</string>
+    <string name="version_label">版本 %1$s (%2$d)</string>
+    <string name="scan_prompt">掃描 AionUi 中顯示的配對 QR 碼</string>
+    <string name="not_a_pairing_code">此 QR 碼不是 AionUi 配對碼</string>
+</resources>

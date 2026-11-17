@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi yardımcı</string>
+    <string name="accessibility_description">İzin verdiğin AionUi ajanlarının bu ekranı okumasına, dokunmasına, kaydırmasına ve yazmasına izin verir. Yalnızca ajanları AionUi yardımcı uygulamasında açtığın sürece; Durdur onları hemen kapatır.</string>
+    <string name="notification_channel">Ajan oturumu</string>
+    <string name="notification_controlling">AionUi ajanları bu telefonu kontrol edebilir</string>
+    <string name="notification_connected_off">Bağlı · ajanlar kapalı</string>
+    <string name="action_stop">Durdur</string>
+    <string name="overlay_label">AionUi bu telefonu kontrol ediyor</string>
+    <string name="pair_title">AionUi ile eşle</string>
+    <string name="pair_hint">AionUi\'de Ayarlar → Cihazlar → telefonun → Yardımcı uygulama\'yı aç, sonra QR kodunu tara ya da adresi ve kodu yaz.</string>
+    <string name="pair_host">AionUi adresi</string>
+    <string name="pair_code">Eşleme kodu</string>
+    <string name="pair_scan">QR kodu tara</string>
+    <string name="pair_button">Eşle</string>
+    <string name="pair_invalid">Adresi ve kodu kontrol et</string>
+    <string name="paired_with">%1$s ile eşlendi</string>
+    <string name="unpair">Eşlemeyi kaldır</string>
+    <string name="unpair_confirm">Bu telefonun eşlemesi kaldırılsın mı? AionUi\'den yeni bir eşleme kodu gerekecek.</string>
+    <string name="cancel">İptal</string>
+    <string name="switch_label">Ajanlar bu telefonu kullanabilir</string>
+    <string name="switch_hint">Varsayılan olarak kapalı. Bildirimdeki ya da yüzen çipteki Durdur hemen kapatır.</string>
+    <string name="session_start">Oturumu başlat</string>
+    <string name="session_stop">Durdur</string>
+    <string name="session_consent_hint">Android her oturumdan önce AionUi\'nin ekranı görüp göremeyeceğini sorar.</string>
+    <string name="status_stopped">Bağlı değil</string>
+    <string name="status_connecting">Bağlanıyor…</string>
+    <string name="status_connected">Bağlı</string>
+    <string name="status_retrying">Bağlantı koptu, %1$d sn sonra yeniden denenecek</string>
+    <string name="status_needs_pairing">Bu eşleme artık geçerli değil: yeniden eşle</string>
+    <string name="check_title">İzinler</string>
+    <string name="check_accessibility">Erişilebilirlik hizmeti</string>
+    <string name="check_accessibility_hint">Android 13 ve üstü: anahtar griyse önce Uygulama bilgisi → ⋮ → Kısıtlanmış ayarlara izin ver\'i aç.</string>
+    <string name="check_overlay">Diğer uygulamaların üzerinde göster (yüzen Durdur çipi)</string>
+    <string name="check_notifications">Bildirimler</string>
+    <string name="check_open">Aç</string>
+    <string name="check_app_info">Uygulama bilgisi</string>
+    <string name="check_on">Açık</string>
+    <string name="check_off">Kapalı</string>
+    <string name="capture_on">Bu oturum için ekran kaydına izin verildi</string>
+    <string name="version_label">Sürüm %1$s (%2$d)</string>
+    <string name="scan_prompt">AionUi\'de gösterilen eşleme QR kodunu tara</string>
+    <string name="not_a_pairing_code">Bu QR kodu bir AionUi eşleme kodu değil</string>
+</resources>

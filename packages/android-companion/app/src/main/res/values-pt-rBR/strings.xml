@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi companion</string>
+    <string name="accessibility_description">Permite que os agentes do AionUi que você autorizar leiam esta tela e toquem, deslizem e digitem nela. Só enquanto você liga os agentes no app AionUi companion; Parar os desliga na hora.</string>
+    <string name="notification_channel">Sessão de agentes</string>
+    <string name="notification_controlling">Os agentes do AionUi podem controlar este celular</string>
+    <string name="notification_connected_off">Conectado · agentes desligados</string>
+    <string name="action_stop">Parar</string>
+    <string name="overlay_label">O AionUi está controlando este celular</string>
+    <string name="pair_title">Parear com o AionUi</string>
+    <string name="pair_hint">No AionUi abra Configurações → Dispositivos → seu celular → App companion e leia o QR code ou digite o endereço e o código.</string>
+    <string name="pair_host">Endereço do AionUi</string>
+    <string name="pair_code">Código de pareamento</string>
+    <string name="pair_scan">Ler QR code</string>
+    <string name="pair_button">Parear</string>
+    <string name="pair_invalid">Confira o endereço e o código</string>
+    <string name="paired_with">Pareado com %1$s</string>
+    <string name="unpair">Desparear</string>
+    <string name="unpair_confirm">Desparear este celular? Você vai precisar de um novo código do AionUi.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="switch_label">Agentes podem usar este celular</string>
+    <string name="switch_hint">Desligado por padrão. Parar na notificação ou no chip flutuante desliga na hora.</string>
+    <string name="session_start">Iniciar sessão</string>
+    <string name="session_stop">Parar</string>
+    <string name="session_consent_hint">O Android pergunta antes de cada sessão se o AionUi pode ver a tela.</string>
+    <string name="status_stopped">Desconectado</string>
+    <string name="status_connecting">Conectando…</string>
+    <string name="status_connected">Conectado</string>
+    <string name="status_retrying">Conexão perdida, nova tentativa em %1$d s</string>
+    <string name="status_needs_pairing">Este pareamento não é mais válido: pareie de novo</string>
+    <string name="check_title">Permissões</string>
+    <string name="check_accessibility">Serviço de acessibilidade</string>
+    <string name="check_accessibility_hint">Android 13 ou mais novo: se a chave estiver cinza, abra antes Informações do app → ⋮ → Permitir configurações restritas.</string>
+    <string name="check_overlay">Sobrepor a outros apps (chip flutuante Parar)</string>
+    <string name="check_notifications">Notificações</string>
+    <string name="check_open">Abrir</string>
+    <string name="check_app_info">Informações do app</string>
+    <string name="check_on">Ligado</string>
+    <string name="check_off">Desligado</string>
+    <string name="capture_on">Captura de tela permitida nesta sessão</string>
+    <string name="version_label">Versão %1$s (%2$d)</string>
+    <string name="scan_prompt">Leia o QR code de pareamento mostrado no AionUi</string>
+    <string name="not_a_pairing_code">Este QR code não é um código de pareamento do AionUi</string>
+</resources>

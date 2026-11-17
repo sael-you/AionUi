@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi companion</string>
+    <string name="accessibility_description">Permet aux agents AionUi que vous autorisez de lire cet écran et d\'y toucher, balayer et écrire. Seulement quand vous activez les agents dans l\'app AionUi companion ; Arrêter les coupe aussitôt.</string>
+    <string name="notification_channel">Session des agents</string>
+    <string name="notification_controlling">Les agents AionUi peuvent contrôler ce téléphone</string>
+    <string name="notification_connected_off">Connecté · agents désactivés</string>
+    <string name="action_stop">Arrêter</string>
+    <string name="overlay_label">AionUi contrôle ce téléphone</string>
+    <string name="pair_title">Associer à AionUi</string>
+    <string name="pair_hint">Dans AionUi, ouvrez Réglages → Appareils → votre téléphone → App companion, puis scannez le QR code ou saisissez l\'adresse et le code.</string>
+    <string name="pair_host">Adresse AionUi</string>
+    <string name="pair_code">Code d\'association</string>
+    <string name="pair_scan">Scanner le QR code</string>
+    <string name="pair_button">Associer</string>
+    <string name="pair_invalid">Vérifiez l\'adresse et le code</string>
+    <string name="paired_with">Associé à %1$s</string>
+    <string name="unpair">Dissocier</string>
+    <string name="unpair_confirm">Dissocier ce téléphone ? Il faudra un nouveau code d\'association depuis AionUi.</string>
+    <string name="cancel">Annuler</string>
+    <string name="switch_label">Les agents peuvent utiliser ce téléphone</string>
+    <string name="switch_hint">Désactivé par défaut. Arrêter dans la notification ou sur la pastille flottante le coupe aussitôt.</string>
+    <string name="session_start">Démarrer la session</string>
+    <string name="session_stop">Arrêter</string>
+    <string name="session_consent_hint">Android demande avant chaque session si AionUi peut voir l\'écran.</string>
+    <string name="status_stopped">Non connecté</string>
+    <string name="status_connecting">Connexion…</string>
+    <string name="status_connected">Connecté</string>
+    <string name="status_retrying">Connexion perdue, nouvel essai dans %1$d s</string>
+    <string name="status_needs_pairing">Cette association n\'est plus valide : associez à nouveau</string>
+    <string name="check_title">Autorisations</string>
+    <string name="check_accessibility">Service d\'accessibilité</string>
+    <string name="check_accessibility_hint">Android 13 et plus : si l\'interrupteur est grisé, ouvrez d\'abord Infos sur l\'app → ⋮ → Autoriser les paramètres restreints.</string>
+    <string name="check_overlay">Afficher par-dessus les autres apps (pastille Arrêter)</string>
+    <string name="check_notifications">Notifications</string>
+    <string name="check_open">Ouvrir</string>
+    <string name="check_app_info">Infos sur l\'app</string>
+    <string name="check_on">Activé</string>
+    <string name="check_off">Désactivé</string>
+    <string name="capture_on">Capture d\'écran autorisée pour cette session</string>
+    <string name="version_label">Version %1$s (%2$d)</string>
+    <string name="scan_prompt">Scannez le QR code d\'association affiché dans AionUi</string>
+    <string name="not_a_pairing_code">Ce QR code n\'est pas un code d\'association AionUi</string>
+</resources>

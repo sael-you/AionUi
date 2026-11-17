@@ -1,0 +1,14 @@
+.gradle/
+build/
+app/build/
+local.properties
+.idea/
+*.iml
+captures/
+.cxx/
+# Signing material never lives in this public repo (see README: /root/.clauterm/keys/).
+*.jks
+*.keystore
+keystore.properties
+dist/
+.kotlin/

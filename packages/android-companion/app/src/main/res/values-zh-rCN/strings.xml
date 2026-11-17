@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AionUi 伴侣</string>
+    <string name="accessibility_description">允许你授权的 AionUi 智能体读取此屏幕并点按、滑动和输入。仅在你于 AionUi 伴侣应用中开启智能体期间有效；点“停止”立即关闭。</string>
+    <string name="notification_channel">智能体会话</string>
+    <string name="notification_controlling">AionUi 智能体可以控制此手机</string>
+    <string name="notification_connected_off">已连接 · 智能体已关闭</string>
+    <string name="action_stop">停止</string>
+    <string name="overlay_label">AionUi 正在控制此手机</string>
+    <string name="pair_title">与 AionUi 配对</string>
+    <string name="pair_hint">在 AionUi 中打开 设置 → 设备 → 你的手机 → 伴侣应用，然后扫描二维码或输入地址和配对码。</string>
+    <string name="pair_host">AionUi 地址</string>
+    <string name="pair_code">配对码</string>
+    <string name="pair_scan">扫描二维码</string>
+    <string name="pair_button">配对</string>
+    <string name="pair_invalid">请检查地址和配对码</string>
+    <string name="paired_with">已与 %1$s 配对</string>
+    <string name="unpair">取消配对</string>
+    <string name="unpair_confirm">取消此手机的配对？之后需要 AionUi 提供的新配对码。</string>
+    <string name="cancel">取消</string>
+    <string name="switch_label">智能体可以使用此手机</string>
+    <string name="switch_hint">默认关闭。在通知或悬浮按钮上点“停止”会立即关闭。</string>
+    <string name="session_start">开始会话</string>
+    <string name="session_stop">停止</string>
+    <string name="session_consent_hint">每次会话前，Android 都会询问 AionUi 能否查看屏幕。</string>
+    <string name="status_stopped">未连接</string>
+    <string name="status_connecting">正在连接…</string>
+    <string name="status_connected">已连接</string>
+    <string name="status_retrying">连接已断开，%1$d 秒后重试</string>
+    <string name="status_needs_pairing">此配对已失效：请重新配对</string>
+    <string name="check_title">权限</string>
+    <string name="check_accessibility">无障碍服务</string>
+    <string name="check_accessibility_hint">Android 13 及以上：如果开关为灰色，请先打开 应用信息 → ⋮ → 允许受限设置。</string>
+    <string name="check_overlay">显示在其他应用上层（悬浮停止按钮）</string>
+    <string name="check_notifications">通知</string>
+    <string name="check_open">打开</string>
+    <string name="check_app_info">应用信息</string>
+    <string name="check_on">开</string>
+    <string name="check_off">关</string>
+    <string name="capture_on">本次会话已允许屏幕录制</string>
+    <string name="version_label">版本 %1$s (%2$d)</string>
+    <string name="scan_prompt">扫描 AionUi 中显示的配对二维码</string>
+    <string name="not_a_pairing_code">此二维码不是 AionUi 配对码</string>
+</resources>
