@@ -83,7 +83,10 @@ const RulesEffectivePanel: React.FC<{ query: RuleEffectiveQuery; onOpenRule?: (i
             >
               <Tag size='small'>{t(`mcp.kits.level.${rule.level}`, { defaultValue: rule.level })}</Tag>
               {onOpenRule ? (
-                <Link className='flex-1 min-w-0 truncate !text-13px' onClick={() => onOpenRule(rule.id)}>
+                <Link
+                  className='flex-1 min-w-0 truncate !text-13px !text-t-primary hover:underline'
+                  onClick={() => onOpenRule(rule.id)}
+                >
                   {rule.name}
                 </Link>
               ) : (
