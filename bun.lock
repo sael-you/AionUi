@@ -169,6 +169,10 @@
         "electron-winstaller": "^5.4.0",
       },
     },
+    "packages/browser-extension": {
+      "name": "@aionui/browser-extension",
+      "version": "0.1.0",
+    },
     "packages/desktop": {
       "name": "@aionui/desktop",
       "version": "0.0.0",
@@ -230,6 +234,8 @@
     "@adobe/css-tools": ["@adobe/css-tools@4.4.4", "", {}, "sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg=="],
 
     "@agentclientprotocol/sdk": ["@agentclientprotocol/sdk@0.18.2", "", { "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" } }, "sha512-l/o9NKvUc00GPa6RFJ4AccQq2O/PAf83xQ75mThHuL3H571iN4+PEdwnTBez67sS8Nv2aSA373xCZ5CbTXEwzA=="],
+
+    "@aionui/browser-extension": ["@aionui/browser-extension@workspace:packages/browser-extension"],
 
     "@aionui/desktop": ["@aionui/desktop@workspace:packages/desktop"],
 
