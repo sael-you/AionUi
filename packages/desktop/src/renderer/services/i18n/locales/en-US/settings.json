@@ -1805,6 +1805,28 @@
       "wifi": {
         "steps": "On the phone open Developer options → Wireless debugging, then type the code below when AionUi asks."
       }
+    },
+    "addons": {
+      "title": "About this add-on",
+      "generic": {
+        "desc": "Runs whole flows on your phone with its own model loop."
+      },
+      "artemis": {
+        "desc": "Artemis: give it a task and it works through the phone by itself, with model keys from your providers.",
+        "licence": "Apache-2.0, by Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: runs a whole flow on the phone through its Portal app, which you download from its releases and AionUi installs over adb.",
+        "licence": "Framework MIT; the Portal app is AGPL-3.0: personal use only."
+      },
+      "approval": "Agents get one tool, “run this flow on the phone”. You approve each task text before it starts; the phone switch, its timeout and Stop still end it. Plain phone actions stay the default.",
+      "runsOn": "Runs on {{name}}.",
+      "needsRoute": "Needs a phone connected through your Mac or Wi-Fi debugging."
+    },
+    "mac": {
+      "title": "Your Mac",
+      "desc": "Agents can see your Mac's screen and click, type and open apps, only while this is on.",
+      "permissions": "macOS asks once for Screen Recording and Accessibility for the AionUi Mac helper."
     }
   }
 }

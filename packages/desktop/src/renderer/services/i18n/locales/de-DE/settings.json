@@ -1805,6 +1805,28 @@
       "wifi": {
         "steps": "Öffne auf dem Telefon Entwickleroptionen → Debugging über WLAN und gib den Code unten ein, wenn AionUi danach fragt."
       }
+    },
+    "addons": {
+      "title": "Über dieses Add-on",
+      "generic": {
+        "desc": "Führt ganze Abläufe auf deinem Telefon mit eigener Modellschleife aus."
+      },
+      "artemis": {
+        "desc": "Artemis: Gib ihm eine Aufgabe, und es arbeitet sich selbst durch das Telefon – mit Modellschlüsseln deiner Anbieter.",
+        "licence": "Apache-2.0, von Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: führt einen ganzen Ablauf auf dem Telefon über seine Portal-App aus, die du aus den Releases herunterlädst und AionUi per adb installiert.",
+        "licence": "Framework MIT; die Portal-App ist AGPL-3.0: nur für den persönlichen Gebrauch."
+      },
+      "approval": "Agenten erhalten ein Werkzeug: „diesen Ablauf auf dem Telefon ausführen“. Du gibst jeden Aufgabentext vor dem Start frei; der Telefonschalter, sein Zeitlimit und Stopp beenden ihn trotzdem. Einfache Telefonaktionen bleiben der Standard.",
+      "runsOn": "Läuft auf {{name}}.",
+      "needsRoute": "Benötigt ein Telefon, das über deinen Mac oder WLAN-Debugging verbunden ist."
+    },
+    "mac": {
+      "title": "Dein Mac",
+      "desc": "Agenten können den Bildschirm deines Macs sehen, klicken, tippen und Apps öffnen – nur solange dies an ist.",
+      "permissions": "macOS fragt einmal nach Bildschirmaufnahme und Bedienungshilfen für den AionUi-Mac-Helfer."
     }
   }
 }

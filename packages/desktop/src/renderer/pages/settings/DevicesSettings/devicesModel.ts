@@ -70,3 +70,21 @@ export const formatDiskSize = (bytes: number, locale: string): string => {
 /** Minutes left until the switch turns itself off (rounded up), or null. */
 export const minutesLeft = (enabledUntil: number | null, now: number): number | null =>
   enabledUntil === null ? null : Math.max(0, Math.ceil((enabledUntil - now) / 60_000));
+
+/** Add-ons we describe (C38 §5); others show the generic add-on text. */
+export const KNOWN_ADDONS = ['artemis', 'mobilerun'] as const;
+export type KnownAddon = (typeof KNOWN_ADDONS)[number];
+
+/** Which known add-on a registry row is, by its source id or name. */
+export const knownAddon = (device: Device): KnownAddon | null => {
+  if (device.kind !== 'addon') return null;
+  const haystack = `${device.source_id ?? ''} ${device.name}`.toLowerCase();
+  return KNOWN_ADDONS.find((name) => haystack.includes(name)) ?? null;
+};
+
+/** i18n key of the one-line description on a card, or null. */
+export const descriptionKey = (device: Device): string | null => {
+  if (device.kind === 'addon') return `settings.devices.addons.${knownAddon(device) ?? 'generic'}.desc`;
+  if (device.kind === 'mac') return 'settings.devices.mac.desc';
+  return null;
+};

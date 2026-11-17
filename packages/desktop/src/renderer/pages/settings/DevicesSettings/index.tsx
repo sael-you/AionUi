@@ -50,6 +50,7 @@ import {
   type DevicesTab,
 } from './devicesModel';
 import DevicePairingModal from './phones/DevicePairingModal';
+import { AddonBlock, MacBlock } from './phones/AddonBlocks';
 import { DeviceAccessBlock, DeviceAuditBlock, DeviceRoutesBlock, DEFAULT_TIMEOUT } from './phones/PhoneBlocks';
 import { useDevices } from './useDevices';
 
@@ -288,7 +289,14 @@ const WebDevices: React.FC = () => {
         onRemove={remove}
         onJobFinished={() => void reload()}
       >
-        {opened && (opened.kind === 'phone' || opened.kind === 'mac') ? (
+        {opened?.kind === 'mac' ? <MacBlock /> : null}
+        {opened?.kind === 'addon' ? (
+          <>
+            <AddonBlock device={opened} host={devices.find((device) => device.id === opened.addon_host) ?? null} />
+            {opened.installed ? <DeviceAuditBlock key={opened.id} device={opened} /> : null}
+          </>
+        ) : null}
+        {opened && opened.available === 'now' && (opened.kind === 'phone' || opened.kind === 'mac') ? (
           <>
             <DeviceAccessBlock device={opened} onChanged={() => void reload()} />
             <DeviceRoutesBlock device={opened} onChanged={() => void reload()} onPair={setPairingKind} />

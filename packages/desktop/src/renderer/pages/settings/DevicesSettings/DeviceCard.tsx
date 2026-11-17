@@ -17,7 +17,7 @@ import type { Device } from '@/common/types/platform/devices';
 import LibraryCard, {
   type LibraryCardMenuItem,
 } from '@/renderer/components/settings/SettingsModal/library/LibraryCard';
-import { formatDiskSize, isBusy, minutesLeft, STATUS_COLORS } from './devicesModel';
+import { descriptionKey, formatDiskSize, isBusy, minutesLeft, STATUS_COLORS } from './devicesModel';
 import { JOB_LOST, useDeviceJob } from './useDevices';
 
 const KEY = 'settings.devices';
@@ -88,6 +88,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const busy = isBusy(device);
+  const description = descriptionKey(device);
   const left = device.enabled ? minutesLeft(device.enabled_until, now) : null;
   const canToggle = device.installed && device.available === 'now' && device.status !== 'needs_pairing' && !busy;
 
@@ -129,6 +130,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
       id={device.id}
       name={device.name}
       visual={device.kind}
+      description={description ? t(description) : undefined}
       chips={chips}
       action={action}
       toggle={

@@ -60,9 +60,11 @@ vi.mock('react-i18next', () => ({
 import DevicesSettings from '@/renderer/pages/settings/DevicesSettings';
 import {
   categoryCounts,
+  descriptionKey,
   devicesOn,
   formatDiskSize,
   isActiveDevice,
+  knownAddon,
   minutesLeft,
 } from '@/renderer/pages/settings/DevicesSettings/devicesModel';
 import { JOB_LOST, loadJob } from '@/renderer/pages/settings/DevicesSettings/useDevices';
@@ -277,6 +279,49 @@ describe('Settings → Devices page (TASK-136 U1)', () => {
     fireEvent.click(screen.getByTestId('devices-add-phone'));
     fireEvent.click(await screen.findByText(`${KEY}.routes.companion.name`, { selector: '.arco-dropdown-menu-item' }));
     await waitFor(() => expect(api.createPairingCode.invoke).toHaveBeenCalledWith({ kind: 'companion' }));
+  });
+
+  it('add-ons say what they are, how tasks are approved and where they run; the Mac card waits greyed', async () => {
+    const artemis = device({
+      id: 'artemis',
+      kind: 'addon',
+      name: 'Artemis',
+      source_id: 'artemis',
+      addon_host: 'pixel',
+    });
+    const other = device({ id: 'x', kind: 'addon', name: 'Other', installed: false });
+    api.list.invoke.mockResolvedValue([artemis, other, PIXEL, MAC]);
+    renderPage();
+    fireEvent.click(railButton('addon'));
+    const card = await cardOf('Artemis');
+    expect(card).toHaveTextContent(`${KEY}.addons.artemis.desc`);
+    fireEvent.click(screen.getByRole('button', { name: 'Artemis' }));
+    const drawer = await screen.findByTestId('device-drawer');
+    expect(within(drawer).getByTestId('device-addon')).toHaveTextContent(`${KEY}.addons.artemis.licence`);
+    expect(within(drawer).getByTestId('device-addon')).toHaveTextContent(`${KEY}.addons.approval`);
+    expect(within(drawer).getByTestId('device-addon-host')).toHaveTextContent(
+      `${KEY}.addons.runsOn|{"name":"Pixel 9"}`
+    );
+    expect(await within(drawer).findByTestId('device-audit-empty')).toBeInTheDocument();
+    expect(knownAddon(other)).toBeNull();
+    expect(descriptionKey(other)).toBe(`${KEY}.addons.generic.desc`);
+    expect(descriptionKey(MAC)).toBe(`${KEY}.mac.desc`);
+    expect(descriptionKey(CHROME)).toBeNull();
+  });
+
+  it('the Mac that comes later explains itself and has no switch', async () => {
+    renderPage();
+    await cardOf('Chrome');
+    fireEvent.click(railButton('mac'));
+    fireEvent.click(screen.getByTestId('library-tab-library'));
+    const card = await cardOf('Mac');
+    expect(card).toHaveTextContent(`${KEY}.later`);
+    expect(within(card).queryByTestId('library-card-toggle')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Mac' }));
+    const drawer = await screen.findByTestId('device-drawer');
+    expect(within(drawer).getByTestId('device-mac')).toHaveTextContent(`${KEY}.mac.permissions`);
+    expect(within(drawer).queryByTestId('device-access')).toBeNull();
+    expect(drawer).toHaveTextContent(`${KEY}.laterHint`);
   });
 
   it('My browsers keeps the extension install, pairing and the approvals log', async () => {

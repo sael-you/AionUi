@@ -1805,6 +1805,28 @@
       "wifi": {
         "steps": "En el teléfono abre Opciones de desarrollador → Depuración inalámbrica y escribe el código de abajo cuando AionUi lo pida."
       }
+    },
+    "addons": {
+      "title": "Acerca de este complemento",
+      "generic": {
+        "desc": "Ejecuta flujos completos en tu teléfono con su propio bucle de modelo."
+      },
+      "artemis": {
+        "desc": "Artemis: dale una tarea y recorre el teléfono por sí solo, con claves de modelo de tus proveedores.",
+        "licence": "Apache-2.0, de Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: ejecuta un flujo completo en el teléfono mediante su app Portal, que descargas de sus versiones y AionUi instala por adb.",
+        "licence": "Framework MIT; la app Portal es AGPL-3.0: solo uso personal."
+      },
+      "approval": "Los agentes reciben una herramienta: «ejecutar este flujo en el teléfono». Apruebas el texto de cada tarea antes de que empiece; el interruptor del teléfono, su tiempo límite y Detener la terminan igualmente. Las acciones simples siguen siendo lo predeterminado.",
+      "runsOn": "Se ejecuta en {{name}}.",
+      "needsRoute": "Necesita un teléfono conectado mediante tu Mac o la depuración Wi-Fi."
+    },
+    "mac": {
+      "title": "Tu Mac",
+      "desc": "Los agentes pueden ver la pantalla de tu Mac y hacer clic, escribir y abrir apps, solo mientras esto esté activado.",
+      "permissions": "macOS pide una vez Grabación de pantalla y Accesibilidad para el asistente de AionUi para Mac."
     }
   }
 }

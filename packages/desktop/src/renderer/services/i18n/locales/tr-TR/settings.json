@@ -1805,6 +1805,28 @@
       "wifi": {
         "steps": "Telefonda Geliştirici seçenekleri → Kablosuz hata ayıklama'yı açın ve AionUi istediğinde aşağıdaki kodu yazın."
       }
+    },
+    "addons": {
+      "title": "Bu eklenti hakkında",
+      "generic": {
+        "desc": "Telefonunuzda kendi model döngüsüyle tüm akışları çalıştırır."
+      },
+      "artemis": {
+        "desc": "Artemis: bir görev verin, sağlayıcılarınızın model anahtarlarıyla telefonda kendi kendine ilerlesin.",
+        "licence": "Apache-2.0, Google tarafından."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: sürümlerinden indirdiğiniz ve AionUi'nin adb ile kurduğu Portal uygulaması üzerinden telefonda tüm bir akışı çalıştırır.",
+        "licence": "Çerçeve MIT; Portal uygulaması AGPL-3.0: yalnızca kişisel kullanım."
+      },
+      "approval": "Ajanlar tek bir araç alır: “bu akışı telefonda çalıştır”. Her görev metnini başlamadan önce siz onaylarsınız; telefon anahtarı, zaman aşımı ve Durdur yine de sonlandırır. Basit telefon işlemleri varsayılan kalır.",
+      "runsOn": "{{name}} üzerinde çalışır.",
+      "needsRoute": "Mac'iniz veya Wi-Fi hata ayıklama üzerinden bağlı bir telefon gerekir."
+    },
+    "mac": {
+      "title": "Mac'iniz",
+      "desc": "Ajanlar yalnızca bu açıkken Mac'inizin ekranını görebilir, tıklayabilir, yazabilir ve uygulama açabilir.",
+      "permissions": "macOS, AionUi Mac yardımcısı için bir kez Ekran Kaydı ve Erişilebilirlik izni ister."
     }
   }
 }

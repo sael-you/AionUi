@@ -1805,6 +1805,28 @@
       "wifi": {
         "steps": "Sur le téléphone, ouvrez Options pour les développeurs → Débogage sans fil, puis saisissez le code ci-dessous quand AionUi le demande."
       }
+    },
+    "addons": {
+      "title": "À propos de ce module",
+      "generic": {
+        "desc": "Exécute des parcours entiers sur votre téléphone avec sa propre boucle de modèle."
+      },
+      "artemis": {
+        "desc": "Artemis : donnez-lui une tâche et il parcourt le téléphone tout seul, avec les clés de modèle de vos fournisseurs.",
+        "licence": "Apache-2.0, par Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun : exécute un parcours entier sur le téléphone via son application Portal, que vous téléchargez depuis ses versions et qu'AionUi installe par adb.",
+        "licence": "Framework MIT ; l'application Portal est sous AGPL-3.0 : usage personnel uniquement."
+      },
+      "approval": "Les agents disposent d'un outil : « exécuter ce parcours sur le téléphone ». Vous approuvez le texte de chaque tâche avant son démarrage ; l'interrupteur du téléphone, son délai et Arrêter y mettent fin malgré tout. Les actions simples restent la règle.",
+      "runsOn": "S'exécute sur {{name}}.",
+      "needsRoute": "Nécessite un téléphone connecté via votre Mac ou le débogage Wi-Fi."
+    },
+    "mac": {
+      "title": "Votre Mac",
+      "desc": "Les agents peuvent voir l'écran de votre Mac, cliquer, saisir et ouvrir des apps, uniquement tant que ceci est activé.",
+      "permissions": "macOS demande une fois l'Enregistrement de l'écran et l'Accessibilité pour l'assistant Mac d'AionUi."
     }
   }
 }

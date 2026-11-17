@@ -1807,6 +1807,28 @@
       "wifi": {
         "steps": "在手機上打開 開發人員選項 → 無線偵錯，並在 AionUi 詢問時輸入下方的配對碼。"
       }
+    },
+    "addons": {
+      "title": "關於此附加元件",
+      "generic": {
+        "desc": "用自己的模型迴圈在你的手機上執行完整流程。"
+      },
+      "artemis": {
+        "desc": "Artemis：給它一個工作，它會使用你的供應商的模型金鑰自行在手機上完成。",
+        "licence": "Apache-2.0，來自 Google。"
+      },
+      "mobilerun": {
+        "desc": "Mobilerun：透過它的 Portal App 在手機上執行完整流程；Portal 由你從其發布頁下載，AionUi 透過 adb 安裝。",
+        "licence": "框架為 MIT；Portal App 為 AGPL-3.0：僅限個人使用。"
+      },
+      "approval": "智慧代理只有一個工具：「在手機上執行此流程」。每個工作的文字都要先經你核准才開始；手機開關、逾時和停止仍會結束它。一般手機操作仍是預設方式。",
+      "runsOn": "執行於 {{name}}。",
+      "needsRoute": "需要一支透過你的 Mac 或 Wi-Fi 偵錯連接的手機。"
+    },
+    "mac": {
+      "title": "你的 Mac",
+      "desc": "僅在此項開啟時，智慧代理可以查看你的 Mac 螢幕並點按、輸入和開啟 App。",
+      "permissions": "macOS 會為 AionUi Mac 輔助程式要求一次「螢幕錄製」和「輔助使用」權限。"
     }
   }
 }

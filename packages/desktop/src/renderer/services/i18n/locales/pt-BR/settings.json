@@ -1808,6 +1808,28 @@
       "wifi": {
         "steps": "No celular, abra Opções do desenvolvedor → Depuração sem fio e digite o código abaixo quando o AionUi pedir."
       }
+    },
+    "addons": {
+      "title": "Sobre este complemento",
+      "generic": {
+        "desc": "Executa fluxos inteiros no seu celular com o próprio ciclo de modelo."
+      },
+      "artemis": {
+        "desc": "Artemis: dê uma tarefa e ele percorre o celular sozinho, com chaves de modelo dos seus provedores.",
+        "licence": "Apache-2.0, do Google."
+      },
+      "mobilerun": {
+        "desc": "Mobilerun: executa um fluxo inteiro no celular pelo app Portal, que você baixa das versões dele e o AionUi instala via adb.",
+        "licence": "Framework MIT; o app Portal é AGPL-3.0: apenas uso pessoal."
+      },
+      "approval": "Os agentes recebem uma ferramenta: “executar este fluxo no celular”. Você aprova o texto de cada tarefa antes de começar; o interruptor do celular, o tempo limite e Parar ainda a encerram. Ações simples continuam sendo o padrão.",
+      "runsOn": "Executa em {{name}}.",
+      "needsRoute": "Precisa de um celular conectado pelo seu Mac ou pela depuração Wi-Fi."
+    },
+    "mac": {
+      "title": "Seu Mac",
+      "desc": "Os agentes podem ver a tela do seu Mac e clicar, digitar e abrir apps, só enquanto isto estiver ligado.",
+      "permissions": "O macOS pede uma vez Gravação de Tela e Acessibilidade para o auxiliar do AionUi para Mac."
     }
   }
 }
