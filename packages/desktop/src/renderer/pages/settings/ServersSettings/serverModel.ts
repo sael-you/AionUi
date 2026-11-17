@@ -13,6 +13,14 @@
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import type { KitAttachmentResponse } from '@/common/config/storage';
 import {
+  projectItemCount,
+  scopeAttachment,
+  scopeItems,
+  scopeToggle,
+  type ScopeItems,
+  type ScopeToggle,
+} from '@/renderer/hooks/mcp/market/kitScope';
+import {
   SERVER_NAME_PATTERN,
   type CreateServerRequest,
   type ServerResponse,
@@ -25,92 +33,34 @@ type TFn = (key: string, options?: Record<string, unknown>) => string;
 export const UNLABELLED = '__unlabelled__';
 
 // ---------------------------------------------------------------------------
-// What a scope gets (attachments with item_kind 'server')
+// What a scope gets (attachments with item_kind 'server', see kitScope)
 // ---------------------------------------------------------------------------
 
-export type ScopeServers = {
-  /** Added at this scope's own level. */
-  here: string[];
-  /** Project scope: added at Global and not turned off here. */
-  fromGlobal: string[];
-  /** Project scope: added at Global but turned off here (a `remove` at this project). */
-  offHere: string[];
-};
+export type ScopeServers = ScopeItems;
+export type { ScopeToggle };
 
-const serverAttachments = (attachments: readonly KitAttachmentResponse[]) =>
-  attachments.filter((row) => row.item_kind === 'server');
-
-/**
- * Servers a scope delivers, from the attachments (same resolver rule as kits:
- * the project level wins over Global, a `remove` turns an inherited server off).
- */
-export const scopeServers = (attachments: readonly KitAttachmentResponse[], projectId: string | null): ScopeServers => {
-  const rows = serverAttachments(attachments);
-  const at = (level: 'global' | 'project', op: 'add' | 'remove') =>
-    new Set(
-      rows
-        .filter((row) => row.level === level && row.op === op && (level === 'global' || row.target_id === projectId))
-        .map((row) => row.item_ref)
-    );
-  const globalOn = at('global', 'add');
-  if (!projectId) return { here: [...globalOn].toSorted(), fromGlobal: [], offHere: [] };
-  const projectOn = at('project', 'add');
-  const projectOff = at('project', 'remove');
-  return {
-    here: [...projectOn].toSorted(),
-    fromGlobal: [...globalOn].filter((id) => !projectOn.has(id) && !projectOff.has(id)).toSorted(),
-    offHere: [...globalOn].filter((id) => projectOff.has(id) && !projectOn.has(id)).toSorted(),
-  };
-};
+/** Servers a scope delivers (shared kit-scope rule, `item_kind: 'server'`). */
+export const scopeServers = (attachments: readonly KitAttachmentResponse[], projectId: string | null): ScopeItems =>
+  scopeItems(attachments, 'server', projectId);
 
 /** The attachment row of one server at a scope's own level, if any. */
 export const attachmentAt = (
   attachments: readonly KitAttachmentResponse[],
   serverId: string,
   projectId: string | null
-): KitAttachmentResponse | undefined =>
-  serverAttachments(attachments).find(
-    (row) =>
-      row.item_ref === serverId &&
-      (projectId ? row.level === 'project' && row.target_id === projectId : row.level === 'global')
-  );
+): KitAttachmentResponse | undefined => scopeAttachment(attachments, 'server', serverId, projectId);
 
-export type ScopeToggle =
-  | { kind: 'attach'; op: 'add' | 'remove' }
-  | { kind: 'detach'; attachmentId: string }
-  | { kind: 'none' };
-
-/**
- * What flipping "On in <scope>" does. On: add here (or drop a turn-off that hides
- * the Global one). Off: drop this scope's own add, or turn an inherited Global
- * server off for this project with a `remove`.
- */
+/** What flipping "On in <scope>" does for a server. */
 export const scopeToggleAction = (
   attachments: readonly KitAttachmentResponse[],
   serverId: string,
   projectId: string | null,
   turnOn: boolean
-): ScopeToggle => {
-  const own = attachmentAt(attachments, serverId, projectId);
-  const inherited = projectId ? scopeServers(attachments, null).here.includes(serverId) : false;
-  if (turnOn) {
-    if (own?.op === 'add') return { kind: 'none' };
-    if (own?.op === 'remove' && inherited) return { kind: 'detach', attachmentId: own.id };
-    return { kind: 'attach', op: 'add' };
-  }
-  if (own?.op === 'add') {
-    // A project add over a Global add: dropping it alone would leave the server on; turn it off explicitly.
-    return inherited ? { kind: 'attach', op: 'remove' } : { kind: 'detach', attachmentId: own.id };
-  }
-  if (inherited && own?.op !== 'remove') return { kind: 'attach', op: 'remove' };
-  return { kind: 'none' };
-};
+): ScopeToggle => scopeToggle(attachments, 'server', serverId, projectId, turnOn);
 
 /** Number of servers a project delivers (rail counts). */
-export const projectServerCount = (attachments: readonly KitAttachmentResponse[], projectId: string): number => {
-  const scope = scopeServers(attachments, projectId);
-  return scope.here.length + scope.fromGlobal.length;
-};
+export const projectServerCount = (attachments: readonly KitAttachmentResponse[], projectId: string): number =>
+  projectItemCount(attachments, 'server', projectId);
 
 /** Category keys (labels) of a server; `UNLABELLED` when it has none. */
 export const serverCategories = (server: ServerResponse): string[] =>
