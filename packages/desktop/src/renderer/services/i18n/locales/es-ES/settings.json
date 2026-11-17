@@ -1721,7 +1721,6 @@
     },
     "drawer": {
       "about": "Información",
-      "kind": "Tipo",
       "status": "Estado",
       "version": "Versión",
       "disk": "Disco",

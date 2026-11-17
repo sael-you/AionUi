@@ -1722,7 +1722,6 @@
     },
     "drawer": {
       "about": "概览",
-      "kind": "类型",
       "status": "状态",
       "version": "版本",
       "disk": "磁盘",

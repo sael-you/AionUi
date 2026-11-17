@@ -1721,7 +1721,6 @@
     },
     "drawer": {
       "about": "About",
-      "kind": "Kind",
       "status": "Status",
       "version": "Version",
       "disk": "Disk",

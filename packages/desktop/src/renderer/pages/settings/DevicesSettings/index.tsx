@@ -211,10 +211,12 @@ const WebDevices: React.FC = () => {
     panel = deviceSection;
   }
 
-  const enabledCount = devices.filter((device) => device.enabled).length;
-  const diskBytes = devices.reduce((sum, device) => sum + (device.installed ? (device.disk_bytes ?? 0) : 0), 0);
+  // The selected category's line ("2 on · 610 MB on disk"); My browsers lists its own state.
+  const inCategory = devices.filter((device) => device.kind === category);
+  const enabledCount = inCategory.filter((device) => device.enabled).length;
+  const diskBytes = inCategory.reduce((sum, device) => sum + (device.installed ? (device.disk_bytes ?? 0) : 0), 0);
   const summary = [
-    t(`${KEY}.summaryOn`, { count: enabledCount }),
+    category === 'my_browser' ? null : t(`${KEY}.summaryOn`, { count: enabledCount }),
     diskBytes > 0 ? t(`${KEY}.summaryDisk`, { size: formatDiskSize(diskBytes, i18n.language) }) : null,
   ]
     .filter(Boolean)
@@ -223,33 +225,36 @@ const WebDevices: React.FC = () => {
   return (
     <SettingsPageWrapper contentClassName='max-w-1200px'>
       {modalHolder}
-      <LibraryLayout
-        testId='devices-settings-page'
-        title={t(`${KEY}.title`)}
-        description={t(`${KEY}.description`)}
-        search={{ value: query, onChange: setQuery, placeholder: t(`${KEY}.search`) }}
-        rail={{
-          categories: DEVICE_CATEGORIES.map((kind) => ({
-            key: kind,
-            label: t(`${KEY}.categories.${kind}`),
-            count: counts[kind],
-          })),
-          selectedCategory: category,
-          onCategory: (key) => setCategory(key as DeviceKind),
-        }}
-        scopeTitle={t(`${KEY}.categories.${category}`)}
-        summary={summary}
-        tabs={[
-          { key: 'active', label: t('settings.library.tabActive') },
-          { key: 'library', label: t('settings.library.tabLibrary') },
-        ]}
-        activeTab={tab}
-        onTab={(key) => setTab(key as DevicesTab)}
-        tabsLabel={t('settings.library.tabsLabel')}
-        isMobile={isMobile}
-      >
-        <div className='flex flex-col gap-16px'>{panel}</div>
-      </LibraryLayout>
+      {/* A column like the Tools page, so the layout takes the full width on phones. */}
+      <div className='flex flex-col gap-16px min-h-0'>
+        <LibraryLayout
+          testId='devices-settings-page'
+          title={t(`${KEY}.title`)}
+          description={t(`${KEY}.description`)}
+          search={{ value: query, onChange: setQuery, placeholder: t(`${KEY}.search`) }}
+          rail={{
+            categories: DEVICE_CATEGORIES.map((kind) => ({
+              key: kind,
+              label: t(`${KEY}.categories.${kind}`),
+              count: counts[kind],
+            })),
+            selectedCategory: category,
+            onCategory: (key) => setCategory(key as DeviceKind),
+          }}
+          scopeTitle={t(`${KEY}.categories.${category}`)}
+          summary={summary}
+          tabs={[
+            { key: 'active', label: t('settings.library.tabActive') },
+            { key: 'library', label: t('settings.library.tabLibrary') },
+          ]}
+          activeTab={tab}
+          onTab={(key) => setTab(key as DevicesTab)}
+          tabsLabel={t('settings.library.tabsLabel')}
+          isMobile={isMobile}
+        >
+          <div className='flex flex-col gap-16px'>{panel}</div>
+        </LibraryLayout>
+      </div>
       <DeviceDrawer
         device={opened}
         isMobile={isMobile}

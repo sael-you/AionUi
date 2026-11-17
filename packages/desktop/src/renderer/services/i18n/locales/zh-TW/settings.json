@@ -1723,7 +1723,6 @@
     },
     "drawer": {
       "about": "概覽",
-      "kind": "類型",
       "status": "狀態",
       "version": "版本",
       "disk": "磁碟",

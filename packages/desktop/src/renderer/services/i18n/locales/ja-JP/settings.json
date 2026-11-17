@@ -1723,7 +1723,6 @@
     },
     "drawer": {
       "about": "概要",
-      "kind": "種類",
       "status": "状態",
       "version": "バージョン",
       "disk": "ディスク",

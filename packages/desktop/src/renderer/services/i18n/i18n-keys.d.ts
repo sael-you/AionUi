@@ -3135,7 +3135,6 @@ export type I18nKey =
   | 'settings.devices.disk'
   | 'settings.devices.drawer.about'
   | 'settings.devices.drawer.disk'
-  | 'settings.devices.drawer.kind'
   | 'settings.devices.drawer.lastSeen'
   | 'settings.devices.drawer.status'
   | 'settings.devices.drawer.until'

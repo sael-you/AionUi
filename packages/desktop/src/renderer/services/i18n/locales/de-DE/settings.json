@@ -1721,7 +1721,6 @@
     },
     "drawer": {
       "about": "Info",
-      "kind": "Art",
       "status": "Status",
       "version": "Version",
       "disk": "Speicher",

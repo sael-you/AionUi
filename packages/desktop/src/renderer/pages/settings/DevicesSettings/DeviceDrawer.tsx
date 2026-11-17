@@ -80,7 +80,6 @@ const DeviceDrawer: React.FC<DeviceDrawerProps> = ({
               size='small'
               data={(
                 [
-                  { label: t(`${KEY}.drawer.kind`), value: t(`${KEY}.categories.${device.kind}`) },
                   { label: t(`${KEY}.drawer.status`), value: <DeviceStatusTag device={device} /> },
                   device.version ? { label: t(`${KEY}.drawer.version`), value: device.version } : null,
                   device.disk_bytes !== null && device.installed

@@ -1723,7 +1723,6 @@
     },
     "drawer": {
       "about": "정보",
-      "kind": "종류",
       "status": "상태",
       "version": "버전",
       "disk": "디스크",
