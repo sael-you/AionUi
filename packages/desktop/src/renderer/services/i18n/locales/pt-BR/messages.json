@@ -97,5 +97,11 @@
   "requestDetails": "Detalhes da solicitação:",
   "delivery": {
     "pending": "Não lido"
+  },
+  "serverApproval": {
+    "title": "Executar um comando crítico em {{server}}?",
+    "reason": "Crítico: {{reason}}",
+    "crucial": "Conta como comando crítico neste servidor.",
+    "declaredByAgent": "Marcado como crítico pelo próprio agente (nenhuma regra correspondeu)."
   }
 }

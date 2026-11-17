@@ -358,7 +358,9 @@
     "kind": {
       "kit": "Kit",
       "skill": "Skill",
-      "mcp": "MCP-Server"
+      "mcp": "MCP-Server",
+      "server": "Server",
+      "rule": "Regel"
     },
     "op": {
       "add": "Hinzufügen",
@@ -526,6 +528,8 @@
       "testOk": "Verbunden · {{count}} Tools",
       "testOk_one": "Verbunden · {{count}} Tool",
       "testOk_other": "Verbunden · {{count}} Tools"
-    }
+    },
+    "servers": "Server",
+    "rules": "Regeln"
   }
 }

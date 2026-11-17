@@ -11,9 +11,10 @@ import type { IMessageAcpPermission, IMessagePermission } from '@/common/chat/ch
 import MessageAcpPermission from '@/renderer/pages/conversation/Messages/acp/MessageAcpPermission';
 import MessagePermission from '@/renderer/pages/conversation/Messages/components/MessagePermission';
 
-const { genericInvoke, acpInvoke } = vi.hoisted(() => ({
+const { genericInvoke, acpInvoke, classifyInvoke } = vi.hoisted(() => ({
   genericInvoke: vi.fn(),
   acpInvoke: vi.fn(),
+  classifyInvoke: vi.fn(),
 }));
 
 vi.mock('@/common', () => ({
@@ -25,6 +26,7 @@ vi.mock('@/common', () => ({
         },
       },
     },
+    servers: { classify: { invoke: classifyInvoke } },
   },
 }));
 
@@ -167,6 +169,20 @@ describe('permission message adapters', () => {
       call_id: 'acp-message-1',
     });
     expect(await screen.findByTestId('message-acp-permission-status')).toBeInTheDocument();
+  });
+
+  it('a crucial server command says where it runs and why, with the command as the detail (C36)', async () => {
+    classifyInvoke.mockResolvedValue({ crucial: true, reason: 'deletes files', environment: 'production' });
+    const message = makeAcpMessage();
+    message.content.tool_call.title = 'mcp__aionui-servers-crucial__run_command';
+    message.content.tool_call.raw_input = { server: 'db-prod', command: 'rm -rf /var/cache/app' };
+    render(<MessageAcpPermission message={message} />);
+
+    expect(screen.getByText('messages.serverApproval.title')).toBeInTheDocument();
+    expect(screen.getByTestId('server-approval-context')).toHaveTextContent('db-prod');
+    expect(screen.getByText('rm -rf /var/cache/app')).toBeInTheDocument();
+    expect(await screen.findByTestId('server-approval-reason')).toHaveTextContent('messages.serverApproval.reason');
+    expect(classifyInvoke).toHaveBeenCalledWith({ server: 'db-prod', command: 'rm -rf /var/cache/app' });
   });
 
   it('shows the title once and no detail block when no raw command is available', () => {

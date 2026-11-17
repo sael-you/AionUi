@@ -27,11 +27,15 @@ const api = vi.hoisted(() => {
     },
     market: { listInstances: fn(), listTemplates: fn() },
     listSkills: fn(),
+    servers: { list: fn() },
+    rules: { list: fn() },
   };
 });
 
 vi.mock('@/common/adapter/ipcBridge', () => ({ kits: api.kits, mcpService: { market: api.market } }));
-vi.mock('@/common', () => ({ ipcBridge: { fs: { listAvailableSkills: api.listSkills } } }));
+vi.mock('@/common', () => ({
+  ipcBridge: { fs: { listAvailableSkills: api.listSkills }, servers: api.servers, rules: api.rules },
+}));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: fakeT }) }));
 vi.mock('@/renderer/hooks/context/LayoutContext', () => ({ useLayoutContext: () => ({ isMobile: false }) }));
 
@@ -50,6 +54,14 @@ describe('KitAttachPanel (C27 attach flows)', () => {
     api.kits.detach.invoke.mockResolvedValue(undefined);
     api.market.listInstances.invoke.mockResolvedValue(INSTANCES);
     api.market.listTemplates.invoke.mockResolvedValue([]);
+    api.servers.list.invoke.mockResolvedValue([
+      { id: 'srv-1', name: 'db-prod', enabled: true },
+      { id: 'srv-2', name: 'old-box', enabled: false },
+    ]);
+    api.rules.list.invoke.mockResolvedValue([
+      { id: 'rule-1', name: 'Commit messages', enabled: true },
+      { id: 'rule-2', name: 'Old rule', enabled: false },
+    ]);
     api.listSkills.invoke.mockResolvedValue([{ name: 'pf-ui' }, { name: 'cs-build' }]);
     vi.spyOn(Message, 'success').mockImplementation(() => ({}) as never);
     vi.spyOn(Message, 'error').mockImplementation(() => ({}) as never);
@@ -120,6 +132,48 @@ describe('KitAttachPanel (C27 attach flows)', () => {
         item_kind: 'skill',
         item_ref: 'pf-ui',
         op: 'remove',
+      })
+    );
+  });
+
+  it('attaches a server (C36) at the conversation level, switched-off servers marked', async () => {
+    renderWithSwr(<KitAttachPanel level='conversation' targetId='conv-1' />);
+    await screen.findByText('mcp.kits.attach.empty');
+
+    await chooseOption('mcp.kits.attach.kind', 'mcp.kits.kind.server');
+    fireEvent.click(screen.getByRole('combobox', { name: 'mcp.kits.attach.item' }));
+    expect(await screen.findByRole('option', { name: 'old-box · settings.servers.chips.off' })).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole('option', { name: 'db-prod' }));
+    fireEvent.click(screen.getByRole('button', { name: 'mcp.kits.attach.submit' }));
+
+    await waitFor(() =>
+      expect(api.kits.attach.invoke).toHaveBeenCalledWith({
+        level: 'conversation',
+        target_id: 'conv-1',
+        item_kind: 'server',
+        item_ref: 'srv-1',
+        op: 'add',
+      })
+    );
+  });
+
+  it('attaches a rule (C37) at the assistant level, switched-off rules marked', async () => {
+    renderWithSwr(<KitAttachPanel level='assistant' targetId='asst-1' />);
+    await screen.findByText('mcp.kits.attach.empty');
+
+    await chooseOption('mcp.kits.attach.kind', 'mcp.kits.kind.rule');
+    fireEvent.click(screen.getByRole('combobox', { name: 'mcp.kits.attach.item' }));
+    expect(await screen.findByRole('option', { name: 'Old rule · settings.rules.chips.off' })).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole('option', { name: 'Commit messages' }));
+    fireEvent.click(screen.getByRole('button', { name: 'mcp.kits.attach.submit' }));
+
+    await waitFor(() =>
+      expect(api.kits.attach.invoke).toHaveBeenCalledWith({
+        level: 'assistant',
+        target_id: 'asst-1',
+        item_kind: 'rule',
+        item_ref: 'rule-1',
+        op: 'add',
       })
     );
   });

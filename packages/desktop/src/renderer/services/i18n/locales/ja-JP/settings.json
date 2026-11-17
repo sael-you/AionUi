@@ -1858,5 +1858,288 @@
         "camoufox": "Camoufox"
       }
     }
+  },
+  "servers": {
+    "title": "サーバー",
+    "description": "エージェントがコマンドを実行できる SSH サーバーです。オンにした場所の会話にだけ届きます。",
+    "add": "サーバーを追加",
+    "addTitle": "サーバーを追加",
+    "search": "サーバーを検索",
+    "loading": "サーバーを読み込み中",
+    "empty": "サーバーはまだありません。SSH 鍵とともに追加すると、エージェントがコマンドを実行できます。",
+    "nothingOn": "{{scope}} でオンのサーバーはありません。",
+    "browseLibrary": "サーバーを見る",
+    "unlabelled": "ラベルなし",
+    "switchedOff": "オフ",
+    "saved": "{{name}} を保存しました",
+    "created": "{{name}} を追加しました",
+    "deleted": "{{name}} を削除しました",
+    "deleteTitle": "{{name}} を削除しますか？",
+    "deleteBody": "すべての場所でエージェントが使えなくなります。保存された鍵は削除され、監査記録は残ります。",
+    "tierNote": "読み取り/書き込みの区分はエージェントへの目安にすぎません。AionUi はシェル内の読み取りと書き込みを区別できません。読み取り専用にするには、サーバー側で読み取り専用のアカウントが必要です。",
+    "crucialAsks": "本番で書き込み可：重要なコマンドは必ず会話の中で先にあなたに確認します。",
+    "labelsPlaceholder": "ラベルを追加（例：TB、データベース）",
+    "notesPlaceholder": "このサーバーについてエージェントが知っておくべきこと",
+    "enabledHint": "オフ = どこに割り当てられていても、どのエージェントも使えません。",
+    "group": {
+      "here": "{{scope}} でオン",
+      "offHere": "ここではオフ",
+      "otherEnvironment": "その他"
+    },
+    "offHereHint": "グローバルではオン、このプロジェクトではオフ。",
+    "summary": {
+      "on": "{{count}} 件オン",
+      "on_one": "{{count}} 件オン",
+      "on_other": "{{count}} 件オン",
+      "total": "{{count}} 台",
+      "total_one": "{{count}} 台",
+      "total_other": "{{count}} 台",
+      "fromGlobal": "グローバルから {{count}} 件",
+      "fromGlobal_one": "グローバルから {{count}} 件",
+      "fromGlobal_other": "グローバルから {{count}} 件"
+    },
+    "menu": {
+      "switchOff": "すべての場所でオフ",
+      "switchOn": "オンにする"
+    },
+    "chips": {
+      "off": "オフ",
+      "keyStored": "鍵を保存済み",
+      "noKey": "鍵なし",
+      "noHostKey": "ホスト鍵なし",
+      "asks": "重要なコマンドの前に確認"
+    },
+    "fields": {
+      "name": "名前（エージェントが使う呼び名）",
+      "user": "SSH ユーザー",
+      "host": "ホスト",
+      "port": "ポート",
+      "privateKey": "秘密鍵",
+      "hostKey": "ホスト鍵",
+      "environment": "環境",
+      "tier": "区分",
+      "labels": "ラベル",
+      "notes": "メモ",
+      "enabled": "エージェントがこのサーバーを使える"
+    },
+    "key": {
+      "stored": "鍵を保存済み",
+      "replace": "鍵を置き換え",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "パスフレーズなしの OpenSSH または PEM 秘密鍵。暗号化して保存され、二度と表示されません。",
+      "keepStored": "保存済みの鍵を使い続ける"
+    },
+    "hostKey": {
+      "destinationChanged": "ホスト、ポート、ユーザーが変わりました。保存済みのホスト鍵は新しい接続先では信頼されません。新しいホストをスキャンしてフィンガープリントを確認してください。",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "ホスト鍵をスキャン",
+      "hint": "保存前に、サーバー上の ssh-keygen -lf とフィンガープリントを照合してください。"
+    },
+    "problems": {
+      "nameRequired": "名前を入力してください",
+      "nameFormat": "英小文字・数字・ハイフンのみ。先頭は英字か数字",
+      "hostRequired": "ホストを入力してください",
+      "hostFormat": "ホスト名または IP アドレス",
+      "portRange": "1〜65535 のポート",
+      "userRequired": "SSH ユーザーを入力してください",
+      "keyRequired": "秘密鍵を貼り付けてください",
+      "keyPublic": "これは公開鍵です。秘密鍵を貼り付けてください",
+      "keyFormat": "OpenSSH または PEM の秘密鍵ではありません",
+      "keyPassphrase": "パスフレーズ付きの鍵には対応していません",
+      "hostKeyFormat": "1 行に 1 つの \"<種類> <鍵>\""
+    },
+    "test": {
+      "title": "接続",
+      "run": "接続をテスト",
+      "ok": "{{ms}} ms で接続しました",
+      "useSeenKey": "提示された鍵を使う",
+      "errors": {
+        "auth_failed": "サーバーがこのユーザーの鍵を拒否しました。",
+        "host_key_mismatch": "ホストが別のホスト鍵を提示しました。信頼する前に確認してください。",
+        "host_key_unknown": "ホスト鍵がまだ保存されていません。スキャンしてフィンガープリントを確認してください。",
+        "unreachable": "ホストに接続できませんでした。",
+        "timeout": "接続がタイムアウトしました。",
+        "failed": "テストに失敗しました。"
+      }
+    },
+    "usedIn": {
+      "conversation": "会話 {{id}}",
+      "nowhere": "まだどこでもオンになっていません。",
+      "drop": "削除",
+      "dropLabel": "{{scope}} のルールを削除",
+      "levelLabel": "レベル",
+      "targetLabel": "対象",
+      "targetPlaceholder": "選択…",
+      "opLabel": "オンまたはオフ",
+      "apply": "適用",
+      "hint": "追加はそのレベルでサーバーをオンにし、削除は継承されたものをオフにします。1 つの会話だけなら、その会話のヘッダーのキットボタンを使ってください。"
+    },
+    "audit": {
+      "title": "最近のコマンド",
+      "empty": "まだコマンドはありません。",
+      "loadFailed": "最近のコマンドを読み込めませんでした。",
+      "crucial": "重要",
+      "exitCode": "終了 {{code}}",
+      "duration": "{{seconds}} 秒",
+      "decision": {
+        "ran": "実行",
+        "failed": "失敗",
+        "needs_approval": "確認しました",
+        "refused": "拒否"
+      }
+    },
+    "errors": {
+      "generic": "サーバーで問題が発生しました。",
+      "invalid": "保存されませんでした：{{detail}}",
+      "nameTaken": "同じ名前のサーバーがすでにあります。",
+      "notFound": "このサーバーはもう存在しません。",
+      "unavailable": "この AionCore ではサーバープールを利用できません。",
+      "unreachable": "ホストに接続できませんでした。",
+      "sessionRequired": "サーバーを変更するには再度サインインしてください。",
+      "csrf": "ページが古くなっています。再読み込みしてもう一度お試しください。"
+    }
+  },
+  "rules": {
+    "title": "ルール",
+    "description": "すべてのエージェントセッションが開始時から従うルールです。オンにした場所の会話にだけ届きます。",
+    "add": "ルールを追加",
+    "addTitle": "ルールを書く",
+    "search": "ルールを検索",
+    "loading": "ルールを読み込み中",
+    "empty": "ルールはまだありません。書くか、既存の AGENTS.md をインポートしてください。",
+    "nothingOn": "{{scope}} でオンのルールはありません。",
+    "browseLibrary": "ルールを見る",
+    "switchedOff": "オフ",
+    "fromGlobalToggle": "グローバルから",
+    "fromGlobalHint": "グローバルでオンです。このプロジェクトから外すには、ルールを開いて「使用先」でここから削除してください。",
+    "offHereHint": "グローバルではオン、このプロジェクトでは除外。",
+    "saved": "{{name}} を保存しました",
+    "created": "{{name}} を追加しました",
+    "deleted": "{{name}} を削除しました",
+    "deleteTitle": "{{name}} を削除しますか？",
+    "deleteBody": "次のセッションから、どこにも適用されなくなります。",
+    "namePlaceholder": "例：コミットメッセージ",
+    "descriptionPlaceholder": "1 行で：このルールの内容",
+    "bodyPlaceholder": "ルールを Markdown で書いてください。短く、具体的に、確かめられる形で。",
+    "edit": "編集",
+    "preview": "プレビュー",
+    "previewEmpty": "プレビューする内容はまだありません。",
+    "enabledHint": "オフ = どこに割り当てられていても適用されません。",
+    "importedFrom": "{{path}} からインポート",
+    "group": {
+      "here": "{{scope}} でオン",
+      "offHere": "ここでは除外"
+    },
+    "summary": {
+      "on": "{{count}} 件オン",
+      "on_one": "{{count}} 件オン",
+      "on_other": "{{count}} 件オン",
+      "fromGlobal": "グローバルから {{count}} 件",
+      "fromGlobal_one": "グローバルから {{count}} 件",
+      "fromGlobal_other": "グローバルから {{count}} 件",
+      "cap": "セッションあたり最大 {{max}}"
+    },
+    "source": {
+      "mine": "自分",
+      "imported": "インポート"
+    },
+    "chips": {
+      "off": "オフ"
+    },
+    "menu": {
+      "edit": "編集",
+      "switchOff": "すべての場所でオフ",
+      "switchOn": "オンにする"
+    },
+    "fields": {
+      "name": "名前",
+      "description": "説明",
+      "body": "ルール",
+      "enabled": "このルールを適用する"
+    },
+    "problems": {
+      "nameRequired": "名前を入力してください",
+      "nameTooLong": "80 文字以内",
+      "descriptionTooLong": "300 文字以内",
+      "bodyRequired": "ルールを書いてください",
+      "bodyTooLarge": "ルールは最大 {{max}} KB です。分割するか、長い内容はスキルにしてください"
+    },
+    "size": {
+      "label": "{{used}} / {{max}}"
+    },
+    "effective": {
+      "title": "{{scope}} が受け取るもの",
+      "loadFailed": "このスコープが受け取る内容を読み込めませんでした。",
+      "none": "ここに適用されるルールはありません。",
+      "capped": "上限を超えたためセッションから除外：{{names}}",
+      "leftOut": "除外",
+      "exactText": "セッション開始時の正確なテキスト",
+      "nextSession": "進行中の会話は、次のセッションから変更を反映します。"
+    },
+    "header": {
+      "label": "ルール {{count}} 件",
+      "label_one": "ルール {{count}} 件",
+      "label_other": "ルール {{count}} 件",
+      "capped": "サイズ上限を超えて除外されたルールがあります",
+      "title": "この会話のルール",
+      "manage": "ルールを管理"
+    },
+    "usedIn": {
+      "conversation": "会話 {{id}}",
+      "nowhere": "まだどこでもオンになっていません。",
+      "drop": "削除",
+      "dropLabel": "{{scope}} の割り当てを削除",
+      "levelLabel": "レベル",
+      "targetLabel": "対象",
+      "targetPlaceholder": "選択…",
+      "opLabel": "オンまたは除外",
+      "apply": "適用",
+      "hint": "追加はそのレベルでルールをオンにし、削除は継承されたものを除外します。1 つの会話だけなら、その会話のヘッダーのキットボタンを使ってください。"
+    },
+    "import": {
+      "open": "AGENTS.md をインポート",
+      "title": "既存のルールをインポート",
+      "intro": "今使っている AGENTS.md をルールに変換します。まずインポートされる内容を確認してください。インポートするまで何も書き込まれません。",
+      "scopeLabel": "インポート先",
+      "projectPlaceholder": "プロジェクトを選択",
+      "projectLabel": "プロジェクト",
+      "noFiles": "ここにルールファイルは見つかりませんでした。",
+      "nameTaken": "同じ名前のルールがあります",
+      "blocked": "一部の名前は既存のルールで使われています。先にそのルールの名前を変えてからインポートしてください。",
+      "importHint": "ルールを作成してここでオンにします。ファイルはそのままです。",
+      "run": "{{count}} 件のルールをインポート",
+      "run_one": "{{count}} 件のルールをインポート",
+      "run_other": "{{count}} 件のルールをインポート",
+      "imported": "{{count}} 件のルールをインポートしました",
+      "imported_one": "{{count}} 件のルールをインポートしました",
+      "imported_other": "{{count}} 件のルールをインポートしました",
+      "handOverTitle": "ファイルを AionUi に引き継ぐ",
+      "handOverGlobal": "今後、グローバルファイルはグローバルのルールから書き出され、変更のたびに更新されます。編集する場所は 1 か所になります。",
+      "handOverProject": "リポジトリ内の各ファイルは、AionUi のルールを指す 1 行の参照になります。AionUi はコミットもプッシュもしません。変更は git でご自身で確認してください。",
+      "ackGlobal": "グローバルファイルがグローバルのルールから生成されることを理解しました",
+      "ackProject": "これらのファイルが 1 行の参照に置き換えられることを理解しました",
+      "handOver": "引き継ぐ",
+      "handedOver": "{{count}} 件のファイルを引き継ぎました",
+      "handedOver_one": "{{count}} 件のファイルを引き継ぎました",
+      "handedOver_other": "{{count}} 件のファイルを引き継ぎました",
+      "status": {
+        "new": "新規",
+        "imported": "インポート済み",
+        "managed": "引き継ぎ済み",
+        "pointer": "参照のみ",
+        "missing": "見つかりません"
+      }
+    },
+    "errors": {
+      "generic": "ルールで問題が発生しました。",
+      "invalid": "保存されませんでした：{{detail}}",
+      "nameTaken": "同じ名前のルールがすでにあります。",
+      "stale": "このルールは別の場所で変更されたため再読み込みしました。確認してもう一度保存してください。",
+      "alreadyImported": "このファイルはすでにインポートされています。",
+      "confirmRequired": "先に手順を確認してください。",
+      "notFound": "このルールはもう存在しません。",
+      "sessionRequired": "ルールを変更するには再度サインインしてください。",
+      "csrf": "ページが古くなっています。再読み込みしてもう一度お試しください。"
+    }
   }
 }

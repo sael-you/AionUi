@@ -850,8 +850,12 @@ export type McpMarketCreateAssignmentRequest = {
 
 /** Attach level, applied top-down (global → project → assistant → conversation); a lower level wins. */
 export type KitLevel = 'global' | 'project' | 'assistant' | 'conversation';
-/** What an attachment points at: a whole kit, one library skill or one MCP market instance. */
-export type KitItemKind = 'kit' | 'skill' | 'mcp';
+/**
+ * What an attachment points at: a whole kit, one library skill, one MCP market
+ * instance, one SSH server of the server pool (C36) or one owner rule (C37).
+ * `item_ref` = skill name or the instance / server / rule id.
+ */
+export type KitItemKind = 'kit' | 'skill' | 'mcp' | 'server' | 'rule';
 export type KitOp = 'add' | 'remove';
 
 export const KIT_LEVELS: readonly KitLevel[] = ['global', 'project', 'assistant', 'conversation'];
@@ -922,7 +926,13 @@ export type AttachKitItemRequest = {
   op: KitOp;
 };
 
-export type KitAttachmentsQuery = { level?: KitLevel; target_id?: string };
+/** `item_kind` + `item_ref` narrow the list to one item ("Used in"). */
+export type KitAttachmentsQuery = {
+  level?: KitLevel;
+  target_id?: string;
+  item_kind?: KitItemKind;
+  item_ref?: string;
+};
 
 /** `GET /api/kits` filter (C28); omitted = every kit. */
 export type KitListQuery = { project_id?: string };
@@ -972,6 +982,10 @@ export type KitEffectiveSetResponse = {
   assistant_id?: string;
   skills: KitEffectiveItem[];
   mcps: KitEffectiveItem[];
+  /** Servers decided by attachments (C36); `item_ref` = server id. Absent on an older core. */
+  servers?: KitEffectiveItem[];
+  /** Rules decided by attachments (C37); `item_ref` = rule id. Absent on an older core. */
+  rules?: KitEffectiveItem[];
   /** The conversation's frozen skill snapshot; absent for a project/assistant preview. */
   conversation_skills?: string[];
   missing_templates: KitMissingTemplate[];

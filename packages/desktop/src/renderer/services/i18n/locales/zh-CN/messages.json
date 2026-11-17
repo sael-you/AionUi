@@ -97,5 +97,11 @@
   "requestDetails": "请求内容：",
   "delivery": {
     "pending": "未读"
+  },
+  "serverApproval": {
+    "title": "在 {{server}} 上运行关键命令？",
+    "reason": "关键：{{reason}}",
+    "crucial": "在此服务器上属于关键命令。",
+    "declaredByAgent": "由智能体自行标记为关键（未匹配任何规则）。"
   }
 }

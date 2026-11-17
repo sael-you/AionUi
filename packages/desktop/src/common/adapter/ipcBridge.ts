@@ -16,6 +16,32 @@ import type { IConfirmation } from '@/common/chat/chatLib';
 import type { AcpSlashCommandApiItem } from '@/common/chat/slash/types';
 import { bridge } from '@/common/platform/bridge';
 import { buildListTasksPath } from './teamTaskPath';
+import type {
+  ClassifyServerCommandRequest,
+  ClassifyServerCommandResponse,
+  CreateServerRequest,
+  ScanHostKeyRequest,
+  ScanHostKeyResponse,
+  ServerAuditQuery,
+  ServerAuditResponse,
+  ServerResponse,
+  ServerTestResponse,
+  UpdateServerRequest,
+} from '../types/platform/serverPools';
+import type {
+  CreateRuleRequest,
+  RuleEffectiveQuery,
+  RuleEffectiveResponse,
+  RuleImportPreviewResponse,
+  RuleImportQuery,
+  RuleImportRequest,
+  RuleImportResponse,
+  RuleManageFilesRequest,
+  RuleManageFilesResponse,
+  RuleResponse,
+  RuleSourceResponse,
+  UpdateRuleRequest,
+} from '../types/platform/rules';
 import type { OpenDialogOptions } from 'electron';
 import type {
   BrowserApproval,
@@ -1728,7 +1754,13 @@ export const kits = {
     (p) => p.data
   ),
   listAttachments: httpGet<KitAttachmentResponse[], KitAttachmentsQuery>(
-    (p) => `/api/kits/attachments${kitQueryString({ level: p?.level, target_id: p?.target_id })}`
+    (p) =>
+      `/api/kits/attachments${kitQueryString({
+        level: p?.level,
+        target_id: p?.target_id,
+        item_kind: p?.item_kind,
+        item_ref: p?.item_ref,
+      })}`
   ),
   attach: httpPost<KitAttachmentResponse, AttachKitItemRequest>('/api/kits/attachments'),
   detach: httpDelete<void, { id: string }>((p) => `/api/kits/attachments/${encodeURIComponent(p.id)}`),
@@ -1740,6 +1772,65 @@ export const kits = {
         assistant_id: p.assistant_id,
       })}`
   ),
+};
+
+// ---------------------------------------------------------------------------
+// Server access pools (C36): SSH servers assigned through the kit levels
+// (`item_kind: 'server'`). Writes need the browser session (403 for agents).
+// ---------------------------------------------------------------------------
+
+export const servers = {
+  list: httpGet<ServerResponse[], void>('/api/servers'),
+  get: httpGet<ServerResponse, { id: string }>((p) => `/api/servers/${encodeURIComponent(p.id)}`),
+  create: httpPost<ServerResponse, CreateServerRequest>('/api/servers'),
+  update: httpPut<ServerResponse, { id: string; data: UpdateServerRequest }>(
+    (p) => `/api/servers/${encodeURIComponent(p.id)}`,
+    (p) => p.data
+  ),
+  remove: httpDelete<void, { id: string }>((p) => `/api/servers/${encodeURIComponent(p.id)}`),
+  audit: httpGet<ServerAuditResponse[], ServerAuditQuery>(
+    (p) =>
+      `/api/servers/audit${kitQueryString({
+        server_id: p?.server_id,
+        limit: p?.limit === undefined ? undefined : String(p.limit),
+      })}`
+  ),
+  test: httpPost<ServerTestResponse, { id: string }>(
+    (p) => `/api/servers/${encodeURIComponent(p.id)}/test`,
+    () => ({})
+  ),
+  scanHostKey: httpPost<ScanHostKeyResponse, ScanHostKeyRequest>('/api/servers/scan-host-key'),
+  classify: httpPost<ClassifyServerCommandResponse, ClassifyServerCommandRequest>('/api/servers/classify'),
+};
+
+// ---------------------------------------------------------------------------
+// Rules (C37): owner rules attached through the kit levels (`item_kind: 'rule'`).
+// Writes, and the import preview, need the browser session (403 for agents).
+// ---------------------------------------------------------------------------
+
+export const rules = {
+  list: httpGet<RuleResponse[], void>('/api/rules'),
+  get: httpGet<RuleResponse, { id: string }>((p) => `/api/rules/${encodeURIComponent(p.id)}`),
+  create: httpPost<RuleResponse, CreateRuleRequest>('/api/rules'),
+  update: httpPut<RuleResponse, { id: string; data: UpdateRuleRequest }>(
+    (p) => `/api/rules/${encodeURIComponent(p.id)}`,
+    (p) => p.data
+  ),
+  remove: httpDelete<void, { id: string }>((p) => `/api/rules/${encodeURIComponent(p.id)}`),
+  effective: httpGet<RuleEffectiveResponse, RuleEffectiveQuery>(
+    (p) =>
+      `/api/rules/effective${kitQueryString({
+        conversation_id: p?.conversation_id,
+        project_id: p?.project_id,
+        assistant_id: p?.assistant_id,
+      })}`
+  ),
+  sources: httpGet<RuleSourceResponse[], void>('/api/rules/sources'),
+  importPreview: httpGet<RuleImportPreviewResponse, RuleImportQuery>(
+    (p) => `/api/rules/import/preview${kitQueryString({ scope: p.scope, project_id: p.project_id })}`
+  ),
+  import: httpPost<RuleImportResponse, RuleImportRequest>('/api/rules/import'),
+  manageFiles: httpPost<RuleManageFilesResponse, RuleManageFilesRequest>('/api/rules/files/manage'),
 };
 
 export const openclawConversation = {

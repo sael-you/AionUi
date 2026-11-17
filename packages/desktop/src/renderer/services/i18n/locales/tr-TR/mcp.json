@@ -358,7 +358,9 @@
     "kind": {
       "kit": "Kit",
       "skill": "Beceri",
-      "mcp": "MCP sunucusu"
+      "mcp": "MCP sunucusu",
+      "server": "Sunucu",
+      "rule": "Kural"
     },
     "op": {
       "add": "Ekle",
@@ -526,6 +528,8 @@
       "testOk": "Bağlandı · {{count}} araç",
       "testOk_one": "Bağlandı · {{count}} araç",
       "testOk_other": "Bağlandı · {{count}} araç"
-    }
+    },
+    "servers": "Sunucular",
+    "rules": "Kurallar"
   }
 }

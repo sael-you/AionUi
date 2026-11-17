@@ -358,7 +358,9 @@
     "kind": {
       "kit": "کیت",
       "skill": "مهارت",
-      "mcp": "سرور MCP"
+      "mcp": "سرور MCP",
+      "server": "سرور",
+      "rule": "قاعده"
     },
     "op": {
       "add": "افزودن",
@@ -526,6 +528,8 @@
       "testOk": "متصل · {{count}} ابزار",
       "testOk_one": "متصل · {{count}} ابزار",
       "testOk_other": "متصل · {{count}} ابزار"
-    }
+    },
+    "servers": "سرورها",
+    "rules": "قاعده‌ها"
   }
 }

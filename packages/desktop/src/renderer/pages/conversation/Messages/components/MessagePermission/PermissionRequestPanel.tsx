@@ -28,6 +28,8 @@ type PermissionRequestPanelProps = {
   /** i18n key for the detail block label; defaults to messages.command. Lets a
    *  non-command payload (e.g. a raw tool input dump) carry an accurate label. */
   detailLabelKey?: string;
+  /** Context shown between the heading and the detail (e.g. the server a command runs on). */
+  extra?: React.ReactNode;
   options: PermissionPanelOption[];
   onConfirm: (optionValue: string) => Promise<void>;
 };
@@ -40,6 +42,7 @@ export const PermissionRequestPanel: React.FC<PermissionRequestPanelProps> = ({
   operationKind,
   detail,
   detailLabelKey,
+  extra,
   options,
   onConfirm,
 }) => {
@@ -115,6 +118,8 @@ export const PermissionRequestPanel: React.FC<PermissionRequestPanelProps> = ({
           </div>
           {description && <Text className={styles.description}>{description}</Text>}
         </div>
+
+        {extra}
 
         {detail && (
           <div className={styles.detailBlock}>

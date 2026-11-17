@@ -358,7 +358,9 @@
     "kind": {
       "kit": "套件",
       "skill": "技能",
-      "mcp": "MCP 伺服器"
+      "mcp": "MCP 伺服器",
+      "server": "伺服器",
+      "rule": "規則"
     },
     "op": {
       "add": "新增",
@@ -526,6 +528,8 @@
       "testOk": "已連線 · {{count}} 個工具",
       "testOk_one": "已連線 · {{count}} 個工具",
       "testOk_other": "已連線 · {{count}} 個工具"
-    }
+    },
+    "servers": "伺服器",
+    "rules": "規則"
   }
 }

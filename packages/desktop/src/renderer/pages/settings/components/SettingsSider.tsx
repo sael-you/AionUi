@@ -4,6 +4,7 @@ import { type IExtensionSettingsTab } from '@/common/adapter/ipcBridge';
 import { useExtI18n } from '@/renderer/hooks/system/useExtI18n';
 import { useExtensionSettingsTabs } from '@/renderer/hooks/system/useExtensionSettingsTabs';
 import {
+  BookOpen,
   Brain,
   Devices,
   Cat,
@@ -15,6 +16,7 @@ import {
   Lightning,
   LinkCloud,
   Puzzle,
+  Server,
   Speed,
   System,
   Toolkit,
@@ -32,8 +34,10 @@ export const BUILTIN_TAB_IDS = [
   'agent',
   'model',
   'skills',
+  'rules',
   'tools',
   'devices',
+  'servers',
   'appearance',
   'webui',
   'voice',
@@ -104,6 +108,7 @@ const SettingsSider: React.FC<{ collapsed?: boolean; tooltipEnabled?: boolean }>
         icon: <Lightning />,
         path: 'skills',
       },
+      rules: { id: 'rules', label: t('settings.rules.title'), icon: <BookOpen />, path: 'rules' },
       tools: {
         id: 'tools',
         label: t('settings.tools', { defaultValue: 'Tools' }),
@@ -111,6 +116,7 @@ const SettingsSider: React.FC<{ collapsed?: boolean; tooltipEnabled?: boolean }>
         path: 'tools',
       },
       devices: { id: 'devices', label: t('settings.devices.title'), icon: <Devices />, path: 'devices' },
+      servers: { id: 'servers', label: t('settings.servers.title'), icon: <Server />, path: 'servers' },
       appearance: { id: 'appearance', label: t('settings.appearancePanel'), icon: <Computer />, path: 'appearance' },
       webui: {
         id: 'webui',

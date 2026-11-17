@@ -14,11 +14,13 @@
 
 import { Tag } from '@arco-design/web-react';
 import { Attention, CheckOne } from '@icon-park/react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { KitEffectiveItem, KitEffectiveQuery } from '@/common/config/storage';
 import { sortEffectiveItems, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
 import { useKitEffective } from '@/renderer/hooks/mcp/market/useKits';
+import { useRuleList } from '../../RulesSettings/useRules';
+import { useServerList } from '../../ServersSettings/useServers';
 import { MarketErrorNotice, MarketStatusTag } from '../market/shared';
 import { KitOpTag } from './KitAttachPanel';
 
@@ -31,10 +33,13 @@ const Provenance: React.FC<{ item: KitEffectiveItem }> = ({ item }) => {
   return <span className='text-12px text-t-secondary'>{text}</span>;
 };
 
-const EffectiveRow: React.FC<{ item: KitEffectiveItem }> = ({ item }) => {
+const EffectiveRow: React.FC<{ item: KitEffectiveItem; nameOf?: (ref: string) => string | undefined }> = ({
+  item,
+  nameOf,
+}) => {
   const { t } = useTranslation();
   const mcp = item.mcp;
-  const name = mcp?.instance_name || item.item_ref;
+  const name = mcp?.instance_name || nameOf?.(item.item_ref) || item.item_ref;
   return (
     <li
       className={`flex flex-col gap-4px rd-8px border border-border-2 px-12px py-8px ${item.included ? '' : 'opacity-70'}`}
@@ -86,11 +91,13 @@ const EffectiveRow: React.FC<{ item: KitEffectiveItem }> = ({ item }) => {
   );
 };
 
-const EffectiveList: React.FC<{ title: string; items: readonly KitEffectiveItem[]; testId: string }> = ({
-  title,
-  items,
-  testId,
-}) => {
+const EffectiveList: React.FC<{
+  title: string;
+  items: readonly KitEffectiveItem[];
+  testId: string;
+  /** Display name of an `item_ref` that is an id (servers, rules). */
+  nameOf?: (ref: string) => string | undefined;
+}> = ({ title, items, testId, nameOf }) => {
   const { t } = useTranslation();
   const headingId = `${testId}-title`;
   return (
@@ -103,7 +110,7 @@ const EffectiveList: React.FC<{ title: string; items: readonly KitEffectiveItem[
       ) : (
         <ul className='m-0 p-0 list-none flex flex-col gap-6px'>
           {sortEffectiveItems(items).map((item) => (
-            <EffectiveRow key={`${item.kind}:${item.item_ref}`} item={item} />
+            <EffectiveRow key={`${item.kind}:${item.item_ref}`} item={item} nameOf={nameOf} />
           ))}
         </ul>
       )}
@@ -114,6 +121,16 @@ const EffectiveList: React.FC<{ title: string; items: readonly KitEffectiveItem[
 const KitEffectivePanel: React.FC<{ query: KitEffectiveQuery }> = ({ query }) => {
   const { t } = useTranslation();
   const { effective, error, isLoading, reload } = useKitEffective(query);
+  const serverList = useServerList();
+  const serverName = useMemo(() => {
+    const names = new Map(serverList.servers.map((server) => [server.id, server.name]));
+    return (ref: string) => names.get(ref);
+  }, [serverList.servers]);
+  const ruleList = useRuleList();
+  const ruleName = useMemo(() => {
+    const names = new Map(ruleList.rules.map((rule) => [rule.id, rule.name]));
+    return (ref: string) => names.get(ref);
+  }, [ruleList.rules]);
 
   if (error) {
     return <MarketErrorNotice message={describeKitError(t, error)} onRetry={() => void reload()} />;
@@ -122,7 +139,11 @@ const KitEffectivePanel: React.FC<{ query: KitEffectiveQuery }> = ({ query }) =>
     return <div className='text-13px text-t-secondary'>{t('mcp.kits.loading')}</div>;
   }
 
-  const nothingDecided = effective.skills.length === 0 && effective.mcps.length === 0;
+  const nothingDecided =
+    effective.skills.length === 0 &&
+    effective.mcps.length === 0 &&
+    (effective.servers ?? []).length === 0 &&
+    (effective.rules ?? []).length === 0;
 
   return (
     <div className='flex flex-col gap-16px' data-testid='kit-effective-panel'>
@@ -130,6 +151,24 @@ const KitEffectivePanel: React.FC<{ query: KitEffectiveQuery }> = ({ query }) =>
       {nothingDecided ? <div className='text-13px text-t-secondary'>{t('mcp.kits.effective.empty')}</div> : null}
       <EffectiveList title={t('mcp.kits.skills')} items={effective.skills} testId='kit-effective-skills' />
       <EffectiveList title={t('mcp.kits.mcps')} items={effective.mcps} testId='kit-effective-mcps' />
+      {/* Absent on a core without server pools (C36). */}
+      {effective.servers ? (
+        <EffectiveList
+          title={t('mcp.kits.servers')}
+          items={effective.servers}
+          testId='kit-effective-servers'
+          nameOf={serverName}
+        />
+      ) : null}
+      {/* Absent on a core without rules (C37). */}
+      {effective.rules ? (
+        <EffectiveList
+          title={t('mcp.kits.rules')}
+          items={effective.rules}
+          testId='kit-effective-rules'
+          nameOf={ruleName}
+        />
+      ) : null}
       {effective.conversation_skills ? (
         <section aria-labelledby='kit-effective-frozen-title' data-testid='kit-effective-frozen'>
           <h4 id='kit-effective-frozen-title' className='m-0 mb-4px text-13px font-medium text-t-primary'>

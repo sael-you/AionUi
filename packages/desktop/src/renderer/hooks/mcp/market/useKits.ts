@@ -24,6 +24,7 @@ import type {
   KitEffectiveSetResponse,
   KitImportPreviewResponse,
   KitImportServerRequest,
+  KitItemKind,
   KitResponse,
   McpMarketInstance,
   McpMarketTemplate,
@@ -34,8 +35,10 @@ import { createKitRequest, updateKitRequest, type KitFormValues } from './kitMod
 const KITS_KEY = 'kits.list';
 const isKitsKey = (key: unknown): boolean => typeof key === 'string' && key.startsWith('kits.');
 
+/** Item filters (C36/C37 "Used in") get their own entry; unfiltered keys are unchanged. */
 export const kitAttachmentsKey = (query: KitAttachmentsQuery): string =>
-  `kits.attachments:${query.level ?? ''}:${query.target_id ?? ''}`;
+  `kits.attachments:${query.level ?? ''}:${query.target_id ?? ''}` +
+  (query.item_kind ? `:${query.item_kind}:${query.item_ref ?? ''}` : '');
 
 export const kitEffectiveKey = (query: KitEffectiveQuery): string =>
   `kits.effective:${query.conversation_id ?? ''}:${query.project_id ?? ''}:${query.assistant_id ?? ''}`;
@@ -78,6 +81,17 @@ export const useKitAttachments = (query: KitAttachmentsQuery | null) => {
     kitsApi.listAttachments.invoke(query ?? {})
   );
   return { attachments: data ?? [], error: error as unknown, isLoading };
+};
+
+/** Where one server or rule is attached, at any level ("Used in", C36/C37). */
+export const useKitItemAttachments = (kind: KitItemKind, itemRef: string | null) => {
+  const query = itemRef ? { item_kind: kind, item_ref: itemRef } : null;
+  const { data, error, isLoading } = useSWR<KitAttachmentResponse[]>(query ? kitAttachmentsKey(query) : null, () =>
+    kitsApi.listAttachments.invoke(query ?? {})
+  );
+  // An older core ignores the filters: keep only this item's rows either way.
+  const attachments = (data ?? []).filter((row) => row.item_kind === kind && row.item_ref === itemRef);
+  return { attachments, error: error as unknown, isLoading };
 };
 
 export const useKitEffective = (query: KitEffectiveQuery | null) => {

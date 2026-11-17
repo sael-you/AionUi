@@ -97,5 +97,11 @@
   "requestDetails": "İstek ayrıntıları:",
   "delivery": {
     "pending": "Okunmadı"
+  },
+  "serverApproval": {
+    "title": "{{server}} üzerinde kritik bir komut çalıştırılsın mı?",
+    "reason": "Kritik: {{reason}}",
+    "crucial": "Bu sunucuda kritik komut sayılır.",
+    "declaredByAgent": "Ajanın kendisi kritik olarak işaretledi (eşleşen kural yok)."
   }
 }

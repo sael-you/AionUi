@@ -1856,5 +1856,288 @@
         "camoufox": "Camoufox"
       }
     }
+  },
+  "servers": {
+    "title": "Serveurs",
+    "description": "Serveurs SSH sur lesquels les agents peuvent exécuter des commandes. Un serveur n'atteint une conversation que là où vous l'activez.",
+    "add": "Ajouter un serveur",
+    "addTitle": "Ajouter un serveur",
+    "search": "Rechercher des serveurs",
+    "loading": "Chargement des serveurs",
+    "empty": "Aucun serveur pour l'instant. Ajoutez-en un avec sa clé SSH pour que les agents puissent y exécuter des commandes.",
+    "nothingOn": "Aucun serveur n'est activé dans {{scope}}.",
+    "browseLibrary": "Parcourir les serveurs",
+    "unlabelled": "Sans libellé",
+    "switchedOff": "Désactivé",
+    "saved": "{{name}} enregistré",
+    "created": "{{name}} ajouté",
+    "deleted": "{{name}} supprimé",
+    "deleteTitle": "Supprimer {{name}} ?",
+    "deleteBody": "Les agents perdent l'accès partout. Sa clé enregistrée est supprimée ; les lignes d'audit restent.",
+    "tierNote": "Le niveau lecture/écriture n'est qu'une indication pour les agents : AionUi ne distingue pas une lecture d'une écriture dans un shell. Un serveur en lecture seule demande un compte en lecture seule sur le serveur.",
+    "crucialAsks": "Production en écriture : les commandes critiques vous demandent toujours d'abord, dans la conversation.",
+    "labelsPlaceholder": "Ajouter des libellés (ex. TB, base de données)",
+    "notesPlaceholder": "Ce que les agents doivent savoir sur ce serveur",
+    "enabledHint": "Désactivé = aucun agent ne peut l'utiliser, où qu'il soit attaché.",
+    "group": {
+      "here": "Activé dans {{scope}}",
+      "offHere": "Désactivé ici",
+      "otherEnvironment": "Autres"
+    },
+    "offHereHint": "Activé dans Global, désactivé pour ce projet.",
+    "summary": {
+      "on": "{{count}} activés",
+      "on_one": "{{count}} activé",
+      "on_other": "{{count}} activés",
+      "total": "{{count}} serveurs",
+      "total_one": "{{count}} serveur",
+      "total_other": "{{count}} serveurs",
+      "fromGlobal": "{{count}} de Global",
+      "fromGlobal_one": "{{count}} de Global",
+      "fromGlobal_other": "{{count}} de Global"
+    },
+    "menu": {
+      "switchOff": "Désactiver partout",
+      "switchOn": "Activer"
+    },
+    "chips": {
+      "off": "Désactivé",
+      "keyStored": "Clé enregistrée",
+      "noKey": "Aucune clé",
+      "noHostKey": "Aucune clé d'hôte",
+      "asks": "Demande avant les commandes critiques"
+    },
+    "fields": {
+      "name": "Nom (comme l'appellent les agents)",
+      "user": "Utilisateur SSH",
+      "host": "Hôte",
+      "port": "Port",
+      "privateKey": "Clé privée",
+      "hostKey": "Clé d'hôte",
+      "environment": "Environnement",
+      "tier": "Niveau",
+      "labels": "Libellés",
+      "notes": "Notes",
+      "enabled": "Les agents peuvent utiliser ce serveur"
+    },
+    "key": {
+      "stored": "Clé enregistrée",
+      "replace": "Remplacer la clé",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "Clé privée OpenSSH ou PEM sans phrase de passe. Elle est stockée chiffrée et n'est plus jamais affichée.",
+      "keepStored": "Garder la clé enregistrée"
+    },
+    "hostKey": {
+      "destinationChanged": "L'hôte, le port ou l'utilisateur a changé : la clé d'hôte enregistrée ne sera pas reconnue pour la nouvelle destination. Analysez le nouvel hôte et vérifiez son empreinte.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Analyser la clé d'hôte",
+      "hint": "Comparez l'empreinte avec ssh-keygen -lf sur le serveur avant d'enregistrer."
+    },
+    "problems": {
+      "nameRequired": "Saisissez un nom",
+      "nameFormat": "Minuscules, chiffres et tirets, en commençant par une lettre ou un chiffre",
+      "hostRequired": "Saisissez l'hôte",
+      "hostFormat": "Un nom d'hôte ou une adresse IP",
+      "portRange": "Un port entre 1 et 65535",
+      "userRequired": "Saisissez l'utilisateur SSH",
+      "keyRequired": "Collez la clé privée",
+      "keyPublic": "C'est une clé publique ; collez la clé privée",
+      "keyFormat": "Ce n'est pas une clé privée OpenSSH ou PEM",
+      "keyPassphrase": "Les clés avec phrase de passe ne sont pas prises en charge",
+      "hostKeyFormat": "Un \"<type> <clé>\" par ligne"
+    },
+    "test": {
+      "title": "Connexion",
+      "run": "Tester la connexion",
+      "ok": "Connecté en {{ms}} ms",
+      "useSeenKey": "Utiliser la clé présentée",
+      "errors": {
+        "auth_failed": "Le serveur a refusé la clé pour cet utilisateur.",
+        "host_key_mismatch": "L'hôte a présenté une autre clé d'hôte. Vérifiez-la avant de lui faire confiance.",
+        "host_key_unknown": "Aucune clé d'hôte enregistrée : analysez-la et vérifiez son empreinte.",
+        "unreachable": "L'hôte est injoignable.",
+        "timeout": "La connexion a expiré.",
+        "failed": "Le test a échoué."
+      }
+    },
+    "usedIn": {
+      "conversation": "Conversation {{id}}",
+      "nowhere": "Activé nulle part pour l'instant.",
+      "drop": "Retirer",
+      "dropLabel": "Retirer la règle pour {{scope}}",
+      "levelLabel": "Niveau",
+      "targetLabel": "Où",
+      "targetPlaceholder": "Choisir…",
+      "opLabel": "Activer ou désactiver",
+      "apply": "Appliquer",
+      "hint": "Ajouter active le serveur à ce niveau, Retirer désactive un serveur hérité. Pour une seule conversation, utilisez le bouton des kits dans son en-tête."
+    },
+    "audit": {
+      "title": "Commandes récentes",
+      "empty": "Aucune commande pour l'instant.",
+      "loadFailed": "Impossible de charger les commandes récentes.",
+      "crucial": "Critique",
+      "exitCode": "sortie {{code}}",
+      "duration": "{{seconds}} s",
+      "decision": {
+        "ran": "Exécutée",
+        "failed": "Échouée",
+        "needs_approval": "Vous a demandé",
+        "refused": "Refusée"
+      }
+    },
+    "errors": {
+      "generic": "Un problème est survenu avec les serveurs.",
+      "invalid": "Non enregistré : {{detail}}",
+      "nameTaken": "Un autre serveur porte déjà ce nom.",
+      "notFound": "Ce serveur n'existe plus.",
+      "unavailable": "Les groupes de serveurs ne sont pas disponibles sur cet AionCore.",
+      "unreachable": "L'hôte est injoignable.",
+      "sessionRequired": "Reconnectez-vous pour modifier les serveurs.",
+      "csrf": "La page n'est plus à jour ; rechargez-la et réessayez."
+    }
+  },
+  "rules": {
+    "title": "Règles",
+    "description": "Les règles que chaque session d'agent suit dès son début. Une règle n'atteint une conversation que là où vous l'activez.",
+    "add": "Ajouter une règle",
+    "addTitle": "Écrire une règle",
+    "search": "Rechercher des règles",
+    "loading": "Chargement des règles",
+    "empty": "Aucune règle pour l'instant. Écrivez-en une ou importez votre AGENTS.md actuel.",
+    "nothingOn": "Aucune règle n'est activée dans {{scope}}.",
+    "browseLibrary": "Parcourir les règles",
+    "switchedOff": "Désactivée",
+    "fromGlobalToggle": "De Global",
+    "fromGlobalHint": "Activée dans Global. Pour l'exclure de ce projet, ouvrez-la et retirez-la ici sous « Utilisée dans ».",
+    "offHereHint": "Activée dans Global, exclue de ce projet.",
+    "saved": "{{name}} enregistrée",
+    "created": "{{name}} ajoutée",
+    "deleted": "{{name}} supprimée",
+    "deleteTitle": "Supprimer {{name}} ?",
+    "deleteBody": "Elle cesse de s'appliquer partout dès la prochaine session.",
+    "namePlaceholder": "ex. Messages de commit",
+    "descriptionPlaceholder": "Une ligne : de quoi parle cette règle",
+    "bodyPlaceholder": "Écrivez la règle en Markdown. Courte, concrète, vérifiable.",
+    "edit": "Modifier",
+    "preview": "Aperçu",
+    "previewEmpty": "Rien à prévisualiser pour l'instant.",
+    "enabledHint": "Désactivée = elle ne s'applique nulle part, où qu'elle soit attachée.",
+    "importedFrom": "Importée depuis {{path}}",
+    "group": {
+      "here": "Activées dans {{scope}}",
+      "offHere": "Exclues ici"
+    },
+    "summary": {
+      "on": "{{count}} activées",
+      "on_one": "{{count}} activée",
+      "on_other": "{{count}} activées",
+      "fromGlobal": "{{count}} de Global",
+      "fromGlobal_one": "{{count}} de Global",
+      "fromGlobal_other": "{{count}} de Global",
+      "cap": "jusqu'à {{max}} par session"
+    },
+    "source": {
+      "mine": "Les miennes",
+      "imported": "Importées"
+    },
+    "chips": {
+      "off": "Désactivée"
+    },
+    "menu": {
+      "edit": "Modifier",
+      "switchOff": "Désactiver partout",
+      "switchOn": "Activer"
+    },
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "body": "Règle",
+      "enabled": "Appliquer cette règle"
+    },
+    "problems": {
+      "nameRequired": "Saisissez un nom",
+      "nameTooLong": "80 caractères au maximum",
+      "descriptionTooLong": "300 caractères au maximum",
+      "bodyRequired": "Écrivez la règle",
+      "bodyTooLarge": "Une règle fait au plus {{max}} Ko ; découpez-la ou gardez le contenu long dans une skill"
+    },
+    "size": {
+      "label": "{{used}} sur {{max}}"
+    },
+    "effective": {
+      "title": "Ce que reçoit {{scope}}",
+      "loadFailed": "Impossible de charger ce que reçoit cette portée.",
+      "none": "Aucune règle ne s'applique ici.",
+      "capped": "Au-delà de la limite, exclues des sessions : {{names}}",
+      "leftOut": "Exclue",
+      "exactText": "Texte exact au début des sessions",
+      "nextSession": "Les conversations en cours appliquent un changement à leur prochaine session."
+    },
+    "header": {
+      "label": "{{count}} règles",
+      "label_one": "{{count}} règle",
+      "label_other": "{{count}} règles",
+      "capped": "Certaines règles dépassent la limite de taille et sont exclues",
+      "title": "Règles de cette conversation",
+      "manage": "Gérer les règles"
+    },
+    "usedIn": {
+      "conversation": "Conversation {{id}}",
+      "nowhere": "Activée nulle part pour l'instant.",
+      "drop": "Retirer",
+      "dropLabel": "Retirer l'attribution pour {{scope}}",
+      "levelLabel": "Niveau",
+      "targetLabel": "Où",
+      "targetPlaceholder": "Choisir…",
+      "opLabel": "Activer ou exclure",
+      "apply": "Appliquer",
+      "hint": "Ajouter active la règle à ce niveau, Retirer exclut une règle héritée. Pour une seule conversation, utilisez le bouton des kits dans son en-tête."
+    },
+    "import": {
+      "open": "Importer AGENTS.md",
+      "title": "Importer des règles existantes",
+      "intro": "Transformez votre AGENTS.md actuel en règles. Vérifiez d'abord ce qui serait importé ; rien n'est écrit avant l'import.",
+      "scopeLabel": "Importer pour",
+      "projectPlaceholder": "Choisir un projet",
+      "projectLabel": "Projet",
+      "noFiles": "Aucun fichier de règles trouvé ici.",
+      "nameTaken": "Une règle porte déjà ce nom",
+      "blocked": "Certains noms sont déjà utilisés par vos règles. Renommez d'abord ces règles, puis importez.",
+      "importHint": "Crée les règles et les active ici. Les fichiers restent tels quels.",
+      "run": "Importer {{count}} règles",
+      "run_one": "Importer {{count}} règle",
+      "run_other": "Importer {{count}} règles",
+      "imported": "{{count}} règles importées",
+      "imported_one": "{{count}} règle importée",
+      "imported_other": "{{count}} règles importées",
+      "handOverTitle": "Confier les fichiers à AionUi",
+      "handOverGlobal": "Désormais, le fichier global est écrit à partir de vos règles Global, de nouveau après chaque changement : un seul endroit où modifier.",
+      "handOverProject": "Chaque fichier du dépôt devient un renvoi d'une ligne vers les règles d'AionUi. AionUi ne fait ni commit ni push ; vérifiez le changement dans git vous-même.",
+      "ackGlobal": "Je comprends que le fichier global sera généré à partir de mes règles Global",
+      "ackProject": "Je comprends que ces fichiers seront remplacés par un renvoi d'une ligne",
+      "handOver": "Confier",
+      "handedOver": "{{count}} fichiers confiés",
+      "handedOver_one": "{{count}} fichier confié",
+      "handedOver_other": "{{count}} fichiers confiés",
+      "status": {
+        "new": "Nouveau",
+        "imported": "Importé",
+        "managed": "Confié",
+        "pointer": "Renvoi seul",
+        "missing": "Introuvable"
+      }
+    },
+    "errors": {
+      "generic": "Un problème est survenu avec les règles.",
+      "invalid": "Non enregistrée : {{detail}}",
+      "nameTaken": "Une autre règle porte déjà ce nom.",
+      "stale": "Cette règle a changé ailleurs et a été rechargée. Vérifiez-la et enregistrez à nouveau.",
+      "alreadyImported": "Ce fichier a déjà été importé.",
+      "confirmRequired": "Confirmez d'abord l'étape.",
+      "notFound": "Cette règle n'existe plus.",
+      "sessionRequired": "Reconnectez-vous pour modifier les règles.",
+      "csrf": "La page n'est plus à jour ; rechargez-la et réessayez."
+    }
   }
 }

@@ -1857,5 +1857,288 @@
         "camoufox": "Camoufox"
       }
     }
+  },
+  "servers": {
+    "title": "服务器",
+    "description": "智能体可以在其上运行命令的 SSH 服务器。服务器只会出现在你开启它的范围内的对话中。",
+    "add": "添加服务器",
+    "addTitle": "添加服务器",
+    "search": "搜索服务器",
+    "loading": "正在加载服务器",
+    "empty": "还没有服务器。添加服务器及其 SSH 密钥后，智能体即可在上面运行命令。",
+    "nothingOn": "{{scope}} 中没有开启的服务器。",
+    "browseLibrary": "浏览服务器",
+    "unlabelled": "无标签",
+    "switchedOff": "已关闭",
+    "saved": "已保存 {{name}}",
+    "created": "已添加 {{name}}",
+    "deleted": "已删除 {{name}}",
+    "deleteTitle": "删除 {{name}}？",
+    "deleteBody": "智能体将在所有地方失去访问权限。已保存的密钥会被删除，审计记录保留。",
+    "tierNote": "读/写级别只是给智能体的指引：AionUi 无法在 shell 中区分读和写。只读服务器需要服务器上的只读账户。",
+    "crucialAsks": "生产环境且可写：关键命令总会先在对话中询问你。",
+    "labelsPlaceholder": "添加标签（如 TB、数据库）",
+    "notesPlaceholder": "智能体需要了解的关于此服务器的信息",
+    "enabledHint": "关闭 = 无论挂载在哪里，任何智能体都不能使用。",
+    "group": {
+      "here": "在 {{scope}} 中开启",
+      "offHere": "在此关闭",
+      "otherEnvironment": "其他"
+    },
+    "offHereHint": "在全局中开启，对此项目关闭。",
+    "summary": {
+      "on": "{{count}} 个已开启",
+      "on_one": "{{count}} 个已开启",
+      "on_other": "{{count}} 个已开启",
+      "total": "{{count}} 台服务器",
+      "total_one": "{{count}} 台服务器",
+      "total_other": "{{count}} 台服务器",
+      "fromGlobal": "{{count}} 个来自全局",
+      "fromGlobal_one": "{{count}} 个来自全局",
+      "fromGlobal_other": "{{count}} 个来自全局"
+    },
+    "menu": {
+      "switchOff": "在所有地方关闭",
+      "switchOn": "开启"
+    },
+    "chips": {
+      "off": "已关闭",
+      "keyStored": "已保存密钥",
+      "noKey": "无密钥",
+      "noHostKey": "无主机密钥",
+      "asks": "关键命令前询问"
+    },
+    "fields": {
+      "name": "名称（智能体使用的称呼）",
+      "user": "SSH 用户",
+      "host": "主机",
+      "port": "端口",
+      "privateKey": "私钥",
+      "hostKey": "主机密钥",
+      "environment": "环境",
+      "tier": "级别",
+      "labels": "标签",
+      "notes": "备注",
+      "enabled": "智能体可以使用此服务器"
+    },
+    "key": {
+      "stored": "已保存密钥",
+      "replace": "替换密钥",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "无口令的 OpenSSH 或 PEM 私钥。加密保存，不会再显示。",
+      "keepStored": "保留已保存的密钥"
+    },
+    "hostKey": {
+      "destinationChanged": "主机、端口或用户已更改：已保存的主机密钥不会被新目标信任。请扫描新主机并核对其指纹。",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "扫描主机密钥",
+      "hint": "保存前请与服务器上 ssh-keygen -lf 的输出核对指纹。"
+    },
+    "problems": {
+      "nameRequired": "请输入名称",
+      "nameFormat": "小写字母、数字和连字符，以字母或数字开头",
+      "hostRequired": "请输入主机",
+      "hostFormat": "主机名或 IP 地址",
+      "portRange": "1 到 65535 之间的端口",
+      "userRequired": "请输入 SSH 用户",
+      "keyRequired": "请粘贴私钥",
+      "keyPublic": "这是公钥，请粘贴私钥",
+      "keyFormat": "不是 OpenSSH 或 PEM 私钥",
+      "keyPassphrase": "不支持带口令的密钥",
+      "hostKeyFormat": "每行一个 \"<类型> <密钥>\""
+    },
+    "test": {
+      "title": "连接",
+      "run": "测试连接",
+      "ok": "{{ms}} 毫秒内连接成功",
+      "useSeenKey": "使用其提供的密钥",
+      "errors": {
+        "auth_failed": "服务器拒绝了此用户的密钥。",
+        "host_key_mismatch": "主机提供了不同的主机密钥。信任前请先核对。",
+        "host_key_unknown": "尚未保存主机密钥：请扫描并核对指纹。",
+        "unreachable": "无法连接到主机。",
+        "timeout": "连接超时。",
+        "failed": "测试失败。"
+      }
+    },
+    "usedIn": {
+      "conversation": "对话 {{id}}",
+      "nowhere": "尚未在任何地方开启。",
+      "drop": "移除",
+      "dropLabel": "移除 {{scope}} 的规则",
+      "levelLabel": "层级",
+      "targetLabel": "位置",
+      "targetPlaceholder": "选择…",
+      "opLabel": "开启或关闭",
+      "apply": "应用",
+      "hint": "添加会在该层级开启服务器，移除会关闭继承的服务器。若只针对一个对话，请使用该对话标题栏中的套件按钮。"
+    },
+    "audit": {
+      "title": "最近的命令",
+      "empty": "还没有命令。",
+      "loadFailed": "无法加载最近的命令。",
+      "crucial": "关键",
+      "exitCode": "退出码 {{code}}",
+      "duration": "{{seconds}} 秒",
+      "decision": {
+        "ran": "已执行",
+        "failed": "失败",
+        "needs_approval": "已询问你",
+        "refused": "已拒绝"
+      }
+    },
+    "errors": {
+      "generic": "服务器出现问题。",
+      "invalid": "未保存：{{detail}}",
+      "nameTaken": "已有服务器使用此名称。",
+      "notFound": "此服务器已不存在。",
+      "unavailable": "此 AionCore 不支持服务器池。",
+      "unreachable": "无法连接到主机。",
+      "sessionRequired": "请重新登录后再修改服务器。",
+      "csrf": "页面已过期，请刷新后重试。"
+    }
+  },
+  "rules": {
+    "title": "规则",
+    "description": "每个智能体会话从开始就遵守的规则。规则只会出现在你开启它的范围内的对话中。",
+    "add": "添加规则",
+    "addTitle": "编写规则",
+    "search": "搜索规则",
+    "loading": "正在加载规则",
+    "empty": "还没有规则。编写一条，或导入现有的 AGENTS.md。",
+    "nothingOn": "{{scope}} 中没有开启的规则。",
+    "browseLibrary": "浏览规则",
+    "switchedOff": "已关闭",
+    "fromGlobalToggle": "来自全局",
+    "fromGlobalHint": "在全局中开启。要在此项目中排除，请打开该规则，在“使用位置”中移除此处。",
+    "offHereHint": "在全局中开启，在此项目中排除。",
+    "saved": "已保存 {{name}}",
+    "created": "已添加 {{name}}",
+    "deleted": "已删除 {{name}}",
+    "deleteTitle": "删除 {{name}}？",
+    "deleteBody": "从下一个会话起，它在任何地方都不再生效。",
+    "namePlaceholder": "例如：提交信息",
+    "descriptionPlaceholder": "一行：这条规则是关于什么的",
+    "bodyPlaceholder": "用 Markdown 编写规则。简短、具体、可检验。",
+    "edit": "编辑",
+    "preview": "预览",
+    "previewEmpty": "还没有可预览的内容。",
+    "enabledHint": "关闭 = 无论挂载在哪里都不生效。",
+    "importedFrom": "导入自 {{path}}",
+    "group": {
+      "here": "在 {{scope}} 中开启",
+      "offHere": "在此排除"
+    },
+    "summary": {
+      "on": "{{count}} 条已开启",
+      "on_one": "{{count}} 条已开启",
+      "on_other": "{{count}} 条已开启",
+      "fromGlobal": "{{count}} 条来自全局",
+      "fromGlobal_one": "{{count}} 条来自全局",
+      "fromGlobal_other": "{{count}} 条来自全局",
+      "cap": "每个会话最多 {{max}}"
+    },
+    "source": {
+      "mine": "我的",
+      "imported": "已导入"
+    },
+    "chips": {
+      "off": "已关闭"
+    },
+    "menu": {
+      "edit": "编辑",
+      "switchOff": "在所有地方关闭",
+      "switchOn": "开启"
+    },
+    "fields": {
+      "name": "名称",
+      "description": "描述",
+      "body": "规则",
+      "enabled": "应用此规则"
+    },
+    "problems": {
+      "nameRequired": "请输入名称",
+      "nameTooLong": "最多 80 个字符",
+      "descriptionTooLong": "最多 300 个字符",
+      "bodyRequired": "请编写规则",
+      "bodyTooLarge": "一条规则最多 {{max}} KB；请拆分，或把长内容放进技能"
+    },
+    "size": {
+      "label": "{{used}} / {{max}}"
+    },
+    "effective": {
+      "title": "{{scope}} 会收到什么",
+      "loadFailed": "无法加载此范围会收到的内容。",
+      "none": "这里没有生效的规则。",
+      "capped": "超出上限，已从会话中排除：{{names}}",
+      "leftOut": "已排除",
+      "exactText": "会话开始时的确切文本",
+      "nextSession": "进行中的对话会在下一个会话应用更改。"
+    },
+    "header": {
+      "label": "{{count}} 条规则",
+      "label_one": "{{count}} 条规则",
+      "label_other": "{{count}} 条规则",
+      "capped": "部分规则超出大小上限而被排除",
+      "title": "此对话的规则",
+      "manage": "管理规则"
+    },
+    "usedIn": {
+      "conversation": "对话 {{id}}",
+      "nowhere": "尚未在任何地方开启。",
+      "drop": "移除",
+      "dropLabel": "移除 {{scope}} 的分配",
+      "levelLabel": "层级",
+      "targetLabel": "位置",
+      "targetPlaceholder": "选择…",
+      "opLabel": "开启或排除",
+      "apply": "应用",
+      "hint": "添加会在该层级开启规则，移除会排除继承的规则。若只针对一个对话，请使用该对话标题栏中的套件按钮。"
+    },
+    "import": {
+      "open": "导入 AGENTS.md",
+      "title": "导入现有规则",
+      "intro": "把正在使用的 AGENTS.md 转换为规则。请先检查将导入的内容；导入前不会写入任何东西。",
+      "scopeLabel": "导入到",
+      "projectPlaceholder": "选择项目",
+      "projectLabel": "项目",
+      "noFiles": "这里没有找到规则文件。",
+      "nameTaken": "已有同名规则",
+      "blocked": "部分名称已被你的规则使用。请先重命名那些规则，再导入。",
+      "importHint": "创建规则并在此开启。文件保持不变。",
+      "run": "导入 {{count}} 条规则",
+      "run_one": "导入 {{count}} 条规则",
+      "run_other": "导入 {{count}} 条规则",
+      "imported": "已导入 {{count}} 条规则",
+      "imported_one": "已导入 {{count}} 条规则",
+      "imported_other": "已导入 {{count}} 条规则",
+      "handOverTitle": "将文件交给 AionUi 管理",
+      "handOverGlobal": "从现在起，全局文件根据你的全局规则写入，每次更改后重新写入，只需在一个地方编辑。",
+      "handOverProject": "仓库中的每个文件都会变成指向 AionUi 规则的一行引用。AionUi 不会提交或推送；请自行在 git 中检查更改。",
+      "ackGlobal": "我了解全局文件将根据我的全局规则生成",
+      "ackProject": "我了解这些文件将被替换为一行引用",
+      "handOver": "交给 AionUi",
+      "handedOver": "已交出 {{count}} 个文件",
+      "handedOver_one": "已交出 {{count}} 个文件",
+      "handedOver_other": "已交出 {{count}} 个文件",
+      "status": {
+        "new": "新",
+        "imported": "已导入",
+        "managed": "已交出",
+        "pointer": "仅引用",
+        "missing": "未找到"
+      }
+    },
+    "errors": {
+      "generic": "规则出现问题。",
+      "invalid": "未保存：{{detail}}",
+      "nameTaken": "已有其他规则使用此名称。",
+      "stale": "此规则已在别处更改并已重新加载。请检查后再次保存。",
+      "alreadyImported": "此文件之前已导入。",
+      "confirmRequired": "请先确认该步骤。",
+      "notFound": "此规则已不存在。",
+      "sessionRequired": "请重新登录后再修改规则。",
+      "csrf": "页面已过期，请刷新后重试。"
+    }
   }
 }

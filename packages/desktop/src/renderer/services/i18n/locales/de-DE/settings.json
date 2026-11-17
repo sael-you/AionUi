@@ -1856,5 +1856,288 @@
         "camoufox": "Camoufox"
       }
     }
+  },
+  "servers": {
+    "title": "Server",
+    "description": "SSH-Server, auf denen Agenten Befehle ausführen dürfen. Ein Server erreicht ein Gespräch nur dort, wo du ihn einschaltest.",
+    "add": "Server hinzufügen",
+    "addTitle": "Server hinzufügen",
+    "search": "Server suchen",
+    "loading": "Server werden geladen",
+    "empty": "Noch kein Server. Füge einen mit seinem SSH-Schlüssel hinzu, damit Agenten dort Befehle ausführen können.",
+    "nothingOn": "In {{scope}} ist kein Server eingeschaltet.",
+    "browseLibrary": "Server durchsuchen",
+    "unlabelled": "Ohne Label",
+    "switchedOff": "Ausgeschaltet",
+    "saved": "{{name}} gespeichert",
+    "created": "{{name}} hinzugefügt",
+    "deleted": "{{name}} gelöscht",
+    "deleteTitle": "{{name}} löschen?",
+    "deleteBody": "Agenten verlieren überall den Zugriff. Der gespeicherte Schlüssel wird gelöscht; die Protokollzeilen bleiben.",
+    "tierNote": "Die Stufe Lesen/Schreiben ist nur ein Hinweis für Agenten: AionUi kann in einer Shell Lesen und Schreiben nicht unterscheiden. Ein nur lesender Server braucht ein nur lesendes Konto auf dem Server.",
+    "crucialAsks": "Produktion mit Schreiben: Kritische Befehle fragen dich immer zuerst, im Gespräch.",
+    "labelsPlaceholder": "Labels hinzufügen (z. B. TB, Datenbank)",
+    "notesPlaceholder": "Was Agenten über diesen Server wissen sollten",
+    "enabledHint": "Aus = kein Agent darf ihn nutzen, egal wo er angehängt ist.",
+    "group": {
+      "here": "An in {{scope}}",
+      "offHere": "Hier ausgeschaltet",
+      "otherEnvironment": "Andere"
+    },
+    "offHereHint": "In Global an, für dieses Projekt ausgeschaltet.",
+    "summary": {
+      "on": "{{count}} an",
+      "on_one": "{{count}} an",
+      "on_other": "{{count}} an",
+      "total": "{{count}} Server",
+      "total_one": "{{count}} Server",
+      "total_other": "{{count}} Server",
+      "fromGlobal": "{{count}} aus Global",
+      "fromGlobal_one": "{{count}} aus Global",
+      "fromGlobal_other": "{{count}} aus Global"
+    },
+    "menu": {
+      "switchOff": "Überall ausschalten",
+      "switchOn": "Einschalten"
+    },
+    "chips": {
+      "off": "Aus",
+      "keyStored": "Schlüssel gespeichert",
+      "noKey": "Kein Schlüssel",
+      "noHostKey": "Kein Host-Schlüssel",
+      "asks": "Fragt vor kritischen Befehlen"
+    },
+    "fields": {
+      "name": "Name (so nennen ihn Agenten)",
+      "user": "SSH-Benutzer",
+      "host": "Host",
+      "port": "Port",
+      "privateKey": "Privater Schlüssel",
+      "hostKey": "Host-Schlüssel",
+      "environment": "Umgebung",
+      "tier": "Stufe",
+      "labels": "Labels",
+      "notes": "Notizen",
+      "enabled": "Agenten dürfen diesen Server nutzen"
+    },
+    "key": {
+      "stored": "Schlüssel gespeichert",
+      "replace": "Schlüssel ersetzen",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "Privater OpenSSH- oder PEM-Schlüssel ohne Passphrase. Er wird verschlüsselt gespeichert und nie wieder angezeigt.",
+      "keepStored": "Gespeicherten Schlüssel behalten"
+    },
+    "hostKey": {
+      "destinationChanged": "Host, Port oder Benutzer haben sich geändert: Der gespeicherte Host-Schlüssel gilt für das neue Ziel nicht. Scanne den neuen Host und prüfe den Fingerabdruck.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Host-Schlüssel scannen",
+      "hint": "Vergleiche den Fingerabdruck vor dem Speichern mit ssh-keygen -lf auf dem Server."
+    },
+    "problems": {
+      "nameRequired": "Gib einen Namen ein",
+      "nameFormat": "Kleinbuchstaben, Ziffern und Bindestriche, beginnend mit Buchstabe oder Ziffer",
+      "hostRequired": "Gib den Host ein",
+      "hostFormat": "Ein Hostname oder eine IP-Adresse",
+      "portRange": "Ein Port zwischen 1 und 65535",
+      "userRequired": "Gib den SSH-Benutzer ein",
+      "keyRequired": "Füge den privaten Schlüssel ein",
+      "keyPublic": "Das ist ein öffentlicher Schlüssel; füge den privaten ein",
+      "keyFormat": "Kein privater OpenSSH- oder PEM-Schlüssel",
+      "keyPassphrase": "Schlüssel mit Passphrase werden nicht unterstützt",
+      "hostKeyFormat": "Ein \"<Typ> <Schlüssel>\" pro Zeile"
+    },
+    "test": {
+      "title": "Verbindung",
+      "run": "Verbindung testen",
+      "ok": "Verbunden in {{ms}} ms",
+      "useSeenKey": "Angezeigten Schlüssel übernehmen",
+      "errors": {
+        "auth_failed": "Der Server hat den Schlüssel für diesen Benutzer abgelehnt.",
+        "host_key_mismatch": "Der Host zeigt einen anderen Host-Schlüssel. Prüfe ihn, bevor du ihm vertraust.",
+        "host_key_unknown": "Noch kein Host-Schlüssel gespeichert: scanne ihn und prüfe den Fingerabdruck.",
+        "unreachable": "Der Host ist nicht erreichbar.",
+        "timeout": "Zeitüberschreitung bei der Verbindung.",
+        "failed": "Der Test ist fehlgeschlagen."
+      }
+    },
+    "usedIn": {
+      "conversation": "Gespräch {{id}}",
+      "nowhere": "Noch nirgends eingeschaltet.",
+      "drop": "Entfernen",
+      "dropLabel": "Regel für {{scope}} entfernen",
+      "levelLabel": "Ebene",
+      "targetLabel": "Wo",
+      "targetPlaceholder": "Auswählen…",
+      "opLabel": "An oder aus",
+      "apply": "Anwenden",
+      "hint": "Hinzufügen schaltet den Server auf dieser Ebene ein, Entfernen schaltet einen geerbten aus. Für ein einzelnes Gespräch nutze den Kits-Knopf in dessen Kopfzeile."
+    },
+    "audit": {
+      "title": "Letzte Befehle",
+      "empty": "Noch kein Befehl.",
+      "loadFailed": "Die letzten Befehle konnten nicht geladen werden.",
+      "crucial": "Kritisch",
+      "exitCode": "Exit {{code}}",
+      "duration": "{{seconds}} s",
+      "decision": {
+        "ran": "Ausgeführt",
+        "failed": "Fehlgeschlagen",
+        "needs_approval": "Hat dich gefragt",
+        "refused": "Abgelehnt"
+      }
+    },
+    "errors": {
+      "generic": "Bei den Servern ist etwas schiefgelaufen.",
+      "invalid": "Nicht gespeichert: {{detail}}",
+      "nameTaken": "Ein anderer Server hat schon diesen Namen.",
+      "notFound": "Diesen Server gibt es nicht mehr.",
+      "unavailable": "Server-Pools sind auf diesem AionCore nicht verfügbar.",
+      "unreachable": "Der Host ist nicht erreichbar.",
+      "sessionRequired": "Melde dich erneut an, um Server zu ändern.",
+      "csrf": "Die Seite ist veraltet; lade sie neu und versuche es erneut."
+    }
+  },
+  "rules": {
+    "title": "Regeln",
+    "description": "Regeln, denen jede Agenten-Sitzung von Beginn an folgt. Eine Regel erreicht ein Gespräch nur dort, wo du sie einschaltest.",
+    "add": "Regel hinzufügen",
+    "addTitle": "Regel schreiben",
+    "search": "Regeln suchen",
+    "loading": "Regeln werden geladen",
+    "empty": "Noch keine Regel. Schreibe eine oder importiere deine vorhandene AGENTS.md.",
+    "nothingOn": "In {{scope}} ist keine Regel eingeschaltet.",
+    "browseLibrary": "Regeln durchsuchen",
+    "switchedOff": "Ausgeschaltet",
+    "fromGlobalToggle": "Aus Global",
+    "fromGlobalHint": "In Global an. Um eine für dieses Projekt auszulassen, öffne sie und entferne sie hier unter „Verwendet in“.",
+    "offHereHint": "In Global an, in diesem Projekt ausgelassen.",
+    "saved": "{{name}} gespeichert",
+    "created": "{{name}} hinzugefügt",
+    "deleted": "{{name}} gelöscht",
+    "deleteTitle": "{{name}} löschen?",
+    "deleteBody": "Sie gilt ab der nächsten Sitzung nirgends mehr.",
+    "namePlaceholder": "z. B. Commit-Nachrichten",
+    "descriptionPlaceholder": "Eine Zeile: worum es in dieser Regel geht",
+    "bodyPlaceholder": "Schreibe die Regel in Markdown. Kurz, konkret, überprüfbar.",
+    "edit": "Bearbeiten",
+    "preview": "Vorschau",
+    "previewEmpty": "Noch nichts für die Vorschau.",
+    "enabledHint": "Aus = sie gilt nirgends, egal wo sie angehängt ist.",
+    "importedFrom": "Importiert aus {{path}}",
+    "group": {
+      "here": "An in {{scope}}",
+      "offHere": "Hier ausgelassen"
+    },
+    "summary": {
+      "on": "{{count}} an",
+      "on_one": "{{count}} an",
+      "on_other": "{{count}} an",
+      "fromGlobal": "{{count}} aus Global",
+      "fromGlobal_one": "{{count}} aus Global",
+      "fromGlobal_other": "{{count}} aus Global",
+      "cap": "bis zu {{max}} pro Sitzung"
+    },
+    "source": {
+      "mine": "Meine",
+      "imported": "Importiert"
+    },
+    "chips": {
+      "off": "Aus"
+    },
+    "menu": {
+      "edit": "Bearbeiten",
+      "switchOff": "Überall ausschalten",
+      "switchOn": "Einschalten"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Beschreibung",
+      "body": "Regel",
+      "enabled": "Diese Regel anwenden"
+    },
+    "problems": {
+      "nameRequired": "Gib einen Namen ein",
+      "nameTooLong": "Höchstens 80 Zeichen",
+      "descriptionTooLong": "Höchstens 300 Zeichen",
+      "bodyRequired": "Schreibe die Regel",
+      "bodyTooLarge": "Eine Regel darf höchstens {{max}} KB haben; teile sie oder lege lange Inhalte in einen Skill"
+    },
+    "size": {
+      "label": "{{used}} von {{max}}"
+    },
+    "effective": {
+      "title": "Was {{scope}} bekommt",
+      "loadFailed": "Was dieser Bereich bekommt, konnte nicht geladen werden.",
+      "none": "Hier gilt keine Regel.",
+      "capped": "Über dem Limit, in den Sitzungen ausgelassen: {{names}}",
+      "leftOut": "Ausgelassen",
+      "exactText": "Genauer Text, mit dem die Sitzungen beginnen",
+      "nextSession": "Laufende Gespräche übernehmen eine Änderung ab ihrer nächsten Sitzung."
+    },
+    "header": {
+      "label": "{{count}} Regeln",
+      "label_one": "{{count}} Regel",
+      "label_other": "{{count}} Regeln",
+      "capped": "Einige Regeln sind über dem Größenlimit und werden ausgelassen",
+      "title": "Regeln dieses Gesprächs",
+      "manage": "Regeln verwalten"
+    },
+    "usedIn": {
+      "conversation": "Gespräch {{id}}",
+      "nowhere": "Noch nirgends eingeschaltet.",
+      "drop": "Entfernen",
+      "dropLabel": "Regelzuordnung für {{scope}} entfernen",
+      "levelLabel": "Ebene",
+      "targetLabel": "Wo",
+      "targetPlaceholder": "Auswählen…",
+      "opLabel": "An oder aus",
+      "apply": "Anwenden",
+      "hint": "Hinzufügen schaltet die Regel auf dieser Ebene ein, Entfernen lässt eine geerbte aus. Für ein einzelnes Gespräch nutze den Kits-Knopf in dessen Kopfzeile."
+    },
+    "import": {
+      "open": "AGENTS.md importieren",
+      "title": "Vorhandene Regeln importieren",
+      "intro": "Mach aus deiner bisherigen AGENTS.md Regeln. Prüfe zuerst, was importiert würde; nichts wird geschrieben, bevor du importierst.",
+      "scopeLabel": "Importieren für",
+      "projectPlaceholder": "Projekt wählen",
+      "projectLabel": "Projekt",
+      "noFiles": "Hier wurde keine Regeldatei gefunden.",
+      "nameTaken": "Eine Regel mit diesem Namen existiert",
+      "blocked": "Einige Namen sind schon vergeben. Benenne diese Regeln zuerst um und importiere dann.",
+      "importHint": "Erstellt die Regeln und schaltet sie hier ein. Die Dateien bleiben unverändert.",
+      "run": "{{count}} Regeln importieren",
+      "run_one": "{{count}} Regel importieren",
+      "run_other": "{{count}} Regeln importieren",
+      "imported": "{{count}} Regeln importiert",
+      "imported_one": "{{count}} Regel importiert",
+      "imported_other": "{{count}} Regeln importiert",
+      "handOverTitle": "Dateien an AionUi übergeben",
+      "handOverGlobal": "Ab jetzt wird die globale Datei aus deinen Global-Regeln geschrieben, nach jeder Änderung neu – so gibt es nur eine Stelle zum Bearbeiten.",
+      "handOverProject": "Jede Datei im Repository wird zu einem einzeiligen Verweis auf die Regeln in AionUi. AionUi committet oder pusht nichts; prüfe die Änderung selbst in git.",
+      "ackGlobal": "Mir ist klar, dass die globale Datei aus meinen Global-Regeln erzeugt wird",
+      "ackProject": "Mir ist klar, dass diese Dateien durch einen einzeiligen Verweis ersetzt werden",
+      "handOver": "Übergeben",
+      "handedOver": "{{count}} Dateien übergeben",
+      "handedOver_one": "{{count}} Datei übergeben",
+      "handedOver_other": "{{count}} Dateien übergeben",
+      "status": {
+        "new": "Neu",
+        "imported": "Importiert",
+        "managed": "Übergeben",
+        "pointer": "Nur Verweis",
+        "missing": "Nicht gefunden"
+      }
+    },
+    "errors": {
+      "generic": "Bei den Regeln ist etwas schiefgelaufen.",
+      "invalid": "Nicht gespeichert: {{detail}}",
+      "nameTaken": "Eine andere Regel hat schon diesen Namen.",
+      "stale": "Diese Regel wurde anderswo geändert und neu geladen. Prüfe sie und speichere erneut.",
+      "alreadyImported": "Diese Datei wurde schon importiert.",
+      "confirmRequired": "Bestätige zuerst den Schritt.",
+      "notFound": "Diese Regel gibt es nicht mehr.",
+      "sessionRequired": "Melde dich erneut an, um Regeln zu ändern.",
+      "csrf": "Die Seite ist veraltet; lade sie neu und versuche es erneut."
+    }
   }
 }

@@ -1856,5 +1856,288 @@
         "camoufox": "Camoufox"
       }
     }
+  },
+  "servers": {
+    "title": "Servidores",
+    "description": "Servidores SSH en los que los agentes pueden ejecutar comandos. Un servidor solo llega a una conversación donde lo actives.",
+    "add": "Añadir servidor",
+    "addTitle": "Añadir un servidor",
+    "search": "Buscar servidores",
+    "loading": "Cargando servidores",
+    "empty": "Aún no hay servidores. Añade uno con su clave SSH para que los agentes ejecuten comandos en él.",
+    "nothingOn": "No hay ningún servidor activo en {{scope}}.",
+    "browseLibrary": "Ver servidores",
+    "unlabelled": "Sin etiqueta",
+    "switchedOff": "Desactivado",
+    "saved": "{{name}} guardado",
+    "created": "{{name}} añadido",
+    "deleted": "{{name}} eliminado",
+    "deleteTitle": "¿Eliminar {{name}}?",
+    "deleteBody": "Los agentes pierden el acceso en todas partes. Su clave guardada se elimina; las filas de auditoría se conservan.",
+    "tierNote": "El nivel lectura/escritura es solo una guía para los agentes: AionUi no distingue una lectura de una escritura dentro de un shell. Un servidor de solo lectura necesita una cuenta de solo lectura en el servidor.",
+    "crucialAsks": "Producción con escritura: los comandos críticos siempre te preguntan primero, en la conversación.",
+    "labelsPlaceholder": "Añade etiquetas (p. ej. TB, base de datos)",
+    "notesPlaceholder": "Lo que los agentes deben saber de este servidor",
+    "enabledHint": "Desactivado = ningún agente puede usarlo, esté adjunto donde esté.",
+    "group": {
+      "here": "Activo en {{scope}}",
+      "offHere": "Desactivado aquí",
+      "otherEnvironment": "Otros"
+    },
+    "offHereHint": "Activo en Global, desactivado para este proyecto.",
+    "summary": {
+      "on": "{{count}} activos",
+      "on_one": "{{count}} activo",
+      "on_other": "{{count}} activos",
+      "total": "{{count}} servidores",
+      "total_one": "{{count}} servidor",
+      "total_other": "{{count}} servidores",
+      "fromGlobal": "{{count}} de Global",
+      "fromGlobal_one": "{{count}} de Global",
+      "fromGlobal_other": "{{count}} de Global"
+    },
+    "menu": {
+      "switchOff": "Desactivar en todas partes",
+      "switchOn": "Activar"
+    },
+    "chips": {
+      "off": "Desactivado",
+      "keyStored": "Clave guardada",
+      "noKey": "Sin clave",
+      "noHostKey": "Sin clave de host",
+      "asks": "Pregunta antes de comandos críticos"
+    },
+    "fields": {
+      "name": "Nombre (como lo llaman los agentes)",
+      "user": "Usuario SSH",
+      "host": "Host",
+      "port": "Puerto",
+      "privateKey": "Clave privada",
+      "hostKey": "Clave de host",
+      "environment": "Entorno",
+      "tier": "Nivel",
+      "labels": "Etiquetas",
+      "notes": "Notas",
+      "enabled": "Los agentes pueden usar este servidor"
+    },
+    "key": {
+      "stored": "Clave guardada",
+      "replace": "Reemplazar clave",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "Clave privada OpenSSH o PEM sin frase de contraseña. Se guarda cifrada y no se vuelve a mostrar.",
+      "keepStored": "Conservar la clave guardada"
+    },
+    "hostKey": {
+      "destinationChanged": "Cambió el host, el puerto o el usuario: la clave de host guardada no se confiará para el nuevo destino. Escanea el nuevo host y comprueba su huella.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Escanear clave de host",
+      "hint": "Compara la huella con ssh-keygen -lf en el servidor antes de guardar."
+    },
+    "problems": {
+      "nameRequired": "Escribe un nombre",
+      "nameFormat": "Minúsculas, dígitos y guiones, empezando por letra o dígito",
+      "hostRequired": "Escribe el host",
+      "hostFormat": "Un nombre de host o una dirección IP",
+      "portRange": "Un puerto entre 1 y 65535",
+      "userRequired": "Escribe el usuario SSH",
+      "keyRequired": "Pega la clave privada",
+      "keyPublic": "Es una clave pública; pega la privada",
+      "keyFormat": "No es una clave privada OpenSSH o PEM",
+      "keyPassphrase": "No se admiten claves con frase de contraseña",
+      "hostKeyFormat": "Un \"<tipo> <clave>\" por línea"
+    },
+    "test": {
+      "title": "Conexión",
+      "run": "Probar conexión",
+      "ok": "Conectado en {{ms}} ms",
+      "useSeenKey": "Usar la clave que presentó",
+      "errors": {
+        "auth_failed": "El servidor rechazó la clave para este usuario.",
+        "host_key_mismatch": "El host presentó otra clave de host. Compruébala antes de confiar en ella.",
+        "host_key_unknown": "Aún no hay clave de host guardada: escanéala y comprueba su huella.",
+        "unreachable": "No se pudo llegar al host.",
+        "timeout": "Se agotó el tiempo de conexión.",
+        "failed": "La prueba falló."
+      }
+    },
+    "usedIn": {
+      "conversation": "Conversación {{id}}",
+      "nowhere": "Aún no está activo en ningún sitio.",
+      "drop": "Quitar",
+      "dropLabel": "Quitar la regla de {{scope}}",
+      "levelLabel": "Nivel",
+      "targetLabel": "Dónde",
+      "targetPlaceholder": "Elige…",
+      "opLabel": "Activar o desactivar",
+      "apply": "Aplicar",
+      "hint": "Añadir activa el servidor en ese nivel; Quitar desactiva uno heredado. Para una sola conversación, usa el botón de kits en su cabecera."
+    },
+    "audit": {
+      "title": "Comandos recientes",
+      "empty": "Aún no hay comandos.",
+      "loadFailed": "No se pudieron cargar los comandos recientes.",
+      "crucial": "Crítico",
+      "exitCode": "salida {{code}}",
+      "duration": "{{seconds}} s",
+      "decision": {
+        "ran": "Ejecutado",
+        "failed": "Falló",
+        "needs_approval": "Te preguntó",
+        "refused": "Rechazado"
+      }
+    },
+    "errors": {
+      "generic": "Algo salió mal con los servidores.",
+      "invalid": "No guardado: {{detail}}",
+      "nameTaken": "Otro servidor ya tiene este nombre.",
+      "notFound": "Este servidor ya no existe.",
+      "unavailable": "Los grupos de servidores no están disponibles en este AionCore.",
+      "unreachable": "No se pudo llegar al host.",
+      "sessionRequired": "Vuelve a iniciar sesión para cambiar servidores.",
+      "csrf": "La página está desactualizada; recárgala e inténtalo de nuevo."
+    }
+  },
+  "rules": {
+    "title": "Reglas",
+    "description": "Reglas que sigue cada sesión de agentes desde su inicio. Una regla solo llega a una conversación donde la actives.",
+    "add": "Añadir regla",
+    "addTitle": "Escribir una regla",
+    "search": "Buscar reglas",
+    "loading": "Cargando reglas",
+    "empty": "Aún no hay reglas. Escribe una o importa tu AGENTS.md actual.",
+    "nothingOn": "No hay ninguna regla activa en {{scope}}.",
+    "browseLibrary": "Ver reglas",
+    "switchedOff": "Desactivada",
+    "fromGlobalToggle": "De Global",
+    "fromGlobalHint": "Activa en Global. Para dejarla fuera de este proyecto, ábrela y quítala aquí en «Se usa en».",
+    "offHereHint": "Activa en Global, excluida de este proyecto.",
+    "saved": "{{name}} guardada",
+    "created": "{{name}} añadida",
+    "deleted": "{{name}} eliminada",
+    "deleteTitle": "¿Eliminar {{name}}?",
+    "deleteBody": "Deja de aplicarse en todas partes desde la próxima sesión.",
+    "namePlaceholder": "p. ej. Mensajes de commit",
+    "descriptionPlaceholder": "Una línea: de qué trata esta regla",
+    "bodyPlaceholder": "Escribe la regla en Markdown. Breve, concreta, comprobable.",
+    "edit": "Editar",
+    "preview": "Vista previa",
+    "previewEmpty": "Aún no hay nada que mostrar.",
+    "enabledHint": "Desactivada = no se aplica en ningún sitio, esté adjunta donde esté.",
+    "importedFrom": "Importada de {{path}}",
+    "group": {
+      "here": "Activas en {{scope}}",
+      "offHere": "Excluidas aquí"
+    },
+    "summary": {
+      "on": "{{count}} activas",
+      "on_one": "{{count}} activa",
+      "on_other": "{{count}} activas",
+      "fromGlobal": "{{count}} de Global",
+      "fromGlobal_one": "{{count}} de Global",
+      "fromGlobal_other": "{{count}} de Global",
+      "cap": "hasta {{max}} por sesión"
+    },
+    "source": {
+      "mine": "Mías",
+      "imported": "Importadas"
+    },
+    "chips": {
+      "off": "Desactivada"
+    },
+    "menu": {
+      "edit": "Editar",
+      "switchOff": "Desactivar en todas partes",
+      "switchOn": "Activar"
+    },
+    "fields": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "body": "Regla",
+      "enabled": "Aplicar esta regla"
+    },
+    "problems": {
+      "nameRequired": "Escribe un nombre",
+      "nameTooLong": "Como máximo 80 caracteres",
+      "descriptionTooLong": "Como máximo 300 caracteres",
+      "bodyRequired": "Escribe la regla",
+      "bodyTooLarge": "Una regla puede tener como máximo {{max}} KB; divídela o guarda el material largo en una skill"
+    },
+    "size": {
+      "label": "{{used}} de {{max}}"
+    },
+    "effective": {
+      "title": "Qué recibe {{scope}}",
+      "loadFailed": "No se pudo cargar qué recibe este ámbito.",
+      "none": "Aquí no se aplica ninguna regla.",
+      "capped": "Por encima del límite, excluidas de las sesiones: {{names}}",
+      "leftOut": "Excluida",
+      "exactText": "Texto exacto con el que empiezan las sesiones",
+      "nextSession": "Las conversaciones en curso aplican un cambio en su próxima sesión."
+    },
+    "header": {
+      "label": "{{count}} reglas",
+      "label_one": "{{count}} regla",
+      "label_other": "{{count}} reglas",
+      "capped": "Algunas reglas superan el límite de tamaño y quedan fuera",
+      "title": "Reglas de esta conversación",
+      "manage": "Gestionar reglas"
+    },
+    "usedIn": {
+      "conversation": "Conversación {{id}}",
+      "nowhere": "Aún no está activa en ningún sitio.",
+      "drop": "Quitar",
+      "dropLabel": "Quitar la asignación de {{scope}}",
+      "levelLabel": "Nivel",
+      "targetLabel": "Dónde",
+      "targetPlaceholder": "Elige…",
+      "opLabel": "Activar o excluir",
+      "apply": "Aplicar",
+      "hint": "Añadir activa la regla en ese nivel; Quitar excluye una heredada. Para una sola conversación, usa el botón de kits en su cabecera."
+    },
+    "import": {
+      "open": "Importar AGENTS.md",
+      "title": "Importar reglas existentes",
+      "intro": "Convierte tu AGENTS.md actual en reglas. Primero revisa lo que se importaría; no se escribe nada hasta que importes.",
+      "scopeLabel": "Importar para",
+      "projectPlaceholder": "Elige un proyecto",
+      "projectLabel": "Proyecto",
+      "noFiles": "No se encontró ningún archivo de reglas aquí.",
+      "nameTaken": "Ya existe una regla con este nombre",
+      "blocked": "Algunos nombres ya los usan tus reglas. Cambia primero el nombre de esas reglas y luego importa.",
+      "importHint": "Crea las reglas y las activa aquí. Los archivos no cambian.",
+      "run": "Importar {{count}} reglas",
+      "run_one": "Importar {{count}} regla",
+      "run_other": "Importar {{count}} reglas",
+      "imported": "{{count}} reglas importadas",
+      "imported_one": "{{count}} regla importada",
+      "imported_other": "{{count}} reglas importadas",
+      "handOverTitle": "Ceder los archivos a AionUi",
+      "handOverGlobal": "A partir de ahora el archivo global se escribe desde tus reglas Global, de nuevo tras cada cambio, para que haya un solo lugar donde editar.",
+      "handOverProject": "Cada archivo del repositorio pasa a ser un puntero de una línea a las reglas de AionUi. AionUi no hace commit ni push; revisa tú el cambio en git.",
+      "ackGlobal": "Entiendo que el archivo global se generará desde mis reglas Global",
+      "ackProject": "Entiendo que estos archivos se sustituirán por un puntero de una línea",
+      "handOver": "Ceder",
+      "handedOver": "{{count}} archivos cedidos",
+      "handedOver_one": "{{count}} archivo cedido",
+      "handedOver_other": "{{count}} archivos cedidos",
+      "status": {
+        "new": "Nuevo",
+        "imported": "Importado",
+        "managed": "Cedido",
+        "pointer": "Solo puntero",
+        "missing": "No encontrado"
+      }
+    },
+    "errors": {
+      "generic": "Algo salió mal con las reglas.",
+      "invalid": "No guardado: {{detail}}",
+      "nameTaken": "Otra regla ya tiene este nombre.",
+      "stale": "Esta regla cambió en otro lugar y se recargó. Revísala y vuelve a guardar.",
+      "alreadyImported": "Este archivo ya se importó.",
+      "confirmRequired": "Confirma primero el paso.",
+      "notFound": "Esta regla ya no existe.",
+      "sessionRequired": "Vuelve a iniciar sesión para cambiar reglas.",
+      "csrf": "La página está desactualizada; recárgala e inténtalo de nuevo."
+    }
   }
 }

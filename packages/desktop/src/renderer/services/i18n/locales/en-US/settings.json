@@ -1856,5 +1856,288 @@
         "camoufox": "Camoufox"
       }
     }
+  },
+  "servers": {
+    "title": "Servers",
+    "description": "SSH servers agents may run commands on. A server reaches a conversation only where you turn it on.",
+    "add": "Add server",
+    "addTitle": "Add a server",
+    "search": "Search servers",
+    "loading": "Loading servers",
+    "empty": "No server yet. Add one with its SSH key to let agents run commands on it.",
+    "nothingOn": "No server is on in {{scope}}.",
+    "browseLibrary": "Browse servers",
+    "unlabelled": "No label",
+    "switchedOff": "Switched off",
+    "saved": "{{name}} saved",
+    "created": "{{name}} added",
+    "deleted": "{{name}} deleted",
+    "deleteTitle": "Delete {{name}}?",
+    "deleteBody": "Agents lose access everywhere it is on. Its stored key is deleted; the audit rows stay.",
+    "tierNote": "The read/write tier is guidance for agents only: AionUi cannot tell a read from a write inside a shell. A read-only server needs a read-only account on the server.",
+    "crucialAsks": "Production with write: crucial commands always ask you first, in the conversation.",
+    "labelsPlaceholder": "Add labels (e.g. TB, database)",
+    "notesPlaceholder": "What agents should know about this server",
+    "enabledHint": "Off = no agent may use it anywhere, whatever it is attached to.",
+    "group": {
+      "here": "On in {{scope}}",
+      "offHere": "Turned off here",
+      "otherEnvironment": "Other"
+    },
+    "offHereHint": "On in Global, switched off for this project.",
+    "summary": {
+      "on": "{{count}} on",
+      "on_one": "{{count}} on",
+      "on_other": "{{count}} on",
+      "total": "{{count}} servers",
+      "total_one": "{{count}} server",
+      "total_other": "{{count}} servers",
+      "fromGlobal": "{{count}} from Global",
+      "fromGlobal_one": "{{count}} from Global",
+      "fromGlobal_other": "{{count}} from Global"
+    },
+    "menu": {
+      "switchOff": "Switch off everywhere",
+      "switchOn": "Switch on"
+    },
+    "chips": {
+      "off": "Off",
+      "keyStored": "Key stored",
+      "noKey": "No key",
+      "noHostKey": "No host key",
+      "asks": "Asks before crucial commands"
+    },
+    "fields": {
+      "name": "Name (what agents call it)",
+      "user": "SSH user",
+      "host": "Host",
+      "port": "Port",
+      "privateKey": "Private key",
+      "hostKey": "Host key",
+      "environment": "Environment",
+      "tier": "Tier",
+      "labels": "Labels",
+      "notes": "Notes",
+      "enabled": "Agents may use this server"
+    },
+    "key": {
+      "stored": "Key stored",
+      "replace": "Replace key",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "OpenSSH or PEM private key without a passphrase. It is stored encrypted and never shown again.",
+      "keepStored": "Keep the stored key"
+    },
+    "hostKey": {
+      "destinationChanged": "The host, port or user changed: the stored host key will not be trusted for the new destination. Scan the new host and check its fingerprint.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Scan host key",
+      "hint": "Compare the fingerprint with ssh-keygen -lf on the server before saving."
+    },
+    "problems": {
+      "nameRequired": "Enter a name",
+      "nameFormat": "Lowercase letters, digits and dashes, starting with a letter or digit",
+      "hostRequired": "Enter the host",
+      "hostFormat": "A host name or an IP address",
+      "portRange": "A port between 1 and 65535",
+      "userRequired": "Enter the SSH user",
+      "keyRequired": "Paste the private key",
+      "keyPublic": "This is a public key; paste the private key",
+      "keyFormat": "Not an OpenSSH or PEM private key",
+      "keyPassphrase": "Keys with a passphrase are not supported",
+      "hostKeyFormat": "One \"<type> <key>\" per line"
+    },
+    "test": {
+      "title": "Connection",
+      "run": "Test connection",
+      "ok": "Connected in {{ms}} ms",
+      "useSeenKey": "Use the key it presented",
+      "errors": {
+        "auth_failed": "The server refused the key for this user.",
+        "host_key_mismatch": "The host presented a different host key. Check it before trusting it.",
+        "host_key_unknown": "No host key stored yet: scan it and check its fingerprint.",
+        "unreachable": "The host could not be reached.",
+        "timeout": "The connection timed out.",
+        "failed": "The test failed."
+      }
+    },
+    "usedIn": {
+      "conversation": "Conversation {{id}}",
+      "nowhere": "Not on anywhere yet.",
+      "drop": "Remove",
+      "dropLabel": "Remove the rule for {{scope}}",
+      "levelLabel": "Level",
+      "targetLabel": "Where",
+      "targetPlaceholder": "Choose…",
+      "opLabel": "On or off",
+      "apply": "Apply",
+      "hint": "Add turns the server on at that level, Remove turns an inherited one off. For one conversation, use the kits button in its header."
+    },
+    "audit": {
+      "title": "Recent commands",
+      "empty": "No command yet.",
+      "loadFailed": "The recent commands could not be loaded.",
+      "crucial": "Crucial",
+      "exitCode": "exit {{code}}",
+      "duration": "{{seconds}} s",
+      "decision": {
+        "ran": "Ran",
+        "failed": "Failed",
+        "needs_approval": "Asked you",
+        "refused": "Refused"
+      }
+    },
+    "errors": {
+      "generic": "Something went wrong with the servers.",
+      "invalid": "Not saved: {{detail}}",
+      "nameTaken": "Another server already has this name.",
+      "notFound": "This server no longer exists.",
+      "unavailable": "Server pools are not available on this AionCore.",
+      "unreachable": "The host could not be reached.",
+      "sessionRequired": "Sign in again to change servers.",
+      "csrf": "The page is out of date; reload it and try again."
+    }
+  },
+  "rules": {
+    "title": "Rules",
+    "description": "Rules every agent session follows, from its start. A rule reaches a conversation only where you turn it on.",
+    "add": "Add rule",
+    "addTitle": "Write a rule",
+    "search": "Search rules",
+    "loading": "Loading rules",
+    "empty": "No rule yet. Write one, or import your existing AGENTS.md.",
+    "nothingOn": "No rule is on in {{scope}}.",
+    "browseLibrary": "Browse rules",
+    "switchedOff": "Switched off",
+    "fromGlobalToggle": "From Global",
+    "fromGlobalHint": "On in Global. To leave one out of this project, open it and remove it here under Used in.",
+    "offHereHint": "On in Global, left out of this project.",
+    "saved": "{{name}} saved",
+    "created": "{{name}} added",
+    "deleted": "{{name}} deleted",
+    "deleteTitle": "Delete {{name}}?",
+    "deleteBody": "It stops applying everywhere from the next session.",
+    "namePlaceholder": "e.g. Commit messages",
+    "descriptionPlaceholder": "One line: what this rule is about",
+    "bodyPlaceholder": "Write the rule in Markdown. Short, concrete, testable.",
+    "edit": "Edit",
+    "preview": "Preview",
+    "previewEmpty": "Nothing to preview yet.",
+    "enabledHint": "Off = it applies nowhere, whatever it is attached to.",
+    "importedFrom": "Imported from {{path}}",
+    "group": {
+      "here": "On in {{scope}}",
+      "offHere": "Left out here"
+    },
+    "summary": {
+      "on": "{{count}} on",
+      "on_one": "{{count}} on",
+      "on_other": "{{count}} on",
+      "fromGlobal": "{{count}} from Global",
+      "fromGlobal_one": "{{count}} from Global",
+      "fromGlobal_other": "{{count}} from Global",
+      "cap": "up to {{max}} per session"
+    },
+    "source": {
+      "mine": "Mine",
+      "imported": "Imported"
+    },
+    "chips": {
+      "off": "Off"
+    },
+    "menu": {
+      "edit": "Edit",
+      "switchOff": "Switch off everywhere",
+      "switchOn": "Switch on"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "body": "Rule",
+      "enabled": "Apply this rule"
+    },
+    "problems": {
+      "nameRequired": "Enter a name",
+      "nameTooLong": "At most 80 characters",
+      "descriptionTooLong": "At most 300 characters",
+      "bodyRequired": "Write the rule",
+      "bodyTooLarge": "A rule can be at most {{max}} KB; split it, or keep long material in a skill"
+    },
+    "size": {
+      "label": "{{used}} of {{max}}"
+    },
+    "effective": {
+      "title": "What {{scope}} gets",
+      "loadFailed": "What this scope gets could not be loaded.",
+      "none": "No rule applies here.",
+      "capped": "Over the cap, left out of the sessions: {{names}}",
+      "leftOut": "Left out",
+      "exactText": "Exact text the sessions start with",
+      "nextSession": "Running conversations pick a change up at their next session."
+    },
+    "header": {
+      "label": "{{count}} rules",
+      "label_one": "{{count}} rule",
+      "label_other": "{{count}} rules",
+      "capped": "Some rules are over the size cap and left out",
+      "title": "Rules this conversation gets",
+      "manage": "Manage rules"
+    },
+    "usedIn": {
+      "conversation": "Conversation {{id}}",
+      "nowhere": "Not on anywhere yet.",
+      "drop": "Remove",
+      "dropLabel": "Remove the rule for {{scope}}",
+      "levelLabel": "Level",
+      "targetLabel": "Where",
+      "targetPlaceholder": "Choose…",
+      "opLabel": "On or off",
+      "apply": "Apply",
+      "hint": "Add turns the rule on at that level, Remove leaves an inherited one out. For one conversation, use the kits button in its header."
+    },
+    "import": {
+      "open": "Import AGENTS.md",
+      "title": "Import existing rules",
+      "intro": "Turn the AGENTS.md you already use into rules. First check what would be imported; nothing is written until you import.",
+      "scopeLabel": "Import for",
+      "projectPlaceholder": "Choose a project",
+      "projectLabel": "Project",
+      "noFiles": "No rule file found here.",
+      "nameTaken": "A rule with this name exists",
+      "blocked": "Some names are already used by your rules. Rename those rules first, then import.",
+      "importHint": "Creates the rules and turns them on here. The files stay as they are.",
+      "run": "Import {{count}} rules",
+      "run_one": "Import {{count}} rule",
+      "run_other": "Import {{count}} rules",
+      "imported": "{{count}} rules imported",
+      "imported_one": "{{count}} rule imported",
+      "imported_other": "{{count}} rules imported",
+      "handOverTitle": "Hand the files over to AionUi",
+      "handOverGlobal": "From now on the global file is written from your Global rules, again after every change, so there is one place to edit.",
+      "handOverProject": "Each file in the repository becomes a one-line pointer to AionUi's rules. AionUi does not commit or push it; review the change in git yourself.",
+      "ackGlobal": "I understand the global file will be generated from my Global rules",
+      "ackProject": "I understand these files will be replaced by a one-line pointer",
+      "handOver": "Hand over",
+      "handedOver": "{{count}} files handed over",
+      "handedOver_one": "{{count}} file handed over",
+      "handedOver_other": "{{count}} files handed over",
+      "status": {
+        "new": "New",
+        "imported": "Imported",
+        "managed": "Handed over",
+        "pointer": "Pointer only",
+        "missing": "Not found"
+      }
+    },
+    "errors": {
+      "generic": "Something went wrong with the rules.",
+      "invalid": "Not saved: {{detail}}",
+      "nameTaken": "Another rule already has this name.",
+      "stale": "This rule changed elsewhere; it was reloaded. Check it and save again.",
+      "alreadyImported": "This file was imported before.",
+      "confirmRequired": "Confirm the step first.",
+      "notFound": "This rule no longer exists.",
+      "sessionRequired": "Sign in again to change rules.",
+      "csrf": "The page is out of date; reload it and try again."
+    }
   }
 }

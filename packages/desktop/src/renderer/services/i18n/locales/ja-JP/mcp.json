@@ -358,7 +358,9 @@
     "kind": {
       "kit": "キット",
       "skill": "スキル",
-      "mcp": "MCP サーバー"
+      "mcp": "MCP サーバー",
+      "server": "サーバー",
+      "rule": "ルール"
     },
     "op": {
       "add": "追加",
@@ -526,6 +528,8 @@
       "testOk": "接続済み · ツール {{count}} 件",
       "testOk_one": "接続済み · ツール {{count}} 件",
       "testOk_other": "接続済み · ツール {{count}} 件"
-    }
+    },
+    "servers": "サーバー",
+    "rules": "ルール"
   }
 }
