@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/config"
+	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/shot"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/wire"
 )
 
@@ -166,7 +167,7 @@ func TestScreenshotScaling(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	full := res.(Screenshot)
+	full := res.(shot.Screenshot)
 	if full.Format != "png" || full.Width != 40 || full.Height != 20 {
 		t.Fatalf("full %+v", full)
 	}
@@ -174,7 +175,7 @@ func TestScreenshotScaling(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	half := res.(Screenshot)
+	half := res.(shot.Screenshot)
 	data, _ := base64.StdEncoding.DecodeString(half.DataBase64)
 	if half.Format != "jpeg" || half.Width != 20 || half.Height != 10 || !bytes.HasPrefix(data, []byte{0xff, 0xd8}) {
 		t.Fatalf("half %+v", half.Format)

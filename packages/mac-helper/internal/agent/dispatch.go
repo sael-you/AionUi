@@ -10,6 +10,7 @@ import (
 
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/adb"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/audit"
+	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/shot"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/wire"
 )
 
@@ -122,7 +123,7 @@ func (a *Agent) phoneVerb(ctx context.Context, phone adb.Phone, verb string, arg
 		if err != nil {
 			return nil, err
 		}
-		return EncodeScreenshot(png, scale)
+		return shot.Encode(png, scale)
 	case "ui_tree":
 		if err := decode(args, &struct{}{}); err != nil {
 			return nil, err

@@ -24,6 +24,7 @@ import (
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/cdp"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/config"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/macos"
+	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/macos/control"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/relay"
 	"github.com/iOfficeAI/AionUi/packages/mac-helper/internal/wire"
 )
@@ -93,10 +94,14 @@ func runCommand(cmd string, args []string) error {
 
 // capabilities is what this build can do (sent in pair/hello).
 func capabilities() []string {
-	return []string{
+	caps := []string{
 		"screenshot", "ui_tree", "tap", "swipe", "text", "key", "launch", "foreground",
 		"install_apk", "logcat", "stop", "cdp_open", "cdp_frame", "cdp_close",
 	}
+	if control.Supported() {
+		caps = append(caps, "mac_screenshot", "mac_ax_tree", "mac_click", "mac_type", "mac_key", "mac_open_app")
+	}
+	return caps
 }
 
 func cmdPair(args []string) error {
@@ -187,6 +192,9 @@ func cmdRun() error {
 	a.Notify = macos.Notifier{}
 	tunnels := cdp.NewManager(runner)
 	a.CDP = tunnels
+	if control.Supported() {
+		a.Mac = control.New(dir)
+	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go a.Run(ctx, filepath.Join(dir, "config.json"))
@@ -246,6 +254,10 @@ func cmdStatus() error {
 	if cfg.Paused {
 		fmt.Println("STOPPED: every device is off (run `resume`).")
 	}
+	dir, err := stateDir()
+	if err != nil {
+		return err
+	}
 	runner, err := adbRunner()
 	if err != nil {
 		fmt.Println("adb:", err)
@@ -256,6 +268,11 @@ func cmdStatus() error {
 	phones, err := adb.Devices(ctx, runner)
 	if err != nil {
 		return err
+	}
+	if control.Supported() {
+		mac := control.New(dir).Info()
+		fmt.Printf("  %-28s %-12s %-5s %-14s agents %s (permissions %s)\n", "mac", "this Mac", "-", mac.Name,
+			onOff(cfg.DeviceEnabled(wire.DeviceMac)), map[bool]string{true: "granted", false: "missing: Screen Recording + Accessibility"}[mac.PermissionsOK])
 	}
 	if len(phones) == 0 {
 		fmt.Println("No phones: plug one in (USB debugging on) or pair one over Wi-Fi with `adb pair`.")

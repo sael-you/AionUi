@@ -65,7 +65,22 @@ aionui-mac-helper install-agent          # keep the helper running (starts at lo
   or screenshots).
 - AionUi asks you before crucial actions (payments, messages, deletes) and keeps its own audit.
 
-## 7 Remove
+## 7 Control of this Mac (optional, off by default)
+
+Agents can also take screenshots of the main display, read the frontmost app's accessibility tree, click, type,
+press keys and open apps on this Mac — only after you grant macOS permissions **and** switch `mac` on:
+
+1. System Settings → Privacy & Security → **Screen Recording** → add `aionui-mac-helper` and switch it on.
+2. System Settings → Privacy & Security → **Accessibility** → add `aionui-mac-helper` and switch it on.
+3. The first accessibility-tree read asks to let the helper control **System Events** — allow it.
+4. `aionui-mac-helper status` shows `permissions granted`; then `aionui-mac-helper enable mac` and switch the Mac
+   on in AionUi.
+
+Limits: main display only; clicks use points (screenshots are scaled to points to match); text fields marked secure
+never report their content; macOS ties the permissions to this exact binary, so **every new version needs steps
+1–2 again** (ad-hoc signature, no Apple Developer ID). AionUi asks you before crucial actions here too.
+
+## 8 Remove
 
 ```sh
 aionui-mac-helper uninstall-agent

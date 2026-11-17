@@ -13,7 +13,8 @@ Design: `clauterm-studio/design/mobile/C38-ANDROID-ACCESS.md` §5–§7. Owner g
 | `internal/cdp`          | phone Chrome DevTools tunnel (`adb forward` → browser socket)                           |
 | `internal/config`       | state dir (0700), config + token files (0600), per-device switches                      |
 | `internal/audit`        | local JSON-lines log (no typed text, screenshots or tokens)                             |
-| `internal/macos`        | notifications, launchd agent                                                            |
+| `internal/macos`        | notifications, launchd agent; `control/`: Mac verbs (CoreGraphics via purego, JXA tree) |
+| `internal/shot`         | screenshot encoding (PNG, or downscaled JPEG q80)                                       |
 
 ```sh
 export PATH=/root/.clauterm/toolchain/go/bin:$PATH   # container toolchain
