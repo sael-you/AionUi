@@ -78,7 +78,8 @@ export type KnownAddon = (typeof KNOWN_ADDONS)[number];
 /** Which known add-on a registry row is, by its source id or name. */
 export const knownAddon = (device: Device): KnownAddon | null => {
   if (device.kind !== 'addon') return null;
-  const haystack = `${device.source_id ?? ''} ${device.name}`.toLowerCase();
+  // Core ids: `addon:<name>` in the Library, `addon:<pairing>:<name>` once installed.
+  const haystack = `${device.id} ${device.source_id ?? ''} ${device.name}`.toLowerCase();
   return KNOWN_ADDONS.find((name) => haystack.includes(name)) ?? null;
 };
 
@@ -87,4 +88,35 @@ export const descriptionKey = (device: Device): string | null => {
   if (device.kind === 'addon') return `settings.devices.addons.${knownAddon(device) ?? 'generic'}.desc`;
   if (device.kind === 'mac') return 'settings.devices.mac.desc';
   return null;
+};
+
+/** What an add-on run left in an audit row's `detail` (a JSON string from AionCore, K5). */
+export type AddonRunDetail = {
+  task?: string;
+  state?: string;
+  message?: string;
+  /** Only http(s) links are kept. */
+  traceUrl?: string;
+  durationMs?: number;
+};
+
+/** Parse an audit row's `detail`; null when it is not the add-on JSON. */
+export const addonRunDetail = (detail: string | null): AddonRunDetail | null => {
+  if (!detail) return null;
+  try {
+    const value: unknown = JSON.parse(detail);
+    if (!value || typeof value !== 'object') return null;
+    const row = value as Record<string, unknown>;
+    const text = (field: unknown) => (typeof field === 'string' && field ? field : undefined);
+    const trace = text(row.trace_url);
+    return {
+      task: text(row.task),
+      state: text(row.state) ?? text(row.reason),
+      message: text(row.message),
+      traceUrl: trace && /^https?:\/\//i.test(trace) ? trace : undefined,
+      durationMs: typeof row.duration_ms === 'number' ? row.duration_ms : undefined,
+    };
+  } catch {
+    return null;
+  }
 };

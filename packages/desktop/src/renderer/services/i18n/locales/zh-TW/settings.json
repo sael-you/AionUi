@@ -1768,7 +1768,8 @@
       "empty": "尚無內容。",
       "more": "顯示較早的",
       "failed": "無法載入更多。",
-      "error": "錯誤"
+      "error": "錯誤",
+      "trace": "開啟執行記錄"
     },
     "approval": {
       "title": "智慧代理想在「{{device}}」上操作",
@@ -1776,7 +1777,13 @@
       "target": "在 {{target}} 中：",
       "taskHint": "你核准的是整個工作：附加元件自行決定每次點按。停止和逾時仍會結束它。",
       "allow": "允許",
-      "allowed": "已允許。"
+      "allowed": "已允許。",
+      "allowFor_one": "允許 {{count}} 分鐘",
+      "allowFor_other": "允許 {{count}} 分鐘",
+      "allowedFor_one": "已允許 {{count}} 分鐘。",
+      "allowedFor_other": "已允許 {{count}} 分鐘。",
+      "grantHint_one": "允許後，{{count}} 分鐘內可在此裝置和 App 上讀取並操作；之後智慧代理會再次詢問。",
+      "grantHint_other": "允許後，{{count}} 分鐘內可在此裝置和 App 上讀取並操作；之後智慧代理會再次詢問。"
     },
     "pair": {
       "title": {

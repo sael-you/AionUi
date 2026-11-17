@@ -1766,7 +1766,8 @@
       "empty": "Nada todavía.",
       "more": "Mostrar anteriores",
       "failed": "No se pudo cargar más.",
-      "error": "error"
+      "error": "error",
+      "trace": "Abrir el registro"
     },
     "approval": {
       "title": "Un agente quiere actuar en «{{device}}»",
@@ -1774,7 +1775,13 @@
       "target": "En {{target}}:",
       "taskHint": "Apruebas la tarea completa: el complemento decide sus propios toques. Detener y el tiempo límite la terminan igualmente.",
       "allow": "Permitir",
-      "allowed": "Permitido."
+      "allowed": "Permitido.",
+      "allowFor_one": "Permitir {{count}} min",
+      "allowFor_other": "Permitir {{count}} min",
+      "allowedFor_one": "Permitido durante {{count}} min.",
+      "allowedFor_other": "Permitido durante {{count}} min.",
+      "grantHint_one": "Permitir cubre leer y actuar en este dispositivo y esta app durante {{count}} min; después los agentes vuelven a preguntar.",
+      "grantHint_other": "Permitir cubre leer y actuar en este dispositivo y esta app durante {{count}} min; después los agentes vuelven a preguntar."
     },
     "pair": {
       "title": {

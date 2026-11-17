@@ -39,12 +39,19 @@ export const DeviceApprovalCard: React.FC<{
   const bodyId = useId();
   const [busy, setBusy] = useState<DeviceApprovalDecision | null>(null);
   const target = approval.package ?? approval.origin;
+  const minutes = approval.grant_minutes && approval.grant_minutes > 0 ? approval.grant_minutes : 0;
 
   const decide = async (decision: DeviceApprovalDecision) => {
     setBusy(decision);
     try {
       await devicesApi.decideApproval.invoke({ id: approval.id, decision });
-      Message.success(t(decision === 'allow' ? `${KEY}.allowed` : `${SHARED}.denied`));
+      Message.success(
+        decision !== 'allow'
+          ? t(`${SHARED}.denied`)
+          : minutes
+            ? t(`${KEY}.allowedFor`, { count: minutes })
+            : t(`${KEY}.allowed`)
+      );
     } catch (error) {
       Message.error(t(isBackendHttpError(error) && error.status === 410 ? `${SHARED}.expired` : `${SHARED}.failed`));
     } finally {
@@ -76,6 +83,7 @@ export const DeviceApprovalCard: React.FC<{
           {approval.task ?? approval.summary}
         </code>
         {approval.task ? <span>{t(`${KEY}.taskHint`)}</span> : null}
+        {minutes ? <span data-testid='device-approval-grant'>{t(`${KEY}.grantHint`, { count: minutes })}</span> : null}
         <span aria-live='polite'>{t(`${SHARED}.countdown`, { count: secondsLeft(approval.expires_at, now) })}</span>
       </div>
       <div className='flex flex-wrap gap-8px justify-end'>
@@ -97,7 +105,7 @@ export const DeviceApprovalCard: React.FC<{
           onClick={() => void decide('allow')}
           data-testid='device-approval-allow'
         >
-          {t(`${KEY}.allow`)}
+          {minutes ? t(`${KEY}.allowFor`, { count: minutes }) : t(`${KEY}.allow`)}
         </Button>
       </div>
     </div>

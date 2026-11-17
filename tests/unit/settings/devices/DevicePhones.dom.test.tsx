@@ -46,6 +46,7 @@ import {
   DeviceAuditBlock,
   DeviceRoutesBlock,
 } from '@/renderer/pages/settings/DevicesSettings/phones/PhoneBlocks';
+import { addonRunDetail, knownAddon } from '@/renderer/pages/settings/DevicesSettings/devicesModel';
 import { pendingDeviceApprovals } from '@/renderer/pages/settings/DevicesSettings/useDevices';
 
 const KEY = 'settings.devices';
@@ -125,6 +126,16 @@ describe('device approvals (TASK-136 U2/U3)', () => {
     expect(Message.success).toHaveBeenCalledWith(`${KEY}.approval.allowed`);
   });
 
+  it('a grant says how long Allow covers that device and app; an add-on task has none', async () => {
+    api.decideApproval.invoke.mockResolvedValue(undefined);
+    render(<DeviceApprovalCard approval={approval({ grant_minutes: 5 })} now={1_000} onDecided={() => undefined} />);
+    expect(screen.getByTestId('device-approval-grant')).toHaveTextContent(`${KEY}.approval.grantHint|{"count":5}`);
+    const allow = screen.getByTestId('device-approval-allow');
+    expect(allow).toHaveTextContent(`${KEY}.approval.allowFor|{"count":5}`);
+    fireEvent.click(allow);
+    await waitFor(() => expect(Message.success).toHaveBeenCalledWith(`${KEY}.approval.allowedFor|{"count":5}`));
+  });
+
   it('an add-on run shows the whole task text; Deny on an expired one says so', async () => {
     api.decideApproval.invoke.mockRejectedValue({ status: 410 });
     render(
@@ -138,6 +149,8 @@ describe('device approvals (TASK-136 U2/U3)', () => {
     expect(card).toHaveTextContent(`${KEY}.approval.titleTask|{"device":"Pixel 9"}`);
     expect(screen.getByTestId('device-approval-summary')).toHaveTextContent('Book the 9:00 train to Lyon');
     expect(card).toHaveTextContent(`${KEY}.approval.taskHint`);
+    expect(screen.queryByTestId('device-approval-grant')).toBeNull();
+    expect(screen.getByTestId('device-approval-allow')).toHaveTextContent(`${KEY}.approval.allow`);
     fireEvent.click(screen.getByTestId('device-approval-deny'));
     await waitFor(() => expect(api.decideApproval.invoke).toHaveBeenCalledWith({ id: 'a1', decision: 'deny' }));
     await waitFor(() => expect(Message.error).toHaveBeenCalledWith(`${SHARED}.expired`));
@@ -268,5 +281,34 @@ describe('phone drawer blocks (TASK-136 U2)', () => {
     expect(api.audit.invoke).toHaveBeenLastCalledWith({ id: 'pixel', cursor: 'c2', limit: 50 });
     expect(screen.getAllByTestId('device-audit-row')[2]).toHaveTextContent(`${KEY}.audit.error`);
     expect(screen.queryByTestId('device-audit-more')).toBeNull();
+  });
+
+  it('an add-on run in the audit shows its task and a trace link, http(s) only', async () => {
+    const run = (detail: unknown) => ({
+      at: 5,
+      verb: 'addon_run',
+      package: null,
+      origin: null,
+      outcome: 'ok' as const,
+      conversation_id: null,
+      detail: JSON.stringify(detail),
+    });
+    api.audit.invoke.mockResolvedValue({
+      rows: [
+        run({ task: 'Book the train', state: 'done', duration_ms: 9000, trace_url: 'https://trace.example/1' }),
+        run({ task: 'Other', state: 'failed', message: 'phone locked', trace_url: 'javascript:alert(1)' }),
+      ],
+      next_cursor: null,
+    });
+    render(swr(<DeviceAuditBlock device={{ ...PHONE, id: 'addon:p1:artemis', kind: 'addon' }} />));
+    const rows = await screen.findAllByTestId('device-audit-row');
+    expect(within(rows[0]).getByTestId('device-audit-task')).toHaveTextContent('Book the train');
+    expect(within(rows[0]).getByTestId('device-audit-trace')).toHaveAttribute('href', 'https://trace.example/1');
+    expect(rows[1]).toHaveTextContent('phone locked');
+    expect(within(rows[1]).queryByTestId('device-audit-trace')).toBeNull();
+    expect(addonRunDetail('not json')).toBeNull();
+    expect(addonRunDetail(null)).toBeNull();
+    expect(knownAddon({ ...PHONE, id: 'addon:p1:mobilerun', kind: 'addon', name: 'x' })).toBe('mobilerun');
+    expect(knownAddon({ ...PHONE, id: 'addon:artemis', kind: 'addon', name: 'x' })).toBe('artemis');
   });
 });

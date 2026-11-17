@@ -1766,7 +1766,8 @@
       "empty": "Nothing yet.",
       "more": "Show older",
       "failed": "Could not load more.",
-      "error": "error"
+      "error": "error",
+      "trace": "Open the trace"
     },
     "approval": {
       "title": "An agent wants to act on “{{device}}”",
@@ -1774,7 +1775,13 @@
       "target": "In {{target}}:",
       "taskHint": "You approve the whole task: the add-on decides its own taps. Stop and the timeout still end it.",
       "allow": "Allow",
-      "allowed": "Allowed."
+      "allowed": "Allowed.",
+      "allowFor_one": "Allow for {{count}} min",
+      "allowFor_other": "Allow for {{count}} min",
+      "allowedFor_one": "Allowed for {{count}} min.",
+      "allowedFor_other": "Allowed for {{count}} min.",
+      "grantHint_one": "Allowing covers reading and acting on this device and app for {{count}} min; then agents ask again.",
+      "grantHint_other": "Allowing covers reading and acting on this device and app for {{count}} min; then agents ask again."
     },
     "pair": {
       "title": {

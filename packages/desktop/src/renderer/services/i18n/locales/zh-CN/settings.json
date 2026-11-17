@@ -1767,7 +1767,8 @@
       "empty": "暂无内容。",
       "more": "显示更早的",
       "failed": "无法加载更多。",
-      "error": "错误"
+      "error": "错误",
+      "trace": "打开运行记录"
     },
     "approval": {
       "title": "智能体想在“{{device}}”上操作",
@@ -1775,7 +1776,13 @@
       "target": "在 {{target}} 中：",
       "taskHint": "你批准的是整个任务：附加组件自行决定每次点按。停止和超时仍会结束它。",
       "allow": "允许",
-      "allowed": "已允许。"
+      "allowed": "已允许。",
+      "allowFor_one": "允许 {{count}} 分钟",
+      "allowFor_other": "允许 {{count}} 分钟",
+      "allowedFor_one": "已允许 {{count}} 分钟。",
+      "allowedFor_other": "已允许 {{count}} 分钟。",
+      "grantHint_one": "允许后，{{count}} 分钟内可在此设备和应用上读取并操作；之后智能体会再次询问。",
+      "grantHint_other": "允许后，{{count}} 分钟内可在此设备和应用上读取并操作；之后智能体会再次询问。"
     },
     "pair": {
       "title": {
