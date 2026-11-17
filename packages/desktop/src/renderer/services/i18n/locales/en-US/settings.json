@@ -1659,5 +1659,145 @@
       "stepPair": "Pair it: click “{{button}}” below, then click the AionUi icon in your browser and type the code.",
       "update": "Version {{version}} is available. Still on an older one: {{names}}. Download it, replace the files in the folder, then press the reload arrow on the extension's card."
     }
+  },
+  "servers": {
+    "title": "Servers",
+    "description": "SSH servers agents may run commands on. A server reaches a conversation only where you turn it on.",
+    "add": "Add server",
+    "addTitle": "Add a server",
+    "search": "Search servers",
+    "loading": "Loading servers",
+    "empty": "No server yet. Add one with its SSH key to let agents run commands on it.",
+    "nothingOn": "No server is on in {{scope}}.",
+    "browseLibrary": "Browse servers",
+    "unlabelled": "No label",
+    "switchedOff": "Switched off",
+    "saved": "{{name}} saved",
+    "created": "{{name}} added",
+    "deleted": "{{name}} deleted",
+    "deleteTitle": "Delete {{name}}?",
+    "deleteBody": "Agents lose access everywhere it is on. Its stored key is deleted; the audit rows stay.",
+    "tierNote": "The read/write tier is guidance for agents only: AionUi cannot tell a read from a write inside a shell. A read-only server needs a read-only account on the server.",
+    "crucialAsks": "Production with write: crucial commands always ask you first, in the conversation.",
+    "labelsPlaceholder": "Add labels (e.g. TB, database)",
+    "notesPlaceholder": "What agents should know about this server",
+    "enabledHint": "Off = no agent may use it anywhere, whatever it is attached to.",
+    "group": {
+      "here": "On in {{scope}}",
+      "offHere": "Turned off here",
+      "otherEnvironment": "Other"
+    },
+    "offHereHint": "On in Global, switched off for this project.",
+    "summary": {
+      "on": "{{count}} on",
+      "on_one": "{{count}} on",
+      "on_other": "{{count}} on",
+      "total": "{{count}} servers",
+      "total_one": "{{count}} server",
+      "total_other": "{{count}} servers",
+      "fromGlobal": "{{count}} from Global",
+      "fromGlobal_one": "{{count}} from Global",
+      "fromGlobal_other": "{{count}} from Global"
+    },
+    "menu": {
+      "switchOff": "Switch off everywhere",
+      "switchOn": "Switch on"
+    },
+    "chips": {
+      "off": "Off",
+      "keyStored": "Key stored",
+      "noKey": "No key",
+      "noHostKey": "No host key",
+      "asks": "Asks before crucial commands"
+    },
+    "fields": {
+      "name": "Name (what agents call it)",
+      "user": "SSH user",
+      "host": "Host",
+      "port": "Port",
+      "privateKey": "Private key",
+      "hostKey": "Host key",
+      "environment": "Environment",
+      "tier": "Tier",
+      "labels": "Labels",
+      "notes": "Notes",
+      "enabled": "Agents may use this server"
+    },
+    "key": {
+      "stored": "Key stored",
+      "replace": "Replace key",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "OpenSSH or PEM private key without a passphrase. It is stored encrypted and never shown again.",
+      "keepStored": "Keep the stored key"
+    },
+    "hostKey": {
+      "destinationChanged": "The host, port or user changed: the stored host key will not be trusted for the new destination. Scan the new host and check its fingerprint.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Scan host key",
+      "hint": "Compare the fingerprint with ssh-keygen -lf on the server before saving."
+    },
+    "problems": {
+      "nameRequired": "Enter a name",
+      "nameFormat": "Lowercase letters, digits and dashes, starting with a letter or digit",
+      "hostRequired": "Enter the host",
+      "hostFormat": "A host name or an IP address",
+      "portRange": "A port between 1 and 65535",
+      "userRequired": "Enter the SSH user",
+      "keyRequired": "Paste the private key",
+      "keyPublic": "This is a public key; paste the private key",
+      "keyFormat": "Not an OpenSSH or PEM private key",
+      "keyPassphrase": "Keys with a passphrase are not supported",
+      "hostKeyFormat": "One \"<type> <key>\" per line"
+    },
+    "test": {
+      "title": "Connection",
+      "run": "Test connection",
+      "ok": "Connected in {{ms}} ms",
+      "useSeenKey": "Use the key it presented",
+      "errors": {
+        "auth_failed": "The server refused the key for this user.",
+        "host_key_mismatch": "The host presented a different host key. Check it before trusting it.",
+        "host_key_unknown": "No host key stored yet: scan it and check its fingerprint.",
+        "unreachable": "The host could not be reached.",
+        "timeout": "The connection timed out.",
+        "failed": "The test failed."
+      }
+    },
+    "usedIn": {
+      "conversation": "Conversation {{id}}",
+      "nowhere": "Not on anywhere yet.",
+      "drop": "Remove",
+      "dropLabel": "Remove the rule for {{scope}}",
+      "levelLabel": "Level",
+      "targetLabel": "Where",
+      "targetPlaceholder": "Choose…",
+      "opLabel": "On or off",
+      "apply": "Apply",
+      "hint": "Add turns the server on at that level, Remove turns an inherited one off. For one conversation, use the kits button in its header."
+    },
+    "audit": {
+      "title": "Recent commands",
+      "empty": "No command yet.",
+      "loadFailed": "The recent commands could not be loaded.",
+      "crucial": "Crucial",
+      "exitCode": "exit {{code}}",
+      "duration": "{{seconds}} s",
+      "decision": {
+        "ran": "Ran",
+        "failed": "Failed",
+        "needs_approval": "Asked you",
+        "refused": "Refused"
+      }
+    },
+    "errors": {
+      "generic": "Something went wrong with the servers.",
+      "invalid": "Not saved: {{detail}}",
+      "nameTaken": "Another server already has this name.",
+      "notFound": "This server no longer exists.",
+      "unavailable": "Server pools are not available on this AionCore.",
+      "unreachable": "The host could not be reached.",
+      "sessionRequired": "Sign in again to change servers.",
+      "csrf": "The page is out of date; reload it and try again."
+    }
   }
 }

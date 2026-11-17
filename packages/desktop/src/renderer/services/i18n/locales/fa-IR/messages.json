@@ -97,5 +97,11 @@
   "requestDetails": "جزئیات درخواست:",
   "delivery": {
     "pending": "خوانده‌نشده"
+  },
+  "serverApproval": {
+    "title": "یک فرمان حساس روی {{server}} اجرا شود؟",
+    "reason": "حساس: {{reason}}",
+    "crucial": "در این سرور فرمان حساس حساب می‌شود.",
+    "declaredByAgent": "خود عامل آن را حساس علامت زد (هیچ قاعده‌ای منطبق نشد)."
   }
 }

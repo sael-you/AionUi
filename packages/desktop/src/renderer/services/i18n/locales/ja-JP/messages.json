@@ -97,5 +97,11 @@
   "requestDetails": "リクエスト内容:",
   "delivery": {
     "pending": "未読"
+  },
+  "serverApproval": {
+    "title": "{{server}} で重要なコマンドを実行しますか？",
+    "reason": "重要：{{reason}}",
+    "crucial": "このサーバーでは重要なコマンドに当たります。",
+    "declaredByAgent": "エージェント自身が重要と指定しました（一致したルールはありません）。"
   }
 }

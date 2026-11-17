@@ -358,7 +358,8 @@
     "kind": {
       "kit": "套件",
       "skill": "技能",
-      "mcp": "MCP 服务器"
+      "mcp": "MCP 服务器",
+      "server": "服务器"
     },
     "op": {
       "add": "添加",
@@ -526,6 +527,7 @@
       "testOk": "已连接 · {{count}} 个工具",
       "testOk_one": "已连接 · {{count}} 个工具",
       "testOk_other": "已连接 · {{count}} 个工具"
-    }
+    },
+    "servers": "服务器"
   }
 }

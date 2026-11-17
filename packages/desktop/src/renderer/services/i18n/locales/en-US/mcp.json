@@ -358,7 +358,8 @@
     "kind": {
       "kit": "Kit",
       "skill": "Skill",
-      "mcp": "MCP server"
+      "mcp": "MCP server",
+      "server": "Server"
     },
     "op": {
       "add": "Add",
@@ -526,6 +527,7 @@
       "testOk": "Connected · {{count}} tools",
       "testOk_one": "Connected · {{count}} tool",
       "testOk_other": "Connected · {{count}} tools"
-    }
+    },
+    "servers": "Servers"
   }
 }

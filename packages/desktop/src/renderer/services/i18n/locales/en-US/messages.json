@@ -97,5 +97,11 @@
   "requestDetails": "Request details:",
   "delivery": {
     "pending": "Unread"
+  },
+  "serverApproval": {
+    "title": "Run a crucial command on {{server}}?",
+    "reason": "Crucial: {{reason}}",
+    "crucial": "Counts as a crucial command on this server.",
+    "declaredByAgent": "Marked crucial by the agent itself (no rule matched)."
   }
 }

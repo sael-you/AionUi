@@ -34,8 +34,10 @@ import { createKitRequest, updateKitRequest, type KitFormValues } from './kitMod
 const KITS_KEY = 'kits.list';
 const isKitsKey = (key: unknown): boolean => typeof key === 'string' && key.startsWith('kits.');
 
+/** Item filters (C36/C37 "Used in") get their own entry; unfiltered keys are unchanged. */
 export const kitAttachmentsKey = (query: KitAttachmentsQuery): string =>
-  `kits.attachments:${query.level ?? ''}:${query.target_id ?? ''}`;
+  `kits.attachments:${query.level ?? ''}:${query.target_id ?? ''}` +
+  (query.item_kind ? `:${query.item_kind}:${query.item_ref ?? ''}` : '');
 
 export const kitEffectiveKey = (query: KitEffectiveQuery): string =>
   `kits.effective:${query.conversation_id ?? ''}:${query.project_id ?? ''}:${query.assistant_id ?? ''}`;

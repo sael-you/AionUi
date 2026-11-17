@@ -1661,5 +1661,145 @@
       "stepPair": "配對：按一下下方的「{{button}}」，然後按一下瀏覽器中的 AionUi 圖示並輸入配對碼。",
       "update": "版本 {{version}} 已可使用。仍在使用舊版本：{{names}}。下載後取代資料夾中的檔案，然後按一下擴充功能卡片上的重新載入箭頭。"
     }
+  },
+  "servers": {
+    "title": "伺服器",
+    "description": "代理可以在上面執行指令的 SSH 伺服器。伺服器只會出現在你開啟它的範圍內的對話中。",
+    "add": "新增伺服器",
+    "addTitle": "新增伺服器",
+    "search": "搜尋伺服器",
+    "loading": "正在載入伺服器",
+    "empty": "還沒有伺服器。新增伺服器及其 SSH 金鑰後，代理即可在上面執行指令。",
+    "nothingOn": "{{scope}} 中沒有開啟的伺服器。",
+    "browseLibrary": "瀏覽伺服器",
+    "unlabelled": "無標籤",
+    "switchedOff": "已關閉",
+    "saved": "已儲存 {{name}}",
+    "created": "已新增 {{name}}",
+    "deleted": "已刪除 {{name}}",
+    "deleteTitle": "要刪除 {{name}} 嗎？",
+    "deleteBody": "代理將在所有地方失去存取權。已儲存的金鑰會被刪除，稽核紀錄保留。",
+    "tierNote": "讀/寫等級只是給代理的指引：AionUi 無法在 shell 中區分讀與寫。唯讀伺服器需要伺服器上的唯讀帳號。",
+    "crucialAsks": "正式環境且可寫：關鍵指令一定會先在對話中詢問你。",
+    "labelsPlaceholder": "新增標籤（例如 TB、資料庫）",
+    "notesPlaceholder": "代理需要知道的這台伺服器資訊",
+    "enabledHint": "關閉 = 無論掛載在哪裡，任何代理都不能使用。",
+    "group": {
+      "here": "在 {{scope}} 中開啟",
+      "offHere": "在此關閉",
+      "otherEnvironment": "其他"
+    },
+    "offHereHint": "在全域開啟，對此專案關閉。",
+    "summary": {
+      "on": "{{count}} 個已開啟",
+      "on_one": "{{count}} 個已開啟",
+      "on_other": "{{count}} 個已開啟",
+      "total": "{{count}} 台伺服器",
+      "total_one": "{{count}} 台伺服器",
+      "total_other": "{{count}} 台伺服器",
+      "fromGlobal": "{{count}} 個來自全域",
+      "fromGlobal_one": "{{count}} 個來自全域",
+      "fromGlobal_other": "{{count}} 個來自全域"
+    },
+    "menu": {
+      "switchOff": "在所有地方關閉",
+      "switchOn": "開啟"
+    },
+    "chips": {
+      "off": "已關閉",
+      "keyStored": "已儲存金鑰",
+      "noKey": "無金鑰",
+      "noHostKey": "無主機金鑰",
+      "asks": "關鍵指令前詢問"
+    },
+    "fields": {
+      "name": "名稱（代理使用的稱呼）",
+      "user": "SSH 使用者",
+      "host": "主機",
+      "port": "連接埠",
+      "privateKey": "私密金鑰",
+      "hostKey": "主機金鑰",
+      "environment": "環境",
+      "tier": "等級",
+      "labels": "標籤",
+      "notes": "備註",
+      "enabled": "代理可以使用這台伺服器"
+    },
+    "key": {
+      "stored": "已儲存金鑰",
+      "replace": "取代金鑰",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "無密碼片語的 OpenSSH 或 PEM 私密金鑰。加密儲存，不會再顯示。",
+      "keepStored": "保留已儲存的金鑰"
+    },
+    "hostKey": {
+      "destinationChanged": "主機、連接埠或使用者已變更：已儲存的主機金鑰不會被新目標信任。請掃描新主機並核對指紋。",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "掃描主機金鑰",
+      "hint": "儲存前請與伺服器上 ssh-keygen -lf 的結果核對指紋。"
+    },
+    "problems": {
+      "nameRequired": "請輸入名稱",
+      "nameFormat": "小寫字母、數字和連字號，以字母或數字開頭",
+      "hostRequired": "請輸入主機",
+      "hostFormat": "主機名稱或 IP 位址",
+      "portRange": "1 到 65535 之間的連接埠",
+      "userRequired": "請輸入 SSH 使用者",
+      "keyRequired": "請貼上私密金鑰",
+      "keyPublic": "這是公開金鑰，請貼上私密金鑰",
+      "keyFormat": "不是 OpenSSH 或 PEM 私密金鑰",
+      "keyPassphrase": "不支援有密碼片語的金鑰",
+      "hostKeyFormat": "每行一個 \"<類型> <金鑰>\""
+    },
+    "test": {
+      "title": "連線",
+      "run": "測試連線",
+      "ok": "{{ms}} 毫秒內連線成功",
+      "useSeenKey": "使用它提供的金鑰",
+      "errors": {
+        "auth_failed": "伺服器拒絕了此使用者的金鑰。",
+        "host_key_mismatch": "主機提供了不同的主機金鑰。信任前請先核對。",
+        "host_key_unknown": "尚未儲存主機金鑰：請掃描並核對指紋。",
+        "unreachable": "無法連線到主機。",
+        "timeout": "連線逾時。",
+        "failed": "測試失敗。"
+      }
+    },
+    "usedIn": {
+      "conversation": "對話 {{id}}",
+      "nowhere": "尚未在任何地方開啟。",
+      "drop": "移除",
+      "dropLabel": "移除 {{scope}} 的規則",
+      "levelLabel": "層級",
+      "targetLabel": "位置",
+      "targetPlaceholder": "選擇…",
+      "opLabel": "開啟或關閉",
+      "apply": "套用",
+      "hint": "新增會在該層級開啟伺服器，移除會關閉繼承的伺服器。若只針對一個對話，請使用該對話標題列中的套件按鈕。"
+    },
+    "audit": {
+      "title": "最近的指令",
+      "empty": "還沒有指令。",
+      "loadFailed": "無法載入最近的指令。",
+      "crucial": "關鍵",
+      "exitCode": "結束碼 {{code}}",
+      "duration": "{{seconds}} 秒",
+      "decision": {
+        "ran": "已執行",
+        "failed": "失敗",
+        "needs_approval": "已詢問你",
+        "refused": "已拒絕"
+      }
+    },
+    "errors": {
+      "generic": "伺服器發生問題。",
+      "invalid": "未儲存：{{detail}}",
+      "nameTaken": "已有伺服器使用這個名稱。",
+      "notFound": "這台伺服器已不存在。",
+      "unavailable": "此 AionCore 不支援伺服器池。",
+      "unreachable": "無法連線到主機。",
+      "sessionRequired": "請重新登入後再修改伺服器。",
+      "csrf": "頁面已過期，請重新整理後再試一次。"
+    }
   }
 }

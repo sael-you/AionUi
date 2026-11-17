@@ -13,6 +13,7 @@ const AssistantSettings = React.lazy(() => import('@renderer/pages/settings/Assi
 const SkillsSettings = React.lazy(() => import('@renderer/pages/settings/SkillsSettings/SkillsHubSettings'));
 const SkillDetailPage = React.lazy(() => import('@renderer/pages/settings/SkillsSettings/SkillDetailPage'));
 const ToolsSettings = React.lazy(() => import('@renderer/pages/settings/ToolsSettings'));
+const ServersSettings = React.lazy(() => import('@renderer/pages/settings/ServersSettings'));
 const BrowserSettingsPage = React.lazy(
   () => import('@renderer/pages/conversation/Preview/browser/BrowserSettingsPage')
 );
@@ -98,6 +99,7 @@ const PanelRoute: React.FC<{ layout: React.ReactElement }> = ({ layout }) => {
           <Route path='/settings/skills/import-history' element={withRouteFallback(SkillsSettings)} />
           <Route path='/settings/skills/detail/:skillName' element={withRouteFallback(SkillDetailPage)} />
           <Route path='/settings/tools' element={withRouteFallback(ToolsSettings)} />
+          <Route path='/settings/servers' element={withRouteFallback(ServersSettings)} />
           <Route path='/settings/browser' element={withRouteFallback(BrowserSettingsPage)} />
           {/* Legacy routes — the previous combined "Capabilities" page is now two pages. */}
           <Route path='/settings/capabilities' element={<CapabilitiesRedirect />} />

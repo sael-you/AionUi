@@ -11,6 +11,7 @@ import {
   normalizePermissionOperationKind,
   PermissionRequestPanel,
 } from '../components/MessagePermission';
+import { ServerCommandContext, serverCommandOf } from '../components/MessagePermission/serverCommand';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -57,7 +58,11 @@ const MessageAcpPermission: React.FC<MessageAcpPermissionProps> = React.memo(({ 
     return null;
   }
 
-  const title = tool_call.title || tool_call.raw_input?.description || t('messages.permissionRequest');
+  // A crucial command on a server (C36): say where it runs and why it asks.
+  const serverCommand = serverCommandOf(tool_call.title, tool_call.raw_input as Record<string, unknown> | undefined);
+  const title = serverCommand
+    ? t('messages.serverApproval.title', { server: serverCommand.server })
+    : tool_call.title || tool_call.raw_input?.description || t('messages.permissionRequest');
   const description = tool_call.raw_input?.description;
   // Fallback A (2026-08-04 spec): when raw_input carries no `command`, render the
   // raw_input itself as readable JSON instead of echoing the title (the old echo
@@ -90,6 +95,7 @@ const MessageAcpPermission: React.FC<MessageAcpPermissionProps> = React.memo(({ 
       operationKind={normalizePermissionOperationKind(tool_call.kind)}
       detail={detail}
       detailLabelKey={command ? undefined : 'messages.requestDetails'}
+      extra={serverCommand ? <ServerCommandContext request={serverCommand} /> : undefined}
       options={panelOptions}
       onConfirm={handleConfirm}
     />

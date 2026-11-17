@@ -19,9 +19,10 @@ import type { KitAttachmentResponse, KitItemKind, KitLevel, KitOp } from '@/comm
 import { attachRequest, globalAttachBlock, describeKitError } from '@/renderer/hooks/mcp/market/kitModel';
 import { attachableKits } from '@/renderer/hooks/mcp/market/kitGroups';
 import { useKitActions, useKitAttachments, useKitLibrary, useKitList } from '@/renderer/hooks/mcp/market/useKits';
+import { useServerList } from '../../ServersSettings/useServers';
 import { MarketErrorNotice, touchClass, useIsMobileLayout } from '../market/shared';
 
-const KINDS: readonly KitItemKind[] = ['kit', 'skill', 'mcp'];
+const KINDS: readonly KitItemKind[] = ['kit', 'skill', 'mcp', 'server'];
 const OPS: readonly KitOp[] = ['add', 'remove'];
 
 type KitAttachPanelProps = {
@@ -55,6 +56,8 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({
   const { attachments, error, isLoading } = useKitAttachments(query);
   const { kits } = useKitList();
   const library = useKitLibrary();
+  // Servers (C36) are attached like any item; an older core has none (the list just stays empty).
+  const { servers } = useServerList();
   const { attach, detach } = useKitActions();
   const [kind, setKind] = useState<KitItemKind>('kit');
   const [itemRef, setItemRef] = useState<string | undefined>(undefined);
@@ -65,6 +68,12 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({
     if (kind === 'kit')
       return attachableKits(kits, level, projectId).map((kit) => ({ value: kit.id, label: kit.name }));
     if (kind === 'skill') return library.skillNames.map((name) => ({ value: name, label: name }));
+    if (kind === 'server') {
+      return servers.map((server) => ({
+        value: server.id,
+        label: server.enabled ? server.name : `${server.name} · ${t('settings.servers.chips.off')}`,
+      }));
+    }
     return library.instances.map((instance) => {
       const block = globalAttachBlock(level, instance);
       return {
@@ -73,7 +82,7 @@ const KitAttachPanel: React.FC<KitAttachPanelProps> = ({
         disabled: block !== null,
       };
     });
-  }, [kind, kits, library.skillNames, library.instances, level, projectId, t]);
+  }, [kind, kits, library.skillNames, library.instances, servers, level, projectId, t]);
 
   const handleAttach = async () => {
     if (!itemRef) return;

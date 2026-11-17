@@ -15,6 +15,7 @@ import {
   Lightning,
   LinkCloud,
   Puzzle,
+  Server,
   Speed,
   System,
   Toolkit,
@@ -34,6 +35,7 @@ export const BUILTIN_TAB_IDS = [
   'skills',
   'tools',
   'browser',
+  'servers',
   'appearance',
   'webui',
   'voice',
@@ -110,6 +112,7 @@ const SettingsSider: React.FC<{ collapsed?: boolean; tooltipEnabled?: boolean }>
         icon: <Toolkit />,
         path: 'tools',
       },
+      servers: { id: 'servers', label: t('settings.servers.title'), icon: <Server />, path: 'servers' },
       browser: { id: 'browser', label: t('settings.browserPage.title'), icon: <Browser />, path: 'browser' },
       appearance: { id: 'appearance', label: t('settings.appearancePanel'), icon: <Computer />, path: 'appearance' },
       webui: {

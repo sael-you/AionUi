@@ -1659,5 +1659,145 @@
       "stepPair": "Koppeln: Klicke unten auf „{{button}}“, dann auf das AionUi-Symbol im Browser und gib den Code ein.",
       "update": "Version {{version}} ist verfügbar. Noch auf einer älteren: {{names}}. Lade sie herunter, ersetze die Dateien im Ordner und drücke dann den Neu-laden-Pfeil auf der Karte der Erweiterung."
     }
+  },
+  "servers": {
+    "title": "Server",
+    "description": "SSH-Server, auf denen Agenten Befehle ausführen dürfen. Ein Server erreicht ein Gespräch nur dort, wo du ihn einschaltest.",
+    "add": "Server hinzufügen",
+    "addTitle": "Server hinzufügen",
+    "search": "Server suchen",
+    "loading": "Server werden geladen",
+    "empty": "Noch kein Server. Füge einen mit seinem SSH-Schlüssel hinzu, damit Agenten dort Befehle ausführen können.",
+    "nothingOn": "In {{scope}} ist kein Server eingeschaltet.",
+    "browseLibrary": "Server durchsuchen",
+    "unlabelled": "Ohne Label",
+    "switchedOff": "Ausgeschaltet",
+    "saved": "{{name}} gespeichert",
+    "created": "{{name}} hinzugefügt",
+    "deleted": "{{name}} gelöscht",
+    "deleteTitle": "{{name}} löschen?",
+    "deleteBody": "Agenten verlieren überall den Zugriff. Der gespeicherte Schlüssel wird gelöscht; die Protokollzeilen bleiben.",
+    "tierNote": "Die Stufe Lesen/Schreiben ist nur ein Hinweis für Agenten: AionUi kann in einer Shell Lesen und Schreiben nicht unterscheiden. Ein nur lesender Server braucht ein nur lesendes Konto auf dem Server.",
+    "crucialAsks": "Produktion mit Schreiben: Kritische Befehle fragen dich immer zuerst, im Gespräch.",
+    "labelsPlaceholder": "Labels hinzufügen (z. B. TB, Datenbank)",
+    "notesPlaceholder": "Was Agenten über diesen Server wissen sollten",
+    "enabledHint": "Aus = kein Agent darf ihn nutzen, egal wo er angehängt ist.",
+    "group": {
+      "here": "An in {{scope}}",
+      "offHere": "Hier ausgeschaltet",
+      "otherEnvironment": "Andere"
+    },
+    "offHereHint": "In Global an, für dieses Projekt ausgeschaltet.",
+    "summary": {
+      "on": "{{count}} an",
+      "on_one": "{{count}} an",
+      "on_other": "{{count}} an",
+      "total": "{{count}} Server",
+      "total_one": "{{count}} Server",
+      "total_other": "{{count}} Server",
+      "fromGlobal": "{{count}} aus Global",
+      "fromGlobal_one": "{{count}} aus Global",
+      "fromGlobal_other": "{{count}} aus Global"
+    },
+    "menu": {
+      "switchOff": "Überall ausschalten",
+      "switchOn": "Einschalten"
+    },
+    "chips": {
+      "off": "Aus",
+      "keyStored": "Schlüssel gespeichert",
+      "noKey": "Kein Schlüssel",
+      "noHostKey": "Kein Host-Schlüssel",
+      "asks": "Fragt vor kritischen Befehlen"
+    },
+    "fields": {
+      "name": "Name (so nennen ihn Agenten)",
+      "user": "SSH-Benutzer",
+      "host": "Host",
+      "port": "Port",
+      "privateKey": "Privater Schlüssel",
+      "hostKey": "Host-Schlüssel",
+      "environment": "Umgebung",
+      "tier": "Stufe",
+      "labels": "Labels",
+      "notes": "Notizen",
+      "enabled": "Agenten dürfen diesen Server nutzen"
+    },
+    "key": {
+      "stored": "Schlüssel gespeichert",
+      "replace": "Schlüssel ersetzen",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "Privater OpenSSH- oder PEM-Schlüssel ohne Passphrase. Er wird verschlüsselt gespeichert und nie wieder angezeigt.",
+      "keepStored": "Gespeicherten Schlüssel behalten"
+    },
+    "hostKey": {
+      "destinationChanged": "Host, Port oder Benutzer haben sich geändert: Der gespeicherte Host-Schlüssel gilt für das neue Ziel nicht. Scanne den neuen Host und prüfe den Fingerabdruck.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Host-Schlüssel scannen",
+      "hint": "Vergleiche den Fingerabdruck vor dem Speichern mit ssh-keygen -lf auf dem Server."
+    },
+    "problems": {
+      "nameRequired": "Gib einen Namen ein",
+      "nameFormat": "Kleinbuchstaben, Ziffern und Bindestriche, beginnend mit Buchstabe oder Ziffer",
+      "hostRequired": "Gib den Host ein",
+      "hostFormat": "Ein Hostname oder eine IP-Adresse",
+      "portRange": "Ein Port zwischen 1 und 65535",
+      "userRequired": "Gib den SSH-Benutzer ein",
+      "keyRequired": "Füge den privaten Schlüssel ein",
+      "keyPublic": "Das ist ein öffentlicher Schlüssel; füge den privaten ein",
+      "keyFormat": "Kein privater OpenSSH- oder PEM-Schlüssel",
+      "keyPassphrase": "Schlüssel mit Passphrase werden nicht unterstützt",
+      "hostKeyFormat": "Ein \"<Typ> <Schlüssel>\" pro Zeile"
+    },
+    "test": {
+      "title": "Verbindung",
+      "run": "Verbindung testen",
+      "ok": "Verbunden in {{ms}} ms",
+      "useSeenKey": "Angezeigten Schlüssel übernehmen",
+      "errors": {
+        "auth_failed": "Der Server hat den Schlüssel für diesen Benutzer abgelehnt.",
+        "host_key_mismatch": "Der Host zeigt einen anderen Host-Schlüssel. Prüfe ihn, bevor du ihm vertraust.",
+        "host_key_unknown": "Noch kein Host-Schlüssel gespeichert: scanne ihn und prüfe den Fingerabdruck.",
+        "unreachable": "Der Host ist nicht erreichbar.",
+        "timeout": "Zeitüberschreitung bei der Verbindung.",
+        "failed": "Der Test ist fehlgeschlagen."
+      }
+    },
+    "usedIn": {
+      "conversation": "Gespräch {{id}}",
+      "nowhere": "Noch nirgends eingeschaltet.",
+      "drop": "Entfernen",
+      "dropLabel": "Regel für {{scope}} entfernen",
+      "levelLabel": "Ebene",
+      "targetLabel": "Wo",
+      "targetPlaceholder": "Auswählen…",
+      "opLabel": "An oder aus",
+      "apply": "Anwenden",
+      "hint": "Hinzufügen schaltet den Server auf dieser Ebene ein, Entfernen schaltet einen geerbten aus. Für ein einzelnes Gespräch nutze den Kits-Knopf in dessen Kopfzeile."
+    },
+    "audit": {
+      "title": "Letzte Befehle",
+      "empty": "Noch kein Befehl.",
+      "loadFailed": "Die letzten Befehle konnten nicht geladen werden.",
+      "crucial": "Kritisch",
+      "exitCode": "Exit {{code}}",
+      "duration": "{{seconds}} s",
+      "decision": {
+        "ran": "Ausgeführt",
+        "failed": "Fehlgeschlagen",
+        "needs_approval": "Hat dich gefragt",
+        "refused": "Abgelehnt"
+      }
+    },
+    "errors": {
+      "generic": "Bei den Servern ist etwas schiefgelaufen.",
+      "invalid": "Nicht gespeichert: {{detail}}",
+      "nameTaken": "Ein anderer Server hat schon diesen Namen.",
+      "notFound": "Diesen Server gibt es nicht mehr.",
+      "unavailable": "Server-Pools sind auf diesem AionCore nicht verfügbar.",
+      "unreachable": "Der Host ist nicht erreichbar.",
+      "sessionRequired": "Melde dich erneut an, um Server zu ändern.",
+      "csrf": "Die Seite ist veraltet; lade sie neu und versuche es erneut."
+    }
   }
 }

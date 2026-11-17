@@ -1660,5 +1660,145 @@
       "stepPair": "配对：点击下方的“{{button}}”，然后点击浏览器中的 AionUi 图标并输入配对码。",
       "update": "版本 {{version}} 已可用。仍在使用旧版本：{{names}}。下载后替换文件夹中的文件，然后点击扩展卡片上的重新加载箭头。"
     }
+  },
+  "servers": {
+    "title": "服务器",
+    "description": "智能体可以在其上运行命令的 SSH 服务器。服务器只会出现在你开启它的范围内的对话中。",
+    "add": "添加服务器",
+    "addTitle": "添加服务器",
+    "search": "搜索服务器",
+    "loading": "正在加载服务器",
+    "empty": "还没有服务器。添加服务器及其 SSH 密钥后，智能体即可在上面运行命令。",
+    "nothingOn": "{{scope}} 中没有开启的服务器。",
+    "browseLibrary": "浏览服务器",
+    "unlabelled": "无标签",
+    "switchedOff": "已关闭",
+    "saved": "已保存 {{name}}",
+    "created": "已添加 {{name}}",
+    "deleted": "已删除 {{name}}",
+    "deleteTitle": "删除 {{name}}？",
+    "deleteBody": "智能体将在所有地方失去访问权限。已保存的密钥会被删除，审计记录保留。",
+    "tierNote": "读/写级别只是给智能体的指引：AionUi 无法在 shell 中区分读和写。只读服务器需要服务器上的只读账户。",
+    "crucialAsks": "生产环境且可写：关键命令总会先在对话中询问你。",
+    "labelsPlaceholder": "添加标签（如 TB、数据库）",
+    "notesPlaceholder": "智能体需要了解的关于此服务器的信息",
+    "enabledHint": "关闭 = 无论挂载在哪里，任何智能体都不能使用。",
+    "group": {
+      "here": "在 {{scope}} 中开启",
+      "offHere": "在此关闭",
+      "otherEnvironment": "其他"
+    },
+    "offHereHint": "在全局中开启，对此项目关闭。",
+    "summary": {
+      "on": "{{count}} 个已开启",
+      "on_one": "{{count}} 个已开启",
+      "on_other": "{{count}} 个已开启",
+      "total": "{{count}} 台服务器",
+      "total_one": "{{count}} 台服务器",
+      "total_other": "{{count}} 台服务器",
+      "fromGlobal": "{{count}} 个来自全局",
+      "fromGlobal_one": "{{count}} 个来自全局",
+      "fromGlobal_other": "{{count}} 个来自全局"
+    },
+    "menu": {
+      "switchOff": "在所有地方关闭",
+      "switchOn": "开启"
+    },
+    "chips": {
+      "off": "已关闭",
+      "keyStored": "已保存密钥",
+      "noKey": "无密钥",
+      "noHostKey": "无主机密钥",
+      "asks": "关键命令前询问"
+    },
+    "fields": {
+      "name": "名称（智能体使用的称呼）",
+      "user": "SSH 用户",
+      "host": "主机",
+      "port": "端口",
+      "privateKey": "私钥",
+      "hostKey": "主机密钥",
+      "environment": "环境",
+      "tier": "级别",
+      "labels": "标签",
+      "notes": "备注",
+      "enabled": "智能体可以使用此服务器"
+    },
+    "key": {
+      "stored": "已保存密钥",
+      "replace": "替换密钥",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "无口令的 OpenSSH 或 PEM 私钥。加密保存，不会再显示。",
+      "keepStored": "保留已保存的密钥"
+    },
+    "hostKey": {
+      "destinationChanged": "主机、端口或用户已更改：已保存的主机密钥不会被新目标信任。请扫描新主机并核对其指纹。",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "扫描主机密钥",
+      "hint": "保存前请与服务器上 ssh-keygen -lf 的输出核对指纹。"
+    },
+    "problems": {
+      "nameRequired": "请输入名称",
+      "nameFormat": "小写字母、数字和连字符，以字母或数字开头",
+      "hostRequired": "请输入主机",
+      "hostFormat": "主机名或 IP 地址",
+      "portRange": "1 到 65535 之间的端口",
+      "userRequired": "请输入 SSH 用户",
+      "keyRequired": "请粘贴私钥",
+      "keyPublic": "这是公钥，请粘贴私钥",
+      "keyFormat": "不是 OpenSSH 或 PEM 私钥",
+      "keyPassphrase": "不支持带口令的密钥",
+      "hostKeyFormat": "每行一个 \"<类型> <密钥>\""
+    },
+    "test": {
+      "title": "连接",
+      "run": "测试连接",
+      "ok": "{{ms}} 毫秒内连接成功",
+      "useSeenKey": "使用其提供的密钥",
+      "errors": {
+        "auth_failed": "服务器拒绝了此用户的密钥。",
+        "host_key_mismatch": "主机提供了不同的主机密钥。信任前请先核对。",
+        "host_key_unknown": "尚未保存主机密钥：请扫描并核对指纹。",
+        "unreachable": "无法连接到主机。",
+        "timeout": "连接超时。",
+        "failed": "测试失败。"
+      }
+    },
+    "usedIn": {
+      "conversation": "对话 {{id}}",
+      "nowhere": "尚未在任何地方开启。",
+      "drop": "移除",
+      "dropLabel": "移除 {{scope}} 的规则",
+      "levelLabel": "层级",
+      "targetLabel": "位置",
+      "targetPlaceholder": "选择…",
+      "opLabel": "开启或关闭",
+      "apply": "应用",
+      "hint": "添加会在该层级开启服务器，移除会关闭继承的服务器。若只针对一个对话，请使用该对话标题栏中的套件按钮。"
+    },
+    "audit": {
+      "title": "最近的命令",
+      "empty": "还没有命令。",
+      "loadFailed": "无法加载最近的命令。",
+      "crucial": "关键",
+      "exitCode": "退出码 {{code}}",
+      "duration": "{{seconds}} 秒",
+      "decision": {
+        "ran": "已执行",
+        "failed": "失败",
+        "needs_approval": "已询问你",
+        "refused": "已拒绝"
+      }
+    },
+    "errors": {
+      "generic": "服务器出现问题。",
+      "invalid": "未保存：{{detail}}",
+      "nameTaken": "已有服务器使用此名称。",
+      "notFound": "此服务器已不存在。",
+      "unavailable": "此 AionCore 不支持服务器池。",
+      "unreachable": "无法连接到主机。",
+      "sessionRequired": "请重新登录后再修改服务器。",
+      "csrf": "页面已过期，请刷新后重试。"
+    }
   }
 }

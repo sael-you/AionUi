@@ -97,5 +97,11 @@
   "requestDetails": "Anfragedetails:",
   "delivery": {
     "pending": "Ungelesen"
+  },
+  "serverApproval": {
+    "title": "Kritischen Befehl auf {{server}} ausführen?",
+    "reason": "Kritisch: {{reason}}",
+    "crucial": "Gilt auf diesem Server als kritischer Befehl.",
+    "declaredByAgent": "Vom Agenten selbst als kritisch markiert (keine Regel hat gegriffen)."
   }
 }

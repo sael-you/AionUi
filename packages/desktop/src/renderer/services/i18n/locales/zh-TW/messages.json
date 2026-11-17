@@ -97,5 +97,11 @@
   "requestDetails": "請求內容：",
   "delivery": {
     "pending": "未讀"
+  },
+  "serverApproval": {
+    "title": "在 {{server}} 上執行關鍵指令？",
+    "reason": "關鍵：{{reason}}",
+    "crucial": "在這台伺服器上屬於關鍵指令。",
+    "declaredByAgent": "由代理自行標記為關鍵（沒有符合的規則）。"
   }
 }

@@ -97,5 +97,11 @@
   "requestDetails": "요청 내용:",
   "delivery": {
     "pending": "읽지 않음"
+  },
+  "serverApproval": {
+    "title": "{{server}}에서 중요한 명령을 실행할까요?",
+    "reason": "중요: {{reason}}",
+    "crucial": "이 서버에서 중요한 명령에 해당합니다.",
+    "declaredByAgent": "에이전트가 직접 중요하다고 표시했습니다 (일치한 규칙 없음)."
   }
 }

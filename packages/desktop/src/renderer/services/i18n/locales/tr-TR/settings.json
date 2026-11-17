@@ -1659,5 +1659,145 @@
       "stepPair": "Eşleyin: aşağıdaki “{{button}}” düğmesine, ardından tarayıcınızdaki AionUi simgesine tıklayın ve kodu yazın.",
       "update": "{{version}} sürümü hazır. Hâlâ eski sürümde: {{names}}. İndirin, klasördeki dosyaları değiştirin, ardından uzantı kartındaki yeniden yükle okuna basın."
     }
+  },
+  "servers": {
+    "title": "Sunucular",
+    "description": "Ajanların komut çalıştırabileceği SSH sunucuları. Bir sunucu yalnızca açtığın yerde bir sohbete ulaşır.",
+    "add": "Sunucu ekle",
+    "addTitle": "Sunucu ekle",
+    "search": "Sunucularda ara",
+    "loading": "Sunucular yükleniyor",
+    "empty": "Henüz sunucu yok. Ajanların komut çalıştırabilmesi için SSH anahtarıyla bir sunucu ekle.",
+    "nothingOn": "{{scope}} içinde açık sunucu yok.",
+    "browseLibrary": "Sunuculara göz at",
+    "unlabelled": "Etiketsiz",
+    "switchedOff": "Kapalı",
+    "saved": "{{name}} kaydedildi",
+    "created": "{{name}} eklendi",
+    "deleted": "{{name}} silindi",
+    "deleteTitle": "{{name}} silinsin mi?",
+    "deleteBody": "Ajanlar her yerde erişimi kaybeder. Kayıtlı anahtarı silinir; denetim satırları kalır.",
+    "tierNote": "Okuma/yazma düzeyi yalnızca ajanlar için bir yönergedir: AionUi bir kabukta okumayı yazmadan ayıramaz. Salt okunur bir sunucu, sunucuda salt okunur bir hesap gerektirir.",
+    "crucialAsks": "Yazmalı üretim: kritik komutlar her zaman önce sohbette sana sorar.",
+    "labelsPlaceholder": "Etiket ekle (ör. TB, veritabanı)",
+    "notesPlaceholder": "Ajanların bu sunucu hakkında bilmesi gerekenler",
+    "enabledHint": "Kapalı = nereye bağlı olursa olsun hiçbir ajan kullanamaz.",
+    "group": {
+      "here": "{{scope}} içinde açık",
+      "offHere": "Burada kapatıldı",
+      "otherEnvironment": "Diğer"
+    },
+    "offHereHint": "Global'de açık, bu proje için kapatıldı.",
+    "summary": {
+      "on": "{{count}} açık",
+      "on_one": "{{count}} açık",
+      "on_other": "{{count}} açık",
+      "total": "{{count}} sunucu",
+      "total_one": "{{count}} sunucu",
+      "total_other": "{{count}} sunucu",
+      "fromGlobal": "{{count}} Global'den",
+      "fromGlobal_one": "{{count}} Global'den",
+      "fromGlobal_other": "{{count}} Global'den"
+    },
+    "menu": {
+      "switchOff": "Her yerde kapat",
+      "switchOn": "Aç"
+    },
+    "chips": {
+      "off": "Kapalı",
+      "keyStored": "Anahtar kayıtlı",
+      "noKey": "Anahtar yok",
+      "noHostKey": "Ana makine anahtarı yok",
+      "asks": "Kritik komutlardan önce sorar"
+    },
+    "fields": {
+      "name": "Ad (ajanların kullandığı)",
+      "user": "SSH kullanıcısı",
+      "host": "Ana makine",
+      "port": "Port",
+      "privateKey": "Özel anahtar",
+      "hostKey": "Ana makine anahtarı",
+      "environment": "Ortam",
+      "tier": "Düzey",
+      "labels": "Etiketler",
+      "notes": "Notlar",
+      "enabled": "Ajanlar bu sunucuyu kullanabilir"
+    },
+    "key": {
+      "stored": "Anahtar kayıtlı",
+      "replace": "Anahtarı değiştir",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "Parolasız OpenSSH veya PEM özel anahtarı. Şifreli saklanır ve bir daha gösterilmez.",
+      "keepStored": "Kayıtlı anahtarı koru"
+    },
+    "hostKey": {
+      "destinationChanged": "Ana makine, port veya kullanıcı değişti: kayıtlı ana makine anahtarı yeni hedef için güvenilmeyecek. Yeni ana makineyi tara ve parmak izini kontrol et.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Ana makine anahtarını tara",
+      "hint": "Kaydetmeden önce parmak izini sunucudaki ssh-keygen -lf ile karşılaştır."
+    },
+    "problems": {
+      "nameRequired": "Bir ad gir",
+      "nameFormat": "Küçük harf, rakam ve tire; harf veya rakamla başlamalı",
+      "hostRequired": "Ana makineyi gir",
+      "hostFormat": "Bir ana makine adı veya IP adresi",
+      "portRange": "1 ile 65535 arasında bir port",
+      "userRequired": "SSH kullanıcısını gir",
+      "keyRequired": "Özel anahtarı yapıştır",
+      "keyPublic": "Bu bir açık anahtar; özel anahtarı yapıştır",
+      "keyFormat": "OpenSSH veya PEM özel anahtarı değil",
+      "keyPassphrase": "Parolalı anahtarlar desteklenmiyor",
+      "hostKeyFormat": "Her satıra bir \"<tür> <anahtar>\""
+    },
+    "test": {
+      "title": "Bağlantı",
+      "run": "Bağlantıyı test et",
+      "ok": "{{ms}} ms içinde bağlandı",
+      "useSeenKey": "Sunduğu anahtarı kullan",
+      "errors": {
+        "auth_failed": "Sunucu bu kullanıcı için anahtarı reddetti.",
+        "host_key_mismatch": "Ana makine farklı bir anahtar sundu. Güvenmeden önce kontrol et.",
+        "host_key_unknown": "Henüz kayıtlı ana makine anahtarı yok: tara ve parmak izini kontrol et.",
+        "unreachable": "Ana makineye ulaşılamadı.",
+        "timeout": "Bağlantı zaman aşımına uğradı.",
+        "failed": "Test başarısız oldu."
+      }
+    },
+    "usedIn": {
+      "conversation": "Sohbet {{id}}",
+      "nowhere": "Henüz hiçbir yerde açık değil.",
+      "drop": "Kaldır",
+      "dropLabel": "{{scope}} kuralını kaldır",
+      "levelLabel": "Düzey",
+      "targetLabel": "Nerede",
+      "targetPlaceholder": "Seç…",
+      "opLabel": "Aç veya kapat",
+      "apply": "Uygula",
+      "hint": "Ekle sunucuyu o düzeyde açar, Kaldır devralınanı kapatır. Tek bir sohbet için başlığındaki kit düğmesini kullan."
+    },
+    "audit": {
+      "title": "Son komutlar",
+      "empty": "Henüz komut yok.",
+      "loadFailed": "Son komutlar yüklenemedi.",
+      "crucial": "Kritik",
+      "exitCode": "çıkış {{code}}",
+      "duration": "{{seconds}} sn",
+      "decision": {
+        "ran": "Çalıştı",
+        "failed": "Başarısız",
+        "needs_approval": "Sana sordu",
+        "refused": "Reddedildi"
+      }
+    },
+    "errors": {
+      "generic": "Sunucularla ilgili bir sorun oluştu.",
+      "invalid": "Kaydedilmedi: {{detail}}",
+      "nameTaken": "Başka bir sunucu bu adı kullanıyor.",
+      "notFound": "Bu sunucu artık yok.",
+      "unavailable": "Bu AionCore'da sunucu havuzları yok.",
+      "unreachable": "Ana makineye ulaşılamadı.",
+      "sessionRequired": "Sunucuları değiştirmek için yeniden giriş yap.",
+      "csrf": "Sayfa güncel değil; yenileyip tekrar dene."
+    }
   }
 }

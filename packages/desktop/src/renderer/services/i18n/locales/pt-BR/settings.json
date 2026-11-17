@@ -1662,5 +1662,145 @@
       "stepPair": "Pareie: clique em “{{button}}” abaixo, depois no ícone do AionUi no navegador e digite o código.",
       "update": "A versão {{version}} está disponível. Ainda em uma anterior: {{names}}. Baixe-a, substitua os arquivos da pasta e pressione a seta de recarregar no cartão da extensão."
     }
+  },
+  "servers": {
+    "title": "Servidores",
+    "description": "Servidores SSH em que os agentes podem executar comandos. Um servidor só chega a uma conversa onde você o ativa.",
+    "add": "Adicionar servidor",
+    "addTitle": "Adicionar um servidor",
+    "search": "Buscar servidores",
+    "loading": "Carregando servidores",
+    "empty": "Nenhum servidor ainda. Adicione um com a chave SSH para que os agentes executem comandos nele.",
+    "nothingOn": "Nenhum servidor está ativo em {{scope}}.",
+    "browseLibrary": "Ver servidores",
+    "unlabelled": "Sem rótulo",
+    "switchedOff": "Desligado",
+    "saved": "{{name}} salvo",
+    "created": "{{name}} adicionado",
+    "deleted": "{{name}} excluído",
+    "deleteTitle": "Excluir {{name}}?",
+    "deleteBody": "Os agentes perdem o acesso em todo lugar. A chave guardada é excluída; as linhas de auditoria ficam.",
+    "tierNote": "O nível leitura/escrita é só uma orientação para os agentes: o AionUi não distingue uma leitura de uma escrita dentro de um shell. Um servidor só de leitura precisa de uma conta só de leitura no servidor.",
+    "crucialAsks": "Produção com escrita: comandos críticos sempre perguntam a você antes, na conversa.",
+    "labelsPlaceholder": "Adicione rótulos (ex.: TB, banco de dados)",
+    "notesPlaceholder": "O que os agentes devem saber sobre este servidor",
+    "enabledHint": "Desligado = nenhum agente pode usá-lo, onde quer que esteja anexado.",
+    "group": {
+      "here": "Ativo em {{scope}}",
+      "offHere": "Desligado aqui",
+      "otherEnvironment": "Outros"
+    },
+    "offHereHint": "Ativo no Global, desligado para este projeto.",
+    "summary": {
+      "on": "{{count}} ativos",
+      "on_one": "{{count}} ativo",
+      "on_other": "{{count}} ativos",
+      "total": "{{count}} servidores",
+      "total_one": "{{count}} servidor",
+      "total_other": "{{count}} servidores",
+      "fromGlobal": "{{count}} do Global",
+      "fromGlobal_one": "{{count}} do Global",
+      "fromGlobal_other": "{{count}} do Global"
+    },
+    "menu": {
+      "switchOff": "Desligar em todo lugar",
+      "switchOn": "Ligar"
+    },
+    "chips": {
+      "off": "Desligado",
+      "keyStored": "Chave guardada",
+      "noKey": "Sem chave",
+      "noHostKey": "Sem chave do host",
+      "asks": "Pergunta antes de comandos críticos"
+    },
+    "fields": {
+      "name": "Nome (como os agentes o chamam)",
+      "user": "Usuário SSH",
+      "host": "Host",
+      "port": "Porta",
+      "privateKey": "Chave privada",
+      "hostKey": "Chave do host",
+      "environment": "Ambiente",
+      "tier": "Nível",
+      "labels": "Rótulos",
+      "notes": "Notas",
+      "enabled": "Agentes podem usar este servidor"
+    },
+    "key": {
+      "stored": "Chave guardada",
+      "replace": "Substituir chave",
+      "placeholder": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "hint": "Chave privada OpenSSH ou PEM sem senha. É guardada criptografada e nunca mais exibida.",
+      "keepStored": "Manter a chave guardada"
+    },
+    "hostKey": {
+      "destinationChanged": "O host, a porta ou o usuário mudou: a chave do host guardada não será confiável para o novo destino. Escaneie o novo host e confira a impressão digital.",
+      "placeholder": "ssh-ed25519 AAAA…",
+      "scan": "Escanear chave do host",
+      "hint": "Compare a impressão digital com ssh-keygen -lf no servidor antes de salvar."
+    },
+    "problems": {
+      "nameRequired": "Digite um nome",
+      "nameFormat": "Letras minúsculas, dígitos e hífens, começando por letra ou dígito",
+      "hostRequired": "Digite o host",
+      "hostFormat": "Um nome de host ou endereço IP",
+      "portRange": "Uma porta entre 1 e 65535",
+      "userRequired": "Digite o usuário SSH",
+      "keyRequired": "Cole a chave privada",
+      "keyPublic": "Esta é uma chave pública; cole a privada",
+      "keyFormat": "Não é uma chave privada OpenSSH ou PEM",
+      "keyPassphrase": "Chaves com senha não são suportadas",
+      "hostKeyFormat": "Um \"<tipo> <chave>\" por linha"
+    },
+    "test": {
+      "title": "Conexão",
+      "run": "Testar conexão",
+      "ok": "Conectado em {{ms}} ms",
+      "useSeenKey": "Usar a chave apresentada",
+      "errors": {
+        "auth_failed": "O servidor recusou a chave para este usuário.",
+        "host_key_mismatch": "O host apresentou outra chave. Confira antes de confiar nela.",
+        "host_key_unknown": "Nenhuma chave do host guardada: escaneie e confira a impressão digital.",
+        "unreachable": "Não foi possível alcançar o host.",
+        "timeout": "A conexão expirou.",
+        "failed": "O teste falhou."
+      }
+    },
+    "usedIn": {
+      "conversation": "Conversa {{id}}",
+      "nowhere": "Ainda não está ativo em lugar nenhum.",
+      "drop": "Remover",
+      "dropLabel": "Remover a regra de {{scope}}",
+      "levelLabel": "Nível",
+      "targetLabel": "Onde",
+      "targetPlaceholder": "Escolha…",
+      "opLabel": "Ligar ou desligar",
+      "apply": "Aplicar",
+      "hint": "Adicionar liga o servidor nesse nível; Remover desliga um herdado. Para uma única conversa, use o botão de kits no cabeçalho dela."
+    },
+    "audit": {
+      "title": "Comandos recentes",
+      "empty": "Nenhum comando ainda.",
+      "loadFailed": "Não foi possível carregar os comandos recentes.",
+      "crucial": "Crítico",
+      "exitCode": "saída {{code}}",
+      "duration": "{{seconds}} s",
+      "decision": {
+        "ran": "Executado",
+        "failed": "Falhou",
+        "needs_approval": "Perguntou a você",
+        "refused": "Recusado"
+      }
+    },
+    "errors": {
+      "generic": "Algo deu errado com os servidores.",
+      "invalid": "Não salvo: {{detail}}",
+      "nameTaken": "Outro servidor já tem este nome.",
+      "notFound": "Este servidor não existe mais.",
+      "unavailable": "Grupos de servidores não estão disponíveis neste AionCore.",
+      "unreachable": "Não foi possível alcançar o host.",
+      "sessionRequired": "Entre de novo para alterar servidores.",
+      "csrf": "A página está desatualizada; recarregue e tente de novo."
+    }
   }
 }
