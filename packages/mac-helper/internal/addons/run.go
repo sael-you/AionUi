@@ -113,7 +113,7 @@ func (h *Host) command(name, task, device string) (string, []string, []string, e
 		src := filepath.Join(h.dir(name), "src")
 		// Standalone: no Artemis daemon / web console listening on the Mac.
 		env = append(env, "ARTEMIS_STANDALONE=1", "ADB_DEVICE_SERIAL="+device)
-		return uv, []string{"run", "--project", src, "artemis", "run", task, "--device-serial", device}, env, nil
+		return uv, []string{"run", "--project", src, "artemis", "run", task, "--device-serial", device, "--standalone"}, env, nil
 	case Mobilerun:
 		bin := filepath.Join(h.dir(name), "bin", "mobilerun")
 		return bin, []string{"run", task, "--device", device}, env, nil

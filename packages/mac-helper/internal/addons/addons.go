@@ -173,12 +173,7 @@ func (h *Host) Handle(ctx context.Context, verb string, args []byte) (any, error
 		if err := os.RemoveAll(h.dir(in.Name)); err != nil {
 			return nil, err
 		}
-		if len(h.Installed()) == 0 {
-			// Nothing uses the managed Python or uv any more.
-			_ = os.RemoveAll(filepath.Join(h.StateDir, "python"))
-			_ = os.RemoveAll(filepath.Join(h.StateDir, "uv-cache"))
-			_ = os.RemoveAll(filepath.Join(h.StateDir, "uv"))
-		}
+		h.freeShared()
 		return nil, nil
 	case "addon_run":
 		var in struct {

@@ -21,6 +21,10 @@ import (
 
 var httpClient = &http.Client{Timeout: 15 * time.Minute}
 
+// PythonVersion is the managed Python both add-ons run on (Artemis needs
+// ≥ 3.12, Mobilerun < 3.14; newer Pythons lack wheels some deps need).
+const PythonVersion = "3.12"
+
 var commitPattern = regexp.MustCompile(`^[0-9a-f]{40}$`)
 
 // download is the default Fetch: GET url into dest (https only).
@@ -241,6 +245,9 @@ func (h *Host) install(ctx context.Context, name, version string) (string, error
 	if err := os.MkdirAll(h.Root, 0o700); err != nil {
 		return "", err
 	}
+	// The download cache is only needed while installing; a failed install
+	// leaves nothing behind either.
+	defer h.freeShared()
 	final := h.dir(name)
 	staging := final + ".new"
 	_ = os.RemoveAll(staging)
@@ -283,7 +290,7 @@ func (h *Host) install(ctx context.Context, name, version string) (string, error
 		if err := h.swap(staging, final); err != nil {
 			return "", err
 		}
-		if err := h.runUV(ictx, uv, name, filepath.Join(final, "src"), "sync", "--project", filepath.Join(final, "src")); err != nil {
+		if err := h.runUV(ictx, uv, name, filepath.Join(final, "src"), "sync", "--python", PythonVersion, "--project", filepath.Join(final, "src")); err != nil {
 			_ = os.RemoveAll(final)
 			return "", err
 		}
@@ -296,7 +303,7 @@ func (h *Host) install(ctx context.Context, name, version string) (string, error
 		if err := h.swap(staging, final); err != nil {
 			return "", err
 		}
-		if err := h.runUV(ictx, uv, name, final, "tool", "install", "--force", spec); err != nil {
+		if err := h.runUV(ictx, uv, name, final, "tool", "install", "--force", "--python", PythonVersion, spec); err != nil {
 			_ = os.RemoveAll(final)
 			return "", err
 		}
@@ -304,8 +311,6 @@ func (h *Host) install(ctx context.Context, name, version string) (string, error
 			installed = "latest"
 		}
 	}
-	// The download cache is only needed while installing: free it.
-	_ = os.RemoveAll(filepath.Join(h.StateDir, "uv-cache"))
 	m := manifest{Name: name, Version: installed, InstalledAt: time.Now().UTC()}
 	raw, _ := json.Marshal(m)
 	if err := os.WriteFile(h.manifestPath(name), raw, 0o600); err != nil {
@@ -326,4 +331,16 @@ func (h *Host) swap(staging, final string) error {
 		return err
 	}
 	return os.Rename(staging, final)
+}
+
+// freeShared drops the uv download cache, and uv + Python when no add-on
+// remains.
+func (h *Host) freeShared() {
+	_ = os.RemoveAll(filepath.Join(h.StateDir, "uv-cache"))
+	if len(h.Installed()) == 0 {
+		_ = os.RemoveAll(filepath.Join(h.StateDir, "python"))
+		if h.UV == "" {
+			_ = os.RemoveAll(filepath.Join(h.StateDir, "uv"))
+		}
+	}
 }

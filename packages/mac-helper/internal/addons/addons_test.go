@@ -146,7 +146,7 @@ func TestInstallArtemisPinsTheCommitAndRemoveFreesDisk(t *testing.T) {
 		t.Fatalf("installed %+v", inv)
 	}
 	calls, _ := os.ReadFile(log)
-	if !strings.Contains(string(calls), "sync --project "+filepath.Join(h.Root, "artemis", "src")) {
+	if !strings.Contains(string(calls), "sync --python 3.12 --project "+filepath.Join(h.Root, "artemis", "src")) {
 		t.Fatalf("uv calls %s", calls)
 	}
 	if _, err := call(t, h, "addon_remove", map[string]string{"name": "artemis"}); err != nil {
@@ -196,7 +196,7 @@ func TestRunChecksSwitchArgsAndReportsProgress(t *testing.T) {
 	runID := res.(map[string]string)["run_id"]
 	waitState(t, ev, runID, "done")
 	calls, _ := os.ReadFile(log)
-	for _, want := range []string{"run --project", "artemis run Open Settings --device-serial S1", "ADB_DEVICE_SERIAL=S1", "ARTEMIS_STANDALONE=1", "OPENAI_API_KEY=sk-test"} {
+	for _, want := range []string{"run --project", "artemis run Open Settings --device-serial S1 --standalone", "ADB_DEVICE_SERIAL=S1", "ARTEMIS_STANDALONE=1", "OPENAI_API_KEY=sk-test"} {
 		if !strings.Contains(string(calls), want) {
 			t.Errorf("missing %q in %s", want, calls)
 		}
