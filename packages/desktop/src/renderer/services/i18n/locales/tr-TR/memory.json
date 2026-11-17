@@ -28,7 +28,9 @@
     "buttonSelected_other": "{{count}} dosyayı yapay zekâ ile incele",
     "noClaude": "Claude Code asistanı kullanılamıyor.",
     "failed": "İnceleme sohbeti başlatılamadı.",
-    "conversationName": "Bellek incelemesi"
+    "conversationName": "Bellek incelemesi",
+    "failedCode": "İnceleme sohbeti başlatılamadı ({{code}}).",
+    "noWorkspace": "Bu projenin bu sunucuda klasörü yok, bu yüzden içinde inceleme çalıştırılamaz."
   },
   "listLabel": "Bellek dosyaları",
   "summary": "{{count}} bellek · dizin {{lines}} satır",

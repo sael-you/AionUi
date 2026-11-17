@@ -28,7 +28,9 @@
     "buttonSelected_other": "Review {{count}} files with AI",
     "noClaude": "Claude Code is not available as an assistant.",
     "failed": "The review conversation could not be started.",
-    "conversationName": "Memory review"
+    "conversationName": "Memory review",
+    "failedCode": "The review conversation could not be started ({{code}}).",
+    "noWorkspace": "This project has no folder on this server, so a review cannot run in it."
   },
   "listLabel": "Memory files",
   "summary": "{{count}} memories · index {{lines}} lines",

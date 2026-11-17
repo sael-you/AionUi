@@ -28,7 +28,9 @@
     "buttonSelected_other": "بررسی {{count}} فایل با هوش مصنوعی",
     "noClaude": "دستیار Claude Code در دسترس نیست.",
     "failed": "شروع گفتگوی بررسی ممکن نشد.",
-    "conversationName": "بررسی حافظه"
+    "conversationName": "بررسی حافظه",
+    "failedCode": "گفتگوی بازبینی شروع نشد ({{code}}).",
+    "noWorkspace": "این پروژه روی این سرور پوشه‌ای ندارد، پس بازبینی در آن اجرا نمی‌شود."
   },
   "listLabel": "فایل‌های حافظه",
   "summary": "{{count}} حافظه · فهرست {{lines}} خط",

@@ -13,6 +13,7 @@
 import { Notification } from '@arco-design/web-react';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import i18next from 'i18next';
+import { Message } from '@arco-design/web-react';
 import React from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -89,7 +90,7 @@ const LIST: MemoryListResponse = {
   lint: [{ kind: 'not_in_index', file: 'orphan.md', detail: 'no MEMORY.md line' }],
 };
 
-const renderPanel = () => {
+const renderPanel = (workspace = '/root/projects/alpha') => {
   const i18n = i18next.createInstance();
   void i18n.use(initReactI18next).init({
     lng: 'en-US',
@@ -102,10 +103,7 @@ const renderPanel = () => {
       <MemoryRouter initialEntries={['/memory/p1']}>
         <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
           <Routes>
-            <Route
-              path='/memory/:projectId'
-              element={<MemoryPanel projectId='p1' workspace='/root/projects/alpha' />}
-            />
+            <Route path='/memory/:projectId' element={<MemoryPanel projectId='p1' workspace={workspace} />} />
             <Route path='/conversation/:id' element={<div>conversation page</div>} />
           </Routes>
         </SWRConfig>
@@ -258,6 +256,57 @@ describe('MemoryPanel', () => {
     const initial = JSON.parse(sessionStorage.getItem('acp_initial_message_conv-9') ?? '{}') as { input: string };
     expect(initial.input).toContain('Focus on these memory files: deploy.md.');
     expect(initial.input).toContain('Change nothing until the owner approves.');
+  });
+
+  const CLAUDE = [
+    {
+      id: 'bare:claude',
+      enabled: true,
+      source: 'generated',
+      agent: { type: 'acp', source: 'builtin', acp_backend: 'claude' },
+    },
+  ];
+
+  it('Review with AI sends the project folder as a path when it is known as a file:// URI (Settings → Memory)', async () => {
+    // Regression: the sidebar read model gives `file:///…`; AionCore refused it with WORKSPACE_PATH_UNAVAILABLE.
+    api.assistants.mockResolvedValue(CLAUDE);
+    api.create.mockResolvedValue({ id: 'conv-10' });
+    renderPanel('file:///root/projects/my%20alpha');
+    fireEvent.click(await screen.findByRole('checkbox', { name: 'Select Deploy train for the AI review' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Review 1 file with AI' }));
+    expect(await screen.findByText('conversation page')).toBeTruthy();
+    expect(api.create).toHaveBeenCalledWith({
+      name: 'Memory review',
+      assistant: { id: 'bare:claude', locale: 'en-US' },
+      extra: { workspace: '/root/projects/my alpha', custom_workspace: true },
+    });
+  });
+
+  it('Review with AI names the server rule that refused it, and does not ask for a folder it cannot use', async () => {
+    const error = vi.spyOn(Message, 'error').mockImplementation(() => ({}) as never);
+    api.assistants.mockResolvedValue(CLAUDE);
+    api.create.mockRejectedValue(
+      Object.assign(new Error('Workspace path is unavailable.'), {
+        name: 'BackendHttpError',
+        status: 400,
+        code: 'WORKSPACE_PATH_UNAVAILABLE',
+      })
+    );
+    const first = renderPanel();
+    fireEvent.click(await screen.findByRole('checkbox', { name: 'Select Deploy train for the AI review' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Review 1 file with AI' }));
+    await waitFor(() =>
+      expect(error).toHaveBeenCalledWith('The review conversation could not be started (WORKSPACE_PATH_UNAVAILABLE).')
+    );
+    first.unmount();
+    api.create.mockClear();
+    renderPanel('file://fileserver/share/alpha');
+    fireEvent.click(await screen.findByRole('checkbox', { name: 'Select Deploy train for the AI review' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Review 1 file with AI' }));
+    await waitFor(() =>
+      expect(error).toHaveBeenCalledWith('This project has no folder on this server, so a review cannot run in it.')
+    );
+    expect(api.create).not.toHaveBeenCalled();
   });
 
   it('says so when the project has no memory directory yet', async () => {

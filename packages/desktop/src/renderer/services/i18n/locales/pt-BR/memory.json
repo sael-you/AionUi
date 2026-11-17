@@ -28,7 +28,9 @@
     "buttonSelected_other": "Revisar {{count}} arquivos com IA",
     "noClaude": "O assistente Claude Code não está disponível.",
     "failed": "Não foi possível iniciar a conversa de revisão.",
-    "conversationName": "Revisão da memória"
+    "conversationName": "Revisão da memória",
+    "failedCode": "Não foi possível iniciar a conversa de revisão ({{code}}).",
+    "noWorkspace": "Este projeto não tem pasta neste servidor, então uma revisão não pode rodar nele."
   },
   "listLabel": "Arquivos de memória",
   "summary": "{{count}} memórias · índice {{lines}} linhas",

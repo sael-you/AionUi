@@ -28,7 +28,9 @@
     "buttonSelected_other": "{{count}} 件のファイルを AI でレビュー",
     "noClaude": "Claude Code アシスタントを利用できません。",
     "failed": "レビューの会話を開始できませんでした。",
-    "conversationName": "メモリーレビュー"
+    "conversationName": "メモリーレビュー",
+    "failedCode": "レビュー用の会話を開始できませんでした（{{code}}）。",
+    "noWorkspace": "このプロジェクトにはこのサーバー上のフォルダがないため、レビューを実行できません。"
   },
   "listLabel": "メモリーファイル",
   "summary": "{{count}} 件のメモリー · インデックス {{lines}} 行",

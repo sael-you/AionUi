@@ -28,7 +28,9 @@
     "buttonSelected_other": "让 AI 审查 {{count}} 个文件",
     "noClaude": "Claude Code 助手不可用。",
     "failed": "无法开始审查对话。",
-    "conversationName": "记忆审查"
+    "conversationName": "记忆审查",
+    "failedCode": "无法开始审查会话（{{code}}）。",
+    "noWorkspace": "此项目在这台服务器上没有文件夹，因此无法在其中运行审查。"
   },
   "listLabel": "记忆文件",
   "summary": "{{count}} 条记忆 · 索引 {{lines}} 行",
