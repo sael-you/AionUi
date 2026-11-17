@@ -8,6 +8,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { resetOfflineOwnerForTests } from '@/renderer/services/pendingUploads/offlineOwner';
 import {
   DRAFT_MAX_CONTENT_CHARS,
   DRAFT_MAX_ENTRIES,
@@ -16,7 +17,7 @@ import {
 } from '@/renderer/hooks/chat/useSendBoxDraft';
 
 const useAcpDraft = getSendBoxDraftHook('acp', { _type: 'acp', atPath: [], content: '', uploadFile: [] });
-const KEY = 'aionui.sendBoxDraft.acp.c1';
+const KEY = 'aionui.sendBoxDraft.u1.acp.c1';
 
 // A new SWR cache per mount = a fresh page.
 const freshPage = ({ children }: { children: React.ReactNode }) => (
@@ -26,6 +27,7 @@ const open = (id = 'c1') => renderHook(() => useAcpDraft(id), { wrapper: freshPa
 
 describe('composer draft persistence (TASK-127)', () => {
   beforeEach(() => {
+    resetOfflineOwnerForTests('u1');
     window.localStorage.clear();
     resetSendBoxDraftsForTests();
   });
@@ -63,7 +65,7 @@ describe('composer draft persistence (TASK-127)', () => {
     act(() => one.result.current.mutate((draft) => ({ ...draft, content: 'for one' })));
     const two = open('c2');
     await waitFor(() => expect(two.result.current.data).toBeUndefined());
-    expect(window.localStorage.getItem('aionui.sendBoxDraft.acp.c2')).toBeNull();
+    expect(window.localStorage.getItem('aionui.sendBoxDraft.u1.acp.c2')).toBeNull();
   });
 
   it('ignores a damaged or foreign entry instead of failing', async () => {
@@ -86,7 +88,7 @@ describe('composer draft persistence (TASK-127)', () => {
 
     for (let index = 0; index < DRAFT_MAX_ENTRIES + 5; index += 1) {
       window.localStorage.setItem(
-        `aionui.sendBoxDraft.acp.old${index}`,
+        `aionui.sendBoxDraft.u1.acp.old${index}`,
         JSON.stringify({ v: 1, savedAt: index, draft: { _type: 'acp', content: 'old', atPath: [], uploadFile: [] } })
       );
     }
@@ -95,7 +97,7 @@ describe('composer draft persistence (TASK-127)', () => {
       const keys = Object.keys(window.localStorage).filter((key) => key.startsWith('aionui.sendBoxDraft.'));
       expect(keys).toHaveLength(DRAFT_MAX_ENTRIES);
       expect(keys).toContain(KEY);
-      expect(keys).not.toContain('aionui.sendBoxDraft.acp.old0');
+      expect(keys).not.toContain('aionui.sendBoxDraft.u1.acp.old0');
     });
   });
 });

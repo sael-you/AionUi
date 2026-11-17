@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
 import useSWR from 'swr';
+import {
+  getOfflineOwner,
+  isOfflineDraftExpired,
+  onOfflineDraftsCleared,
+} from '@/renderer/services/pendingUploads/offlineOwner';
 import type { FileOrFolderItem } from '@/renderer/utils/file/fileTypes';
 export type { FileOrFolderItem } from '@/renderer/utils/file/fileTypes';
 
@@ -39,10 +44,11 @@ const store: SendBoxDraftStore = {
 
 // ---------------------------------------------------------------------------
 // Persistence (TASK-127): what the owner is typing survives a reload, a crash or
-// a lost connection. One localStorage entry per conversation holds the text and
-// the attachment references (uploaded files already live on the server; the
-// quote stack persists itself). Restored on open, removed once the draft is empty
-// (a successful send empties it).
+// a lost connection. One localStorage entry per user and conversation holds the
+// text and the attachment references (uploaded files already live on the server;
+// the quote stack persists itself). Restored on open, removed once the draft is
+// empty (a successful send empties it), dropped after 14 days, and cleared on
+// logout or when another user signs in (see offlineOwner).
 // ---------------------------------------------------------------------------
 
 const DRAFT_STORAGE_PREFIX = 'aionui.sendBoxDraft.';
@@ -53,8 +59,11 @@ export const DRAFT_MAX_ENTRIES = 50;
 
 type StoredDraft = { v: 1; savedAt: number; draft: Draft };
 
-const draftStorageKey = (type: DraftConversationType, conversation_id: string) =>
-  `${DRAFT_STORAGE_PREFIX}${type}.${conversation_id}`;
+/** Null while no user is known: then the draft lives in memory only. */
+const draftStorageKey = (type: DraftConversationType, conversation_id: string): string | null => {
+  const owner = getOfflineOwner();
+  return owner ? `${DRAFT_STORAGE_PREFIX}${owner}.${type}.${conversation_id}` : null;
+};
 
 const isEmptyDraft = (draft: Draft | undefined): boolean =>
   !draft || (draft.content.length === 0 && draft.atPath.length === 0 && draft.uploadFile.length === 0);
@@ -73,6 +82,7 @@ const parseStoredDraft = (raw: string | null, type: DraftConversationType): Draf
     const parsed = JSON.parse(raw) as Partial<StoredDraft>;
     const draft = parsed?.draft;
     if (parsed?.v !== 1 || !draft || draft._type !== type) return undefined;
+    if (isOfflineDraftExpired(parsed.savedAt)) return undefined;
     if (typeof draft.content !== 'string' || !Array.isArray(draft.atPath) || !Array.isArray(draft.uploadFile)) {
       return undefined;
     }
@@ -105,8 +115,8 @@ const pruneStoredDrafts = (storage: Storage): void => {
 
 const persistDraft = (type: DraftConversationType, conversation_id: string, draft: Draft | undefined): void => {
   const storage = draftStorage();
-  if (!storage || !conversation_id) return;
   const key = draftStorageKey(type, conversation_id);
+  if (!storage || !conversation_id || !key) return;
   try {
     if (isEmptyDraft(draft)) {
       storage.removeItem(key);
@@ -130,22 +140,29 @@ const loadStoredDraft = <K extends DraftConversationType>(
   conversation_id: string
 ): Extract<Draft, { _type: K }> | undefined => {
   const storage = draftStorage();
-  if (!storage || !conversation_id) return undefined;
+  const key = draftStorageKey(type, conversation_id);
+  if (!storage || !conversation_id || !key) return undefined;
   try {
-    return parseStoredDraft(storage.getItem(draftStorageKey(type, conversation_id)), type) as
-      | Extract<Draft, { _type: K }>
-      | undefined;
+    const raw = storage.getItem(key);
+    const draft = parseStoredDraft(raw, type) as Extract<Draft, { _type: K }> | undefined;
+    // Expired or unreadable: drop it now rather than keep it around.
+    if (raw && !draft) storage.removeItem(key);
+    return draft;
   } catch {
     return undefined;
   }
 };
 
-/** Test seam: forget the in-memory drafts (localStorage is the source on the next read). */
-export const resetSendBoxDraftsForTests = (): void => {
+const forgetDraftsInMemory = (): void => {
   store.acp.clear();
   store.codex.clear();
   store.aionrs.clear();
 };
+// Logout or another user: the drafts held in memory go with the stored ones.
+onOfflineDraftsCleared(forgetDraftsInMemory);
+
+/** Test seam: forget the in-memory drafts (localStorage is the source on the next read). */
+export const resetSendBoxDraftsForTests = forgetDraftsInMemory;
 
 export type ConversationSendBoxPrefill = {
   requestId: number;

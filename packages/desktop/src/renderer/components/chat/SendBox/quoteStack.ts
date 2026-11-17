@@ -14,6 +14,11 @@
  */
 
 import { useCallback, useSyncExternalStore } from 'react';
+import {
+  getOfflineOwner,
+  isOfflineDraftExpired,
+  onOfflineDraftsCleared,
+} from '@/renderer/services/pendingUploads/offlineOwner';
 
 export type QuotePosition = 'left' | 'right' | 'center' | 'pop';
 
@@ -64,10 +69,20 @@ export const moveQuote = (items: readonly QuoteItem[], from: number, to: number)
 };
 
 /** Stored JSON → valid items only (anything else is dropped, never trusted). */
-export const parseStoredStack = (raw: string | null): QuoteItem[] => {
+/**
+ * A stored stack: `{savedAt, items}` (TASK-127 review: per user, 14-day expiry).
+ * A bare array is also read, for tests and stacks written before the wrapper.
+ */
+export const parseStoredStack = (raw: string | null, now = Date.now()): QuoteItem[] => {
   if (!raw) return [];
   try {
-    const value = JSON.parse(raw) as unknown;
+    const parsed = JSON.parse(raw) as unknown;
+    let value: unknown = parsed;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      const stored = parsed as { savedAt?: unknown; items?: unknown };
+      if (isOfflineDraftExpired(stored.savedAt, now)) return [];
+      value = stored.items;
+    }
     if (!Array.isArray(value)) return [];
     return value.filter(
       (item): item is QuoteItem =>
@@ -92,14 +107,19 @@ const EMPTY: QuoteItem[] = [];
 const stacks = new Map<string, QuoteItem[]>();
 const listeners = new Map<string, Set<() => void>>();
 
-const storageKey = (conversationId: string) => `${STORAGE_PREFIX}${conversationId}`;
+/** Per user and conversation; null while no user is known (then the stack lives in memory only). */
+const storageKey = (conversationId: string): string | null => {
+  const owner = getOfflineOwner();
+  return owner ? `${STORAGE_PREFIX}${owner}.${conversationId}` : null;
+};
 
 const read = (conversationId: string): QuoteItem[] => {
   const cached = stacks.get(conversationId);
   if (cached) return cached;
   let loaded: QuoteItem[] = EMPTY;
   try {
-    loaded = parseStoredStack(window.localStorage.getItem(storageKey(conversationId)));
+    const key = storageKey(conversationId);
+    loaded = key ? parseStoredStack(window.localStorage.getItem(key)) : EMPTY;
   } catch {
     loaded = EMPTY;
   }
@@ -111,9 +131,15 @@ const read = (conversationId: string): QuoteItem[] => {
 const write = (conversationId: string, items: QuoteItem[]) => {
   const value = items.length > 0 ? items : EMPTY;
   stacks.set(conversationId, value);
+  const key = storageKey(conversationId);
   try {
-    if (value.length > 0) window.localStorage.setItem(storageKey(conversationId), JSON.stringify(value));
-    else window.localStorage.removeItem(storageKey(conversationId));
+    if (!key) {
+      // No known user: memory only.
+    } else if (value.length > 0) {
+      window.localStorage.setItem(key, JSON.stringify({ savedAt: Date.now(), items: value }));
+    } else {
+      window.localStorage.removeItem(key);
+    }
   } catch {
     // Storage full or blocked: the stack still works for this page.
   }
@@ -138,6 +164,12 @@ export const quoteStackStore = {
     listeners.clear();
   },
 };
+
+// Logout or another user signing in: forget the cached stacks and tell the open views.
+onOfflineDraftsCleared(() => {
+  stacks.clear();
+  for (const set of listeners.values()) for (const listener of set) listener();
+});
 
 const newId = (): string =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto

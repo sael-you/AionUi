@@ -25,6 +25,11 @@ import type { SessionRef } from '@/common/adapter/ipcBridge';
 import type { TChatConversation } from '@/common/config/storage';
 import type { ChatFileRef } from '@/common/types/chatFile';
 import { uuid } from '@/common/utils';
+import {
+  getOfflineOwner,
+  isOfflineDraftExpired,
+  onOfflineDraftsCleared,
+} from '@/renderer/services/pendingUploads/offlineOwner';
 
 export type UnsentMessage = {
   key: string;
@@ -52,12 +57,22 @@ export const isConnectionFailure = (error: unknown): boolean => {
 
 const sameFiles = (a: ChatFileRef[], b: ChatFileRef[]): boolean => JSON.stringify(a) === JSON.stringify(b);
 
+/** Per user and conversation; null while no user is known (then it lives in memory only). */
+const storageKey = (conversation_id: string): string | null => {
+  const owner = getOfflineOwner();
+  return owner ? `${STORAGE_PREFIX}${owner}.${conversation_id}` : null;
+};
+
 const readUnsent = (conversation_id: string): UnsentMessage | null => {
+  const key = storageKey(conversation_id);
+  if (!key) return null;
   try {
-    const parsed = JSON.parse(
-      window.localStorage.getItem(STORAGE_PREFIX + conversation_id) ?? 'null'
-    ) as Partial<UnsentMessage> | null;
+    const parsed = JSON.parse(window.localStorage.getItem(key) ?? 'null') as Partial<UnsentMessage> | null;
     if (!parsed || typeof parsed.key !== 'string' || typeof parsed.input !== 'string') return null;
+    if (isOfflineDraftExpired(parsed.savedAt)) {
+      window.localStorage.removeItem(key);
+      return null;
+    }
     return {
       key: parsed.key,
       input: parsed.input,
@@ -72,9 +87,11 @@ const readUnsent = (conversation_id: string): UnsentMessage | null => {
 };
 
 const writeUnsent = (conversation_id: string, unsent: UnsentMessage | null): void => {
+  const key = storageKey(conversation_id);
+  if (!key) return;
   try {
-    if (unsent) window.localStorage.setItem(STORAGE_PREFIX + conversation_id, JSON.stringify(unsent));
-    else window.localStorage.removeItem(STORAGE_PREFIX + conversation_id);
+    if (unsent) window.localStorage.setItem(key, JSON.stringify(unsent));
+    else window.localStorage.removeItem(key);
   } catch {
     // Storage full or blocked: the record lives for this page only.
   }
@@ -111,6 +128,16 @@ export const useUnsentMessage = ({ conversation_id, content, resend, keyed = tru
     setUnsent(readUnsent(conversation_id));
     restoredSeenRef.current = false;
   }, [conversation_id]);
+
+  // Logout or another user: the record went with the stored drafts.
+  useEffect(
+    () =>
+      onOfflineDraftsCleared(() => {
+        setUnsent(null);
+        restoredSeenRef.current = false;
+      }),
+    []
+  );
 
   const store = useCallback(
     (next: UnsentMessage | null) => {

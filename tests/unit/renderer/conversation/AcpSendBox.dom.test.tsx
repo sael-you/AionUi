@@ -7,6 +7,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import React from 'react';
+import { resetOfflineOwnerForTests } from '@/renderer/services/pendingUploads/offlineOwner';
 import { BackendHttpError } from '@/common/adapter/httpBridge';
 import AcpSendBox from '@/renderer/pages/conversation/platforms/acp/AcpSendBox';
 import type { UseAcpMessageReturn } from '@/renderer/pages/conversation/platforms/acp/useAcpMessage';
@@ -397,7 +398,8 @@ describe('AcpSendBox', () => {
   });
 
   it('keeps a message that found no connection as a draft with Retry, without an error card (TASK-127)', async () => {
-    window.localStorage.removeItem('aionui.unsentMessage.conv-1');
+    resetOfflineOwnerForTests('u1');
+    window.localStorage.removeItem('aionui.unsentMessage.u1.conv-1');
     sendMessageInvokeMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
     sendMessageInvokeMock.mockResolvedValueOnce({ turn_id: 'turn-1', runtime: null, msg_id: 'msg-1' });
 
@@ -408,7 +410,7 @@ describe('AcpSendBox', () => {
 
     const banner = await screen.findByTestId('unsent-message-banner');
     expect(banner).toHaveTextContent('conversation.unsent.notSent');
-    expect(JSON.parse(window.localStorage.getItem('aionui.unsentMessage.conv-1') as string)).toMatchObject({
+    expect(JSON.parse(window.localStorage.getItem('aionui.unsentMessage.u1.conv-1') as string)).toMatchObject({
       input: 'Hello',
     });
 
@@ -419,7 +421,7 @@ describe('AcpSendBox', () => {
     await waitFor(() => expect(sendMessageInvokeMock).toHaveBeenCalledTimes(2));
     expect(sendMessageInvokeMock.mock.calls[1]?.[0]).toMatchObject({ input: 'Hello', conversation_id: 'conv-1' });
     await waitFor(() => expect(screen.queryByTestId('unsent-message-banner')).toBeNull());
-    expect(window.localStorage.getItem('aionui.unsentMessage.conv-1')).toBeNull();
+    expect(window.localStorage.getItem('aionui.unsentMessage.u1.conv-1')).toBeNull();
   });
 
   it('shows a progress ring with a window size, a hollow ring without one, and nothing without usage', () => {
