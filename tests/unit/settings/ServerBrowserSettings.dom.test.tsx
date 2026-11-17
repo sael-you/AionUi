@@ -41,6 +41,8 @@ const api = vi.hoisted(() => {
 
 vi.mock('@/common/adapter/ipcBridge', () => ({ serverBrowser: api }));
 const platform = vi.hoisted(() => ({ desktop: false }));
+const clipboard = vi.hoisted(() => ({ copyText: vi.fn() }));
+vi.mock('@/renderer/utils/ui/clipboard', () => clipboard);
 vi.mock('@/renderer/utils/platform', () => ({ isElectronDesktop: () => platform.desktop }));
 vi.mock('@/renderer/pages/settings/components/SettingsPageWrapper', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -64,6 +66,11 @@ import ServerBrowserSettings from '@/renderer/components/settings/SettingsModal/
 import BrowserApprovalsLog, {
   approvalLogRows,
 } from '@/renderer/components/settings/SettingsModal/contents/SystemModalContent/BrowserApprovalsLog';
+import BrowserExtensionInstall, {
+  isOlderVersion,
+  outdatedDevices,
+  parseRelease,
+} from '@/renderer/pages/conversation/Preview/browser/BrowserExtensionInstall';
 import BrowserSettingsPage from '@/renderer/pages/conversation/Preview/browser/BrowserSettingsPage';
 import { BUILTIN_TAB_IDS } from '@/renderer/pages/settings/components/SettingsSider';
 import BrowserDevicesSettings, {
@@ -520,5 +527,103 @@ describe('Settings → Browser page (TASK-128)', () => {
       ['Work', 'o2'],
       ['Mac', 'o1'],
     ]);
+  });
+});
+
+describe('Settings → Browser → Install on your computer (TASK-133)', () => {
+  const RELEASE = {
+    version: '0.1.2',
+    file: 'aionui-browser-bridge-0.1.2.zip',
+    sha256: 'ab'.repeat(32),
+    size: 20480,
+  };
+  const serve = (body: unknown, ok = true) =>
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({ ok, json: async () => body }))
+    );
+
+  beforeEach(() => {
+    api.listDevices.invoke.mockResolvedValue([MAC]);
+    clipboard.copyText.mockResolvedValue(undefined);
+    vi.spyOn(Message, 'success').mockImplementation(() => ({}) as never);
+    vi.spyOn(Message, 'error').mockImplementation(() => ({}) as never);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
+  const renderInstall = () =>
+    render(
+      <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+        <BrowserExtensionInstall />
+      </SWRConfig>
+    );
+
+  it('compares dotted versions numerically and ignores malformed ones', () => {
+    expect(isOlderVersion('0.1.1', '0.1.2')).toBe(true);
+    expect(isOlderVersion('0.1.9', '0.1.10')).toBe(true);
+    expect(isOlderVersion('0.1.2', '0.1.2')).toBe(false);
+    expect(isOlderVersion('0.2.0', '0.1.9')).toBe(false);
+    expect(isOlderVersion('dev', '0.1.2')).toBe(false);
+  });
+
+  it('accepts only a well-formed release descriptor', () => {
+    expect(parseRelease(RELEASE)).toEqual(RELEASE);
+    expect(parseRelease({ ...RELEASE, sha256: 'nope' })).toBeNull();
+    expect(parseRelease({ ...RELEASE, file: '../evil.zip' })).toBeNull();
+    expect(parseRelease('<!doctype html>')).toBeNull();
+  });
+
+  it('flags only browsers known to run an older extension', () => {
+    const rows = [
+      { ...MAC, device_id: 'a', extension_version: '0.1.1' },
+      { ...MAC, device_id: 'b', extension_version: '0.1.2' },
+      { ...MAC, device_id: 'c' },
+    ];
+    expect(outdatedDevices(rows, '0.1.2').map((row) => row.device_id)).toEqual(['a']);
+  });
+
+  it('offers the versioned download with its SHA-256 and the four steps', async () => {
+    serve(RELEASE);
+    renderInstall();
+    const download = await screen.findByTestId('browser-extension-download');
+    expect(download.getAttribute('href')).toBe('/extension/aionui-browser-bridge-0.1.2.zip');
+    expect(download.getAttribute('download')).toBe('aionui-browser-bridge-0.1.2.zip');
+    expect(download.textContent).toContain('"version":"0.1.2"');
+    expect(screen.getByTestId('browser-extension-sha256').textContent).toBe(RELEASE.sha256);
+    expect(within(screen.getByTestId('browser-extension-steps')).getAllByRole('listitem')).toHaveLength(4);
+    expect(screen.queryByTestId('browser-extension-update')).toBeNull();
+  });
+
+  it('copies chrome://extensions and arc://extensions instead of linking to them', async () => {
+    serve(RELEASE);
+    renderInstall();
+    const buttons = await screen.findAllByTestId('browser-extension-copy-address');
+    expect(buttons).toHaveLength(2);
+    expect(buttons.every((button) => button.getAttribute('href') === null)).toBe(true);
+    fireEvent.click(buttons[0]);
+    await waitFor(() => expect(clipboard.copyText).toHaveBeenCalledWith('chrome://extensions'));
+    fireEvent.click(buttons[1]);
+    await waitFor(() => expect(clipboard.copyText).toHaveBeenCalledWith('arc://extensions'));
+  });
+
+  it('says a new version is available when a paired browser runs an older one', async () => {
+    serve(RELEASE);
+    api.listDevices.invoke.mockResolvedValue([{ ...MAC, extension_version: '0.1.1' }]);
+    renderInstall();
+    const notice = await screen.findByTestId('browser-extension-update');
+    expect(notice.textContent).toContain('"version":"0.1.2"');
+    expect(notice.textContent).toContain(`${MAC.name} (0.1.1)`);
+  });
+
+  it('keeps the steps and explains when the build has no extension download', async () => {
+    serve('<!doctype html>');
+    renderInstall();
+    expect(await screen.findByTestId('browser-extension-unavailable')).toBeTruthy();
+    expect(screen.queryByTestId('browser-extension-download')).toBeNull();
+    expect(screen.getByTestId('browser-extension-steps')).toBeTruthy();
   });
 });

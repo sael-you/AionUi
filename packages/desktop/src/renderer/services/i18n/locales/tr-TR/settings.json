@@ -1640,6 +1640,23 @@
       "empty": "Henüz hiçbir şey onayınızı gerektirmedi.",
       "pending_one": "{{count}} işlem yanıtınızı bekliyor",
       "pending_other": "{{count}} işlem yanıtınızı bekliyor"
+    },
+    "install": {
+      "title": "Bilgisayarınıza kurun",
+      "description": "AionUi Browser Bridge'i bilgisayarınızdaki Chrome veya Arc'a ekleyin. Yaklaşık bir dakika sürer ve Chrome Web Mağazası gerekmez.",
+      "download": "{{version}} sürümünü indir",
+      "sha256": "SHA-256",
+      "copySha": "SHA-256'yı kopyala",
+      "shaCopied": "SHA-256 kopyalandı.",
+      "copyFailed": "Kopyalanamadı.",
+      "unavailable": "Bu derleme uzantı indirmesini içermiyor.",
+      "stepUnzip": "Zip dosyasını indirin ve kalıcı bir yere, örneğin Belgeler klasörünüze çıkarın.",
+      "stepOpen": "Uzantılar sayfasını açın: adresini kopyalayıp adres çubuğuna yapıştırın. Bir web sayfasının bunu sizin için açmasına izin verilmez.",
+      "copyAddress": "{{address}} adresini kopyala",
+      "addressCopied": "{{address}} kopyalandı. Adres çubuğuna yapıştırın.",
+      "stepLoad": "“Geliştirici modu”nu açın (sağ üst), “Paketlenmemiş öğe yükle”ye tıklayın ve çıkarılan klasörü seçin.",
+      "stepPair": "Eşleyin: aşağıdaki “{{button}}” düğmesine, ardından tarayıcınızdaki AionUi simgesine tıklayın ve kodu yazın.",
+      "update": "{{version}} sürümü hazır. Hâlâ eski sürümde: {{names}}. İndirin, klasördeki dosyaları değiştirin, ardından uzantı kartındaki yeniden yükle okuna basın."
     }
   }
 }

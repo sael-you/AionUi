@@ -1642,6 +1642,23 @@
       "empty": "還沒有需要你核准的操作。",
       "pending_one": "{{count}} 個操作正在等待你的回應",
       "pending_other": "{{count}} 個操作正在等待你的回應"
+    },
+    "install": {
+      "title": "安裝到你的電腦",
+      "description": "把 AionUi Browser Bridge 加到你電腦上的 Chrome 或 Arc。大約一分鐘，不需要 Chrome 線上應用程式商店。",
+      "download": "下載版本 {{version}}",
+      "sha256": "SHA-256",
+      "copySha": "複製 SHA-256",
+      "shaCopied": "已複製 SHA-256。",
+      "copyFailed": "複製失敗。",
+      "unavailable": "此組建不包含擴充功能下載。",
+      "stepUnzip": "下載 zip 並解壓縮到固定位置，例如「文件」資料夾。",
+      "stepOpen": "開啟擴充功能頁面：複製網址並貼到網址列。網頁無法替你開啟它。",
+      "copyAddress": "複製 {{address}}",
+      "addressCopied": "已複製 {{address}}。請貼到網址列。",
+      "stepLoad": "開啟右上角的「開發人員模式」，按一下「載入未封裝項目」，選擇解壓縮後的資料夾。",
+      "stepPair": "配對：按一下下方的「{{button}}」，然後按一下瀏覽器中的 AionUi 圖示並輸入配對碼。",
+      "update": "版本 {{version}} 已可使用。仍在使用舊版本：{{names}}。下載後取代資料夾中的檔案，然後按一下擴充功能卡片上的重新載入箭頭。"
     }
   }
 }

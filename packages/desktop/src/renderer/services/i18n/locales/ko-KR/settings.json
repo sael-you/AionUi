@@ -1642,6 +1642,23 @@
       "empty": "아직 승인이 필요한 작업이 없었습니다.",
       "pending_one": "작업 {{count}}개가 응답을 기다리고 있습니다",
       "pending_other": "작업 {{count}}개가 응답을 기다리고 있습니다"
+    },
+    "install": {
+      "title": "내 컴퓨터에 설치",
+      "description": "내 컴퓨터의 Chrome 또는 Arc에 AionUi Browser Bridge를 추가합니다. 약 1분이면 되고 Chrome 웹 스토어가 필요 없습니다.",
+      "download": "버전 {{version}} 다운로드",
+      "sha256": "SHA-256",
+      "copySha": "SHA-256 복사",
+      "shaCopied": "SHA-256을 복사했습니다.",
+      "copyFailed": "복사하지 못했습니다.",
+      "unavailable": "이 빌드에는 확장 프로그램 다운로드가 포함되어 있지 않습니다.",
+      "stepUnzip": "zip을 다운로드하고 문서 폴더 같은 영구적인 위치에 압축을 풉니다.",
+      "stepOpen": "확장 프로그램 페이지를 엽니다. 주소를 복사해 주소창에 붙여넣으세요. 웹 페이지는 이 페이지를 대신 열 수 없습니다.",
+      "copyAddress": "{{address}} 복사",
+      "addressCopied": "{{address}}을(를) 복사했습니다. 주소창에 붙여넣으세요.",
+      "stepLoad": "오른쪽 위의 “개발자 모드”를 켜고 “압축해제된 확장 프로그램을 로드합니다”를 클릭한 뒤 압축을 푼 폴더를 선택합니다.",
+      "stepPair": "페어링: 아래의 “{{button}}”을(를) 클릭한 다음 브라우저의 AionUi 아이콘을 클릭하고 코드를 입력합니다.",
+      "update": "버전 {{version}}을 사용할 수 있습니다. 아직 이전 버전: {{names}}. 다운로드하여 폴더의 파일을 교체한 다음 확장 프로그램 카드의 새로고침 화살표를 누르세요."
     }
   }
 }

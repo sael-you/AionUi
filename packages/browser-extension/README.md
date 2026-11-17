@@ -17,6 +17,10 @@ Writes `packages/browser-extension/dist/unpacked/` (load this folder) and
 
 ## Install (owner, once per browser)
 
+The web UI ships the zip: **Settings → Browser → Install on your computer** has the download
+(`/extension/aionui-browser-bridge-<version>.zip`, SHA-256 shown, descriptor `/extension/latest.json`)
+and the same steps. It also says when a paired browser runs an older build.
+
 1. Unzip `aionui-browser-bridge-<version>.zip` somewhere permanent (e.g. `~/AionUi Browser Bridge`).
 2. Chrome: open `chrome://extensions` · Arc: open `arc://extensions`. Turn on **Developer mode**.
 3. **Load unpacked** → pick the unzipped folder. Pin the AionUi icon to the toolbar.

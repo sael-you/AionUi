@@ -22,6 +22,7 @@ import { useSettingsViewMode } from '@/renderer/components/settings/SettingsModa
 import SettingsPageHeader from '@/renderer/pages/settings/components/SettingsPageHeader';
 import SettingsPageWrapper from '@/renderer/pages/settings/components/SettingsPageWrapper';
 import { isElectronDesktop } from '@/renderer/utils/platform';
+import BrowserExtensionInstall from './BrowserExtensionInstall';
 
 const BrowserSettingsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -41,6 +42,7 @@ const BrowserSettingsPage: React.FC = () => {
             ) : (
               <>
                 <ServerBrowserSettings />
+                <BrowserExtensionInstall />
                 <BrowserDevicesSettings />
                 <BrowserApprovalsLog />
               </>

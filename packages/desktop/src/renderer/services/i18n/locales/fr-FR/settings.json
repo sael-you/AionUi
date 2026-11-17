@@ -1640,6 +1640,23 @@
       "empty": "Rien n’a encore demandé votre accord.",
       "pending_one": "{{count}} action attend votre réponse",
       "pending_other": "{{count}} actions attendent votre réponse"
+    },
+    "install": {
+      "title": "Installer sur votre ordinateur",
+      "description": "Ajoutez AionUi Browser Bridge à Chrome ou Arc sur votre ordinateur. Cela prend environ une minute et ne nécessite pas le Chrome Web Store.",
+      "download": "Télécharger la version {{version}}",
+      "sha256": "SHA-256",
+      "copySha": "Copier le SHA-256",
+      "shaCopied": "SHA-256 copié.",
+      "copyFailed": "Copie impossible.",
+      "unavailable": "Cette version n'inclut pas le téléchargement de l'extension.",
+      "stepUnzip": "Téléchargez le zip et décompressez-le à un emplacement permanent, par exemple votre dossier Documents.",
+      "stepOpen": "Ouvrez la page des extensions : copiez son adresse et collez-la dans la barre d'adresse. Une page web n'a pas le droit de l'ouvrir pour vous.",
+      "copyAddress": "Copier {{address}}",
+      "addressCopied": "{{address}} copié. Collez-le dans la barre d'adresse.",
+      "stepLoad": "Activez le « Mode développeur » (en haut à droite), cliquez sur « Charger l'extension non empaquetée » et choisissez le dossier décompressé.",
+      "stepPair": "Associez-la : cliquez sur « {{button}} » ci-dessous, puis sur l'icône AionUi dans votre navigateur et saisissez le code.",
+      "update": "La version {{version}} est disponible. Encore sur une version antérieure : {{names}}. Téléchargez-la, remplacez les fichiers du dossier, puis appuyez sur la flèche de rechargement de la carte de l'extension."
     }
   }
 }
