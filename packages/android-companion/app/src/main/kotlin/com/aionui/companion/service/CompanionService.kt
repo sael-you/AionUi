@@ -177,7 +177,10 @@ class CompanionService : Service() {
 
     /** The owner's Stop (notification, overlay chip or the app): agents off now, session ends. */
     private fun ownerStop() {
+        // First no new verb is accepted, then whatever runs or waits is cancelled, now:
+        // not when the session closes after the flush below.
         CompanionState.setSwitch(this, false)
+        dispatcher.stopAll()
         releaseCapture()
         overlay.hide()
         session?.sendEvent(EVENT_SWITCH_OFF)

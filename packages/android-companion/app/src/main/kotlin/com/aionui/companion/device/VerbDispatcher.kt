@@ -46,7 +46,7 @@ class VerbDispatcher(
             return
         }
         if (!actions.switchOn()) {
-            reply(VerbResult.Failed(VerbError.SWITCH_OFF, "the owner switched agents off on this phone"))
+            reply(VerbResult.Failed(VerbError.SWITCH_OFF, SWITCHED_OFF))
             return
         }
         val call = try {
@@ -57,7 +57,12 @@ class VerbDispatcher(
         }
         val job = scope.launch {
             val result = try {
-                oneAtATime.withLock { withTimeout(timeoutMs) { call() } }
+                oneAtATime.withLock {
+                    // Again at its turn: a verb queued (or racing a stop) before the owner's
+                    // switch-off must not run after it.
+                    if (!actions.switchOn()) throw VerbException(VerbError.SWITCH_OFF, SWITCHED_OFF)
+                    withTimeout(timeoutMs) { call() }
+                }
             } catch (error: VerbException) {
                 VerbResult.Failed(error.code, error.message)
             } catch (_: TimeoutCancellationException) {
@@ -153,5 +158,6 @@ class VerbDispatcher(
 
     private companion object {
         val PACKAGE = Regex("^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+$")
+        const val SWITCHED_OFF = "the owner switched agents off on this phone"
     }
 }

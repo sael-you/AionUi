@@ -157,4 +157,37 @@ class VerbDispatcherTest {
         assertEquals("failed", (result.getCompleted() as VerbResult.Failed).code)
         assertEquals(1, actions.cancelled)
     }
+
+    @Test
+    fun `owner stop - switch off then stopAll - ends the running verb and runs nothing queued`() = runTest {
+        actions.hang = true
+        val d = dispatcher()
+        val running = CompletableDeferred<VerbResult>()
+        val queued = CompletableDeferred<VerbResult>()
+        d.handle("tap", args("""{"x":1,"y":1}""")) { running.complete(it) }
+        testScheduler.runCurrent()
+        d.handle("key", args("""{"code":4}""")) { queued.complete(it) }
+        testScheduler.runCurrent()
+
+        actions.on = false
+        d.stopAll()
+        advanceUntilIdle()
+
+        assertEquals("failed", (running.getCompleted() as VerbResult.Failed).code)
+        assertTrue(queued.getCompleted() is VerbResult.Failed)
+        assertEquals(listOf("tap 1 1"), actions.calls)
+        assertEquals(1, actions.cancelled)
+    }
+
+    @Test
+    fun `a verb accepted just before the switch went off does not run`() = runTest {
+        val d = dispatcher()
+        val result = CompletableDeferred<VerbResult>()
+        // Accepted while on; its turn comes after the owner switched off (a stop that missed it).
+        d.handle("tap", args("""{"x":5,"y":5}""")) { result.complete(it) }
+        actions.on = false
+        advanceUntilIdle()
+        assertEquals("switch_off", (result.getCompleted() as VerbResult.Failed).code)
+        assertTrue(actions.calls.isEmpty())
+    }
 }

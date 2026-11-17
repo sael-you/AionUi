@@ -70,5 +70,14 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service" />
         </service>
+
+        <!-- Read-only client_id for adb (K3). Exported because the shell user cannot reach a
+             private provider; PairingProvider answers only the shell (2000) and root (0) uids. -->
+        <provider
+            android:name=".store.PairingProvider"
+            android:authorities="com.aionui.companion.pairing"
+            android:exported="true"
+            android:grantUriPermissions="false"
+            tools:ignore="ExportedContentProvider" />
     </application>
 </manifest>
