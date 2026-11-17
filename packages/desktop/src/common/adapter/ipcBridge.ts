@@ -2638,8 +2638,16 @@ export type IRealtimeReconnectedEvent = {
   timestamp: number;
 };
 
+/** Frames were lost for good (server restart, too old, no answer): re-pull state (TASK-43). */
+export type IRealtimeResyncEvent = {
+  reason: 'epoch_changed' | 'too_old' | 'timeout';
+  timestamp: number;
+};
+
 export const realtime = {
   reconnected: wsEmitter<IRealtimeReconnectedEvent>('realtime.reconnected'),
+  /** Local only: raised by the replay tracker in httpBridge, never sent by the server. */
+  resync: wsEmitter<IRealtimeResyncEvent>('realtime.resync'),
 };
 
 export const team = {
