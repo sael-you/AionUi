@@ -10,10 +10,11 @@
  * install / remove progress. Opens the details drawer.
  */
 
-import { Button, Progress, Tag } from '@arco-design/web-react';
+import { Button, Progress, Tag, Tooltip } from '@arco-design/web-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Device } from '@/common/types/platform/devices';
+import type { BrowserEngineStatus } from '@/common/types/platform/serverBrowser';
 import LibraryCard, {
   type LibraryCardMenuItem,
 } from '@/renderer/components/settings/SettingsModal/library/LibraryCard';
@@ -65,8 +66,34 @@ export const DeviceJobProgress: React.FC<{ device: Device; onFinished: () => voi
   );
 };
 
+/** How AionCore verified the engine download, and whether it is for agents only (C35, TASK-134). */
+export const EngineChips: React.FC<{ engine: BrowserEngineStatus }> = ({ engine }) => {
+  const { t } = useTranslation();
+  const signed = engine.verification === 'signed-repository' || engine.verification === 'pinned-sha256';
+  return (
+    <>
+      {engine.verification ? (
+        <Tooltip content={t(signed ? `${KEY}.engine.signedTip` : `${KEY}.engine.tlsOnlyTip`)}>
+          <Tag size='small' color={signed ? 'green' : 'orange'} tabIndex={0} data-testid='engine-verification'>
+            {t(signed ? `${KEY}.engine.signed` : `${KEY}.engine.tlsOnly`)}
+          </Tag>
+        </Tooltip>
+      ) : null}
+      {engine.agents_only ? (
+        <Tooltip content={t(`${KEY}.engine.agentsOnlyTip`)}>
+          <Tag size='small' color='purple' tabIndex={0} data-testid='engine-agents-only'>
+            {t(`${KEY}.engine.agentsOnly`)}
+          </Tag>
+        </Tooltip>
+      ) : null}
+    </>
+  );
+};
+
 export type DeviceCardProps = {
   device: Device;
+  /** Server browsers: the engine's status from `GET /api/browser/status`. */
+  engine?: BrowserEngineStatus;
   now: number;
   saving: boolean;
   onToggle: (device: Device, enabled: boolean) => void;
@@ -78,6 +105,7 @@ export type DeviceCardProps = {
 
 const DeviceCard: React.FC<DeviceCardProps> = ({
   device,
+  engine,
   now,
   saving,
   onToggle,
@@ -100,10 +128,15 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
         <span>{t(`${KEY}.disk`, { size: formatDiskSize(device.disk_bytes, i18n.language) })}</span>
       ) : null}
       {left !== null ? <span data-testid='device-off-in'>{t(`${KEY}.offIn`, { count: left })}</span> : null}
+      {engine ? <EngineChips engine={engine} /> : null}
     </>
   );
 
   const menu: LibraryCardMenuItem[] = [{ key: 'details', label: t(`${KEY}.details`), onClick: () => onOpen(device) }];
+  if (device.installed && engine && device.available === 'now') {
+    // Download the engine's current version over the installed one.
+    menu.push({ key: 'update', label: t(`${KEY}.engine.update`), disabled: busy, onClick: () => onInstall(device) });
+  }
   if (device.installed && (device.kind === 'server_browser' || device.kind === 'addon')) {
     menu.push({
       key: 'remove',
@@ -130,7 +163,13 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
       id={device.id}
       name={device.name}
       visual={device.kind}
-      description={description ? t(description) : undefined}
+      description={
+        engine?.error && !busy
+          ? t(`${KEY}.engine.failed`, { error: engine.error })
+          : description
+            ? t(description)
+            : undefined
+      }
       chips={chips}
       action={action}
       toggle={

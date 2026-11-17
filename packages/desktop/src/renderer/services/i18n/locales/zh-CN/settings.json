@@ -1596,7 +1596,10 @@
       "errors": {
         "nameTooLong": "最多 {{max}} 个字符。",
         "emojiTooLong": "表情过长。"
-      }
+      },
+      "engine": "浏览器",
+      "engineHint": "在此配置文件下次启动时生效。",
+      "engineNotDownloaded": "未下载"
     }
   },
   "browserDevices": {
@@ -1828,6 +1831,24 @@
       "title": "你的 Mac",
       "desc": "仅在此项开启时，智能体可以查看你的 Mac 屏幕并点击、输入和打开应用。",
       "permissions": "macOS 会为 AionUi Mac 助手请求一次“屏幕录制”和“辅助功能”权限。"
+    },
+    "engine": {
+      "signed": "已签名",
+      "signedTip": "下载内容已通过厂商的签名和校验和验证。",
+      "tlsOnly": "仅 TLS",
+      "tlsOnlyTip": "厂商未发布签名或校验和：通过 HTTPS 从厂商下载，并记录了所下载内容的校验和。",
+      "agentsOnly": "仅限智能体",
+      "agentsOnlyTip": "没有窗口，User-Agent 为无头模式：用于智能体工作，不用于面板或登录。",
+      "update": "更新",
+      "failed": "下载失败：{{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

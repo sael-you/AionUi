@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "En fazla {{max}} karakter.",
         "emojiTooLong": "Emoji çok uzun."
-      }
+      },
+      "engine": "Tarayıcı",
+      "engineHint": "Bu profil bir sonraki başlatıldığında geçerli olur.",
+      "engineNotDownloaded": "indirilmedi"
     }
   },
   "browserDevices": {
@@ -1827,6 +1830,24 @@
       "title": "Mac'iniz",
       "desc": "Ajanlar yalnızca bu açıkken Mac'inizin ekranını görebilir, tıklayabilir, yazabilir ve uygulama açabilir.",
       "permissions": "macOS, AionUi Mac yardımcısı için bir kez Ekran Kaydı ve Erişilebilirlik izni ister."
+    },
+    "engine": {
+      "signed": "İmzalı",
+      "signedTip": "İndirme, satıcının imzası ve sağlama toplamıyla doğrulandı.",
+      "tlsOnly": "Yalnızca TLS",
+      "tlsOnlyTip": "Satıcı imza veya sağlama toplamı yayımlamıyor: satıcıdan HTTPS ile indirildi; indirilenin sağlama toplamı kaydedildi.",
+      "agentsOnly": "Yalnızca ajanlar",
+      "agentsOnlyTip": "Pencere yok ve headless User-Agent: ajan işleri için, panel veya oturum açma için değil.",
+      "update": "Güncelle",
+      "failed": "İndirme başarısız: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

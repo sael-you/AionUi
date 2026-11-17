@@ -22,6 +22,8 @@ export const SERVER_BROWSER_SETTINGS_KEY = 'server-browser.settings';
 export type ServerBrowserProfile = Pick<BrowserInstanceSettings, 'instance' | 'name' | 'color' | 'emoji' | 'engine'> & {
   /** `vnc` for engines without a CDP screencast (Camoufox). */
   panel?: BrowserPanelKind;
+  /** The engine has no window: agents use it, the panel cannot show it. */
+  agentsOnly?: boolean;
 };
 
 export const useServerBrowserAvailability = (): {
@@ -40,6 +42,7 @@ export const useServerBrowserAvailability = (): {
     profiles: (settings?.instances ?? []).map((profile) => ({
       ...profile,
       panel: panelKindOf(profile.engine, status?.engines),
+      agentsOnly: status?.engines?.find((entry) => entry.engine === profile.engine)?.agents_only === true,
     })),
     devicesAgentsEnabled: Boolean(settings?.agents_enabled && settings?.devices_agents_enabled),
   };

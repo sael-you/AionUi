@@ -56,7 +56,13 @@ const BrowserScopeSelect: React.FC<{
       data-testid='server-browser-profile'
     >
       {profiles.map((profile) => (
-        <Select.Option key={`p:${profile.instance}`} value={`p:${profile.instance}`}>
+        // A headless engine has no window to show: agents use that profile, the panel cannot.
+        <Select.Option
+          key={`p:${profile.instance}`}
+          value={`p:${profile.instance}`}
+          disabled={profile.agentsOnly}
+          title={profile.agentsOnly ? t('settings.devices.engine.agentsOnlyTip') : undefined}
+        >
           <BrowserProfileLabel profile={profile} />
         </Select.Option>
       ))}

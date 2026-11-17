@@ -373,6 +373,7 @@ const ServerBrowserSettings: React.FC = () => {
       <BrowserProfileModal
         target={profileTarget}
         saving={saving}
+        engines={status?.engines}
         onSave={(draft) => void saveProfile(draft)}
         onClose={() => setProfileTarget(null)}
       />

@@ -1597,7 +1597,10 @@
       "errors": {
         "nameTooLong": "최대 {{max}}자입니다.",
         "emojiTooLong": "이모지가 너무 깁니다."
-      }
+      },
+      "engine": "브라우저",
+      "engineHint": "이 프로필을 다음에 시작할 때 적용됩니다.",
+      "engineNotDownloaded": "다운로드 안 됨"
     }
   },
   "browserDevices": {
@@ -1829,6 +1832,24 @@
       "title": "내 Mac",
       "desc": "이 기능이 켜져 있는 동안에만 에이전트가 Mac 화면을 보고 클릭, 입력, 앱 실행을 할 수 있습니다.",
       "permissions": "macOS가 AionUi Mac 도우미에 대해 화면 기록과 손쉬운 사용 권한을 한 번 요청합니다."
+    },
+    "engine": {
+      "signed": "서명됨",
+      "signedTip": "다운로드를 공급업체의 서명과 체크섬으로 확인했습니다.",
+      "tlsOnly": "TLS만",
+      "tlsOnlyTip": "공급업체가 서명이나 체크섬을 제공하지 않습니다. 공급업체에서 HTTPS로 내려받았고, 내려받은 파일의 체크섬을 기록합니다.",
+      "agentsOnly": "에이전트 전용",
+      "agentsOnlyTip": "창이 없고 헤드리스 User-Agent를 씁니다. 에이전트 작업용이며 패널이나 로그인용이 아닙니다.",
+      "update": "업데이트",
+      "failed": "다운로드 실패: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

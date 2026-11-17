@@ -1597,7 +1597,10 @@
       "errors": {
         "nameTooLong": "最多 {{max}} 個字元。",
         "emojiTooLong": "表情過長。"
-      }
+      },
+      "engine": "瀏覽器",
+      "engineHint": "在此設定檔下次啟動時生效。",
+      "engineNotDownloaded": "未下載"
     }
   },
   "browserDevices": {
@@ -1829,6 +1832,24 @@
       "title": "你的 Mac",
       "desc": "僅在此項開啟時，智慧代理可以查看你的 Mac 螢幕並點按、輸入和開啟 App。",
       "permissions": "macOS 會為 AionUi Mac 輔助程式要求一次「螢幕錄製」和「輔助使用」權限。"
+    },
+    "engine": {
+      "signed": "已簽署",
+      "signedTip": "下載內容已透過廠商的簽章和總和檢查碼驗證。",
+      "tlsOnly": "僅 TLS",
+      "tlsOnlyTip": "廠商未發布簽章或總和檢查碼：透過 HTTPS 從廠商下載，並記錄了所下載內容的總和檢查碼。",
+      "agentsOnly": "僅限智慧代理",
+      "agentsOnlyTip": "沒有視窗，User-Agent 為無頭模式：用於智慧代理工作，不用於面板或登入。",
+      "update": "更新",
+      "failed": "下載失敗：{{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

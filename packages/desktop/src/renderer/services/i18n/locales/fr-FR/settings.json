@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "{{max}} caractères au maximum.",
         "emojiTooLong": "L’emoji est trop long."
-      }
+      },
+      "engine": "Navigateur",
+      "engineHint": "S'applique au prochain démarrage de ce profil.",
+      "engineNotDownloaded": "non téléchargé"
     }
   },
   "browserDevices": {
@@ -1827,6 +1830,24 @@
       "title": "Votre Mac",
       "desc": "Les agents peuvent voir l'écran de votre Mac, cliquer, saisir et ouvrir des apps, uniquement tant que ceci est activé.",
       "permissions": "macOS demande une fois l'Enregistrement de l'écran et l'Accessibilité pour l'assistant Mac d'AionUi."
+    },
+    "engine": {
+      "signed": "Signé",
+      "signedTip": "Le téléchargement a été vérifié avec la signature et la somme de contrôle de l'éditeur.",
+      "tlsOnly": "TLS seul",
+      "tlsOnlyTip": "L'éditeur ne publie ni signature ni somme de contrôle : téléchargé en HTTPS depuis l'éditeur ; la somme de contrôle du téléchargement est consignée.",
+      "agentsOnly": "Agents uniquement",
+      "agentsOnlyTip": "Pas de fenêtre et un User-Agent headless : pour le travail des agents, pas pour le panneau ni les connexions.",
+      "update": "Mettre à jour",
+      "failed": "Échec du téléchargement : {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

@@ -1597,7 +1597,10 @@
       "errors": {
         "nameTooLong": "最大 {{max}} 文字です。",
         "emojiTooLong": "絵文字が長すぎます。"
-      }
+      },
+      "engine": "ブラウザ",
+      "engineHint": "このプロファイルの次回起動時に適用されます。",
+      "engineNotDownloaded": "未ダウンロード"
     }
   },
   "browserDevices": {
@@ -1829,6 +1832,24 @@
       "title": "あなたの Mac",
       "desc": "これがオンの間だけ、エージェントは Mac の画面を見て、クリック、入力、アプリの起動ができます。",
       "permissions": "macOS は AionUi Mac ヘルパーに対し、画面収録とアクセシビリティの許可を一度求めます。"
+    },
+    "engine": {
+      "signed": "署名済み",
+      "signedTip": "ダウンロードはベンダーの署名とチェックサムで検証されました。",
+      "tlsOnly": "TLS のみ",
+      "tlsOnlyTip": "ベンダーは署名もチェックサムも公開していません。ベンダーから HTTPS でダウンロードし、そのチェックサムを記録しています。",
+      "agentsOnly": "エージェント専用",
+      "agentsOnlyTip": "ウィンドウがなく、User-Agent がヘッドレスです。エージェントの作業用で、パネルやログインには向きません。",
+      "update": "更新",
+      "failed": "ダウンロードに失敗しました: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

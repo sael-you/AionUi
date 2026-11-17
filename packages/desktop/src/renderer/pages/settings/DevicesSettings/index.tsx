@@ -20,9 +20,11 @@ import { Button, Dropdown, Menu, Message, Modal } from '@arco-design/web-react';
 import { Plus } from '@icon-park/react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 import { isBackendHttpError } from '@/common/adapter/httpBridge';
-import { devices as devicesApi } from '@/common/adapter/ipcBridge';
+import { devices as devicesApi, serverBrowser } from '@/common/adapter/ipcBridge';
 import type { Device, DeviceKind, DevicePairingKind } from '@/common/types/platform/devices';
+import type { BrowserStatusResponse } from '@/common/types/platform/serverBrowser';
 import AionScrollArea from '@/renderer/components/base/AionScrollArea';
 import LibraryLayout from '@/renderer/components/settings/SettingsModal/library/LibraryLayout';
 import { LibraryEmpty } from '@/renderer/components/settings/SettingsModal/library/LibraryParts';
@@ -35,6 +37,7 @@ import ServerBrowserSettings from '@/renderer/components/settings/SettingsModal/
 import { useSettingsViewMode } from '@/renderer/components/settings/SettingsModal/settingsViewContext';
 import BrowserExtensionInstall from '@/renderer/pages/conversation/Preview/browser/BrowserExtensionInstall';
 import { useBrowserDevices } from '@/renderer/pages/conversation/Preview/browser/server/useBrowserDevices';
+import { SERVER_BROWSER_STATUS_KEY } from '@/renderer/pages/conversation/Preview/browser/server/useServerBrowserAvailability';
 import SettingsPageHeader from '@/renderer/pages/settings/components/SettingsPageHeader';
 import SettingsPageWrapper from '@/renderer/pages/settings/components/SettingsPageWrapper';
 import { useIsMobileLayout } from '@/renderer/pages/settings/ToolsSettings/market/shared';
@@ -77,6 +80,14 @@ const WebDevices: React.FC = () => {
   const isMobile = useIsMobileLayout();
   const { devices, reload } = useDevices();
   const { devices: browsers } = useBrowserDevices();
+  // Engines carry what the registry does not: how the download was verified, agents-only, the last error.
+  const { data: status } = useSWR<BrowserStatusResponse | null>(SERVER_BROWSER_STATUS_KEY, async () => {
+    try {
+      return await serverBrowser.getStatus.invoke();
+    } catch {
+      return null;
+    }
+  });
   const [category, setCategory] = useState<DeviceKind>('server_browser');
   const [tab, setTab] = useState<DevicesTab>('active');
   const [query, setQuery] = useState('');
@@ -153,11 +164,14 @@ const WebDevices: React.FC = () => {
     });
   };
 
+  const engineOf = (device: Device) => status?.engines?.find((entry) => entry.engine === device.source_id);
+
   const cards = (list: Device[]) =>
     list.map((device) => (
       <DeviceCard
         key={device.id}
         device={device}
+        engine={device.kind === 'server_browser' ? engineOf(device) : undefined}
         now={now}
         saving={saving === device.id}
         onToggle={(target, enabled) => void toggle(target, enabled)}

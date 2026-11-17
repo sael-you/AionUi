@@ -1595,7 +1595,10 @@
       "errors": {
         "nameTooLong": "حداکثر {{max}} نویسه.",
         "emojiTooLong": "ایموجی خیلی طولانی است."
-      }
+      },
+      "engine": "مرورگر",
+      "engineHint": "از راه‌اندازی بعدی این نمایه اعمال می‌شود.",
+      "engineNotDownloaded": "دانلود نشده"
     }
   },
   "browserDevices": {
@@ -1827,6 +1830,24 @@
       "title": "مک شما",
       "desc": "عامل‌ها فقط تا وقتی این روشن است می‌توانند صفحهٔ مک شما را ببینند، کلیک کنند، تایپ کنند و برنامه باز کنند.",
       "permissions": "macOS یک بار اجازهٔ Screen Recording و Accessibility را برای دستیار مک AionUi می‌خواهد."
+    },
+    "engine": {
+      "signed": "امضاشده",
+      "signedTip": "دانلود با امضا و چک‌سام سازنده بررسی شد.",
+      "tlsOnly": "فقط TLS",
+      "tlsOnlyTip": "سازنده امضا یا چک‌سامی منتشر نمی‌کند: با HTTPS از سازنده دانلود شد؛ چک‌سام فایل دانلودشده ثبت می‌شود.",
+      "agentsOnly": "فقط عامل‌ها",
+      "agentsOnlyTip": "بدون پنجره و با User-Agent هدلس: برای کار عامل‌ها، نه برای پنل یا ورود به حساب.",
+      "update": "به‌روزرسانی",
+      "failed": "دانلود ناموفق بود: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }

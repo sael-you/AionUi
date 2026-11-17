@@ -62,7 +62,7 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-import {
+import BrowserProfileModal, {
   profileDraftProblem,
   profileFields,
 } from '@/renderer/pages/conversation/Preview/browser/server/BrowserProfileModal';
@@ -75,6 +75,7 @@ import BrowserExtensionInstall, {
   outdatedDevices,
   parseRelease,
 } from '@/renderer/pages/conversation/Preview/browser/BrowserExtensionInstall';
+import BrowserScopeSelect from '@/renderer/pages/conversation/Preview/browser/server/BrowserScopeSelect';
 import DevicesSettings from '@/renderer/pages/settings/DevicesSettings';
 import { BUILTIN_TAB_IDS } from '@/renderer/pages/settings/components/SettingsSider';
 import BrowserDevicesSettings, {
@@ -333,6 +334,79 @@ describe('ServerBrowserSettings (C30 Settings > Browser)', () => {
 });
 
 describe('browser profile draft rules (TASK-124)', () => {
+  it('sends the engine only when one is chosen', () => {
+    expect(profileFields({ name: 'Work', color: '', emoji: '', engine: 'brave' }, true)).toEqual({
+      name: 'Work',
+      color: '',
+      emoji: '',
+      engine: 'brave',
+    });
+    expect(profileFields({ name: 'Work', color: '', emoji: '', engine: 'edge' }, false)).toEqual({
+      name: 'Work',
+      engine: 'edge',
+    });
+  });
+
+  it('a profile picks its engine among the downloaded ones; it applies at the next start (TASK-134)', async () => {
+    const onSave = vi.fn();
+    const engines = [
+      { engine: 'chrome', installed_version: '142.0', verification: 'signed-repository' as const },
+      { engine: 'brave', verification: 'signed-repository' as const },
+      { engine: 'headless-shell', installed_version: '142.0', verification: 'tls-only' as const, agents_only: true },
+    ];
+    render(
+      <BrowserProfileModal
+        target={{ instance: 2, name: 'Work', hide_automation: false, engine: 'chrome' }}
+        saving={false}
+        engines={engines}
+        onSave={onSave}
+        onClose={() => undefined}
+      />
+    );
+    const dialog = await screen.findByTestId('browser-profile-modal');
+    expect(dialog).toHaveTextContent('settings.serverBrowser.profile.engineHint');
+    fireEvent.click(within(dialog).getByTestId('browser-profile-engine'));
+    const brave = await screen.findByRole('option', { name: /settings\.devices\.engine\.names\.brave/ });
+    expect(brave).toHaveTextContent('settings.serverBrowser.profile.engineNotDownloaded');
+    expect(brave).toHaveClass('arco-select-option-disabled');
+    const headless = screen.getByRole('option', { name: /headless-shell/ });
+    expect(headless).toHaveTextContent('settings.devices.engine.agentsOnly');
+    fireEvent.click(headless);
+    fireEvent.click(screen.getByRole('button', { name: 'common.save' }));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ name: 'Work', engine: 'headless-shell' }));
+  });
+
+  it('without engines (older AionCore) the profile dialog has no engine choice', async () => {
+    render(
+      <BrowserProfileModal
+        target={{ instance: 2, name: 'Work', hide_automation: false }}
+        saving={false}
+        onSave={() => undefined}
+        onClose={() => undefined}
+      />
+    );
+    expect(await screen.findByTestId('browser-profile-modal')).toBeInTheDocument();
+    expect(screen.queryByTestId('browser-profile-engine')).toBeNull();
+  });
+
+  it('the panel switcher does not offer a profile whose engine is for agents only', async () => {
+    render(
+      <BrowserScopeSelect
+        profiles={[
+          { instance: 1, name: 'Main' },
+          { instance: 2, name: 'Crawler', agentsOnly: true },
+        ]}
+        devices={[]}
+        value={{ kind: 'profile', instance: 1 }}
+        onChange={() => undefined}
+      />
+    );
+    fireEvent.click(screen.getByTestId('server-browser-profile'));
+    const crawler = await screen.findByRole('option', { name: /Crawler/ });
+    expect(crawler).toHaveClass('arco-select-option-disabled');
+    expect(screen.getByRole('option', { name: /Main/ })).not.toHaveClass('arco-select-option-disabled');
+  });
+
   it('needs a name of at most 40 characters and an emoji of at most 16 bytes', () => {
     expect(profileDraftProblem({ name: '   ', color: '', emoji: '' })).toBe('nameRequired');
     expect(profileDraftProblem({ name: 'x'.repeat(41), color: '', emoji: '' })).toBe('nameTooLong');

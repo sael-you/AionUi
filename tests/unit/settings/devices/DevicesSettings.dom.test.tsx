@@ -21,10 +21,12 @@ const api = vi.hoisted(() => ({
   createPairingCode: { invoke: vi.fn() },
   changed: { on: () => () => undefined },
 }));
+const status = vi.hoisted(() => ({ invoke: vi.fn(async (): Promise<unknown> => null) }));
 vi.mock('@/common/adapter/ipcBridge', () => ({
   devices: api,
   serverBrowser: {
     getSettings: { invoke: vi.fn(async () => ({})) },
+    getStatus: status,
     listDevices: { invoke: vi.fn(async () => []) },
     devicesChanged: { on: () => () => undefined },
   },
@@ -322,6 +324,43 @@ describe('Settings → Devices page (TASK-136 U1)', () => {
     expect(within(drawer).getByTestId('device-mac')).toHaveTextContent(`${KEY}.mac.permissions`);
     expect(within(drawer).queryByTestId('device-access')).toBeNull();
     expect(drawer).toHaveTextContent(`${KEY}.laterHint`);
+  });
+
+  it('engines show how the download was verified, agents-only, a failed download, and Update (TASK-134)', async () => {
+    api.install.invoke.mockResolvedValue({ job_id: 'j2' });
+    api.list.invoke.mockResolvedValue([
+      { ...CHROME, source_id: 'chrome' },
+      device({ id: 'cft', name: 'Chrome for Testing', source_id: 'chrome-for-testing', installed: true }),
+      device({ id: 'hs', name: 'Headless shell', source_id: 'headless-shell', installed: true }),
+      { ...BRAVE, source_id: 'brave' },
+    ]);
+    status.invoke.mockResolvedValue({
+      available: true,
+      instances: [],
+      idle_timeout_secs: 900,
+      engines: [
+        { engine: 'chrome', installed_version: '142.0', verification: 'signed-repository' },
+        { engine: 'chrome-for-testing', installed_version: '142.0', verification: 'tls-only' },
+        { engine: 'headless-shell', installed_version: '142.0', verification: 'tls-only', agents_only: true },
+        { engine: 'brave', verification: 'signed-repository', error: 'sha256 mismatch' },
+      ],
+    });
+    renderPage();
+    const chrome = await cardOf('Chrome');
+    expect(await within(chrome).findByTestId('engine-verification')).toHaveTextContent(`${KEY}.engine.signed`);
+    expect(within(chrome).queryByTestId('engine-agents-only')).toBeNull();
+    const cft = await cardOf('Chrome for Testing');
+    expect(within(cft).getByTestId('engine-verification')).toHaveTextContent(`${KEY}.engine.tlsOnly`);
+    const headless = await cardOf('Headless shell');
+    expect(within(headless).getByTestId('engine-agents-only')).toHaveTextContent(`${KEY}.engine.agentsOnly`);
+    fireEvent.click(within(chrome).getByTestId('library-card-more'));
+    fireEvent.click(await screen.findByText(`${KEY}.engine.update`));
+    await waitFor(() => expect(api.install.invoke).toHaveBeenCalledWith({ id: 'chrome' }));
+    fireEvent.click(screen.getByTestId('library-tab-library'));
+    const brave = await cardOf('Brave');
+    expect(brave).toHaveTextContent(`${KEY}.engine.failed|{"error":"sha256 mismatch"}`);
+    expect(within(brave).getByTestId('device-install')).toBeInTheDocument();
+    status.invoke.mockResolvedValue(null);
   });
 
   it('My browsers keeps the extension install, pairing and the approvals log', async () => {

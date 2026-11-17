@@ -1627,7 +1627,10 @@
       "errors": {
         "nameTooLong": "Не более {{max}} символов.",
         "emojiTooLong": "Слишком длинный эмодзи."
-      }
+      },
+      "engine": "Браузер",
+      "engineHint": "Применится при следующем запуске этого профиля.",
+      "engineNotDownloaded": "не загружен"
     }
   },
   "browserDevices": {
@@ -1869,6 +1872,24 @@
       "title": "Ваш Mac",
       "desc": "Агенты могут видеть экран вашего Mac, нажимать, печатать и открывать приложения — только пока это включено.",
       "permissions": "macOS один раз запросит доступ к записи экрана и универсальному доступу для помощника AionUi."
+    },
+    "engine": {
+      "signed": "Подписан",
+      "signedTip": "Загрузка проверена по подписи и контрольной сумме поставщика.",
+      "tlsOnly": "Только TLS",
+      "tlsOnlyTip": "Поставщик не публикует подпись и контрольную сумму: загружено по HTTPS с его серверов; контрольная сумма загруженного записана.",
+      "agentsOnly": "Только для агентов",
+      "agentsOnlyTip": "Без окна и с headless User-Agent: для работы агентов, не для панели и не для входа в аккаунты.",
+      "update": "Обновить",
+      "failed": "Сбой загрузки: {{error}}",
+      "names": {
+        "chrome": "Chrome",
+        "chrome-for-testing": "Chrome for Testing",
+        "brave": "Brave",
+        "edge": "Microsoft Edge",
+        "headless-shell": "Chrome headless shell",
+        "camoufox": "Camoufox"
+      }
     }
   }
 }
