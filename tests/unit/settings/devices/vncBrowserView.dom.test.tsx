@@ -44,7 +44,11 @@ vi.mock('react-i18next', () => ({
 }));
 
 import VncBrowserView from '@/renderer/pages/conversation/Preview/browser/VncBrowserView';
-import { browserVncUrl, vncCloseKey } from '@/renderer/pages/conversation/Preview/browser/server/streamProtocol';
+import {
+  browserVncUrl,
+  panelKindOf,
+  vncCloseKey,
+} from '@/renderer/pages/conversation/Preview/browser/server/streamProtocol';
 
 const KEY = 'preview.serverBrowser.vnc';
 
@@ -84,6 +88,11 @@ describe('Camoufox live view over VNC (TASK-136 U4)', () => {
     expect(browserVncUrl({ protocol: 'http:', host: 'localhost:8080' }, 1)).toBe(
       'ws://localhost:8080/api/browser/instances/1/vnc'
     );
+    const engines = [{ engine: 'chrome' }, { engine: 'camoufox', panel: 'vnc' as const }];
+    expect(panelKindOf('camoufox', engines)).toBe('vnc');
+    expect(panelKindOf('chrome', engines)).toBe('screencast');
+    expect(panelKindOf('camoufox', undefined)).toBe('screencast');
+    expect(panelKindOf(undefined, engines)).toBe('screencast');
     expect(vncCloseKey(4409)).toBe('notCamoufox');
     expect(vncCloseKey(4403)).toBe('notAllowed');
     expect(vncCloseKey(4503)).toBe('startFailed');

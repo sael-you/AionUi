@@ -120,8 +120,14 @@ export const isGoogleSignInRejected = (url: string): boolean =>
 export const browserStreamUrl = (location: Pick<Location, 'protocol' | 'host'>, instance: number): string =>
   `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/api/browser/ws?instance=${instance}`;
 
-/** Engine whose live view is VNC (no CDP screencast): Camoufox (C35 v2, TASK-136 U4). */
-export const VNC_ENGINE = 'camoufox';
+/**
+ * The live view of a profile (C35 v2, TASK-136 U4): its engine's `panel` in
+ * the browser status; `screencast` when the engine or the field is missing.
+ */
+export const panelKindOf = (
+  engine: string | undefined,
+  engines: ReadonlyArray<{ engine: string; panel?: 'screencast' | 'vnc' }> | undefined
+): 'screencast' | 'vnc' => (engine && engines?.find((entry) => entry.engine === engine)?.panel) || 'screencast';
 
 /** The VNC socket of a Camoufox profile: raw RFB 3.8 in binary frames; connecting starts or attaches. */
 export const browserVncUrl = (location: Pick<Location, 'protocol' | 'host'>, instance: number): string =>

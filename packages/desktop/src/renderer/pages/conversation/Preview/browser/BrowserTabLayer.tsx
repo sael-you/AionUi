@@ -10,7 +10,6 @@ import BrowserViewer from './BrowserViewer';
 import BrowserScopeSelect from './server/BrowserScopeSelect';
 import DeviceBrowserView from './server/DeviceBrowserView';
 import ServerBrowserView from './server/ServerBrowserView';
-import { VNC_ENGINE } from './server/streamProtocol';
 import VncBrowserView from './VncBrowserView';
 import { useBrowserDevices } from './server/useBrowserDevices';
 import { useServerBrowserAvailability } from './server/useServerBrowserAvailability';
@@ -71,7 +70,7 @@ const BrowserTabLayer: React.FC<BrowserTabLayerProps> = ({ browserTabs, activeTa
   // WebUI with the server browser (C30): one real Chrome with its own tabs, instead of one iframe per tab.
   if (serverBrowser.available) {
     const vncProfile = serverBrowser.profiles.find(
-      (profile) => profile.instance === lastInstance && profile.engine === VNC_ENGINE
+      (profile) => profile.instance === lastInstance && profile.panel === 'vnc'
     );
     const requested = browserTabs.find((tab) => tab.id === activeTabId) ?? browserTabs.at(-1);
     return (
