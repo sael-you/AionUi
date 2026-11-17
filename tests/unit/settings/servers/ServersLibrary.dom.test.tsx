@@ -24,6 +24,8 @@ const api = vi.hoisted(() => ({
   audit: vi.fn(),
   attach: vi.fn(),
   detach: vi.fn(),
+  messageSuccess: vi.fn(),
+  messageError: vi.fn(),
 }));
 
 // One fake bridge for both import paths (`@/common` and the adapter module itself).
@@ -49,6 +51,11 @@ vi.mock('@/common/adapter/ipcBridge', async (importOriginal) => ({
   servers: bridge.servers,
 }));
 vi.mock('@/common', () => ({ ipcBridge: bridge }));
+// Arco's static Message cannot mount under jsdom + React 19; the toasts are spied instead.
+vi.mock('@arco-design/web-react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@arco-design/web-react')>();
+  return { ...actual, Message: { ...actual.Message, success: api.messageSuccess, error: api.messageError } };
+});
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
