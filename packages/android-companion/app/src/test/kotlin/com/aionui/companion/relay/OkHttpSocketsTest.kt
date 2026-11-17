@@ -31,10 +31,14 @@ class OkHttpSocketsTest {
             override fun onMessage(webSocket: WebSocket, text: String) {
                 serverGot += text
             }
+            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                webSocket.close(1000, null)
+            }
         }))
         server.start()
 
         val opened = CountDownLatch(1)
+        val closed = CountDownLatch(1)
         val clientGot = LinkedBlockingQueue<String>()
         val url = server.url("/api/devices/relay").toString().replace("http://", "ws://")
         val socket = OkHttpSockets().open(url, object : SocketListener {
@@ -42,7 +46,7 @@ class OkHttpSocketsTest {
             override fun onText(text: String) {
                 clientGot += text
             }
-            override fun onClosed(code: Int, reason: String) = Unit
+            override fun onClosed(code: Int, reason: String) = closed.countDown()
             override fun onFailure(message: String) = Unit
         })
 
@@ -54,6 +58,8 @@ class OkHttpSocketsTest {
         val upgrade = server.takeRequest(5, TimeUnit.SECONDS)!!
         assertNull("core refuses any Origin header", upgrade.getHeader("Origin"))
         assertEquals("/api/devices/relay", upgrade.path)
+        // Finish the close handshake before the server shuts down.
         socket.close(1000, "done")
+        assertTrue(closed.await(5, TimeUnit.SECONDS))
     }
 }

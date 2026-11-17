@@ -3,6 +3,7 @@ package com.aionui.companion.service
 import android.content.Context
 import android.graphics.PixelFormat
 import android.provider.Settings
+import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +22,9 @@ class OverlayChip(private val context: Context, private val onStop: () -> Unit) 
 
     fun show() {
         if (view != null || !Settings.canDrawOverlays(context)) return
-        val chip = LayoutInflater.from(context).inflate(R.layout.overlay_chip, null)
+        // A service context has no theme; Material views need one.
+        val themed = ContextThemeWrapper(context, R.style.Theme_Companion)
+        val chip = LayoutInflater.from(themed).inflate(R.layout.overlay_chip, null)
         chip.findViewById<MaterialButton>(R.id.overlay_stop).setOnClickListener { onStop() }
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
