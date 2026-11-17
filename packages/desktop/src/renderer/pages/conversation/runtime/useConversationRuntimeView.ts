@@ -12,7 +12,7 @@ import {
   reconcileWaitingConfirmationFromRuntime,
 } from '@/renderer/pages/conversation/GroupedHistory/hooks/useConversationListSync';
 import { getConversationOrNull } from '@/renderer/pages/conversation/utils/conversationCache';
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import {
   conversationDeleted,
   getConversationRuntimeViewSnapshot,
@@ -82,6 +82,9 @@ const getRuntimeOrNull = (runtime: TConversationRuntimeSummary | undefined): TCo
 export const useConversationRuntimeView = (conversation_id: string): UseConversationRuntimeViewReturn => {
   const getSnapshot = useCallback(() => getConversationRuntimeViewSnapshot(conversation_id), [conversation_id]);
   const view = useSyncExternalStore(subscribeConversationRuntimeView, getSnapshot, getSnapshot);
+  // Bumped when realtime frames were lost for good (TASK-43): read the runtime state again.
+  const [resyncCount, setResyncCount] = useState(0);
+  useEffect(() => ipcBridge.realtime?.resync?.on(() => setResyncCount((count) => count + 1)), []);
 
   useEffect(() => {
     if (!conversation_id) {
@@ -118,7 +121,7 @@ export const useConversationRuntimeView = (conversation_id: string): UseConversa
     return () => {
       cancelled = true;
     };
-  }, [conversation_id]);
+  }, [conversation_id, resyncCount]);
 
   useEffect(() => {
     if (!conversation_id) {

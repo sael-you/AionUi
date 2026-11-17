@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { isUploadConnectionError, pendingUploadStore } from './pendingUploads/pendingUploadStore';
 import type { FileMetadata } from './FileService';
 import { getFileExtension, UPLOAD_ABORTED_ERROR, uploadFileViaHttp } from './FileService';
 import { trackUpload, type UploadSource } from '@/renderer/hooks/file/useUploadState';
@@ -41,6 +42,10 @@ async function createTempFile(
   } catch (error) {
     if (error instanceof Error && error.message === UPLOAD_ABORTED_ERROR) {
       return null;
+    }
+    // No connection (TASK-127): keep the pasted file; the composer uploads it when it is back.
+    if (conversation_id && source === 'sendbox' && isUploadConnectionError(error)) {
+      if ((await pendingUploadStore.save(conversation_id, file)) === 'saved') return null;
     }
     throw error;
   } finally {

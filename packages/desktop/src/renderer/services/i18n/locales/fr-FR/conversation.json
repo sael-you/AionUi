@@ -1003,5 +1003,14 @@
     "continue": "Continuer en arrière-plan",
     "running": "En cours en arrière-plan",
     "failed": "Impossible de passer l'appel d'outil en arrière-plan."
+  },
+  "unsent": {
+    "notSent": "Non envoyé — enregistré comme brouillon",
+    "autoRetry": "sera renvoyé au retour de la connexion",
+    "retry": "Réessayer"
+  },
+  "pendingUpload": {
+    "waiting": "En attente de la connexion pour envoyer :",
+    "tooLarge": "{{name}} est trop volumineux pour être conservé hors ligne (max. {{max}} Mo) — joignez-le à nouveau une fois en ligne"
   }
 }

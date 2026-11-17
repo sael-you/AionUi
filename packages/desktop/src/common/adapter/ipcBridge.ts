@@ -456,6 +456,9 @@ export const conversation = {
       sessions: p.sessions,
       loading_id: p.loading_id,
       inject_skills: p.inject_skills,
+      // Same key = the first send's result, never a second message (TASK-127). Only
+      // sent when the conversation advertises `capabilities.send_idempotency`.
+      idempotency_key: p.idempotency_key,
     })
   ),
   getSlashCommands: httpGet<AcpSlashCommandApiItem[], { conversation_id: string }>(
@@ -2169,6 +2172,8 @@ interface ISendMessageParams {
   /** Conversations the user referenced with `@@`. Ids only — the backend
    *  resolves the (mutable) name from the id. */
   sessions?: SessionRef[];
+  /** 1–128 characters; a retry with the same key returns the first send's result. */
+  idempotency_key?: string;
 }
 
 // Server-assigned identifier for the newly created user message. Clients must
@@ -2638,8 +2643,16 @@ export type IRealtimeReconnectedEvent = {
   timestamp: number;
 };
 
+/** Frames were lost for good (server restart, too old, no answer): re-pull state (TASK-43). */
+export type IRealtimeResyncEvent = {
+  reason: 'epoch_changed' | 'too_old' | 'timeout';
+  timestamp: number;
+};
+
 export const realtime = {
   reconnected: wsEmitter<IRealtimeReconnectedEvent>('realtime.reconnected'),
+  /** Local only: raised by the replay tracker in httpBridge, never sent by the server. */
+  resync: wsEmitter<IRealtimeResyncEvent>('realtime.resync'),
 };
 
 export const team = {

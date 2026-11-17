@@ -1003,5 +1003,14 @@
     "continue": "Continue in background",
     "running": "Running in background",
     "failed": "Could not move the tool call to the background."
+  },
+  "unsent": {
+    "notSent": "Not sent — saved as draft",
+    "autoRetry": "sends again when the connection is back",
+    "retry": "Retry"
+  },
+  "pendingUpload": {
+    "waiting": "Waiting for the connection to upload:",
+    "tooLarge": "{{name}} is too large to keep offline (max {{max}} MB) — re-attach it when you are online"
   }
 }

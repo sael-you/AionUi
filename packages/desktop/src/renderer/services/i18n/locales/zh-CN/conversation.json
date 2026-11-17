@@ -1003,5 +1003,14 @@
     "continue": "转到后台继续",
     "running": "正在后台运行",
     "failed": "无法将该工具调用转到后台。"
+  },
+  "unsent": {
+    "notSent": "未发送 — 已保存为草稿",
+    "autoRetry": "连接恢复后会自动重发",
+    "retry": "重试"
+  },
+  "pendingUpload": {
+    "waiting": "等待连接恢复后上传：",
+    "tooLarge": "{{name}} 太大，无法离线保存（最大 {{max}} MB）— 请在联网后重新添加"
   }
 }

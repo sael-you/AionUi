@@ -6,6 +6,7 @@
  * so existing renderer code works without changes.
  */
 
+import { RealtimeReplayTracker } from './realtimeReplay';
 import {
   CSRF_HEADER_NAME,
   csrfHeaders,
@@ -422,6 +423,8 @@ export function stubProvider<Data, Params = undefined>(name: string, defaultValu
 
 type WsCallback = (data: unknown) => void;
 const REALTIME_RECONNECTED_EVENT = 'realtime.reconnected';
+/** Local event (never sent by the server): frames were lost for good, re-pull state (TASK-43). */
+export const REALTIME_RESYNC_EVENT = 'realtime.resync';
 const wsListeners = new Map<string, Set<WsCallback>>();
 let ws: WebSocket | null = null;
 let wsReconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -439,6 +442,21 @@ function dispatchWsEvent(eventName: string, payload: unknown): void {
     }
   }
 }
+
+/** Replays missed frames after a reconnect or a skipped seq (TASK-43); inert against an older core. */
+const wsReplay = new RealtimeReplayTracker({
+  deliver: (name, data) => dispatchWsEvent(name, data),
+  send: (name, data) => {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return false;
+    try {
+      ws.send(JSON.stringify({ name, data }));
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  resync: (reason) => dispatchWsEvent(REALTIME_RESYNC_EVENT, { reason, timestamp: Date.now() }),
+});
 
 function ensureWs(): void {
   if (typeof window === 'undefined') {
@@ -474,7 +492,10 @@ function ensureWs(): void {
 
   current.addEventListener('close', (e) => {
     console.debug('[ensureWs] CLOSED code=' + e.code + ' reason=' + e.reason);
-    if (ws === current) ws = null;
+    if (ws === current) {
+      ws = null;
+      wsReplay.onDisconnected();
+    }
     if (e.code === WS_CLOSE_POLICY_VIOLATION) {
       // Auth policy violation (expired/missing session). Blindly reconnecting with
       // the same dead cookie is the #4124 loop — refresh once and only reconnect if
@@ -498,12 +519,14 @@ function ensureWs(): void {
         event?: string;
         data?: unknown;
         payload?: unknown;
+        seq?: number;
       };
       const eventName = msg.name ?? msg.event;
       const payload = msg.data ?? msg.payload;
       console.debug('[WS:msg]', eventName, JSON.stringify(payload).slice(0, 200));
-      if (eventName) {
-        dispatchWsEvent(eventName, payload);
+      if (eventName && ws === current) {
+        // In order, without gaps: the tracker holds, replays or drops by seq, then dispatches.
+        wsReplay.onFrame({ name: eventName, data: payload, seq: msg.seq });
       }
     } catch {
       // ignore non-JSON

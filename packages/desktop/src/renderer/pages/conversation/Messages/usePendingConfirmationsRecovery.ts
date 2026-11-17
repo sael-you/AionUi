@@ -6,7 +6,7 @@
 
 import { ipcBridge } from '@/common';
 import type { IConfirmation, IMessageAsk, IMessagePermission, TMessage } from '@/common/chat/chatLib';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useUpdateMessageList } from './hooks';
 
 export const pendingConfirmationMsgId = (confirmationId: string) => `confirmation:${confirmationId}`;
@@ -75,6 +75,9 @@ function errorMessage(error: unknown): string {
 
 export function usePendingConfirmationsRecovery(conversation_id: string) {
   const updateMessageList = useUpdateMessageList();
+  // Bumped when realtime frames were lost for good (TASK-43): list the pending approvals again.
+  const [resyncCount, setResyncCount] = useState(0);
+  useEffect(() => ipcBridge.realtime?.resync?.on(() => setResyncCount((count) => count + 1)), []);
 
   useEffect(() => {
     if (!conversation_id) return;
@@ -109,5 +112,5 @@ export function usePendingConfirmationsRecovery(conversation_id: string) {
       cancelled = true;
       off();
     };
-  }, [conversation_id, updateMessageList]);
+  }, [conversation_id, updateMessageList, resyncCount]);
 }

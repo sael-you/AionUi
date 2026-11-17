@@ -213,6 +213,12 @@ interface IChatConversation<T, Extra> {
    */
   fork_capability?: { at_turn: boolean };
   /**
+   * Feature flags of the core serving this conversation (list and detail).
+   * `send_idempotency`: the send route accepts `idempotency_key` (TASK-127);
+   * absent = an older core, do not send the key.
+   */
+  capabilities?: { send_idempotency?: boolean };
+  /**
    * Prompt media capability (from `ConversationResponse.prompt_capability`).
    * Filled ONLY on the single-conversation detail response (never on lists).
    * Absent = unknown/unsupported — media attachments are delivered to the

@@ -1005,5 +1005,14 @@
     "continue": "Arka planda devam et",
     "running": "Arka planda çalışıyor",
     "failed": "Araç çağrısı arka plana alınamadı."
+  },
+  "unsent": {
+    "notSent": "Gönderilmedi — taslak olarak kaydedildi",
+    "autoRetry": "bağlantı gelince yeniden gönderilir",
+    "retry": "Yeniden dene"
+  },
+  "pendingUpload": {
+    "waiting": "Yüklemek için bağlantı bekleniyor:",
+    "tooLarge": "{{name}} çevrimdışı saklamak için çok büyük (en fazla {{max}} MB) — çevrimiçi olunca yeniden ekleyin"
   }
 }

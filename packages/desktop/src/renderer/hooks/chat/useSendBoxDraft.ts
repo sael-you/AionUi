@@ -37,6 +37,116 @@ const store: SendBoxDraftStore = {
   aionrs: new Map(),
 };
 
+// ---------------------------------------------------------------------------
+// Persistence (TASK-127): what the owner is typing survives a reload, a crash or
+// a lost connection. One localStorage entry per conversation holds the text and
+// the attachment references (uploaded files already live on the server; the
+// quote stack persists itself). Restored on open, removed once the draft is empty
+// (a successful send empties it).
+// ---------------------------------------------------------------------------
+
+const DRAFT_STORAGE_PREFIX = 'aionui.sendBoxDraft.';
+/** Longest text kept (characters); a longer draft is still kept in memory. */
+export const DRAFT_MAX_CONTENT_CHARS = 200_000;
+/** Most conversations with a saved draft; the oldest are dropped first. */
+export const DRAFT_MAX_ENTRIES = 50;
+
+type StoredDraft = { v: 1; savedAt: number; draft: Draft };
+
+const draftStorageKey = (type: DraftConversationType, conversation_id: string) =>
+  `${DRAFT_STORAGE_PREFIX}${type}.${conversation_id}`;
+
+const isEmptyDraft = (draft: Draft | undefined): boolean =>
+  !draft || (draft.content.length === 0 && draft.atPath.length === 0 && draft.uploadFile.length === 0);
+
+const draftStorage = (): Storage | null => {
+  try {
+    return typeof window === 'undefined' ? null : window.localStorage;
+  } catch {
+    return null;
+  }
+};
+
+const parseStoredDraft = (raw: string | null, type: DraftConversationType): Draft | undefined => {
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw) as Partial<StoredDraft>;
+    const draft = parsed?.draft;
+    if (parsed?.v !== 1 || !draft || draft._type !== type) return undefined;
+    if (typeof draft.content !== 'string' || !Array.isArray(draft.atPath) || !Array.isArray(draft.uploadFile)) {
+      return undefined;
+    }
+    return draft;
+  } catch {
+    return undefined;
+  }
+};
+
+/** Keep at most DRAFT_MAX_ENTRIES saved drafts: drop the oldest. */
+const pruneStoredDrafts = (storage: Storage): void => {
+  const entries: Array<{ key: string; savedAt: number }> = [];
+  for (let index = 0; index < storage.length; index += 1) {
+    const key = storage.key(index);
+    if (!key?.startsWith(DRAFT_STORAGE_PREFIX)) continue;
+    let savedAt = 0;
+    try {
+      savedAt = Number((JSON.parse(storage.getItem(key) ?? '{}') as Partial<StoredDraft>).savedAt) || 0;
+    } catch {
+      /* unreadable entries go first */
+    }
+    entries.push({ key, savedAt });
+  }
+  if (entries.length <= DRAFT_MAX_ENTRIES) return;
+  entries
+    .sort((a, b) => a.savedAt - b.savedAt)
+    .slice(0, entries.length - DRAFT_MAX_ENTRIES)
+    .forEach((entry) => storage.removeItem(entry.key));
+};
+
+const persistDraft = (type: DraftConversationType, conversation_id: string, draft: Draft | undefined): void => {
+  const storage = draftStorage();
+  if (!storage || !conversation_id) return;
+  const key = draftStorageKey(type, conversation_id);
+  try {
+    if (isEmptyDraft(draft)) {
+      storage.removeItem(key);
+      return;
+    }
+    const kept = draft as Draft;
+    const stored: StoredDraft = {
+      v: 1,
+      savedAt: Date.now(),
+      draft: { ...kept, content: kept.content.slice(0, DRAFT_MAX_CONTENT_CHARS) },
+    };
+    storage.setItem(key, JSON.stringify(stored));
+    pruneStoredDrafts(storage);
+  } catch {
+    // Storage full or blocked: the draft stays in memory for this page.
+  }
+};
+
+const loadStoredDraft = <K extends DraftConversationType>(
+  type: K,
+  conversation_id: string
+): Extract<Draft, { _type: K }> | undefined => {
+  const storage = draftStorage();
+  if (!storage || !conversation_id) return undefined;
+  try {
+    return parseStoredDraft(storage.getItem(draftStorageKey(type, conversation_id)), type) as
+      | Extract<Draft, { _type: K }>
+      | undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+/** Test seam: forget the in-memory drafts (localStorage is the source on the next read). */
+export const resetSendBoxDraftsForTests = (): void => {
+  store.acp.clear();
+  store.codex.clear();
+  store.aionrs.clear();
+};
+
 export type ConversationSendBoxPrefill = {
   requestId: number;
   prompt: string;
@@ -120,6 +230,7 @@ const setDraft = <K extends DraftConversationType>(
   conversation_id: string,
   draft: Extract<Draft, { _type: K }> | undefined
 ) => {
+  persistDraft(type, conversation_id, draft);
   // TODO import ts-pattern for exhaustive check
   switch (type) {
     case 'acp':
@@ -152,6 +263,11 @@ const getDraft = <K extends DraftConversationType>(
   type: K,
   conversation_id: string
 ): Extract<Draft, { _type: K }> | undefined => {
+  // First read after a reload: bring the saved draft back into memory.
+  if (!store[type].has(conversation_id)) {
+    const saved = loadStoredDraft(type, conversation_id);
+    if (saved) (store[type] as Map<string, Draft>).set(conversation_id, saved);
+  }
   // TODO import ts-pattern for exhaustive check
   switch (type) {
     case 'acp':

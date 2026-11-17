@@ -1003,5 +1003,14 @@
     "continue": "轉到背景繼續",
     "running": "正在背景執行",
     "failed": "無法將此工具呼叫轉到背景。"
+  },
+  "unsent": {
+    "notSent": "未傳送 — 已儲存為草稿",
+    "autoRetry": "連線恢復後會自動重送",
+    "retry": "重試"
+  },
+  "pendingUpload": {
+    "waiting": "等待連線恢復後上傳：",
+    "tooLarge": "{{name}} 太大，無法離線保存（最大 {{max}} MB）— 請在連線後重新附加"
   }
 }
