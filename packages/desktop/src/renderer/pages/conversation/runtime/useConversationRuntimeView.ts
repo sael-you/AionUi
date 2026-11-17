@@ -84,7 +84,7 @@ export const useConversationRuntimeView = (conversation_id: string): UseConversa
   const view = useSyncExternalStore(subscribeConversationRuntimeView, getSnapshot, getSnapshot);
   // Bumped when realtime frames were lost for good (TASK-43): read the runtime state again.
   const [resyncCount, setResyncCount] = useState(0);
-  useEffect(() => ipcBridge.realtime.resync.on(() => setResyncCount((count) => count + 1)), []);
+  useEffect(() => ipcBridge.realtime?.resync?.on(() => setResyncCount((count) => count + 1)), []);
 
   useEffect(() => {
     if (!conversation_id) {

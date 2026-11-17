@@ -759,6 +759,9 @@ const initializeConversationListSyncStore = () => {
   refreshConversations();
 
   addEventListener('chat.history.refresh', refreshConversations);
+  // Realtime frames were lost for good (TASK-43): the sidebar list and the "Needs you"
+  // box derived from it missed events too, so read the list again.
+  ipcBridge.realtime?.resync?.on(() => refreshConversations());
   ipcBridge.conversation.listChanged.on((event) => {
     if (event.action === 'deleted') {
       clearGenerating(event.conversation_id, 'deleted');

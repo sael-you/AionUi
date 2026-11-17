@@ -464,6 +464,8 @@ Please check your local CLI tool authentication status`,
   const unsentMessage = useUnsentMessage({
     conversation_id,
     content,
+    // Team sends take no idempotency key: no automatic retry there.
+    keyed: !teamSendMessage,
     resend: async (unsent: UnsentMessage) => {
       await executeCommand({
         input: unsent.input,

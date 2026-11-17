@@ -1008,6 +1008,7 @@
     "retry": "重试"
   },
   "pendingUpload": {
-    "waiting": "等待连接恢复后上传："
+    "waiting": "等待连接恢复后上传：",
+    "tooLarge": "{{name}} 太大，无法离线保存（最大 {{max}} MB）— 请在联网后重新添加"
   }
 }

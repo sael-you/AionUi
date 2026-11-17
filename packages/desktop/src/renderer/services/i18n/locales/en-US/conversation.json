@@ -1008,6 +1008,7 @@
     "retry": "Retry"
   },
   "pendingUpload": {
-    "waiting": "Waiting for the connection to upload:"
+    "waiting": "Waiting for the connection to upload:",
+    "tooLarge": "{{name}} is too large to keep offline (max {{max}} MB) — re-attach it when you are online"
   }
 }

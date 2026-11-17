@@ -4,10 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Button, Tag } from '@arco-design/web-react';
+import { Button, Message, Tag } from '@arco-design/web-react';
 import { CloudStorage } from '@icon-park/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  PENDING_UPLOAD_MAX_FILE_BYTES,
+  pendingUploadStore,
+} from '@/renderer/services/pendingUploads/pendingUploadStore';
 import { usePendingUploads } from '@/renderer/services/pendingUploads/usePendingUploads';
 
 /**
@@ -20,6 +24,22 @@ const PendingUploads: React.FC<{ conversation_id: string; onUploaded: (paths: st
 }) => {
   const { t } = useTranslation();
   const { items, uploading, retry, remove } = usePendingUploads(conversation_id, onUploaded);
+
+  // A file over the size cap cannot be kept: say so, never drop it silently.
+  useEffect(
+    () =>
+      pendingUploadStore.onRejected((rejection) => {
+        if (rejection.conversationId !== conversation_id) return;
+        Message.warning({
+          content: t('conversation.pendingUpload.tooLarge', {
+            name: rejection.name,
+            max: Math.round(PENDING_UPLOAD_MAX_FILE_BYTES / (1024 * 1024)),
+          }),
+          duration: 8000,
+        });
+      }),
+    [conversation_id, t]
+  );
   if (items.length === 0) return null;
   return (
     <div

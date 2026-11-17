@@ -32,6 +32,19 @@ const STORE_NAME = 'files';
 
 const memory = new Map<string, StoredUpload>();
 const listeners = new Set<() => void>();
+/** Told when a file could not be kept (over a cap), so the composer can say so. */
+export type PendingUploadRejection = { conversationId: string; name: string; reason: 'too-large' | 'full' };
+const rejectionListeners = new Set<(rejection: PendingUploadRejection) => void>();
+const reject = (rejection: PendingUploadRejection): SavePendingUploadResult => {
+  for (const listener of rejectionListeners) {
+    try {
+      listener(rejection);
+    } catch {
+      /* a listener never breaks the store */
+    }
+  }
+  return rejection.reason;
+};
 let dbPromise: Promise<IDBDatabase | null> | null = null;
 
 const notify = (): void => {
@@ -95,9 +108,11 @@ const newId = (): string =>
 export const pendingUploadStore = {
   /** Keep a file whose upload failed for lack of a connection. */
   async save(conversationId: string, file: File): Promise<SavePendingUploadResult> {
-    if (file.size > PENDING_UPLOAD_MAX_FILE_BYTES) return 'too-large';
+    if (file.size > PENDING_UPLOAD_MAX_FILE_BYTES)
+      return reject({ conversationId, name: file.name, reason: 'too-large' });
     const used = (await all()).reduce((sum, item) => sum + item.size, 0);
-    if (used + file.size > PENDING_UPLOAD_MAX_TOTAL_BYTES) return 'full';
+    if (used + file.size > PENDING_UPLOAD_MAX_TOTAL_BYTES)
+      return reject({ conversationId, name: file.name, reason: 'full' });
     const entry: StoredUpload = {
       id: newId(),
       conversationId,
@@ -138,10 +153,17 @@ export const pendingUploadStore = {
     return () => listeners.delete(listener);
   },
 
+  /** A file was refused (over a cap): never a silent drop. */
+  onRejected(listener: (rejection: PendingUploadRejection) => void): () => void {
+    rejectionListeners.add(listener);
+    return () => rejectionListeners.delete(listener);
+  },
+
   /** Test seam: forget everything kept in memory. */
   resetForTests(): void {
     memory.clear();
     listeners.clear();
+    rejectionListeners.clear();
     dbPromise = null;
   },
 };

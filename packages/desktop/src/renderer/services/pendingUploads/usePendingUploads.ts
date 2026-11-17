@@ -55,19 +55,19 @@ export const usePendingUploads = (conversation_id: string, onUploaded: (paths: s
     }
   }, [conversation_id]);
 
-  const hasItems = items.length > 0;
+  // Listening from the start (not only once a file waits) leaves no gap in which a
+  // returning connection could be missed; with nothing waiting, retry does nothing.
   useEffect(() => {
-    if (!hasItems) return;
     const onBack = (): void => {
       void retry();
     };
     window.addEventListener('online', onBack);
-    const off = ipcBridge.realtime.reconnected.on(onBack);
+    const off = ipcBridge.realtime?.reconnected?.on(onBack);
     return () => {
       window.removeEventListener('online', onBack);
-      off();
+      off?.();
     };
-  }, [hasItems, retry]);
+  }, [retry]);
 
   const remove = useCallback((id: string): void => {
     void pendingUploadStore.remove(id);

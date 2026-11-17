@@ -1009,6 +1009,7 @@
     "retry": "Erneut senden"
   },
   "pendingUpload": {
-    "waiting": "Wartet auf die Verbindung zum Hochladen:"
+    "waiting": "Wartet auf die Verbindung zum Hochladen:",
+    "tooLarge": "{{name}} ist zu groß, um offline behalten zu werden (max. {{max}} MB) — hänge die Datei erneut an, wenn du online bist"
   }
 }

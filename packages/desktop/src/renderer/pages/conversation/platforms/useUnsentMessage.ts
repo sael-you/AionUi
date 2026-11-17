@@ -86,14 +86,16 @@ type UseUnsentMessageOptions = {
   content: string;
   /** Send the remembered message again (same key); resolves once it was accepted. */
   resend: (unsent: UnsentMessage) => Promise<void>;
+  /** False where the send path takes no idempotency key (team sends): Retry stays manual. */
+  keyed?: boolean;
 };
 
-export const useUnsentMessage = ({ conversation_id, content, resend }: UseUnsentMessageOptions) => {
+export const useUnsentMessage = ({ conversation_id, content, resend, keyed = true }: UseUnsentMessageOptions) => {
   // Cache-only read: the conversation page already loads this key.
   const { data: conversation } = useSWR<TChatConversation | null>(
     conversation_id ? `conversation/${conversation_id}` : null
   );
-  const idempotent = conversation?.capabilities?.send_idempotency === true;
+  const idempotent = keyed && conversation?.capabilities?.send_idempotency === true;
 
   const [unsent, setUnsent] = useState<UnsentMessage | null>(() => readUnsent(conversation_id));
   const [retrying, setRetrying] = useState(false);

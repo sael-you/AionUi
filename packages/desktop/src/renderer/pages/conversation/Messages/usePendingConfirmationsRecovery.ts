@@ -77,7 +77,7 @@ export function usePendingConfirmationsRecovery(conversation_id: string) {
   const updateMessageList = useUpdateMessageList();
   // Bumped when realtime frames were lost for good (TASK-43): list the pending approvals again.
   const [resyncCount, setResyncCount] = useState(0);
-  useEffect(() => ipcBridge.realtime.resync.on(() => setResyncCount((count) => count + 1)), []);
+  useEffect(() => ipcBridge.realtime?.resync?.on(() => setResyncCount((count) => count + 1)), []);
 
   useEffect(() => {
     if (!conversation_id) return;

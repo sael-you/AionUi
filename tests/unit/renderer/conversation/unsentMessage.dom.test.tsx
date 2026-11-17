@@ -32,7 +32,7 @@ import { isConnectionFailure, useUnsentMessage } from '@/renderer/pages/conversa
 const KEY = 'aionui.unsentMessage.c1';
 const MESSAGE = { input: '> quote\n\nhello', files: [], draftText: 'hello' };
 
-const mount = (options: { idempotent: boolean; resend?: () => Promise<void>; content?: string }) => {
+const mount = (options: { idempotent: boolean; resend?: () => Promise<void>; content?: string; keyed?: boolean }) => {
   const resend = options.resend ?? vi.fn().mockResolvedValue(undefined);
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <SWRConfig
@@ -45,7 +45,8 @@ const mount = (options: { idempotent: boolean; resend?: () => Promise<void>; con
     </SWRConfig>
   );
   const view = renderHook(
-    ({ content }: { content: string }) => useUnsentMessage({ conversation_id: 'c1', content, resend }),
+    ({ content }: { content: string }) =>
+      useUnsentMessage({ conversation_id: 'c1', content, resend, keyed: options.keyed }),
     { wrapper, initialProps: { content: options.content ?? '' } }
   );
   return { ...view, resend };
@@ -95,6 +96,15 @@ describe('unsent message recovery (TASK-127)', () => {
     await act(() => view.result.current.retry());
     expect(view.resend).toHaveBeenCalledTimes(1);
     expect(view.result.current.unsent).toBeNull();
+  });
+
+  it('team sends take no key: no key and no automatic retry even on a capable core', () => {
+    const view = mount({ idempotent: true, keyed: false });
+    expect(view.result.current.idempotent).toBe(false);
+    expect(view.result.current.keyFor(MESSAGE.input, [])).toBeUndefined();
+    act(() => view.result.current.remember(MESSAGE));
+    act(() => window.dispatchEvent(new Event('online')));
+    expect(view.resend).not.toHaveBeenCalled();
   });
 
   it('retries with the same key when the connection returns, once, and forgets it on success', async () => {

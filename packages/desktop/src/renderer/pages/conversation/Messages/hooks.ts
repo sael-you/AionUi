@@ -987,7 +987,7 @@ export const useMessageLstCache = (key: string) => {
   // the database is the truth, so re-pull the latest page; the merge keeps live rows.
   useEffect(() => {
     if (!key) return;
-    return ipcBridge.realtime.resync.on(() => {
+    return ipcBridge.realtime?.resync?.on(() => {
       void loadMessages().catch((error) => {
         console.error('[useMessageLstCache] Failed to reload messages after a realtime resync:', error);
       });

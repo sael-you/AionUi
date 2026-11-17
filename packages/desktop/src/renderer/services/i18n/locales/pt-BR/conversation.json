@@ -1014,6 +1014,7 @@
     "retry": "Tentar de novo"
   },
   "pendingUpload": {
-    "waiting": "Aguardando a conexão para enviar:"
+    "waiting": "Aguardando a conexão para enviar:",
+    "tooLarge": "{{name}} é grande demais para guardar offline (máx. {{max}} MB) — anexe de novo quando estiver online"
   }
 }

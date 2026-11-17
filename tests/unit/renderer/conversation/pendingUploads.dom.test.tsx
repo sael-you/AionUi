@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { Message } from '@arco-design/web-react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -23,7 +24,11 @@ vi.mock('@/common', () => ({
     },
   },
 }));
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>) => (options ? `${key}|${JSON.stringify(options)}` : key),
+  }),
+}));
 vi.mock('@/renderer/services/FileService', () => ({ uploadFileViaHttp: upload.fn }));
 
 import PendingUploads from '@/renderer/pages/conversation/platforms/PendingUploads';
@@ -107,6 +112,20 @@ describe('files attached without a connection (TASK-127)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'conversation.unsent.retry' }));
     await waitFor(() => expect(onUploaded).toHaveBeenCalledWith(['/uploads/a.png']));
+  });
+
+  it('says so when a file is too large to keep, in its own conversation only (never a silent drop)', async () => {
+    const warning = vi.spyOn(Message, 'warning').mockImplementation(() => (() => {}) as never);
+    render(<PendingUploads conversation_id='c1' onUploaded={vi.fn()} />);
+
+    await pendingUploadStore.save('c2', sized('other.bin', PENDING_UPLOAD_MAX_FILE_BYTES + 1));
+    expect(warning).not.toHaveBeenCalled();
+    await pendingUploadStore.save('c1', sized('huge.bin', PENDING_UPLOAD_MAX_FILE_BYTES + 1));
+    expect(warning).toHaveBeenCalledWith(
+      expect.objectContaining({ content: 'conversation.pendingUpload.tooLarge|{"name":"huge.bin","max":25}' })
+    );
+    expect(await pendingUploadStore.list('c1')).toEqual([]);
+    warning.mockRestore();
   });
 
   it('removes a waiting file on request', async () => {

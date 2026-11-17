@@ -1314,6 +1314,7 @@ export type I18nKey =
   | 'conversation.orchestration.subConversations'
   | 'conversation.orchestration.subConversations_one'
   | 'conversation.orchestration.subConversations_other'
+  | 'conversation.pendingUpload.tooLarge'
   | 'conversation.pendingUpload.waiting'
   | 'conversation.planBar.collapse'
   | 'conversation.planBar.expand'

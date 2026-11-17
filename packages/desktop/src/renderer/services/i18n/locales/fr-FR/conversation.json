@@ -1008,6 +1008,7 @@
     "retry": "Réessayer"
   },
   "pendingUpload": {
-    "waiting": "En attente de la connexion pour envoyer :"
+    "waiting": "En attente de la connexion pour envoyer :",
+    "tooLarge": "{{name}} est trop volumineux pour être conservé hors ligne (max. {{max}} Mo) — joignez-le à nouveau une fois en ligne"
   }
 }
