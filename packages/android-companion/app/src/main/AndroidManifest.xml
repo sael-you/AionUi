@@ -49,12 +49,6 @@
             </intent-filter>
         </activity>
 
-        <!-- zxing's scanner screen, portrait or landscape. -->
-        <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation" />
-
         <service
             android:name=".service.CompanionService"
             android:exported="false"

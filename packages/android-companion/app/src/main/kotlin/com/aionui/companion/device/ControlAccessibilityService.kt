@@ -107,7 +107,7 @@ class ControlAccessibilityService : AccessibilityService() {
         val field = rootInActiveWindow?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
             ?: throw VerbException(VerbError.FAILED, "no text field has the focus")
         if (!field.isEditable) throw VerbException(VerbError.FAILED, "the focused element is not editable")
-        val showingHint = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && field.isShowingHintText
+        val showingHint = field.isShowingHintText
         val existing = if (showingHint || field.isPassword) "" else field.text?.toString().orEmpty()
         val args = Bundle().apply {
             putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, existing + value)

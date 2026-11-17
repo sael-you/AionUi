@@ -1,5 +1,6 @@
 package com.aionui.companion.service
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.provider.Settings
@@ -20,6 +21,8 @@ class OverlayChip(private val context: Context, private val onStop: () -> Unit) 
     private val windows = context.getSystemService(WindowManager::class.java)
     private var view: View? = null
 
+    // A window has no parent view: null is the right root for an overlay.
+    @SuppressLint("InflateParams")
     fun show() {
         if (view != null || !Settings.canDrawOverlays(context)) return
         // A service context has no theme; Material views need one.
