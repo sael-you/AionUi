@@ -57,7 +57,7 @@ const LevelMeter: React.FC<{ levels: number[] }> = ({ levels }) => {
         <span
           key={index}
           className={styles.meterBar}
-          style={{ transform: `scaleY(${Math.max(0.15, Math.min(1, level * 1.6))})` }}
+          style={{ transform: `scaleY(${Math.max(0.3, Math.min(1, 0.3 + level * 3))})` }}
         />
       ))}
     </span>
@@ -194,14 +194,14 @@ const QuoteReplyField: React.FC<QuoteReplyFieldProps> = ({
     <div className='flex flex-col gap-6px'>
       <Input.TextArea
         ref={textAreaRef as never}
-        className='!rd-8px'
+        className='!rd-8px !resize-none'
         value={shown}
         readOnly={busy}
         autoFocus={autoFocus}
         autoSize={{ minRows: 2, maxRows: 8 }}
         placeholder={
           dictation.status === 'recording'
-            ? t('conversation.quoteReply.dictation.listening')
+            ? t('conversation.quoteReply.dictation.stopHint')
             : t('conversation.quoteReply.replyPlaceholder')
         }
         aria-label={t('conversation.quoteReply.replyLabel')}
@@ -236,7 +236,7 @@ const QuoteReplyField: React.FC<QuoteReplyFieldProps> = ({
         <ReplyMic dictation={dictation} onBeforeStart={focusField} />
         <span className={classNames('flex-1 min-w-0 text-11px truncate', styles.live)} aria-live='polite'>
           {dictation.status === 'recording'
-            ? t('conversation.quoteReply.dictation.stopHint')
+            ? t('conversation.quoteReply.dictation.listening')
             : dictation.status === 'transcribing'
               ? t('conversation.chat.speech.processing')
               : ''}
