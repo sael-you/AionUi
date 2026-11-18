@@ -39,8 +39,9 @@ class OkHttpSockets(private val client: OkHttpClient = defaultClient()) : Socket
         fun defaultClient(): OkHttpClient = OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(0, TimeUnit.MILLISECONDS)
-            // Keep-alive is ours (W2 ping/pong), not OkHttp's.
-            .pingInterval(0, TimeUnit.MILLISECONDS)
+            // WebSocket pings next to W2's own ping frames: a dead connection (NAT timeout, a
+            // network that went away silently) fails within a minute instead of hanging.
+            .pingInterval(30, TimeUnit.SECONDS)
             .build()
     }
 }

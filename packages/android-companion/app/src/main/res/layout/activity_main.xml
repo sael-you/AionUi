@@ -152,6 +152,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/consent_hint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -214,5 +215,20 @@
                 style="@style/CheckButton"
                 android:text="@string/check_open" />
         </LinearLayout>
+
+        <LinearLayout style="@style/CheckRow">
+            <TextView style="@style/CheckLabel" android:text="@string/check_battery" />
+            <TextView android:id="@+id/battery_state" style="@style/CheckState" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/open_battery"
+                style="@style/CheckButton"
+                android:text="@string/check_open" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/check_battery_hint"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
     </LinearLayout>
 </ScrollView>

@@ -1,5 +1,6 @@
 package com.aionui.companion.relay
 
+import com.aionui.companion.protocol.Health
 import com.aionui.companion.protocol.Relay
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
@@ -7,6 +8,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -160,20 +162,22 @@ class RelaySessionTest {
     fun `answers a request through the handler, on the socket that asked`() {
         connected()
         val socket = sockets.last
-        socket.receive("""{"type":"request","id":"r1","device":"self","verb":"tap","args":{"x":1,"y":2}}""")
+        socket.receive("""{"type":"request","id":41,"device":"self","verb":"tap","args":{"x":1,"y":2}}""")
         assertEquals(listOf("tap"), handler.calls)
         handler.pending.single()(VerbResult.Ok(JsonPrimitive("done")))
         scheduler.drain()
         val response = socket.frames().last()
         assertEquals("response", response["type"]!!.jsonPrimitive.content)
-        assertEquals("r1", response["id"]!!.jsonPrimitive.content)
+        // Core sends a JSON number and matches the answer on it: echoed as a number, not "41".
+        assertEquals(JsonPrimitive(41), response["id"])
+        assertFalse(response["id"]!!.jsonPrimitive.isString)
         assertTrue(response["ok"]!!.jsonPrimitive.boolean)
     }
 
     @Test
     fun `an answer after a reconnect is dropped, not sent on the new socket`() {
         connected()
-        sockets.last.receive("""{"type":"request","id":"r1","device":"self","verb":"tap","args":{"x":1,"y":2}}""")
+        sockets.last.receive("""{"type":"request","id":1,"device":"self","verb":"tap","args":{"x":1,"y":2}}""")
         sockets.last.listener.onClosed(1006, "")
         scheduler.advance(1_000)
         sockets.last.open()
@@ -183,11 +187,72 @@ class RelaySessionTest {
     }
 
     @Test
+    fun `a request without an id is ignored and a text id is echoed as text`() {
+        connected()
+        val socket = sockets.last
+        socket.receive("""{"type":"request","device":"self","verb":"tap","args":{"x":1,"y":2}}""")
+        assertTrue(handler.calls.isEmpty())
+        socket.receive("""{"type":"request","id":"abc","device":"self","verb":"tap","args":{"x":1,"y":2}}""")
+        handler.pending.single()(VerbResult.Ok(null))
+        scheduler.drain()
+        assertEquals(JsonPrimitive("abc"), socket.frames().last()["id"])
+    }
+
+    @Test
+    fun `health rides in hello and a change is sent as the health event once welcomed`() {
+        callbacks.health = Health(80, true, locked = false, accessibilityOn = true, androidVersion = "15", model = "Pixel 8")
+        val session = connected()
+        val socket = sockets.last
+        val hello = socket.frames().first { it["type"]!!.jsonPrimitive.content == "hello" }
+        assertEquals("80", hello["health"]!!.jsonObject["battery_percent"]!!.jsonPrimitive.content)
+
+        callbacks.health = callbacks.health!!.copy(batteryPercent = 5, locked = true)
+        session.healthChanged()
+        scheduler.drain()
+        val event = socket.frames().last()
+        assertEquals("event", event["type"]!!.jsonPrimitive.content)
+        assertEquals("health", event["name"]!!.jsonPrimitive.content)
+        assertEquals("5", event["data"]!!.jsonObject["battery_percent"]!!.jsonPrimitive.content)
+        assertEquals("true", event["data"]!!.jsonObject["locked"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `redial drops the socket and connects at once, also out of a backoff`() {
+        val session = connected()
+        val first = sockets.last
+        session.redial("network changed")
+        scheduler.drain()
+        assertNotNull(first.closed)
+        assertEquals(2, sockets.opened.size)
+
+        // Lost again: waiting out the backoff, then the network comes back.
+        sockets.last.listener.onFailure("no route")
+        scheduler.drain()
+        assertTrue(session.status is RelayStatus.Retrying)
+        session.redial("network back")
+        scheduler.drain()
+        assertEquals(3, sockets.opened.size)
+        assertTrue(session.status is RelayStatus.Connecting)
+    }
+
+    @Test
+    fun `redial does nothing once the owner stopped the session`() {
+        val session = connected()
+        session.stop()
+        scheduler.drain()
+        val opened = sockets.opened.size
+        session.redial("network changed")
+        scheduler.drain()
+        assertEquals(opened, sockets.opened.size)
+        assertEquals(RelayStatus.Stopped, session.status)
+    }
+
+    @Test
     fun `refuses another device and verbs it does not serve, without calling the handler`() {
         connected()
         val socket = sockets.last
-        socket.receive("""{"type":"request","id":"r1","device":"R5CT123","verb":"tap","args":{}}""")
-        socket.receive("""{"type":"request","id":"r2","device":"self","verb":"logcat","args":{}}""")
+        socket.receive("""{"type":"request","id":1,"device":"R5CT123","verb":"tap","args":{}}""")
+        socket.receive("""{"type":"request","id":2,"device":"self","verb":"logcat","args":{}}""")
         val errors = socket.frames().filter { it["type"]!!.jsonPrimitive.content == "response" }
             .map { it["error"]!!.jsonObject["code"]!!.jsonPrimitive.content }
         assertEquals(listOf("unknown_device", "refused"), errors)

@@ -1,6 +1,8 @@
 package com.aionui.companion.device
 
+import com.aionui.companion.protocol.UrlGuard
 import com.aionui.companion.protocol.VerbError
+import com.aionui.companion.protocol.boolean
 import com.aionui.companion.protocol.number
 import com.aionui.companion.protocol.string
 import com.aionui.companion.relay.VerbHandler
@@ -88,8 +90,10 @@ class VerbDispatcher(
         "screenshot" -> {
             val scale = args.number("scale") ?: 1.0
             if (scale <= 0.0 || scale > 1.0) throw badArgs("scale must be in (0, 1]")
+            val format = args.string("format")
+            if (format != null && format !in ScreenshotPolicy.FORMATS) throw badArgs("format must be png or jpeg")
             suspend {
-                val shot = actions.screenshot(scale)
+                val shot = actions.screenshot(scale, format)
                 VerbResult.Ok(buildJsonObject {
                     put("format", shot.format)
                     put("width", shot.width)
@@ -98,7 +102,14 @@ class VerbDispatcher(
                 })
             }
         }
-        "ui_tree" -> suspend { VerbResult.Ok(buildJsonObject { put("xml", actions.uiTree()) }) }
+        "ui_tree" -> suspend {
+            val dump = actions.uiTree()
+            VerbResult.Ok(buildJsonObject {
+                put("xml", dump.xml)
+                put("nodes", dump.nodes)
+                put("truncated", dump.truncated)
+            })
+        }
         "tap" -> {
             val x = coordinate(args, "x")
             val y = coordinate(args, "y")
@@ -121,8 +132,48 @@ class VerbDispatcher(
         "text" -> {
             val value = args.string("value") ?: throw badArgs("value is required")
             if (value.length > 10_000) throw badArgs("value is longer than 10000 characters")
+            // Appends by default (like `adb shell input text`); replace=true sets the whole field.
+            val replace = args.boolean("replace") ?: false
             suspend {
-                actions.text(value)
+                if (replace) actions.setText(value) else actions.text(value)
+                VerbResult.Ok(null)
+            }
+        }
+        "global" -> {
+            val action = args.string("action") ?: throw badArgs("action is required")
+            if (action !in GlobalActions.SERVED) throw badArgs("action $action is not served; use ${GlobalActions.SERVED}")
+            suspend {
+                actions.global(action)
+                VerbResult.Ok(null)
+            }
+        }
+        "open_url" -> {
+            val checked = UrlGuard.check(args.string("url").orEmpty())
+            val url = checked.url ?: throw badArgs(checked.reason ?: "url is not allowed")
+            suspend {
+                actions.openUrl(url)
+                VerbResult.Ok(null)
+            }
+        }
+        "click_text" -> {
+            val text = args.string("text")?.trim().orEmpty()
+            if (text.isEmpty()) throw badArgs("text is required")
+            if (text.length > 500) throw badArgs("text is longer than 500 characters")
+            val index = (args.number("index") ?: 0.0).toInt()
+            if (index !in 0..99) throw badArgs("index must be 0..99")
+            suspend {
+                val click = actions.clickText(text, index)
+                VerbResult.Ok(buildJsonObject {
+                    put("matches", click.matches)
+                    put("method", click.method)
+                })
+            }
+        }
+        "set_text" -> {
+            val value = args.string("value") ?: throw badArgs("value is required")
+            if (value.length > 10_000) throw badArgs("value is longer than 10000 characters")
+            suspend {
+                actions.setText(value)
                 VerbResult.Ok(null)
             }
         }

@@ -22,7 +22,7 @@ class UiTreeXmlTest {
 
     @Test
     fun `renders the uiautomator dump shape and is valid XML`() {
-        val xml = UiTreeXml.render(listOf(node(text = "Hello", children = listOf(node(text = "child")))))
+        val xml = UiTreeXml.render(listOf(node(text = "Hello", children = listOf(node(text = "child"))))).xml
         val doc = parse(xml)
         assertEquals("hierarchy", doc.documentElement.tagName)
         val nodes = doc.getElementsByTagName("node")
@@ -36,14 +36,14 @@ class UiTreeXmlTest {
 
     @Test
     fun `password fields never carry their text`() {
-        val xml = UiTreeXml.render(listOf(node(text = "hunter2", password = true)))
+        val xml = UiTreeXml.render(listOf(node(text = "hunter2", password = true))).xml
         assertFalse(xml.contains("hunter2"))
         assertTrue(xml.contains("password=\"true\""))
     }
 
     @Test
     fun `escapes markup and drops characters XML cannot carry`() {
-        val xml = UiTreeXml.render(listOf(node(text = "a<b>&\"c'\u0001\nd")))
+        val xml = UiTreeXml.render(listOf(node(text = "a<b>&\"c'\u0001\nd"))).xml
         val text = parse(xml).getElementsByTagName("node").item(0).attributes.getNamedItem("text").nodeValue
         assertEquals("a<b>&\"c'\nd", text)
     }
@@ -52,7 +52,31 @@ class UiTreeXmlTest {
     fun `a runaway tree is cut by depth`() {
         var deep = node(text = "leaf")
         repeat(UiTreeXml.MAX_DEPTH + 20) { deep = node(children = listOf(deep)) }
-        val count = parse(UiTreeXml.render(listOf(deep))).getElementsByTagName("node").length
+        val dump = UiTreeXml.render(listOf(deep))
+        val count = parse(dump.xml).getElementsByTagName("node").length
         assertEquals(UiTreeXml.MAX_DEPTH, count)
+        assertTrue(dump.truncated)
+    }
+
+    @Test
+    fun `a small tree is whole - node count, not truncated`() {
+        val dump = UiTreeXml.render(listOf(node(children = listOf(node(), node())), node()))
+        assertEquals(4, dump.nodes)
+        assertFalse(dump.truncated)
+    }
+
+    @Test
+    fun `more nodes than the cap are left out, all windows still start, and the dump says truncated`() {
+        val wide = node(children = List(2_000) { node(text = "row $it") })
+        val dump = UiTreeXml.render(listOf(wide, node(text = "second window")))
+        assertEquals(UiTreeXml.MAX_NODES, dump.nodes)
+        assertEquals(UiTreeXml.MAX_NODES, parse(dump.xml).getElementsByTagName("node").length)
+        assertTrue(dump.truncated)
+        assertEquals(1_500, UiTreeXml.MAX_NODES)
+    }
+
+    @Test
+    fun `a tree the reader already cut is reported truncated`() {
+        assertTrue(UiTreeXml.render(listOf(node()), cut = true).truncated)
     }
 }

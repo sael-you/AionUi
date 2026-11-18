@@ -1,5 +1,6 @@
 package com.aionui.companion.relay
 
+import com.aionui.companion.protocol.Health
 import com.aionui.companion.protocol.PhoneInfo
 import com.aionui.companion.protocol.RelayJson
 import kotlinx.serialization.json.JsonObject
@@ -87,6 +88,8 @@ class RecordingCallbacks(var enabled: Boolean = true) : SessionCallbacks {
     }
 
     override fun phone() = PhoneInfo("Pixel", "Pixel 8", "15", enabled)
+    var health: Health? = null
+    override fun health() = health
 }
 
 class RecordingHandler : VerbHandler {

@@ -24,26 +24,34 @@ data class NodeView(
     val children: List<NodeView>,
 )
 
+/** `ui_tree` result: the XML, how many nodes it holds, and whether the cap left some out. */
+data class UiTreeDump(val xml: String, val nodes: Int, val truncated: Boolean)
+
 /**
- * `ui_tree` → `{xml}` in the shape of `uiautomator dump`, so agents that know that
+ * `ui_tree` → `{xml, nodes, truncated}` in the shape of `uiautomator dump`, so agents that know that
  * format read it as is. Password fields never carry their text.
  */
 object UiTreeXml {
     /** Deep trees are cut here (a runaway layout must not produce a huge frame). */
     const val MAX_DEPTH = 64
-    const val MAX_NODES = 5_000
+    /** More nodes than this are left out and the dump says `truncated`. */
+    const val MAX_NODES = 1_500
 
-    fun render(roots: List<NodeView>, rotation: Int = 0): String {
+    fun render(roots: List<NodeView>, rotation: Int = 0, maxNodes: Int = MAX_NODES, cut: Boolean = false): UiTreeDump {
         val out = StringBuilder("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>")
         out.append("<hierarchy rotation=\"").append(rotation).append("\">")
-        val budget = intArrayOf(MAX_NODES)
+        // budget[0] = nodes still allowed, budget[1] = 1 once something was left out.
+        val budget = intArrayOf(maxNodes, if (cut) 1 else 0)
         roots.forEachIndexed { index, root -> node(out, root, index, 0, budget) }
         out.append("</hierarchy>")
-        return out.toString()
+        return UiTreeDump(out.toString(), maxNodes - budget[0], budget[1] == 1)
     }
 
     private fun node(out: StringBuilder, node: NodeView, index: Int, depth: Int, budget: IntArray) {
-        if (depth >= MAX_DEPTH || budget[0] <= 0) return
+        if (depth >= MAX_DEPTH || budget[0] <= 0) {
+            budget[1] = 1
+            return
+        }
         budget[0] -= 1
         out.append("<node")
         attr(out, "index", index.toString())

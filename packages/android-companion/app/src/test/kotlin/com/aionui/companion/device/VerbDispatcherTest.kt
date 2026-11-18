@@ -25,11 +25,18 @@ class VerbDispatcherTest {
         var cancelled = 0
 
         override fun switchOn() = on
-        override suspend fun screenshot(scale: Double): Screenshot {
-            calls += "screenshot $scale"
-            return Screenshot("png", 2, 3, byteArrayOf(1, 2, 3))
+        override suspend fun screenshot(scale: Double, format: String?): Screenshot {
+            calls += "screenshot $scale ${format ?: "auto"}"
+            return Screenshot(format ?: "png", 2, 3, byteArrayOf(1, 2, 3))
         }
-        override suspend fun uiTree(): String = "<hierarchy/>".also { calls += "ui_tree" }
+        override suspend fun uiTree(): UiTreeDump = UiTreeDump("<hierarchy/>", 0, truncated).also { calls += "ui_tree" }
+        var truncated = false
+        override suspend fun global(action: String) {
+            calls += "global $action"
+        }
+        override suspend fun openUrl(url: String) {
+            calls += "open_url $url"
+        }
         override suspend fun tap(x: Int, y: Int) {
             calls += "tap $x $y"
             if (hang) awaitCancellation()
@@ -39,6 +46,13 @@ class VerbDispatcherTest {
         }
         override suspend fun text(value: String) {
             calls += "text $value"
+        }
+        override suspend fun clickText(text: String, index: Int): TextClick {
+            calls += "click_text $text $index"
+            return TextClick(2, "click")
+        }
+        override suspend fun setText(value: String) {
+            calls += "set_text $value"
         }
         override suspend fun key(code: Int) {
             calls += "key $code"
@@ -87,7 +101,7 @@ class VerbDispatcherTest {
         assertEquals("png", shot["format"]!!.jsonPrimitive.content)
         assertEquals("2", shot["width"]!!.jsonPrimitive.content)
         assertEquals("AQID", shot["data_base64"]!!.jsonPrimitive.content)
-        assertEquals("screenshot 0.5", actions.calls.single())
+        assertEquals("screenshot 0.5 auto", actions.calls.single())
     }
 
     @Test
@@ -143,6 +157,70 @@ class VerbDispatcherTest {
         actions.hang = true
         val result = run(dispatcher(timeoutMs = 5_000), "tap", """{"x":1,"y":1}""") as VerbResult.Failed
         assertEquals("timeout", result.code)
+    }
+
+    @Test
+    fun `click_text clicks the exact text and says how, set_text replaces the field`() = runTest {
+        val d = dispatcher()
+        val clicked = run(d, "click_text", """{"text":"  Sign in ","index":1}""") as VerbResult.Ok
+        assertEquals(2, clicked.result!!.jsonObject["matches"]!!.jsonPrimitive.content.toInt())
+        assertEquals("click", clicked.result!!.jsonObject["method"]!!.jsonPrimitive.content)
+        assertEquals(VerbResult.Ok(null), run(d, "set_text", """{"value":""}"""))
+        assertEquals(listOf("click_text Sign in 1", "set_text "), actions.calls)
+    }
+
+    @Test
+    fun `text appends by default and replaces the field with replace=true`() = runTest {
+        val d = dispatcher()
+        run(d, "text", """{"value":"a"}""")
+        run(d, "text", """{"value":"b","replace":true}""")
+        run(d, "text", """{"value":"c","replace":false}""")
+        assertEquals(listOf("text a", "set_text b", "text c"), actions.calls)
+    }
+
+    @Test
+    fun `global serves notifications, quick settings and lock, nothing else`() = runTest {
+        val d = dispatcher()
+        for (action in listOf("notifications", "quick_settings", "lock")) {
+            assertEquals(VerbResult.Ok(null), run(d, "global", """{"action":"$action"}"""))
+        }
+        assertEquals("bad_args", (run(d, "global", """{"action":"power_dialog"}""") as VerbResult.Failed).code)
+        assertEquals("bad_args", (run(d, "global", """{}""") as VerbResult.Failed).code)
+        assertEquals(listOf("global notifications", "global quick_settings", "global lock"), actions.calls)
+    }
+
+    @Test
+    fun `open_url opens web and market links only`() = runTest {
+        val d = dispatcher()
+        assertEquals(VerbResult.Ok(null), run(d, "open_url", """{"url":"https://example.com/a?b=1"}"""))
+        assertEquals(VerbResult.Ok(null), run(d, "open_url", """{"url":"market://details?id=com.example"}"""))
+        for (bad in listOf("""{}""", """{"url":"intent://x#Intent;end"}""", """{"url":"file:///sdcard/a"}""", """{"url":"javascript:alert(1)"}""")) {
+            assertEquals("bad_args", (run(d, "open_url", bad) as VerbResult.Failed).code)
+        }
+        assertEquals(listOf("open_url https://example.com/a?b=1", "open_url market://details?id=com.example"), actions.calls)
+    }
+
+    @Test
+    fun `screenshot takes scale and an optional format, ui_tree says when it was cut`() = runTest {
+        val d = dispatcher()
+        val jpeg = run(d, "screenshot", """{"scale":1,"format":"jpeg"}""") as VerbResult.Ok
+        assertEquals("jpeg", jpeg.result!!.jsonObject["format"]!!.jsonPrimitive.content)
+        assertEquals("bad_args", (run(d, "screenshot", """{"format":"webp"}""") as VerbResult.Failed).code)
+        actions.truncated = true
+        val tree = (run(d, "ui_tree") as VerbResult.Ok).result!!.jsonObject
+        assertEquals("true", tree["truncated"]!!.jsonPrimitive.content)
+        assertEquals("<hierarchy/>", tree["xml"]!!.jsonPrimitive.content)
+        assertEquals(listOf("screenshot 1.0 jpeg", "ui_tree"), actions.calls)
+    }
+
+    @Test
+    fun `click_text and set_text check their args`() = runTest {
+        val d = dispatcher()
+        for (bad in listOf("""{}""", """{"text":"  "}""", """{"text":"x","index":-1}""", """{"text":"x","index":100}""")) {
+            assertEquals("bad_args", (run(d, "click_text", bad) as VerbResult.Failed).code)
+        }
+        assertEquals("bad_args", (run(d, "set_text", """{}""") as VerbResult.Failed).code)
+        assertTrue(actions.calls.isEmpty())
     }
 
     @Test
