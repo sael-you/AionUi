@@ -1,35 +1,40 @@
 package com.aionui.companion.relay
 
 /**
- * Decides when a change of the phone's network means "dial again now". Plain Kotlin,
+ * Decides what a change of the phone's network means for the relay socket. Plain Kotlin,
  * unit-tested; the service feeds it ConnectivityManager's default-network callbacks.
  *
+ * A connected socket is never dropped on a callback alone: Android also reports
+ * "lost" / "available" when the app merely goes to the background (0.2.0 redialled there
+ * and lost the request in flight). A change while connected only asks for a probe: one
+ * ping, and the socket goes only if no answer comes back.
+ *
  * - Waiting out a backoff and a network appears → dial now instead of in up to 60 s.
- * - The default network changed (Wi-Fi → mobile) → the socket was bound to the old one
- *   and is dead even if no error arrived yet → dial again.
- * - The first callback after registering (the network we already use) → nothing.
+ * - Connected and the default network changed or came back → probe.
+ * - The first callback after registering (the network already in use) → nothing.
  */
 class NetworkRedial {
+    enum class Action { NONE, REDIAL, PROBE }
+
     private var current: Long? = null
 
-    /** A default network is available; true = redial now. */
-    fun onAvailable(network: Long, status: RelayStatus): Boolean {
+    fun onAvailable(network: Long, status: RelayStatus): Action {
         val previous = current
         current = network
         return when (status) {
-            is RelayStatus.Retrying -> true
-            is RelayStatus.Connected, RelayStatus.Connecting -> previous != null && previous != network
-            RelayStatus.Stopped, is RelayStatus.NeedsPairing -> false
+            is RelayStatus.Retrying -> Action.REDIAL
+            is RelayStatus.Connected -> if (previous != null && previous != network) Action.PROBE else Action.NONE
+            // A dial in progress finishes or fails by itself (5 s welcome timeout).
+            RelayStatus.Connecting, RelayStatus.Stopped, is RelayStatus.NeedsPairing -> Action.NONE
         }
     }
 
-    /** The default network went away (a later onAvailable for any network redials). */
+    /** The default network went away (a later onAvailable for any network counts as a change). */
     fun onLost(network: Long) {
         if (current == network) current = LOST
     }
 
     private companion object {
-        /** No network: any network that follows counts as a change. */
         const val LOST = Long.MIN_VALUE
     }
 }

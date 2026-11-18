@@ -11,6 +11,7 @@ import android.view.Display
 import androidx.annotation.RequiresApi
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.AccessibilityWindowInfo
 import com.aionui.companion.protocol.VerbError
 import com.aionui.companion.service.CompanionState
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -34,7 +35,7 @@ class ControlAccessibilityService : AccessibilityService() {
     }
 
     override fun onDestroy() {
-        if (current === this) current = null
+        if (bound === this) bound = null
         rememberedField = null
         CompanionState.setAccessibilityOn(false)
         super.onDestroy()
@@ -50,10 +51,36 @@ class ControlAccessibilityService : AccessibilityService() {
             return
         }
         if (event?.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
-        val pkg = event.packageName?.toString() ?: return
-        // Our own overlay and screens are not "the app the agent is in".
-        if (pkg == packageName) return
-        CompanionState.setForeground(pkg)
+        // Not the event's package (an overlay raises events too): the top application window.
+        foregroundApp()?.let { CompanionState.setForeground(it) }
+    }
+
+    /** The app in front right now: the top application window, overlays and system chrome skipped. */
+    fun foregroundApp(): String? {
+        val views = runCatching {
+            windows.map { window ->
+                WindowView(
+                    type = when (window.type) {
+                        AccessibilityWindowInfo.TYPE_APPLICATION -> WindowView.Kind.APPLICATION
+                        AccessibilityWindowInfo.TYPE_INPUT_METHOD -> WindowView.Kind.INPUT_METHOD
+                        AccessibilityWindowInfo.TYPE_SYSTEM -> WindowView.Kind.SYSTEM
+                        AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY -> WindowView.Kind.ACCESSIBILITY_OVERLAY
+                        else -> WindowView.Kind.OTHER
+                    },
+                    packageName = window.root?.packageName?.toString(),
+                    layer = window.layer,
+                    focused = window.isFocused || window.isActive,
+                )
+            }
+        }.getOrDefault(emptyList())
+        return ForegroundPick.pick(views, packageName)
+    }
+
+    /** Android unbound the service (the owner switched it off): it must not look alive. */
+    override fun onUnbind(intent: android.content.Intent?): Boolean {
+        if (bound === this) bound = null
+        CompanionState.setAccessibilityOn(false)
+        return super.onUnbind(intent)
     }
 
     override fun onInterrupt() = Unit
@@ -293,7 +320,17 @@ class ControlAccessibilityService : AccessibilityService() {
         private const val CLICK_PARENT_DEPTH = 8
 
         @Volatile
-        var current: ControlAccessibilityService? = null
-            private set
+        private var bound: ControlAccessibilityService? = null
+
+        /**
+         * The service while Android has it connected; null as soon as it is switched off
+         * (a disconnected service has no service info), so a verb is refused at once
+         * instead of waiting on a call that never answers.
+         */
+        var current: ControlAccessibilityService?
+            get() = bound?.takeIf { runCatching { it.serviceInfo != null }.getOrDefault(false) }
+            private set(value) {
+                bound = value
+            }
     }
 }
