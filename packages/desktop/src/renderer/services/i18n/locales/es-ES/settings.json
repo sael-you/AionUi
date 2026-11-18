@@ -1728,7 +1728,10 @@
       "version": "Versión",
       "disk": "Disco",
       "lastSeen": "Visto por última vez",
-      "until": "Se apaga a las"
+      "until": "Se apaga a las",
+      "model": "Modelo",
+      "android": "Android",
+      "battery": "Batería"
     },
     "offIn_one": "se apaga en {{count}} min",
     "offIn_other": "se apaga en {{count}} min",
@@ -1855,6 +1858,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "{{percent}} % de batería",
+      "batteryCharging": "{{percent}} % de batería, cargando",
+      "locked": "Bloqueado",
+      "lockedTip": "La pantalla está bloqueada: los agentes no pueden actuar hasta que desbloquees el teléfono.",
+      "accessibilityOff": "Accesibilidad desactivada",
+      "accessibilityOffTip": "El servicio de accesibilidad de la app AionUi está desactivado: los agentes no pueden leer la pantalla ni tocar. Actívalo en Ajustes → Accesibilidad del teléfono.",
+      "duplicate": "Una tarjeta antigua de este teléfono. El teléfono está vinculado de nuevo con el mismo nombre; esta se puede eliminar.",
+      "removeCompanion": "Se elimina esta tarjeta y se revoca su vinculación: la app AionUi de ese teléfono debe vincularse de nuevo antes de que los agentes puedan usarlo.",
+      "removeViaMac": "Se elimina esta tarjeta. Si el teléfono sigue conectado a tu Mac, volverá a aparecer cuando el asistente para Mac lo notifique."
     }
   },
   "servers": {

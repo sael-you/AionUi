@@ -66,6 +66,7 @@ import {
   devicesOn,
   formatDiskSize,
   isActiveDevice,
+  isOfflineDuplicate,
   knownAddon,
   minutesLeft,
 } from '@/renderer/pages/settings/DevicesSettings/devicesModel';
@@ -361,6 +362,99 @@ describe('Settings → Devices page (TASK-136 U1)', () => {
     expect(brave).toHaveTextContent(`${KEY}.engine.failed|{"error":"sha256 mismatch"}`);
     expect(within(brave).getByTestId('device-install')).toBeInTheDocument();
     status.invoke.mockResolvedValue(null);
+  });
+
+  it('a phone card shows its health and the app version; what blocks agents is flagged (TASK-173)', async () => {
+    api.list.invoke.mockResolvedValue([
+      {
+        ...PIXEL,
+        status: 'on',
+        version: '0.2.0',
+        health: {
+          battery_percent: 82,
+          charging: true,
+          locked: true,
+          accessibility_on: false,
+          android_version: '16',
+          model: 'Pixel 9',
+        },
+      },
+    ]);
+    renderPage();
+    fireEvent.click(railButton('phone'));
+    const card = await cardOf('Pixel 9');
+    expect(card).toHaveTextContent(`${KEY}.version|{"version":"0.2.0"}`);
+    expect(within(card).getByTestId('device-battery')).toHaveTextContent(
+      `${KEY}.health.batteryCharging|{"percent":82}`
+    );
+    expect(within(card).getByTestId('device-locked')).toHaveTextContent(`${KEY}.health.locked`);
+    expect(within(card).getByTestId('device-accessibility-off')).toHaveTextContent(`${KEY}.health.accessibilityOff`);
+    fireEvent.click(screen.getByRole('button', { name: 'Pixel 9' }));
+    const drawer = await screen.findByTestId('device-drawer');
+    expect(drawer).toHaveTextContent(`${KEY}.drawer.model`);
+    expect(drawer).toHaveTextContent(`${KEY}.drawer.android`);
+    expect(drawer).toHaveTextContent('16');
+  });
+
+  it('a healthy phone shows no warning; one that never reported shows no health at all', async () => {
+    api.list.invoke.mockResolvedValue([
+      {
+        ...PIXEL,
+        id: 'a',
+        name: 'Fine',
+        health: { battery_percent: 40, charging: false, locked: false, accessibility_on: true },
+      },
+      { ...PIXEL, id: 'b', name: 'Silent' },
+    ]);
+    renderPage();
+    fireEvent.click(railButton('phone'));
+    const fine = await cardOf('Fine');
+    expect(within(fine).getByTestId('device-battery')).toHaveTextContent(`${KEY}.health.battery|{"percent":40}`);
+    expect(within(fine).queryByTestId('device-locked')).toBeNull();
+    expect(within(fine).queryByTestId('device-accessibility-off')).toBeNull();
+    const silent = await cardOf('Silent');
+    expect(within(silent).queryByTestId('device-battery')).toBeNull();
+    expect(within(silent).queryByTestId('device-accessibility-off')).toBeNull();
+  });
+
+  it('two cards of one phone: the connected one first; the offline one says so, cannot be switched on, and can be removed', async () => {
+    api.remove.invoke.mockResolvedValue({ job_id: 'j9' });
+    const stale = { ...PIXEL, id: 'phone:old:self', status: 'offline' as const, last_seen_at: 1_700_000_000_000 };
+    const live = { ...PIXEL, id: 'phone:new:self', status: 'on' as const, enabled: true };
+    api.list.invoke.mockResolvedValue([stale, live]);
+    expect(devicesOn([stale, live], 'phone', 'active').map((d) => d.id)).toEqual(['phone:new:self', 'phone:old:self']);
+    expect(isOfflineDuplicate(stale, [stale, live])).toBe(true);
+    expect(isOfflineDuplicate(live, [stale, live])).toBe(false);
+    expect(isOfflineDuplicate(stale, [stale])).toBe(false);
+    renderPage();
+    fireEvent.click(railButton('phone'));
+    await waitFor(() => expect(screen.getAllByTestId('library-card')).toHaveLength(2));
+    const [first, second] = screen.getAllByTestId('library-card');
+    expect(first).toHaveAttribute('data-card-id', 'phone:new:self');
+    expect(within(first).getByTestId('library-card-toggle')).toBeInTheDocument();
+    expect(second).toHaveTextContent(`${KEY}.status.offline`);
+    expect(within(second).getByTestId('device-last-seen')).toHaveTextContent('settings.browserDevices.lastSeen');
+    expect(second).toHaveTextContent(`${KEY}.health.duplicate`);
+    expect(within(second).queryByTestId('library-card-toggle')).toBeNull();
+    expect(within(first).queryByTestId('device-last-seen')).toBeNull();
+    fireEvent.click(within(second).getByTestId('library-card-more'));
+    fireEvent.click(await screen.findByText(`${KEY}.remove`));
+    const content = await screen.findByText(`${KEY}.health.removeCompanion`);
+    fireEvent.click(
+      within(content.closest('.arco-modal') as HTMLElement).getByRole('button', { name: `${KEY}.remove` })
+    );
+    await waitFor(() => expect(api.remove.invoke).toHaveBeenCalledWith({ id: 'phone:old:self' }));
+  });
+
+  it('an offline phone that was left on can still be switched off', async () => {
+    api.update.invoke.mockResolvedValue(PIXEL);
+    api.list.invoke.mockResolvedValue([{ ...PIXEL, status: 'offline', enabled: true }]);
+    renderPage();
+    fireEvent.click(railButton('phone'));
+    const card = await cardOf('Pixel 9');
+    fireEvent.click(within(card).getByTestId('library-card-toggle'));
+    await waitFor(() => expect(api.update.invoke).toHaveBeenCalledWith({ id: 'pixel', enabled: false }));
+    expect(within(card).queryByTestId('library-card-more')).toBeInTheDocument();
   });
 
   it('My browsers keeps the extension install, pairing and the approvals log', async () => {

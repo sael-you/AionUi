@@ -51,6 +51,7 @@ import {
   formatDiskSize,
   takesTimeout,
   type DevicesTab,
+  isOfflineDuplicate,
 } from './devicesModel';
 import DevicePairingModal from './phones/DevicePairingModal';
 import { AddonBlock, MacBlock } from './phones/AddonBlocks';
@@ -144,9 +145,13 @@ const WebDevices: React.FC = () => {
     modal.confirm?.({
       title: t(`${KEY}.removeTitle`, { name: device.name }),
       content:
-        device.disk_bytes !== null
-          ? t(`${KEY}.removeFrees`, { size: formatDiskSize(device.disk_bytes, i18n.language) })
-          : t(`${KEY}.removeContent`),
+        device.kind === 'phone'
+          ? // The companion's own card (`…:self`): its pairing is revoked. A phone seen through the Mac helper
+            // is only dropped from the list and returns with the helper's next report if still attached.
+            t(device.id.endsWith(':self') ? `${KEY}.health.removeCompanion` : `${KEY}.health.removeViaMac`)
+          : device.disk_bytes !== null
+            ? t(`${KEY}.removeFrees`, { size: formatDiskSize(device.disk_bytes, i18n.language) })
+            : t(`${KEY}.removeContent`),
       okText: t(`${KEY}.remove`),
       okButtonProps: { status: 'danger' },
       onOk: async () => {
@@ -172,6 +177,7 @@ const WebDevices: React.FC = () => {
         key={device.id}
         device={device}
         engine={device.kind === 'server_browser' ? engineOf(device) : undefined}
+        offlineDuplicate={isOfflineDuplicate(device, devices)}
         now={now}
         saving={saving === device.id}
         onToggle={(target, enabled) => void toggle(target, enabled)}

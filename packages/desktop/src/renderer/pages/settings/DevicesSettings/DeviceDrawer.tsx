@@ -86,6 +86,18 @@ const DeviceDrawer: React.FC<DeviceDrawerProps> = ({
                     ? { label: t(`${KEY}.drawer.disk`), value: formatDiskSize(device.disk_bytes, i18n.language) }
                     : null,
                   device.last_seen_at ? { label: t(`${KEY}.drawer.lastSeen`), value: when(device.last_seen_at) } : null,
+                  device.health?.model ? { label: t(`${KEY}.drawer.model`), value: device.health.model } : null,
+                  device.health?.android_version
+                    ? { label: t(`${KEY}.drawer.android`), value: device.health.android_version }
+                    : null,
+                  typeof device.health?.battery_percent === 'number'
+                    ? {
+                        label: t(`${KEY}.drawer.battery`),
+                        value: t(device.health.charging ? `${KEY}.health.batteryCharging` : `${KEY}.health.battery`, {
+                          percent: device.health.battery_percent,
+                        }),
+                      }
+                    : null,
                   device.enabled && device.enabled_until
                     ? { label: t(`${KEY}.drawer.until`), value: when(device.enabled_until) }
                     : null,

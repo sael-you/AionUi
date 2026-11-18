@@ -1730,7 +1730,10 @@
       "version": "版本",
       "disk": "磁碟",
       "lastSeen": "最後上線",
-      "until": "關閉時間"
+      "until": "關閉時間",
+      "model": "型號",
+      "android": "Android",
+      "battery": "電量"
     },
     "offIn_one": "{{count}} 分鐘後關閉",
     "offIn_other": "{{count}} 分鐘後關閉",
@@ -1857,6 +1860,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "電量 {{percent}}%",
+      "batteryCharging": "電量 {{percent}}%，充電中",
+      "locked": "已鎖定",
+      "lockedTip": "螢幕已鎖定：解鎖手機之前智慧代理無法操作。",
+      "accessibilityOff": "無障礙已關閉",
+      "accessibilityOffTip": "AionUi App 的無障礙服務已關閉：智慧代理無法讀取螢幕或點按。請在手機的 設定 → 無障礙 中開啟。",
+      "duplicate": "這是這支手機的舊卡片。手機已用同一名稱重新配對；此卡片可以移除。",
+      "removeCompanion": "將移除此卡片並撤銷其配對：該手機上的 AionUi App 需要重新配對，智慧代理才能再次使用它。",
+      "removeViaMac": "將移除此卡片。如果手機仍連接著你的 Mac，Mac 輔助程式下次回報時它會重新出現。"
     }
   },
   "servers": {

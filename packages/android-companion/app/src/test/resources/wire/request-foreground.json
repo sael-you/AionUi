@@ -1,1 +1,1 @@
-{"type":"request","id":7,"device":"self","verb":"foreground","args":{}}
+{ "type": "request", "id": 7, "device": "self", "verb": "foreground", "args": {} }

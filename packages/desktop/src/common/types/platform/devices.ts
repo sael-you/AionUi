@@ -53,6 +53,20 @@ export type Device = {
   /** The install / remove job while one runs. */
   job_id: string | null;
   last_seen_at: number | null;
+  /** Phones: what the phone last reported about itself (TASK-173); absent when it never did. */
+  health?: DeviceHealth;
+};
+
+export type DeviceHealth = {
+  /** 0–100. */
+  battery_percent?: number | null;
+  charging?: boolean | null;
+  /** The screen is locked: agents cannot act until it is unlocked. */
+  locked: boolean;
+  /** The companion app's accessibility service is on (needed to read and tap). */
+  accessibility_on: boolean;
+  android_version?: string | null;
+  model?: string | null;
 };
 
 export type DeviceUpdate = { enabled: boolean; timeout_minutes?: DeviceTimeout };

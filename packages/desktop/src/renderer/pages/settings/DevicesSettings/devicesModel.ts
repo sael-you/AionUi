@@ -26,7 +26,22 @@ export const isActiveDevice = (device: Device): boolean =>
 
 /** Devices of one category on one tab; Library shows everything of the category (installable or installed). */
 export const devicesOn = (devices: readonly Device[], kind: DeviceKind, tab: DevicesTab): Device[] =>
-  devices.filter((device) => device.kind === kind && (tab === 'library' || isActiveDevice(device)));
+  devices
+    .filter((device) => device.kind === kind && (tab === 'library' || isActiveDevice(device)))
+    // Connected first (stable otherwise): an offline twin of a phone never sits above the live one.
+    .toSorted((a, b) => Number(isUnreachable(a)) - Number(isUnreachable(b)));
+
+/** Offline: paired once, not connected now. */
+export const isUnreachable = (device: Device): boolean => device.status === 'offline';
+
+/**
+ * An offline phone whose name another phone also has: the stale card of a phone
+ * that was paired again. It can be removed (TASK-173).
+ */
+export const isOfflineDuplicate = (device: Device, devices: readonly Device[]): boolean =>
+  device.kind === 'phone' &&
+  isUnreachable(device) &&
+  devices.some((other) => other.id !== device.id && other.kind === 'phone' && other.name === device.name);
 
 /** Rail counts for a tab. */
 export const categoryCounts = (devices: readonly Device[], tab: DevicesTab): Record<DeviceKind, number> => {

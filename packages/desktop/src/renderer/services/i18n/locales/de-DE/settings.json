@@ -1728,7 +1728,10 @@
       "version": "Version",
       "disk": "Speicher",
       "lastSeen": "Zuletzt gesehen",
-      "until": "Schaltet sich aus um"
+      "until": "Schaltet sich aus um",
+      "model": "Modell",
+      "android": "Android",
+      "battery": "Akku"
     },
     "offIn_one": "aus in {{count}} Min.",
     "offIn_other": "aus in {{count}} Min.",
@@ -1855,6 +1858,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "{{percent}} % Akku",
+      "batteryCharging": "{{percent}} % Akku, lädt",
+      "locked": "Gesperrt",
+      "lockedTip": "Der Bildschirm ist gesperrt: Agenten können erst handeln, wenn du das Telefon entsperrst.",
+      "accessibilityOff": "Bedienungshilfen aus",
+      "accessibilityOffTip": "Der Bedienungshilfen-Dienst der AionUi-App ist aus: Agenten können den Bildschirm weder lesen noch tippen. Schalte ihn unter Einstellungen → Bedienungshilfen auf dem Telefon ein.",
+      "duplicate": "Eine ältere Karte dieses Telefons. Das Telefon ist unter demselben Namen neu gekoppelt; diese kann entfernt werden.",
+      "removeCompanion": "Diese Karte wird entfernt und ihre Kopplung widerrufen: Die AionUi-App auf diesem Telefon muss neu gekoppelt werden, bevor Agenten es nutzen können.",
+      "removeViaMac": "Diese Karte wird entfernt. Ist das Telefon noch mit deinem Mac verbunden, erscheint es wieder, sobald der Mac-Helfer es meldet."
     }
   },
   "servers": {

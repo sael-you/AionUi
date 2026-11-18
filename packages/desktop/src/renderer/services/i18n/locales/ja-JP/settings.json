@@ -1730,7 +1730,10 @@
       "version": "バージョン",
       "disk": "ディスク",
       "lastSeen": "最終接続",
-      "until": "オフになる時刻"
+      "until": "オフになる時刻",
+      "model": "機種",
+      "android": "Android",
+      "battery": "バッテリー"
     },
     "offIn_one": "{{count}} 分後にオフ",
     "offIn_other": "{{count}} 分後にオフ",
@@ -1857,6 +1860,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "バッテリー {{percent}}%",
+      "batteryCharging": "バッテリー {{percent}}%、充電中",
+      "locked": "ロック中",
+      "lockedTip": "画面がロックされています。ロックを解除するまでエージェントは操作できません。",
+      "accessibilityOff": "ユーザー補助オフ",
+      "accessibilityOffTip": "AionUi アプリのユーザー補助サービスがオフです。エージェントは画面の読み取りもタップもできません。スマートフォンの 設定 → ユーザー補助 でオンにしてください。",
+      "duplicate": "このスマートフォンの古いカードです。同じ名前で再ペアリングされているため、こちらは削除できます。",
+      "removeCompanion": "このカードを削除し、ペアリングを取り消します。エージェントが使えるようにするには、そのスマートフォンの AionUi アプリで再度ペアリングが必要です。",
+      "removeViaMac": "このカードを削除します。スマートフォンがまだ Mac に接続されていれば、Mac ヘルパーの次回の報告で再び表示されます。"
     }
   },
   "servers": {

@@ -1728,7 +1728,10 @@
       "version": "Version",
       "disk": "Disque",
       "lastSeen": "Vu pour la dernière fois",
-      "until": "S'éteint à"
+      "until": "S'éteint à",
+      "model": "Modèle",
+      "android": "Android",
+      "battery": "Batterie"
     },
     "offIn_one": "s’éteint dans {{count}} min",
     "offIn_other": "s’éteint dans {{count}} min",
@@ -1855,6 +1858,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "{{percent}} % de batterie",
+      "batteryCharging": "{{percent}} % de batterie, en charge",
+      "locked": "Verrouillé",
+      "lockedTip": "L'écran est verrouillé : les agents ne peuvent pas agir tant que vous n'avez pas déverrouillé le téléphone.",
+      "accessibilityOff": "Accessibilité désactivée",
+      "accessibilityOffTip": "Le service d'accessibilité de l'application AionUi est désactivé : les agents ne peuvent ni lire l'écran ni appuyer. Activez-le dans Paramètres → Accessibilité du téléphone.",
+      "duplicate": "Une ancienne carte de ce téléphone. Le téléphone est de nouveau associé sous le même nom ; celle-ci peut être supprimée.",
+      "removeCompanion": "Cette carte est supprimée et son association révoquée : l'application AionUi de ce téléphone doit être associée de nouveau avant que les agents puissent l'utiliser.",
+      "removeViaMac": "Cette carte est supprimée. Si le téléphone est toujours relié à votre Mac, elle revient dès que l'assistant Mac le signale."
     }
   },
   "servers": {

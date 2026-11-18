@@ -1,1 +1,6 @@
-{"type":"response","id":9,"ok":true,"result":{"format":"png","width":2,"height":3,"data_base64":"AQID"}}
+{
+  "type": "response",
+  "id": 9,
+  "ok": true,
+  "result": { "format": "png", "width": 2, "height": 3, "data_base64": "AQID" }
+}

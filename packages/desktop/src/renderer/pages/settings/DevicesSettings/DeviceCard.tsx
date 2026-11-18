@@ -18,7 +18,8 @@ import type { BrowserEngineStatus } from '@/common/types/platform/serverBrowser'
 import LibraryCard, {
   type LibraryCardMenuItem,
 } from '@/renderer/components/settings/SettingsModal/library/LibraryCard';
-import { descriptionKey, formatDiskSize, isBusy, minutesLeft, STATUS_COLORS } from './devicesModel';
+import { formatDateTime } from '@/renderer/services/i18n/format';
+import { descriptionKey, formatDiskSize, isBusy, isUnreachable, minutesLeft, STATUS_COLORS } from './devicesModel';
 import { JOB_LOST, useDeviceJob } from './useDevices';
 
 const KEY = 'settings.devices';
@@ -90,8 +91,42 @@ export const EngineChips: React.FC<{ engine: BrowserEngineStatus }> = ({ engine 
   );
 };
 
+/** Battery, and what stops agents right now: a locked screen, accessibility off (TASK-173). */
+export const HealthChips: React.FC<{ device: Device }> = ({ device }) => {
+  const { t } = useTranslation();
+  const health = device.health;
+  if (!health || isUnreachable(device)) return null;
+  return (
+    <>
+      {typeof health.battery_percent === 'number' ? (
+        <span data-testid='device-battery'>
+          {t(health.charging ? `${KEY}.health.batteryCharging` : `${KEY}.health.battery`, {
+            percent: health.battery_percent,
+          })}
+        </span>
+      ) : null}
+      {health.locked ? (
+        <Tooltip content={t(`${KEY}.health.lockedTip`)}>
+          <Tag size='small' color='orange' tabIndex={0} data-testid='device-locked'>
+            {t(`${KEY}.health.locked`)}
+          </Tag>
+        </Tooltip>
+      ) : null}
+      {health.accessibility_on ? null : (
+        <Tooltip content={t(`${KEY}.health.accessibilityOffTip`)}>
+          <Tag size='small' color='red' tabIndex={0} data-testid='device-accessibility-off'>
+            {t(`${KEY}.health.accessibilityOff`)}
+          </Tag>
+        </Tooltip>
+      )}
+    </>
+  );
+};
+
 export type DeviceCardProps = {
   device: Device;
+  /** An offline card of a phone that is also paired under the same name: offer Remove. */
+  offlineDuplicate?: boolean;
   /** Server browsers: the engine's status from `GET /api/browser/status`. */
   engine?: BrowserEngineStatus;
   now: number;
@@ -105,6 +140,7 @@ export type DeviceCardProps = {
 
 const DeviceCard: React.FC<DeviceCardProps> = ({
   device,
+  offlineDuplicate,
   engine,
   now,
   saving,
@@ -118,7 +154,14 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
   const busy = isBusy(device);
   const description = descriptionKey(device);
   const left = device.enabled ? minutesLeft(device.enabled_until, now) : null;
-  const canToggle = device.installed && device.available === 'now' && device.status !== 'needs_pairing' && !busy;
+  const offline = isUnreachable(device);
+  // An offline device cannot be switched ON (nothing would reach it); one left on can still be switched off.
+  const canToggle =
+    device.installed &&
+    device.available === 'now' &&
+    device.status !== 'needs_pairing' &&
+    !busy &&
+    (!offline || device.enabled);
 
   const chips = (
     <>
@@ -128,6 +171,14 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
         <span>{t(`${KEY}.disk`, { size: formatDiskSize(device.disk_bytes, i18n.language) })}</span>
       ) : null}
       {left !== null ? <span data-testid='device-off-in'>{t(`${KEY}.offIn`, { count: left })}</span> : null}
+      {offline && device.last_seen_at ? (
+        <span data-testid='device-last-seen'>
+          {t('settings.browserDevices.lastSeen', {
+            time: formatDateTime(device.last_seen_at, i18n.language, { dateStyle: 'medium', timeStyle: 'short' }),
+          })}
+        </span>
+      ) : null}
+      {device.kind === 'phone' ? <HealthChips device={device} /> : null}
       {engine ? <EngineChips engine={engine} /> : null}
     </>
   );
@@ -137,7 +188,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
     // Download the engine's current version over the installed one.
     menu.push({ key: 'update', label: t(`${KEY}.engine.update`), disabled: busy, onClick: () => onInstall(device) });
   }
-  if (device.installed && (device.kind === 'server_browser' || device.kind === 'addon')) {
+  if (offlineDuplicate || (device.installed && (device.kind === 'server_browser' || device.kind === 'addon'))) {
     menu.push({
       key: 'remove',
       label: t(`${KEY}.remove`),
@@ -166,9 +217,11 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
       description={
         engine?.error && !busy
           ? t(`${KEY}.engine.failed`, { error: engine.error })
-          : description
-            ? t(description)
-            : undefined
+          : offlineDuplicate
+            ? t(`${KEY}.health.duplicate`)
+            : description
+              ? t(description)
+              : undefined
       }
       chips={chips}
       action={action}

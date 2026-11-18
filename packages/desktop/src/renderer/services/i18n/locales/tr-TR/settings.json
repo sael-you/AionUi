@@ -1728,7 +1728,10 @@
       "version": "Sürüm",
       "disk": "Disk",
       "lastSeen": "Son görülme",
-      "until": "Kapanma zamanı"
+      "until": "Kapanma zamanı",
+      "model": "Model",
+      "android": "Android",
+      "battery": "Pil"
     },
     "offIn_one": "{{count}} dk sonra kapanır",
     "offIn_other": "{{count}} dk sonra kapanır",
@@ -1855,6 +1858,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "%{{percent}} pil",
+      "batteryCharging": "%{{percent}} pil, şarj oluyor",
+      "locked": "Kilitli",
+      "lockedTip": "Ekran kilitli: telefonun kilidini açana kadar ajanlar işlem yapamaz.",
+      "accessibilityOff": "Erişilebilirlik kapalı",
+      "accessibilityOffTip": "AionUi uygulamasının erişilebilirlik hizmeti kapalı: ajanlar ekranı okuyamaz veya dokunamaz. Telefonda Ayarlar → Erişilebilirlik'ten açın.",
+      "duplicate": "Bu telefonun eski bir kartı. Telefon aynı adla yeniden eşlendi; bu kart kaldırılabilir.",
+      "removeCompanion": "Bu kart kaldırılır ve eşlemesi iptal edilir: ajanların kullanabilmesi için o telefondaki AionUi uygulamasının yeniden eşlenmesi gerekir.",
+      "removeViaMac": "Bu kart kaldırılır. Telefon hâlâ Mac'inize bağlıysa, Mac yardımcısı onu bir sonraki bildirdiğinde geri gelir."
     }
   },
   "servers": {

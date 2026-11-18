@@ -1728,7 +1728,10 @@
       "version": "Version",
       "disk": "Disk",
       "lastSeen": "Last seen",
-      "until": "Switches off at"
+      "until": "Switches off at",
+      "model": "Model",
+      "android": "Android",
+      "battery": "Battery"
     },
     "offIn_one": "off in {{count}} min",
     "offIn_other": "off in {{count}} min",
@@ -1855,6 +1858,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "{{percent}}% battery",
+      "batteryCharging": "{{percent}}% battery, charging",
+      "locked": "Locked",
+      "lockedTip": "The screen is locked: agents cannot act until you unlock the phone.",
+      "accessibilityOff": "Accessibility off",
+      "accessibilityOffTip": "The AionUi app's accessibility service is off: agents cannot read the screen or tap. Turn it on in the phone's Settings → Accessibility.",
+      "duplicate": "An older card of this phone. The phone is paired again under the same name; this one can be removed.",
+      "removeCompanion": "This card is removed and its pairing is revoked: the AionUi app on that phone has to pair again before agents can use it.",
+      "removeViaMac": "This card is removed. If the phone is still connected to your Mac, it comes back the next time the Mac helper reports it."
     }
   },
   "servers": {

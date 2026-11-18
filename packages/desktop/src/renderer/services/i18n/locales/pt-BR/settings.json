@@ -1731,7 +1731,10 @@
       "version": "Versão",
       "disk": "Disco",
       "lastSeen": "Visto por último",
-      "until": "Desliga às"
+      "until": "Desliga às",
+      "model": "Modelo",
+      "android": "Android",
+      "battery": "Bateria"
     },
     "offIn_one": "desliga em {{count}} min",
     "offIn_other": "desliga em {{count}} min",
@@ -1858,6 +1861,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "{{percent}}% de bateria",
+      "batteryCharging": "{{percent}}% de bateria, carregando",
+      "locked": "Bloqueado",
+      "lockedTip": "A tela está bloqueada: os agentes não podem agir até você desbloquear o celular.",
+      "accessibilityOff": "Acessibilidade desligada",
+      "accessibilityOffTip": "O serviço de acessibilidade do app AionUi está desligado: os agentes não conseguem ler a tela nem tocar. Ligue-o em Configurações → Acessibilidade do celular.",
+      "duplicate": "Um cartão antigo deste celular. O celular foi pareado de novo com o mesmo nome; este pode ser removido.",
+      "removeCompanion": "Este cartão é removido e o pareamento é revogado: o app AionUi nesse celular precisa parear de novo antes que os agentes possam usá-lo.",
+      "removeViaMac": "Este cartão é removido. Se o celular ainda estiver conectado ao seu Mac, ele volta quando o auxiliar para Mac o informar."
     }
   },
   "servers": {

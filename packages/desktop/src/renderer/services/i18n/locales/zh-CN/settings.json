@@ -1729,7 +1729,10 @@
       "version": "版本",
       "disk": "磁盘",
       "lastSeen": "最后在线",
-      "until": "关闭时间"
+      "until": "关闭时间",
+      "model": "型号",
+      "android": "Android",
+      "battery": "电量"
     },
     "offIn_one": "{{count}} 分钟后关闭",
     "offIn_other": "{{count}} 分钟后关闭",
@@ -1856,6 +1859,17 @@
         "headless-shell": "Chrome headless shell",
         "camoufox": "Camoufox"
       }
+    },
+    "health": {
+      "battery": "电量 {{percent}}%",
+      "batteryCharging": "电量 {{percent}}%，正在充电",
+      "locked": "已锁定",
+      "lockedTip": "屏幕已锁定：解锁手机之前智能体无法操作。",
+      "accessibilityOff": "无障碍已关闭",
+      "accessibilityOffTip": "AionUi 应用的无障碍服务已关闭：智能体无法读取屏幕或点按。请在手机的 设置 → 无障碍 中开启。",
+      "duplicate": "这是这台手机的旧卡片。手机已用同一名称重新配对；此卡片可以移除。",
+      "removeCompanion": "将移除此卡片并撤销其配对：该手机上的 AionUi 应用需要重新配对，智能体才能再次使用它。",
+      "removeViaMac": "将移除此卡片。如果手机仍连接着你的 Mac，Mac 助手下次上报时它会重新出现。"
     }
   },
   "servers": {
