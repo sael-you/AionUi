@@ -24,6 +24,8 @@ const ROUTE_MODULE_MAP: ReadonlyArray<readonly [prefix: string, tag: FeedbackMod
   ['/board', 'workspace-preview'],
   // A project's Claude memory review (C29) belongs to the same project surface.
   ['/memory', 'workspace-preview'],
+  // The project page (C42: overview, kit, storage, usage) is the same project surface.
+  ['/project', 'workspace-preview'],
   ['/settings/memory', 'workspace-preview'],
   ['/assistants', 'assistant-preset'],
   ['/settings/agent', 'agent-detection'],
