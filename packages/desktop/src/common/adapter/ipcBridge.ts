@@ -64,10 +64,12 @@ import type {
 } from '../types/platform/serverBrowser';
 import type {
   Device,
+  DeviceAccessMode,
   DeviceApproval,
   DeviceApprovalDecision,
   DeviceApprovalEvent,
   DeviceAuditPage,
+  DeviceFullDuration,
   DeviceJob,
   DevicePairingCode,
   DevicePairingKind,
@@ -1136,9 +1138,27 @@ export const devices = {
   job: httpGet<DeviceJob, { job_id: string }>((p) => `/api/devices/jobs/${encodeURIComponent(p.job_id)}`),
   createPairingCode: httpPost<DevicePairingCode, { kind: DevicePairingKind }>('/api/devices/pairing-codes'),
   listApprovals: httpGet<DeviceApproval[], void>('/api/devices/approvals'),
-  decideApproval: httpPost<void, { id: string; decision: DeviceApprovalDecision }>(
+  /** `always` (with allow): the approval's app joins the device's trusted apps. */
+  decideApproval: httpPost<void, { id: string; decision: DeviceApprovalDecision; always?: boolean }>(
     (p) => `/api/devices/approvals/${encodeURIComponent(p.id)}`,
-    (p) => ({ decision: p.decision })
+    (p) => (p.always ? { decision: p.decision, always: true } : { decision: p.decision })
+  ),
+  /** Access mode (TASK-175). `full_duration` is required for `full` and refused otherwise. */
+  setAccess: httpPut<
+    Device,
+    { id: string; mode: DeviceAccessMode; full_duration?: DeviceFullDuration; include_sensitive?: boolean }
+  >(
+    (p) => `/api/devices/${encodeURIComponent(p.id)}/access`,
+    (p) => ({
+      mode: p.mode,
+      ...(p.mode === 'full' && p.full_duration ? { full_duration: p.full_duration } : {}),
+      ...(p.include_sensitive === undefined ? {} : { include_sensitive: p.include_sensitive }),
+    })
+  ),
+  /** Replaces the trusted apps (≤ 100 ids). */
+  setTrustedApps: httpPut<Device, { id: string; apps: string[] }>(
+    (p) => `/api/devices/${encodeURIComponent(p.id)}/access/trusted-apps`,
+    (p) => ({ apps: p.apps })
   ),
   audit: httpGet<DeviceAuditPage, { id: string; cursor?: string | null; limit?: number }>((p) => {
     const query = new URLSearchParams();

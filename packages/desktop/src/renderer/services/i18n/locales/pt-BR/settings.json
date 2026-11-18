@@ -1787,7 +1787,10 @@
       "allowedFor_one": "Permitido por {{count}} min.",
       "allowedFor_other": "Permitido por {{count}} min.",
       "grantHint_one": "Permitir cobre ler e agir neste dispositivo e app por {{count}} min; depois os agentes perguntam de novo.",
-      "grantHint_other": "Permitir cobre ler e agir neste dispositivo e app por {{count}} min; depois os agentes perguntam de novo."
+      "grantHint_other": "Permitir cobre ler e agir neste dispositivo e app por {{count}} min; depois os agentes perguntam de novo.",
+      "always": "Sempre permitir este app",
+      "alwaysDone": "“{{app}}” agora é um app confiável.",
+      "alwaysSensitive": "Este é um app de banco ou de senhas: ele ainda vai perguntar, a menos que você os inclua no modo de acesso do dispositivo."
     },
     "pair": {
       "title": {
@@ -1872,6 +1875,41 @@
       "duplicate": "Um cartão antigo deste celular. O celular foi pareado de novo com o mesmo nome; este pode ser removido.",
       "removeCompanion": "Este cartão é removido e o pareamento é revogado: o app AionUi nesse celular precisa parear de novo antes que os agentes possam usá-lo.",
       "removeViaMac": "Este cartão é removido. Se o celular ainda estiver conectado ao seu Mac, ele volta quando o auxiliar para Mac o informar."
+    },
+    "accessMode": {
+      "title": "Modo de acesso",
+      "label": "Modo de acesso de {{name}}",
+      "modes": {
+        "ask": "Perguntar",
+        "trusted": "Apps confiáveis",
+        "full": "Acesso total"
+      },
+      "hints": {
+        "ask": "Os agentes perguntam antes de ações sensíveis.",
+        "trusted": "Os agentes não perguntam mais dentro dos apps da sua lista. Todo o resto ainda pergunta.",
+        "full": "Os agentes não perguntam nada até isto terminar. Desligar o dispositivo encerra na hora."
+      },
+      "fullTitle": "Dar aos agentes acesso total a “{{name}}”?",
+      "fullConfirm": "Dar acesso total",
+      "fullWarning": "Os agentes vão agir em todos os apps sem perguntar antes, e o dispositivo fica ligado o tempo todo. Use só enquanto puder acompanhar e pelo menor tempo possível.",
+      "fullDuration": "Por quanto tempo",
+      "durations": {
+        "1h": "1 hora",
+        "8h": "8 horas",
+        "until_off": "Até eu desligar"
+      },
+      "includeSensitive": "Também apps de banco e de senhas",
+      "sensitiveOffHint": "Apps de banco e de senhas ficam de fora: neles os agentes ainda perguntam.",
+      "sensitiveOnHint": "Apps de banco e de senhas estão incluídos: neles os agentes também não vão perguntar.",
+      "fullChipUntilOff": "Acesso total · até você desligar",
+      "trustedEmpty": "Nenhum app confiável ainda.",
+      "trustedAdd": "Adicione um app das aprovações recentes ou digite o id",
+      "trustedAddButton": "Adicionar",
+      "trustedHint": "Os apps que você permitiu recentemente são sugeridos. Um id de app é como com.example.app.",
+      "fullChip_one": "Acesso total · restam {{count}} min",
+      "trustedTitle_one": "Apps confiáveis ({{count}})",
+      "fullChip_other": "Acesso total · restam {{count}} min",
+      "trustedTitle_other": "Apps confiáveis ({{count}})"
     }
   },
   "servers": {

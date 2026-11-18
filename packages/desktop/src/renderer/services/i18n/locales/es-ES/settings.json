@@ -1784,7 +1784,10 @@
       "allowedFor_one": "Permitido durante {{count}} min.",
       "allowedFor_other": "Permitido durante {{count}} min.",
       "grantHint_one": "Permitir cubre leer y actuar en este dispositivo y esta app durante {{count}} min; después los agentes vuelven a preguntar.",
-      "grantHint_other": "Permitir cubre leer y actuar en este dispositivo y esta app durante {{count}} min; después los agentes vuelven a preguntar."
+      "grantHint_other": "Permitir cubre leer y actuar en este dispositivo y esta app durante {{count}} min; después los agentes vuelven a preguntar.",
+      "always": "Permitir siempre esta app",
+      "alwaysDone": "«{{app}}» ya es una app de confianza.",
+      "alwaysSensitive": "Es una app de banca o contraseñas: seguirá preguntando salvo que las incluyas en el modo de acceso del dispositivo."
     },
     "pair": {
       "title": {
@@ -1869,6 +1872,41 @@
       "duplicate": "Una tarjeta antigua de este teléfono. El teléfono está vinculado de nuevo con el mismo nombre; esta se puede eliminar.",
       "removeCompanion": "Se elimina esta tarjeta y se revoca su vinculación: la app AionUi de ese teléfono debe vincularse de nuevo antes de que los agentes puedan usarlo.",
       "removeViaMac": "Se elimina esta tarjeta. Si el teléfono sigue conectado a tu Mac, volverá a aparecer cuando el asistente para Mac lo notifique."
+    },
+    "accessMode": {
+      "title": "Modo de acceso",
+      "label": "Modo de acceso de {{name}}",
+      "modes": {
+        "ask": "Preguntar",
+        "trusted": "Apps de confianza",
+        "full": "Acceso total"
+      },
+      "hints": {
+        "ask": "Los agentes te preguntan antes de las acciones delicadas.",
+        "trusted": "Los agentes ya no preguntan dentro de las apps de tu lista. Todo lo demás sigue preguntando.",
+        "full": "Los agentes no preguntan nada hasta que termine. Apagar el dispositivo lo termina al instante."
+      },
+      "fullTitle": "¿Dar a los agentes acceso total a «{{name}}»?",
+      "fullConfirm": "Dar acceso total",
+      "fullWarning": "Los agentes actuarán en todas las apps sin preguntarte antes, y el dispositivo seguirá encendido todo ese tiempo. Úsalo solo mientras puedas mirar y el menor tiempo posible.",
+      "fullDuration": "Durante cuánto tiempo",
+      "durations": {
+        "1h": "1 hora",
+        "8h": "8 horas",
+        "until_off": "Hasta que lo apague"
+      },
+      "includeSensitive": "También apps de banca y contraseñas",
+      "sensitiveOffHint": "Las apps de banca y contraseñas quedan fuera: ahí los agentes siguen preguntando.",
+      "sensitiveOnHint": "Las apps de banca y contraseñas están incluidas: ahí los agentes tampoco preguntarán.",
+      "fullChipUntilOff": "Acceso total · hasta que lo apagues",
+      "trustedEmpty": "Aún no hay apps de confianza.",
+      "trustedAdd": "Añade una app de aprobaciones recientes o escribe su id",
+      "trustedAddButton": "Añadir",
+      "trustedHint": "Se ofrecen las apps que permitiste hace poco. Un id de app es como com.example.app.",
+      "fullChip_one": "Acceso total · quedan {{count}} min",
+      "trustedTitle_one": "Apps de confianza ({{count}})",
+      "fullChip_other": "Acceso total · quedan {{count}} min",
+      "trustedTitle_other": "Apps de confianza ({{count}})"
     }
   },
   "servers": {

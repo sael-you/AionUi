@@ -1784,7 +1784,10 @@
       "allowedFor_one": "Allowed for {{count}} min.",
       "allowedFor_other": "Allowed for {{count}} min.",
       "grantHint_one": "Allowing covers reading and acting on this device and app for {{count}} min; then agents ask again.",
-      "grantHint_other": "Allowing covers reading and acting on this device and app for {{count}} min; then agents ask again."
+      "grantHint_other": "Allowing covers reading and acting on this device and app for {{count}} min; then agents ask again.",
+      "always": "Always allow this app",
+      "alwaysDone": "“{{app}}” is now a trusted app.",
+      "alwaysSensitive": "This is a banking or password app: it will still ask unless you include those in the device's access mode."
     },
     "pair": {
       "title": {
@@ -1869,6 +1872,41 @@
       "duplicate": "An older card of this phone. The phone is paired again under the same name; this one can be removed.",
       "removeCompanion": "This card is removed and its pairing is revoked: the AionUi app on that phone has to pair again before agents can use it.",
       "removeViaMac": "This card is removed. If the phone is still connected to your Mac, it comes back the next time the Mac helper reports it."
+    },
+    "accessMode": {
+      "title": "Access mode",
+      "label": "Access mode of {{name}}",
+      "modes": {
+        "ask": "Ask",
+        "trusted": "Trusted apps",
+        "full": "Full access"
+      },
+      "hints": {
+        "ask": "Agents ask you before sensitive actions.",
+        "trusted": "Agents no longer ask inside the apps on your list. Everything else still asks.",
+        "full": "Agents do not ask for anything until this ends. Switching the device off ends it at once."
+      },
+      "fullTitle": "Give agents full access to “{{name}}”?",
+      "fullConfirm": "Give full access",
+      "fullWarning": "Agents will act in every app without asking you first, and the device stays switched on for the whole time. Use it only while you can watch, and for as short as you need.",
+      "fullDuration": "For how long",
+      "durations": {
+        "1h": "1 hour",
+        "8h": "8 hours",
+        "until_off": "Until I turn it off"
+      },
+      "includeSensitive": "Also banking and password apps",
+      "sensitiveOffHint": "Banking and password apps are left out: agents still ask there.",
+      "sensitiveOnHint": "Banking and password apps are included: agents will not ask there either.",
+      "fullChipUntilOff": "Full access · until you turn it off",
+      "trustedEmpty": "No trusted apps yet.",
+      "trustedAdd": "Add an app from recent approvals, or type its id",
+      "trustedAddButton": "Add",
+      "trustedHint": "Apps you allowed recently are offered. An app id looks like com.example.app.",
+      "fullChip_one": "Full access · {{count}} min left",
+      "trustedTitle_one": "Trusted apps ({{count}})",
+      "fullChip_other": "Full access · {{count}} min left",
+      "trustedTitle_other": "Trusted apps ({{count}})"
     }
   },
   "servers": {

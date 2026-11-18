@@ -53,6 +53,7 @@ import {
   type DevicesTab,
   isOfflineDuplicate,
 } from './devicesModel';
+import { AccessModeBlock } from './phones/AccessMode';
 import DevicePairingModal from './phones/DevicePairingModal';
 import { AddonBlock, MacBlock } from './phones/AddonBlocks';
 import { DeviceAccessBlock, DeviceAuditBlock, DeviceRoutesBlock, DEFAULT_TIMEOUT } from './phones/PhoneBlocks';
@@ -185,6 +186,7 @@ const WebDevices: React.FC = () => {
         onRemove={remove}
         onOpen={(target) => setOpenId(target.id)}
         onJobFinished={() => void reload()}
+        onChanged={() => void reload()}
       />
     ));
 
@@ -319,6 +321,7 @@ const WebDevices: React.FC = () => {
         {opened && opened.available === 'now' && (opened.kind === 'phone' || opened.kind === 'mac') ? (
           <>
             <DeviceAccessBlock device={opened} onChanged={() => void reload()} />
+            <AccessModeBlock device={opened} now={now} onChanged={() => void reload()} />
             <DeviceRoutesBlock device={opened} onChanged={() => void reload()} onPair={setPairingKind} />
             <DeviceAuditBlock key={opened.id} device={opened} />
           </>

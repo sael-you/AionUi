@@ -1784,7 +1784,10 @@
       "allowedFor_one": "Für {{count}} Min. erlaubt.",
       "allowedFor_other": "Für {{count}} Min. erlaubt.",
       "grantHint_one": "Erlauben gilt {{count}} Min. lang für Lesen und Handeln auf diesem Gerät und in dieser App; danach fragen Agenten erneut.",
-      "grantHint_other": "Erlauben gilt {{count}} Min. lang für Lesen und Handeln auf diesem Gerät und in dieser App; danach fragen Agenten erneut."
+      "grantHint_other": "Erlauben gilt {{count}} Min. lang für Lesen und Handeln auf diesem Gerät und in dieser App; danach fragen Agenten erneut.",
+      "always": "Diese App immer erlauben",
+      "alwaysDone": "„{{app}}“ ist jetzt eine vertraute App.",
+      "alwaysSensitive": "Dies ist eine Banking- oder Passwort-App: Sie fragt weiterhin, außer du schließt solche Apps im Zugriffsmodus des Geräts ein."
     },
     "pair": {
       "title": {
@@ -1869,6 +1872,41 @@
       "duplicate": "Eine ältere Karte dieses Telefons. Das Telefon ist unter demselben Namen neu gekoppelt; diese kann entfernt werden.",
       "removeCompanion": "Diese Karte wird entfernt und ihre Kopplung widerrufen: Die AionUi-App auf diesem Telefon muss neu gekoppelt werden, bevor Agenten es nutzen können.",
       "removeViaMac": "Diese Karte wird entfernt. Ist das Telefon noch mit deinem Mac verbunden, erscheint es wieder, sobald der Mac-Helfer es meldet."
+    },
+    "accessMode": {
+      "title": "Zugriffsmodus",
+      "label": "Zugriffsmodus von {{name}}",
+      "modes": {
+        "ask": "Fragen",
+        "trusted": "Vertraute Apps",
+        "full": "Vollzugriff"
+      },
+      "hints": {
+        "ask": "Agenten fragen dich vor heiklen Aktionen.",
+        "trusted": "In den Apps auf deiner Liste fragen Agenten nicht mehr. Alles andere fragt weiterhin.",
+        "full": "Agenten fragen nichts mehr, bis dies endet. Das Gerät auszuschalten beendet es sofort."
+      },
+      "fullTitle": "Agenten Vollzugriff auf „{{name}}“ geben?",
+      "fullConfirm": "Vollzugriff geben",
+      "fullWarning": "Agenten handeln in jeder App, ohne dich vorher zu fragen, und das Gerät bleibt die ganze Zeit eingeschaltet. Nutze das nur, solange du zusehen kannst, und so kurz wie nötig.",
+      "fullDuration": "Wie lange",
+      "durations": {
+        "1h": "1 Stunde",
+        "8h": "8 Stunden",
+        "until_off": "Bis ich es ausschalte"
+      },
+      "includeSensitive": "Auch Banking- und Passwort-Apps",
+      "sensitiveOffHint": "Banking- und Passwort-Apps sind ausgenommen: Dort fragen Agenten weiterhin.",
+      "sensitiveOnHint": "Banking- und Passwort-Apps sind eingeschlossen: Auch dort fragen Agenten nicht.",
+      "fullChipUntilOff": "Vollzugriff · bis du ihn ausschaltest",
+      "trustedEmpty": "Noch keine vertrauten Apps.",
+      "trustedAdd": "App aus letzten Freigaben hinzufügen oder ihre ID eingeben",
+      "trustedAddButton": "Hinzufügen",
+      "trustedHint": "Kürzlich erlaubte Apps werden vorgeschlagen. Eine App-ID sieht aus wie com.example.app.",
+      "fullChip_one": "Vollzugriff · noch {{count}} Min.",
+      "trustedTitle_one": "Vertraute Apps ({{count}})",
+      "fullChip_other": "Vollzugriff · noch {{count}} Min.",
+      "trustedTitle_other": "Vertraute Apps ({{count}})"
     }
   },
   "servers": {
