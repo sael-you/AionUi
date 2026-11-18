@@ -5,7 +5,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 
 // Mirror the project convention: t() echoes the key so labels/tooltips are assertable.
@@ -53,6 +53,12 @@ vi.mock('@/common/config/constants', () => ({
 vi.mock('@/renderer/components/layout/PwaPullToRefresh', () => ({ default: () => null }));
 vi.mock('@/renderer/components/layout/Titlebar', () => ({ default: () => null }));
 vi.mock('@/renderer/components/settings/UpdateModal', () => ({ default: () => null }));
+// The approval prompts open the real WebSocket and poll two /api routes; their failures would be
+// logged after this file's environment is gone (vitest: "Closing rpc while onUserConsoleLog was pending").
+vi.mock('@/renderer/pages/conversation/Preview/browser/server/BrowserApprovalPrompts', () => ({
+  default: () => null,
+}));
+vi.mock('@/renderer/pages/settings/DevicesSettings/phones/DeviceApprovalPrompts', () => ({ default: () => null }));
 vi.mock('@renderer/hooks/system/useDeepLink', () => ({ useDeepLink: () => {} }));
 vi.mock('@renderer/hooks/system/notification/useNotificationClick', () => ({ useNotificationClick: () => {} }));
 vi.mock('@renderer/hooks/system/notification/useBrowserNotification', () => ({ useBrowserNotification: () => {} }));
@@ -74,12 +80,20 @@ vi.mock('@renderer/pages/conversation/Preview/context/PreviewContext', () => ({
 
 import Layout from '@renderer/components/layout/Layout';
 
-const renderLayout = () => render(<Layout sider={<div>sider</div>} />);
+// Layout clones its sider with layout props (onSessionClick, collapsed): a component takes them,
+// a bare <div> would pass them to the DOM and make React warn.
+const SiderStub: React.FC = () => <div>sider</div>;
+const renderLayout = () => render(<Layout sider={<SiderStub />} />);
 
 const BACK_KEY = 'common.back';
 
 describe('Layout sider brand Home button', () => {
+  let consoleError: ReturnType<typeof vi.spyOn>;
+  let consoleWarn: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
+    consoleError = vi.spyOn(console, 'error');
+    consoleWarn = vi.spyOn(console, 'warn');
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: (query: string) => ({
@@ -102,7 +116,18 @@ describe('Layout sider brand Home button', () => {
     currentPathname = '/guid';
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Layout lazy-loads UpdateModal: let that import land inside act() and while the environment
+    // is alive, then unmount, so nothing resolves or logs after this file is torn down.
+    await act(async () => {
+      await vi.dynamicImportSettled();
+    });
+    cleanup();
+    // Console output from here is what vitest could still be relaying at teardown: keep it at none.
+    expect(consoleError).not.toHaveBeenCalled();
+    expect(consoleWarn).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+    consoleWarn.mockRestore();
     vi.clearAllMocks();
   });
 
