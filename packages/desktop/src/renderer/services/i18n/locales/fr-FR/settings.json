@@ -1784,7 +1784,10 @@
       "allowedFor_one": "Autorisé pendant {{count}} min.",
       "allowedFor_other": "Autorisé pendant {{count}} min.",
       "grantHint_one": "L'autorisation couvre la lecture et les actions sur cet appareil et cette application pendant {{count}} min ; ensuite les agents redemandent.",
-      "grantHint_other": "L'autorisation couvre la lecture et les actions sur cet appareil et cette application pendant {{count}} min ; ensuite les agents redemandent."
+      "grantHint_other": "L'autorisation couvre la lecture et les actions sur cet appareil et cette application pendant {{count}} min ; ensuite les agents redemandent.",
+      "always": "Toujours autoriser cette appli",
+      "alwaysDone": "« {{app}} » est maintenant une appli de confiance.",
+      "alwaysSensitive": "C'est une appli bancaire ou de mots de passe : elle demandera encore, sauf si vous les incluez dans le mode d'accès de l'appareil."
     },
     "pair": {
       "title": {
@@ -1869,6 +1872,41 @@
       "duplicate": "Une ancienne carte de ce téléphone. Le téléphone est de nouveau associé sous le même nom ; celle-ci peut être supprimée.",
       "removeCompanion": "Cette carte est supprimée et son association révoquée : l'application AionUi de ce téléphone doit être associée de nouveau avant que les agents puissent l'utiliser.",
       "removeViaMac": "Cette carte est supprimée. Si le téléphone est toujours relié à votre Mac, elle revient dès que l'assistant Mac le signale."
+    },
+    "accessMode": {
+      "title": "Mode d'accès",
+      "label": "Mode d'accès de {{name}}",
+      "modes": {
+        "ask": "Demander",
+        "trusted": "Applis de confiance",
+        "full": "Accès complet"
+      },
+      "hints": {
+        "ask": "Les agents vous demandent avant les actions sensibles.",
+        "trusted": "Les agents ne demandent plus dans les applis de votre liste. Tout le reste demande encore.",
+        "full": "Les agents ne demandent plus rien jusqu'à la fin. Désactiver l'appareil y met fin aussitôt."
+      },
+      "fullTitle": "Donner aux agents un accès complet à « {{name}} » ?",
+      "fullConfirm": "Donner l'accès complet",
+      "fullWarning": "Les agents agiront dans toutes les applis sans vous demander d'abord, et l'appareil restera activé pendant toute la durée. À utiliser seulement quand vous pouvez regarder, et le moins longtemps possible.",
+      "fullDuration": "Pendant combien de temps",
+      "durations": {
+        "1h": "1 heure",
+        "8h": "8 heures",
+        "until_off": "Jusqu'à ce que je le désactive"
+      },
+      "includeSensitive": "Aussi les applis bancaires et de mots de passe",
+      "sensitiveOffHint": "Les applis bancaires et de mots de passe sont exclues : les agents y demandent encore.",
+      "sensitiveOnHint": "Les applis bancaires et de mots de passe sont incluses : les agents n'y demanderont pas non plus.",
+      "fullChipUntilOff": "Accès complet · jusqu'à ce que vous le désactiviez",
+      "trustedEmpty": "Aucune appli de confiance pour l'instant.",
+      "trustedAdd": "Ajoutez une appli des approbations récentes ou saisissez son identifiant",
+      "trustedAddButton": "Ajouter",
+      "trustedHint": "Les applis autorisées récemment sont proposées. Un identifiant d'appli ressemble à com.example.app.",
+      "fullChip_one": "Accès complet · {{count}} min restantes",
+      "trustedTitle_one": "Applis de confiance ({{count}})",
+      "fullChip_other": "Accès complet · {{count}} min restantes",
+      "trustedTitle_other": "Applis de confiance ({{count}})"
     }
   },
   "servers": {

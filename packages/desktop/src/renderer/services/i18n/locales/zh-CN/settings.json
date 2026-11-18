@@ -1785,7 +1785,10 @@
       "allowedFor_one": "已允许 {{count}} 分钟。",
       "allowedFor_other": "已允许 {{count}} 分钟。",
       "grantHint_one": "允许后，{{count}} 分钟内可在此设备和应用上读取并操作；之后智能体会再次询问。",
-      "grantHint_other": "允许后，{{count}} 分钟内可在此设备和应用上读取并操作；之后智能体会再次询问。"
+      "grantHint_other": "允许后，{{count}} 分钟内可在此设备和应用上读取并操作；之后智能体会再次询问。",
+      "always": "始终允许此应用",
+      "alwaysDone": "“{{app}}”现在是受信任的应用。",
+      "alwaysSensitive": "这是银行或密码类应用：除非你在设备的访问模式中包含它们，否则仍会询问。"
     },
     "pair": {
       "title": {
@@ -1870,6 +1873,41 @@
       "duplicate": "这是这台手机的旧卡片。手机已用同一名称重新配对；此卡片可以移除。",
       "removeCompanion": "将移除此卡片并撤销其配对：该手机上的 AionUi 应用需要重新配对，智能体才能再次使用它。",
       "removeViaMac": "将移除此卡片。如果手机仍连接着你的 Mac，Mac 助手下次上报时它会重新出现。"
+    },
+    "accessMode": {
+      "title": "访问模式",
+      "label": "{{name}} 的访问模式",
+      "modes": {
+        "ask": "询问",
+        "trusted": "受信任的应用",
+        "full": "完全访问"
+      },
+      "hints": {
+        "ask": "智能体在敏感操作前会先询问你。",
+        "trusted": "在你列表中的应用里，智能体不再询问。其他情况仍会询问。",
+        "full": "在结束之前，智能体什么都不会询问。关闭设备会立即结束。"
+      },
+      "fullTitle": "要给智能体“{{name}}”的完全访问权限吗？",
+      "fullConfirm": "授予完全访问",
+      "fullWarning": "智能体会在所有应用中直接操作而不先询问你，并且设备在整个期间保持开启。仅在你能看着时使用，时间尽量短。",
+      "fullDuration": "持续多久",
+      "durations": {
+        "1h": "1 小时",
+        "8h": "8 小时",
+        "until_off": "直到我关闭"
+      },
+      "includeSensitive": "也包括银行和密码类应用",
+      "sensitiveOffHint": "银行和密码类应用不包括在内：在这些应用里智能体仍会询问。",
+      "sensitiveOnHint": "银行和密码类应用也包括在内：在这些应用里智能体同样不会询问。",
+      "fullChipUntilOff": "完全访问 · 直到你关闭",
+      "trustedEmpty": "还没有受信任的应用。",
+      "trustedAdd": "从最近的批准中添加应用，或输入其 ID",
+      "trustedAddButton": "添加",
+      "trustedHint": "会列出你最近允许过的应用。应用 ID 形如 com.example.app。",
+      "fullChip_one": "完全访问 · 剩余 {{count}} 分钟",
+      "trustedTitle_one": "受信任的应用（{{count}}）",
+      "fullChip_other": "完全访问 · 剩余 {{count}} 分钟",
+      "trustedTitle_other": "受信任的应用（{{count}}）"
     }
   },
   "servers": {

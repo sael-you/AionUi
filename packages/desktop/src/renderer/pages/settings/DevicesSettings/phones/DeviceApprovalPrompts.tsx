@@ -37,20 +37,24 @@ export const DeviceApprovalCard: React.FC<{
   const { t } = useTranslation();
   const titleId = useId();
   const bodyId = useId();
-  const [busy, setBusy] = useState<DeviceApprovalDecision | null>(null);
+  const [busy, setBusy] = useState<DeviceApprovalDecision | 'always' | null>(null);
   const target = approval.package ?? approval.origin;
+  // An app the owner can put on the trusted list; never an add-on task or an unknown app.
+  const canAlways = Boolean(approval.package) && approval.package !== 'unknown' && !approval.task;
   const minutes = approval.grant_minutes && approval.grant_minutes > 0 ? approval.grant_minutes : 0;
 
-  const decide = async (decision: DeviceApprovalDecision) => {
-    setBusy(decision);
+  const decide = async (decision: DeviceApprovalDecision, always = false) => {
+    setBusy(always ? 'always' : decision);
     try {
-      await devicesApi.decideApproval.invoke({ id: approval.id, decision });
+      await devicesApi.decideApproval.invoke({ id: approval.id, decision, ...(always ? { always: true } : {}) });
       Message.success(
-        decision !== 'allow'
-          ? t(`${SHARED}.denied`)
-          : minutes
-            ? t(`${KEY}.allowedFor`, { count: minutes })
-            : t(`${KEY}.allowed`)
+        always
+          ? t(`${KEY}.alwaysDone`, { app: approval.package })
+          : decision !== 'allow'
+            ? t(`${SHARED}.denied`)
+            : minutes
+              ? t(`${KEY}.allowedFor`, { count: minutes })
+              : t(`${KEY}.allowed`)
       );
     } catch (error) {
       Message.error(t(isBackendHttpError(error) && error.status === 410 ? `${SHARED}.expired` : `${SHARED}.failed`));
@@ -86,7 +90,24 @@ export const DeviceApprovalCard: React.FC<{
         {minutes ? <span data-testid='device-approval-grant'>{t(`${KEY}.grantHint`, { count: minutes })}</span> : null}
         <span aria-live='polite'>{t(`${SHARED}.countdown`, { count: secondsLeft(approval.expires_at, now) })}</span>
       </div>
+      {canAlways && approval.sensitive ? (
+        <span className='text-12px text-t-secondary' data-testid='device-approval-sensitive'>
+          {t(`${KEY}.alwaysSensitive`)}
+        </span>
+      ) : null}
       <div className='flex flex-wrap gap-8px justify-end'>
+        {canAlways ? (
+          <Button
+            size='small'
+            type='text'
+            loading={busy === 'always'}
+            disabled={busy !== null}
+            onClick={() => void decide('allow', true)}
+            data-testid='device-approval-always'
+          >
+            {t(`${KEY}.always`)}
+          </Button>
+        ) : null}
         <Button
           size='small'
           loading={busy === 'deny'}

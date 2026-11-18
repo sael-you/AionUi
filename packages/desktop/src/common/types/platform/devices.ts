@@ -55,6 +55,23 @@ export type Device = {
   last_seen_at: number | null;
   /** Phones: what the phone last reported about itself (TASK-173); absent when it never did. */
   health?: DeviceHealth;
+  /** Phones and the Mac: how much agents may do without asking (TASK-175). */
+  access?: DeviceAccess;
+};
+
+export type DeviceAccessMode = 'ask' | 'trusted' | 'full';
+
+export type DeviceFullDuration = '1h' | '8h' | 'until_off';
+
+export type DeviceAccess = {
+  /** The EFFECTIVE mode: a Full access that ended reads `ask`. */
+  mode: DeviceAccessMode;
+  /** Full access ends then; null = until turned off (only meaningful when `mode` is `full`). */
+  full_until: number | null;
+  /** Banking and password-manager apps are covered too (otherwise they still ask). */
+  include_sensitive: boolean;
+  /** Package / bundle ids that no longer ask. */
+  trusted_apps: string[];
 };
 
 export type DeviceHealth = {
@@ -106,6 +123,8 @@ export type DeviceApproval = {
   conversation_id: string | null;
   created_at: number;
   expires_at: number;
+  /** A banking / password-manager app: "always allow" still asks unless sensitive apps are included. */
+  sensitive?: boolean;
   /** Allowing covers reads and actions on that device + app for this many minutes; absent on add-on tasks. */
   grant_minutes?: number;
 };

@@ -1786,7 +1786,10 @@
       "allowedFor_one": "已允許 {{count}} 分鐘。",
       "allowedFor_other": "已允許 {{count}} 分鐘。",
       "grantHint_one": "允許後，{{count}} 分鐘內可在此裝置和 App 上讀取並操作；之後智慧代理會再次詢問。",
-      "grantHint_other": "允許後，{{count}} 分鐘內可在此裝置和 App 上讀取並操作；之後智慧代理會再次詢問。"
+      "grantHint_other": "允許後，{{count}} 分鐘內可在此裝置和 App 上讀取並操作；之後智慧代理會再次詢問。",
+      "always": "一律允許此 App",
+      "alwaysDone": "「{{app}}」現在是信任的 App。",
+      "alwaysSensitive": "這是銀行或密碼類 App：除非你在裝置的存取模式中包含它們，否則仍會詢問。"
     },
     "pair": {
       "title": {
@@ -1871,6 +1874,41 @@
       "duplicate": "這是這支手機的舊卡片。手機已用同一名稱重新配對；此卡片可以移除。",
       "removeCompanion": "將移除此卡片並撤銷其配對：該手機上的 AionUi App 需要重新配對，智慧代理才能再次使用它。",
       "removeViaMac": "將移除此卡片。如果手機仍連接著你的 Mac，Mac 輔助程式下次回報時它會重新出現。"
+    },
+    "accessMode": {
+      "title": "存取模式",
+      "label": "{{name}} 的存取模式",
+      "modes": {
+        "ask": "詢問",
+        "trusted": "信任的 App",
+        "full": "完整存取"
+      },
+      "hints": {
+        "ask": "智慧代理在敏感操作前會先詢問你。",
+        "trusted": "在你清單中的 App 裡，智慧代理不再詢問。其他情況仍會詢問。",
+        "full": "在結束之前，智慧代理什麼都不會詢問。關閉裝置會立即結束。"
+      },
+      "fullTitle": "要給智慧代理「{{name}}」的完整存取權限嗎？",
+      "fullConfirm": "授予完整存取",
+      "fullWarning": "智慧代理會在所有 App 中直接操作而不先詢問你，而且裝置在整個期間保持開啟。僅在你能看著時使用，時間盡量短。",
+      "fullDuration": "持續多久",
+      "durations": {
+        "1h": "1 小時",
+        "8h": "8 小時",
+        "until_off": "直到我關閉"
+      },
+      "includeSensitive": "也包括銀行和密碼類 App",
+      "sensitiveOffHint": "銀行和密碼類 App 不包括在內：在這些 App 裡智慧代理仍會詢問。",
+      "sensitiveOnHint": "銀行和密碼類 App 也包括在內：在這些 App 裡智慧代理同樣不會詢問。",
+      "fullChipUntilOff": "完整存取 · 直到你關閉",
+      "trustedEmpty": "還沒有信任的 App。",
+      "trustedAdd": "從最近的核准中加入 App，或輸入其 ID",
+      "trustedAddButton": "加入",
+      "trustedHint": "會列出你最近允許過的 App。App ID 形如 com.example.app。",
+      "fullChip_one": "完整存取 · 剩餘 {{count}} 分鐘",
+      "trustedTitle_one": "信任的 App（{{count}}）",
+      "fullChip_other": "完整存取 · 剩餘 {{count}} 分鐘",
+      "trustedTitle_other": "信任的 App（{{count}}）"
     }
   },
   "servers": {

@@ -1784,7 +1784,10 @@
       "allowedFor_one": "{{count}} dk izin verildi.",
       "allowedFor_other": "{{count}} dk izin verildi.",
       "grantHint_one": "İzin, bu cihazda ve uygulamada {{count}} dk boyunca okumayı ve işlem yapmayı kapsar; sonra ajanlar yeniden sorar.",
-      "grantHint_other": "İzin, bu cihazda ve uygulamada {{count}} dk boyunca okumayı ve işlem yapmayı kapsar; sonra ajanlar yeniden sorar."
+      "grantHint_other": "İzin, bu cihazda ve uygulamada {{count}} dk boyunca okumayı ve işlem yapmayı kapsar; sonra ajanlar yeniden sorar.",
+      "always": "Bu uygulamaya her zaman izin ver",
+      "alwaysDone": "“{{app}}” artık güvenilen bir uygulama.",
+      "alwaysSensitive": "Bu bir bankacılık veya parola uygulaması: cihazın erişim modunda bunları dahil etmediğiniz sürece sormaya devam eder."
     },
     "pair": {
       "title": {
@@ -1869,6 +1872,41 @@
       "duplicate": "Bu telefonun eski bir kartı. Telefon aynı adla yeniden eşlendi; bu kart kaldırılabilir.",
       "removeCompanion": "Bu kart kaldırılır ve eşlemesi iptal edilir: ajanların kullanabilmesi için o telefondaki AionUi uygulamasının yeniden eşlenmesi gerekir.",
       "removeViaMac": "Bu kart kaldırılır. Telefon hâlâ Mac'inize bağlıysa, Mac yardımcısı onu bir sonraki bildirdiğinde geri gelir."
+    },
+    "accessMode": {
+      "title": "Erişim modu",
+      "label": "{{name}} erişim modu",
+      "modes": {
+        "ask": "Sor",
+        "trusted": "Güvenilen uygulamalar",
+        "full": "Tam erişim"
+      },
+      "hints": {
+        "ask": "Ajanlar hassas işlemlerden önce size sorar.",
+        "trusted": "Ajanlar listenizdeki uygulamalarda artık sormaz. Diğer her şey sormaya devam eder.",
+        "full": "Bu bitene kadar ajanlar hiçbir şey sormaz. Cihazı kapatmak bunu anında bitirir."
+      },
+      "fullTitle": "Ajanlara “{{name}}” için tam erişim verilsin mi?",
+      "fullConfirm": "Tam erişim ver",
+      "fullWarning": "Ajanlar her uygulamada size sormadan işlem yapar ve cihaz bu süre boyunca açık kalır. Yalnızca izleyebildiğiniz sürece ve gerektiği kadar kısa kullanın.",
+      "fullDuration": "Ne kadar süre",
+      "durations": {
+        "1h": "1 saat",
+        "8h": "8 saat",
+        "until_off": "Ben kapatana kadar"
+      },
+      "includeSensitive": "Bankacılık ve parola uygulamaları da",
+      "sensitiveOffHint": "Bankacılık ve parola uygulamaları hariç: ajanlar orada sormaya devam eder.",
+      "sensitiveOnHint": "Bankacılık ve parola uygulamaları dahil: ajanlar orada da sormaz.",
+      "fullChipUntilOff": "Tam erişim · siz kapatana kadar",
+      "trustedEmpty": "Henüz güvenilen uygulama yok.",
+      "trustedAdd": "Son onaylardan bir uygulama ekleyin veya kimliğini yazın",
+      "trustedAddButton": "Ekle",
+      "trustedHint": "Yakın zamanda izin verdiğiniz uygulamalar önerilir. Uygulama kimliği com.example.app gibidir.",
+      "fullChip_one": "Tam erişim · {{count}} dk kaldı",
+      "trustedTitle_one": "Güvenilen uygulamalar ({{count}})",
+      "fullChip_other": "Tam erişim · {{count}} dk kaldı",
+      "trustedTitle_other": "Güvenilen uygulamalar ({{count}})"
     }
   },
   "servers": {

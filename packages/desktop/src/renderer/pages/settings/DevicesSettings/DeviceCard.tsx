@@ -20,6 +20,7 @@ import LibraryCard, {
 } from '@/renderer/components/settings/SettingsModal/library/LibraryCard';
 import { formatDateTime } from '@/renderer/services/i18n/format';
 import { descriptionKey, formatDiskSize, isBusy, isUnreachable, minutesLeft, STATUS_COLORS } from './devicesModel';
+import { accessOf, AccessModeControl, FullAccessChip } from './phones/AccessMode';
 import { JOB_LOST, useDeviceJob } from './useDevices';
 
 const KEY = 'settings.devices';
@@ -136,6 +137,8 @@ export type DeviceCardProps = {
   onRemove: (device: Device) => void;
   onOpen: (device: Device) => void;
   onJobFinished: () => void;
+  /** The device changed (access mode): refresh the list. */
+  onChanged?: () => void;
 };
 
 const DeviceCard: React.FC<DeviceCardProps> = ({
@@ -149,12 +152,14 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
   onRemove,
   onOpen,
   onJobFinished,
+  onChanged,
 }) => {
   const { t, i18n } = useTranslation();
   const busy = isBusy(device);
   const description = descriptionKey(device);
   const left = device.enabled ? minutesLeft(device.enabled_until, now) : null;
   const offline = isUnreachable(device);
+  const access = accessOf(device);
   // An offline device cannot be switched ON (nothing would reach it); one left on can still be switched off.
   const canToggle =
     device.installed &&
@@ -170,7 +175,12 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
       {device.disk_bytes !== null && device.installed ? (
         <span>{t(`${KEY}.disk`, { size: formatDiskSize(device.disk_bytes, i18n.language) })}</span>
       ) : null}
-      {left !== null ? <span data-testid='device-off-in'>{t(`${KEY}.offIn`, { count: left })}</span> : null}
+      {access?.mode === 'full' ? (
+        // Full access has its own clock (the switch stays on for exactly that long).
+        <FullAccessChip access={access} now={now} />
+      ) : left !== null ? (
+        <span data-testid='device-off-in'>{t(`${KEY}.offIn`, { count: left })}</span>
+      ) : null}
       {offline && device.last_seen_at ? (
         <span data-testid='device-last-seen'>
           {t('settings.browserDevices.lastSeen', {
@@ -207,6 +217,10 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
         {t(`${KEY}.install`)}
       </Button>
     );
+  }
+
+  if (!action && access && device.installed && device.available === 'now' && device.status !== 'needs_pairing') {
+    action = <AccessModeControl device={device} access={access} disabled={offline} onChanged={() => onChanged?.()} />;
   }
 
   return (
