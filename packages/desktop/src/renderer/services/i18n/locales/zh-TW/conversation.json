@@ -1118,5 +1118,111 @@
   "pendingUpload": {
     "waiting": "等待連線恢復後上傳：",
     "tooLarge": "{{name}} 太大，無法離線保存（最大 {{max}} MB）— 請在連線後重新附加"
+  },
+  "projectPage": {
+    "title": "專案",
+    "open": "開啟專案",
+    "tabsLabel": "專案分區",
+    "loading": "載入中",
+    "retry": "重試",
+    "tabs": {
+      "overview": "總覽",
+      "kit": "套件",
+      "storage": "儲存空間",
+      "usage": "用量"
+    },
+    "errors": {
+      "notFound": "此專案已不存在。",
+      "generic": "載入此專案時發生問題。"
+    },
+    "overview": {
+      "conversations": "進行中的對話",
+      "conversationsSub": "共 {{total}} 個",
+      "tokensToday": "今日權杖",
+      "disk": "磁碟用量",
+      "diskShare": "佔磁碟 {{percent}}%",
+      "diskNotScanned": "尚未測量",
+      "openCards": "未完成的看板卡片",
+      "openCardsSub": "不在完成欄中",
+      "getsTitle": "這裡的對話會獲得什麼",
+      "gets": {
+        "skills": "技能",
+        "mcps": "MCP 伺服器",
+        "rules": "規則",
+        "servers": "伺服器",
+        "memory": "記憶檔案"
+      },
+      "turns": "{{count}} 回合",
+      "turns_one": "{{count}} 回合",
+      "turns_other": "{{count}} 回合"
+    },
+    "kit": {
+      "intro": "此專案中的對話開始時獲得的所有內容，依來源分組。要變更，請開啟管理它的頁面。",
+      "empty": "這裡的對話暫時沒有額外內容。",
+      "manage": {
+        "skill": "管理技能（{{n}}）",
+        "mcp": "管理 MCP 伺服器（{{n}}）",
+        "rule": "管理規則（{{n}}）",
+        "server": "管理伺服器（{{n}}）"
+      },
+      "source": {
+        "project": "此專案",
+        "global": "全域",
+        "kit": "套件：{{name}}"
+      }
+    },
+    "storage": {
+      "total": "磁碟總用量",
+      "shareOfDisk": "佔 {{total}} 磁碟的 {{percent}}% · 剩餘 {{free}}",
+      "scanned": "{{ago}}測量",
+      "scannedNow": "剛剛測量",
+      "rescan": "重新測量",
+      "scanning": "正在測量資料夾，可能需要幾秒鐘。",
+      "root": {
+        "workspace": "工作區",
+        "attached": "附加資料夾",
+        "memory": "記憶"
+      },
+      "missing": "此資料夾不存在。",
+      "truncated": "掃描提前停止，實際大小更大。",
+      "emptyRoot": "此資料夾是空的。",
+      "empty": "此專案沒有可測量的資料夾。",
+      "topLevel": "最上層最大的項目",
+      "largestFiles": "最大的檔案",
+      "kind": {
+        "symlink": "連結",
+        "other": "其他"
+      },
+      "entries": "{{shown}} 個檔案和資料夾",
+      "entries_one": "{{shown}} 個檔案和資料夾",
+      "entries_other": "{{shown}} 個檔案和資料夾"
+    },
+    "usage": {
+      "range": "範圍",
+      "perDay": "每日權杖",
+      "since": "自 {{date}} 起記錄，更早的回合不計入。",
+      "none": "尚無用量記錄。此專案下一回合後會顯示。",
+      "series": {
+        "input": "輸入",
+        "output": "輸出",
+        "cache_read": "快取讀取",
+        "cache_write": "快取寫入"
+      },
+      "total": "合計",
+      "totalTokens": "權杖總數",
+      "cost": "費用",
+      "cache": "快取",
+      "showTable": "以表格顯示",
+      "day": "日期",
+      "byConversation": "依對話（前 10）",
+      "byModel": "依模型",
+      "deletedConversation": "已刪除的對話",
+      "unknownModel": "未知模型",
+      "chartLabel": "每日權杖。使用左右方向鍵逐日讀取。",
+      "utc": "日期為 UTC。",
+      "rangeDays": "{{count}} 天",
+      "rangeDays_one": "{{count}} 天",
+      "rangeDays_other": "{{count}} 天"
+    }
   }
 }

@@ -1120,5 +1120,111 @@
   "pendingUpload": {
     "waiting": "Yüklemek için bağlantı bekleniyor:",
     "tooLarge": "{{name}} çevrimdışı saklamak için çok büyük (en fazla {{max}} MB) — çevrimiçi olunca yeniden ekleyin"
+  },
+  "projectPage": {
+    "title": "Proje",
+    "open": "Projeyi aç",
+    "tabsLabel": "Proje bölümleri",
+    "loading": "Yükleniyor",
+    "retry": "Yeniden dene",
+    "tabs": {
+      "overview": "Genel bakış",
+      "kit": "Kit",
+      "storage": "Depolama",
+      "usage": "Kullanım"
+    },
+    "errors": {
+      "notFound": "Bu proje artık yok.",
+      "generic": "Bu proje yüklenirken bir sorun oluştu."
+    },
+    "overview": {
+      "conversations": "Etkin konuşmalar",
+      "conversationsSub": "Toplam {{total}}",
+      "tokensToday": "Bugünkü token",
+      "disk": "Kullanılan disk",
+      "diskShare": "Diskin %{{percent}} kadarı",
+      "diskNotScanned": "Henüz ölçülmedi",
+      "openCards": "Açık pano kartları",
+      "openCardsSub": "Bitti sütununda olmayanlar",
+      "getsTitle": "Buradaki konuşmalar ne alır",
+      "gets": {
+        "skills": "Beceriler",
+        "mcps": "MCP sunucuları",
+        "rules": "Kurallar",
+        "servers": "Sunucular",
+        "memory": "Bellek dosyaları"
+      },
+      "turns": "{{count}} tur",
+      "turns_one": "{{count}} tur",
+      "turns_other": "{{count}} tur"
+    },
+    "kit": {
+      "intro": "Bu projedeki bir konuşmanın başlarken aldığı her şey, kaynağına göre gruplanmış. Değiştirmek için onu yöneten sayfayı açın.",
+      "empty": "Konuşmalar burada henüz ek bir şey almıyor.",
+      "manage": {
+        "skill": "Becerileri yönet ({{n}})",
+        "mcp": "MCP sunucularını yönet ({{n}})",
+        "rule": "Kuralları yönet ({{n}})",
+        "server": "Sunucuları yönet ({{n}})"
+      },
+      "source": {
+        "project": "Bu proje",
+        "global": "Global",
+        "kit": "Kit: {{name}}"
+      }
+    },
+    "storage": {
+      "total": "Diskteki toplam",
+      "shareOfDisk": "{{total}} diskin %{{percent}} kadarı · {{free}} boş",
+      "scanned": "{{ago}} ölçüldü",
+      "scannedNow": "Az önce ölçüldü",
+      "rescan": "Yeniden ölç",
+      "scanning": "Klasörler ölçülüyor. Bu birkaç saniye sürebilir.",
+      "root": {
+        "workspace": "Çalışma alanı",
+        "attached": "Eklenen klasör",
+        "memory": "Bellek"
+      },
+      "missing": "Bu klasör yok.",
+      "truncated": "Tarama erken durdu; gerçek boyut daha büyük.",
+      "emptyRoot": "Bu klasör boş.",
+      "empty": "Bu projenin ölçülecek klasörü yok.",
+      "topLevel": "Üst düzeydeki en büyükler",
+      "largestFiles": "En büyük dosyalar",
+      "kind": {
+        "symlink": "Bağlantı",
+        "other": "Diğer"
+      },
+      "entries": "{{shown}} dosya ve klasör",
+      "entries_one": "{{shown}} dosya veya klasör",
+      "entries_other": "{{shown}} dosya ve klasör"
+    },
+    "usage": {
+      "range": "Aralık",
+      "perDay": "Günlük token",
+      "since": "{{date}} tarihinden beri kaydediliyor. Önceki turlar sayılmaz.",
+      "none": "Henüz kullanım kaydı yok. Bu projedeki bir sonraki turdan sonra görünür.",
+      "series": {
+        "input": "Girdi",
+        "output": "Çıktı",
+        "cache_read": "Önbellek okuma",
+        "cache_write": "Önbellek yazma"
+      },
+      "total": "Toplam",
+      "totalTokens": "Toplam token",
+      "cost": "Maliyet",
+      "cache": "Önbellek",
+      "showTable": "Tablo olarak göster",
+      "day": "Gün",
+      "byConversation": "Konuşmaya göre (ilk 10)",
+      "byModel": "Modele göre",
+      "deletedConversation": "Silinmiş konuşma",
+      "unknownModel": "Bilinmeyen model",
+      "chartLabel": "Günlük token. Her günü okumak için sol ve sağ ok tuşlarını kullanın.",
+      "utc": "Günler UTC'dir.",
+      "rangeDays": "{{count}} gün",
+      "rangeDays_one": "{{count}} gün",
+      "rangeDays_other": "{{count}} gün"
+    }
   }
 }

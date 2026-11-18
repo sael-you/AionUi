@@ -1118,5 +1118,111 @@
   "pendingUpload": {
     "waiting": "Waiting for the connection to upload:",
     "tooLarge": "{{name}} is too large to keep offline (max {{max}} MB) — re-attach it when you are online"
+  },
+  "projectPage": {
+    "title": "Project",
+    "open": "Open project",
+    "tabsLabel": "Project sections",
+    "loading": "Loading",
+    "retry": "Retry",
+    "tabs": {
+      "overview": "Overview",
+      "kit": "Kit",
+      "storage": "Storage",
+      "usage": "Usage"
+    },
+    "errors": {
+      "notFound": "This project no longer exists.",
+      "generic": "Something went wrong loading this project."
+    },
+    "overview": {
+      "conversations": "Active conversations",
+      "conversationsSub": "{{total}} in total",
+      "tokensToday": "Tokens today",
+      "disk": "Disk used",
+      "diskShare": "{{percent}}% of the disk",
+      "diskNotScanned": "Not measured yet",
+      "openCards": "Open board cards",
+      "openCardsSub": "Not in a done column",
+      "getsTitle": "What conversations here get",
+      "gets": {
+        "skills": "Skills",
+        "mcps": "MCP servers",
+        "rules": "Rules",
+        "servers": "Servers",
+        "memory": "Memory files"
+      },
+      "turns": "{{count}} turns",
+      "turns_one": "{{count}} turn",
+      "turns_other": "{{count}} turns"
+    },
+    "kit": {
+      "intro": "Everything a conversation in this project starts with, grouped by where it comes from. To change it, open the page that manages it.",
+      "empty": "Conversations here get nothing extra yet.",
+      "manage": {
+        "skill": "Manage skills ({{n}})",
+        "mcp": "Manage MCP servers ({{n}})",
+        "rule": "Manage rules ({{n}})",
+        "server": "Manage servers ({{n}})"
+      },
+      "source": {
+        "project": "This project",
+        "global": "Global",
+        "kit": "Kit: {{name}}"
+      }
+    },
+    "storage": {
+      "total": "Total on disk",
+      "shareOfDisk": "{{percent}}% of a {{total}} disk · {{free}} free",
+      "scanned": "Measured {{ago}}",
+      "scannedNow": "Measured just now",
+      "rescan": "Measure again",
+      "scanning": "Measuring the folders. This can take a few seconds.",
+      "root": {
+        "workspace": "Workspace",
+        "attached": "Attached folder",
+        "memory": "Memory"
+      },
+      "missing": "This folder does not exist.",
+      "truncated": "The scan stopped early, so the real size is larger.",
+      "emptyRoot": "Nothing in this folder.",
+      "empty": "This project has no folder to measure.",
+      "topLevel": "Largest at the top level",
+      "largestFiles": "Largest files",
+      "kind": {
+        "symlink": "Link",
+        "other": "Other"
+      },
+      "entries": "{{shown}} files and folders",
+      "entries_one": "{{shown}} file or folder",
+      "entries_other": "{{shown}} files and folders"
+    },
+    "usage": {
+      "range": "Range",
+      "perDay": "Tokens per day",
+      "since": "Recorded since {{date}}. Earlier turns are not counted.",
+      "none": "No usage recorded yet. It appears after the next turn in this project.",
+      "series": {
+        "input": "Input",
+        "output": "Output",
+        "cache_read": "Cache read",
+        "cache_write": "Cache write"
+      },
+      "total": "Total",
+      "totalTokens": "Total tokens",
+      "cost": "Cost",
+      "cache": "Cache",
+      "showTable": "Show as table",
+      "day": "Day",
+      "byConversation": "By conversation (top 10)",
+      "byModel": "By model",
+      "deletedConversation": "Deleted conversation",
+      "unknownModel": "Unknown model",
+      "chartLabel": "Tokens per day. Use the left and right arrow keys to read each day.",
+      "utc": "Days are UTC.",
+      "rangeDays": "{{count}} days",
+      "rangeDays_one": "{{count}} day",
+      "rangeDays_other": "{{count}} days"
+    }
   }
 }

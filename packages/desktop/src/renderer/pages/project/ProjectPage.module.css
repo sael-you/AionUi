@@ -1,0 +1,15 @@
+/* The page's tab strip: the active tab reads as text (the theme's primary is too dim on the
+   dark surface) and the ink bar takes the project's accent. */
+.tabs :global(.arco-tabs-header-title-active),
+.tabs :global(.arco-tabs-header-title-active:hover) {
+  color: var(--color-text-1);
+  font-weight: 600;
+}
+
+.tabs :global(.arco-tabs-header-ink) {
+  background-color: var(--project-accent, var(--primary));
+}
+
+.tabs :global(.arco-tabs-content) {
+  display: none;
+}

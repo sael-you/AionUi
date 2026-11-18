@@ -136,6 +136,15 @@
   line-height: 20px;
 }
 
+.projectNameLink {
+  cursor: pointer;
+}
+
+.projectNameLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .projectSpacer {
   flex: 1;
 }

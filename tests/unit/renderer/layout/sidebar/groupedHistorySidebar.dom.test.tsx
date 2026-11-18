@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TChatConversation } from '@/common/config/storage';
 import type { TimelineSection } from '@/renderer/pages/conversation/GroupedHistory/types';
@@ -44,7 +44,12 @@ const sections: TimelineSection[] = [
       {
         type: 'workspace',
         time: 3,
-        workspaceGroup: { workspace: '/p/alpha', display_name: 'alpha', conversations: [A1, A2] },
+        workspaceGroup: {
+          workspace: '/p/alpha',
+          display_name: 'alpha',
+          conversations: [A1, A2],
+          project_id: 'p-alpha',
+        },
       },
       {
         type: 'workspace',
@@ -213,6 +218,27 @@ describe('sidebar list', () => {
     expect(document.activeElement).toBe(screen.getByTestId('project-row-/p/empty'));
     // Exactly one tab stop in the whole tree.
     expect(screen.getAllByRole('treeitem').filter((el) => el.tabIndex === 0)).toHaveLength(1);
+  });
+
+  it('opens the project page from the project name and from "Open project" in its menu (C42)', async () => {
+    const Where: React.FC = () => <output data-testid='where'>{useLocation().pathname}</output>;
+    render(
+      <MemoryRouter>
+        <Sidebar />
+        <Where />
+      </MemoryRouter>
+    );
+    const alpha = screen.getByTestId('project-row-/p/alpha');
+    const expanded = alpha.getAttribute('aria-expanded');
+    fireEvent.click(screen.getByTestId('project-open-/p/alpha'));
+    expect(screen.getByTestId('where')).toHaveTextContent('/project/p-alpha');
+    expect(alpha.getAttribute('aria-expanded')).toBe(expanded);
+    // A folder that is not a listed project has no page: its name stays plain.
+    expect(screen.queryByTestId('project-open-/p/empty')).toBeNull();
+
+    fireEvent.click(screen.getByTestId('project-menu-/p/alpha'));
+    fireEvent.click(await screen.findByText('conversation.projectPage.open'));
+    expect(screen.getByTestId('where')).toHaveTextContent('/project/p-alpha');
   });
 
   it('archives the whole project from its menu while a filter shows only one of its conversations', async () => {

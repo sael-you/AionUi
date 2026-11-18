@@ -1119,5 +1119,111 @@
   "pendingUpload": {
     "waiting": "Wartet auf die Verbindung zum Hochladen:",
     "tooLarge": "{{name}} ist zu groß, um offline behalten zu werden (max. {{max}} MB) — hänge die Datei erneut an, wenn du online bist"
+  },
+  "projectPage": {
+    "title": "Projekt",
+    "open": "Projekt öffnen",
+    "tabsLabel": "Projektbereiche",
+    "loading": "Wird geladen",
+    "retry": "Erneut versuchen",
+    "tabs": {
+      "overview": "Übersicht",
+      "kit": "Kit",
+      "storage": "Speicher",
+      "usage": "Nutzung"
+    },
+    "errors": {
+      "notFound": "Dieses Projekt existiert nicht mehr.",
+      "generic": "Beim Laden dieses Projekts ist etwas schiefgelaufen."
+    },
+    "overview": {
+      "conversations": "Aktive Unterhaltungen",
+      "conversationsSub": "{{total}} insgesamt",
+      "tokensToday": "Tokens heute",
+      "disk": "Belegter Speicher",
+      "diskShare": "{{percent}} % des Datenträgers",
+      "diskNotScanned": "Noch nicht gemessen",
+      "openCards": "Offene Board-Karten",
+      "openCardsSub": "Nicht in einer Erledigt-Spalte",
+      "getsTitle": "Was Unterhaltungen hier bekommen",
+      "gets": {
+        "skills": "Skills",
+        "mcps": "MCP-Server",
+        "rules": "Regeln",
+        "servers": "Server",
+        "memory": "Memory-Dateien"
+      },
+      "turns": "{{count}} Turns",
+      "turns_one": "{{count}} Turn",
+      "turns_other": "{{count}} Turns"
+    },
+    "kit": {
+      "intro": "Alles, womit eine Unterhaltung in diesem Projekt startet, nach Herkunft gruppiert. Zum Ändern die Seite öffnen, die es verwaltet.",
+      "empty": "Unterhaltungen bekommen hier noch nichts Zusätzliches.",
+      "manage": {
+        "skill": "Skills verwalten ({{n}})",
+        "mcp": "MCP-Server verwalten ({{n}})",
+        "rule": "Regeln verwalten ({{n}})",
+        "server": "Server verwalten ({{n}})"
+      },
+      "source": {
+        "project": "Dieses Projekt",
+        "global": "Global",
+        "kit": "Kit: {{name}}"
+      }
+    },
+    "storage": {
+      "total": "Gesamt auf dem Datenträger",
+      "shareOfDisk": "{{percent}} % von {{total}} · {{free}} frei",
+      "scanned": "Gemessen {{ago}}",
+      "scannedNow": "Gerade gemessen",
+      "rescan": "Neu messen",
+      "scanning": "Die Ordner werden gemessen. Das kann einige Sekunden dauern.",
+      "root": {
+        "workspace": "Arbeitsbereich",
+        "attached": "Angehängter Ordner",
+        "memory": "Memory"
+      },
+      "missing": "Dieser Ordner existiert nicht.",
+      "truncated": "Die Messung wurde vorzeitig beendet; die tatsächliche Größe ist höher.",
+      "emptyRoot": "Dieser Ordner ist leer.",
+      "empty": "Dieses Projekt hat keinen Ordner zum Messen.",
+      "topLevel": "Größte Einträge der obersten Ebene",
+      "largestFiles": "Größte Dateien",
+      "kind": {
+        "symlink": "Verknüpfung",
+        "other": "Sonstiges"
+      },
+      "entries": "{{shown}} Dateien und Ordner",
+      "entries_one": "{{shown}} Datei oder Ordner",
+      "entries_other": "{{shown}} Dateien und Ordner"
+    },
+    "usage": {
+      "range": "Zeitraum",
+      "perDay": "Tokens pro Tag",
+      "since": "Erfasst seit {{date}}. Frühere Turns werden nicht gezählt.",
+      "none": "Noch keine Nutzung erfasst. Sie erscheint nach dem nächsten Turn in diesem Projekt.",
+      "series": {
+        "input": "Eingabe",
+        "output": "Ausgabe",
+        "cache_read": "Cache gelesen",
+        "cache_write": "Cache geschrieben"
+      },
+      "total": "Gesamt",
+      "totalTokens": "Tokens gesamt",
+      "cost": "Kosten",
+      "cache": "Cache",
+      "showTable": "Als Tabelle anzeigen",
+      "day": "Tag",
+      "byConversation": "Nach Unterhaltung (Top 10)",
+      "byModel": "Nach Modell",
+      "deletedConversation": "Gelöschte Unterhaltung",
+      "unknownModel": "Unbekanntes Modell",
+      "chartLabel": "Tokens pro Tag. Mit den Pfeiltasten links und rechts jeden Tag lesen.",
+      "utc": "Tage in UTC.",
+      "rangeDays": "{{count}} Tage",
+      "rangeDays_one": "{{count}} Tag",
+      "rangeDays_other": "{{count}} Tage"
+    }
   }
 }

@@ -1124,5 +1124,111 @@
   "pendingUpload": {
     "waiting": "Aguardando a conexão para enviar:",
     "tooLarge": "{{name}} é grande demais para guardar offline (máx. {{max}} MB) — anexe de novo quando estiver online"
+  },
+  "projectPage": {
+    "title": "Projeto",
+    "open": "Abrir projeto",
+    "tabsLabel": "Seções do projeto",
+    "loading": "Carregando",
+    "retry": "Tentar novamente",
+    "tabs": {
+      "overview": "Visão geral",
+      "kit": "Kit",
+      "storage": "Armazenamento",
+      "usage": "Uso"
+    },
+    "errors": {
+      "notFound": "Este projeto não existe mais.",
+      "generic": "Algo deu errado ao carregar este projeto."
+    },
+    "overview": {
+      "conversations": "Conversas ativas",
+      "conversationsSub": "{{total}} no total",
+      "tokensToday": "Tokens hoje",
+      "disk": "Disco usado",
+      "diskShare": "{{percent}}% do disco",
+      "diskNotScanned": "Ainda não medido",
+      "openCards": "Cartões abertos do quadro",
+      "openCardsSub": "Fora de uma coluna concluída",
+      "getsTitle": "O que as conversas recebem aqui",
+      "gets": {
+        "skills": "Skills",
+        "mcps": "Servidores MCP",
+        "rules": "Regras",
+        "servers": "Servidores",
+        "memory": "Arquivos de memória"
+      },
+      "turns": "{{count}} turnos",
+      "turns_one": "{{count}} turno",
+      "turns_other": "{{count}} turnos"
+    },
+    "kit": {
+      "intro": "Tudo com que uma conversa deste projeto começa, agrupado por origem. Para alterar, abra a página que gerencia.",
+      "empty": "As conversas ainda não recebem nada extra aqui.",
+      "manage": {
+        "skill": "Gerenciar skills ({{n}})",
+        "mcp": "Gerenciar servidores MCP ({{n}})",
+        "rule": "Gerenciar regras ({{n}})",
+        "server": "Gerenciar servidores ({{n}})"
+      },
+      "source": {
+        "project": "Este projeto",
+        "global": "Global",
+        "kit": "Kit: {{name}}"
+      }
+    },
+    "storage": {
+      "total": "Total em disco",
+      "shareOfDisk": "{{percent}}% de um disco de {{total}} · {{free}} livres",
+      "scanned": "Medido {{ago}}",
+      "scannedNow": "Medido agora mesmo",
+      "rescan": "Medir de novo",
+      "scanning": "Medindo as pastas. Isso pode levar alguns segundos.",
+      "root": {
+        "workspace": "Workspace",
+        "attached": "Pasta anexada",
+        "memory": "Memória"
+      },
+      "missing": "Esta pasta não existe.",
+      "truncated": "A varredura parou antes do fim; o tamanho real é maior.",
+      "emptyRoot": "Esta pasta está vazia.",
+      "empty": "Este projeto não tem pasta para medir.",
+      "topLevel": "Maiores no primeiro nível",
+      "largestFiles": "Maiores arquivos",
+      "kind": {
+        "symlink": "Link",
+        "other": "Outro"
+      },
+      "entries": "{{shown}} arquivos e pastas",
+      "entries_one": "{{shown}} arquivo ou pasta",
+      "entries_other": "{{shown}} arquivos e pastas"
+    },
+    "usage": {
+      "range": "Período",
+      "perDay": "Tokens por dia",
+      "since": "Registrado desde {{date}}. Turnos anteriores não são contados.",
+      "none": "Nenhum uso registrado ainda. Ele aparece após o próximo turno neste projeto.",
+      "series": {
+        "input": "Entrada",
+        "output": "Saída",
+        "cache_read": "Leitura de cache",
+        "cache_write": "Escrita de cache"
+      },
+      "total": "Total",
+      "totalTokens": "Total de tokens",
+      "cost": "Custo",
+      "cache": "Cache",
+      "showTable": "Mostrar como tabela",
+      "day": "Dia",
+      "byConversation": "Por conversa (top 10)",
+      "byModel": "Por modelo",
+      "deletedConversation": "Conversa excluída",
+      "unknownModel": "Modelo desconhecido",
+      "chartLabel": "Tokens por dia. Use as setas esquerda e direita para ler cada dia.",
+      "utc": "Os dias são UTC.",
+      "rangeDays": "{{count}} dias",
+      "rangeDays_one": "{{count}} dia",
+      "rangeDays_other": "{{count}} dias"
+    }
   }
 }
