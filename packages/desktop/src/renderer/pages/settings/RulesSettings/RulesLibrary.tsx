@@ -21,7 +21,6 @@ import { Button, Message, Skeleton, Tag } from '@arco-design/web-react';
 import { FileAddition, Plus } from '@icon-park/react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 import { RULES_EFFECTIVE_MAX_BYTES, type RuleResponse } from '@/common/types/platform/rules';
 import LibraryCard from '@/renderer/components/settings/SettingsModal/library/LibraryCard';
 import LibraryLayout from '@/renderer/components/settings/SettingsModal/library/LibraryLayout';
@@ -61,9 +60,7 @@ const RulesLibrary: React.FC = () => {
   const { rules, error, isLoading, reload } = useRuleList();
   const { attachments } = useKitAttachments(ALL);
   const projects = useStandardProjects(null);
-  // `?project=<id>`: open on that project (the project page's Manage links).
-  const [searchParams] = useSearchParams();
-  const originProjectId = useOriginProjectId(searchParams.get('project'));
+  const originProjectId = useOriginProjectId(null);
   const kitActions = useKitActions();
   const ruleActions = useRuleActions();
   const [chosenScope, setChosenScope] = useState<string | null>(null);

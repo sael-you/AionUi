@@ -21,6 +21,7 @@ import { ipcBridge } from '@/common';
 import { useProjectWorkspace } from '@/renderer/components/board/hooks/useBoardDirectory';
 import { useProjectTheme } from '@/renderer/components/workspace/ProjectIdentity';
 import KitTab from './KitTab';
+import styles from './ProjectPage.module.css';
 import OverviewTab from './OverviewTab';
 import { ErrorBlock } from './ProjectParts';
 import StorageTab from './StorageTab';
@@ -97,7 +98,7 @@ const ProjectPage: React.FC = () => {
           onChange={(key) => setTab(projectTabOf(key))}
           type='line'
           scrollPosition='center'
-          className='project-page-tabs'
+          className={styles.tabs}
           aria-label={t('conversation.projectPage.tabsLabel')}
         >
           {PROJECT_TABS.map((key) => (

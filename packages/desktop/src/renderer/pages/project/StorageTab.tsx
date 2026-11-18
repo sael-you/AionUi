@@ -60,7 +60,7 @@ const RootPanel: React.FC<{ root: StorageRoot }> = ({ root }) => {
     >
       <code className='break-all text-12px text-t-secondary'>{root.path}</code>
       {!root.exists ? (
-        <span className='text-12px text-t-tertiary'>{t('conversation.projectPage.storage.missing')}</span>
+        <span className='text-12px text-t-secondary'>{t('conversation.projectPage.storage.missing')}</span>
       ) : (
         <>
           {root.truncated ? (
@@ -70,14 +70,14 @@ const RootPanel: React.FC<{ root: StorageRoot }> = ({ root }) => {
               data-testid='project-storage-truncated'
             />
           ) : null}
-          <span className='text-12px text-t-tertiary'>
+          <span className='text-12px text-t-secondary'>
             {t('conversation.projectPage.storage.entries', {
               count: root.entries,
               shown: root.entries.toLocaleString(i18n.language),
             })}
           </span>
           {root.children.length === 0 ? (
-            <span className='text-12px text-t-tertiary'>{t('conversation.projectPage.storage.emptyRoot')}</span>
+            <span className='text-12px text-t-secondary'>{t('conversation.projectPage.storage.emptyRoot')}</span>
           ) : (
             <div className='grid gap-x-24px gap-y-10px lg:grid-cols-2'>
               <div className='min-w-0'>
@@ -154,7 +154,7 @@ const StorageTab: React.FC<{ projectId: string }> = ({ projectId }) => {
           </div>
           <span className='flex-1' />
           <div className='flex items-center gap-8px'>
-            <span className='text-12px text-t-tertiary' data-testid='project-storage-scanned'>
+            <span className='text-12px text-t-secondary' data-testid='project-storage-scanned'>
               {ago
                 ? t('conversation.projectPage.storage.scanned', { ago })
                 : t('conversation.projectPage.storage.scannedNow')}

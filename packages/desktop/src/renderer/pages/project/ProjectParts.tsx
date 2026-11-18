@@ -54,7 +54,7 @@ export const StatTile: React.FC<{
   >
     <span className='text-12px text-t-secondary truncate'>{label}</span>
     <span className='text-22px font-600 leading-28px text-t-primary truncate'>{value}</span>
-    {sub ? <span className='text-12px text-t-tertiary min-h-18px'>{sub}</span> : null}
+    {sub ? <span className='text-12px text-t-secondary min-h-18px'>{sub}</span> : null}
   </div>
 );
 
@@ -103,7 +103,7 @@ export const ErrorBlock: React.FC<{ error: unknown; onRetry?: () => void }> = ({
 
 export const EmptyBlock: React.FC<{ text: string; children?: React.ReactNode }> = ({ text, children }) => (
   <div className='flex flex-col items-start gap-8px py-6px' data-testid='project-empty'>
-    <span className='text-13px text-t-tertiary'>{text}</span>
+    <span className='text-13px text-t-secondary'>{text}</span>
     {children}
   </div>
 );

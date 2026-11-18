@@ -18,7 +18,10 @@ import {
   suggestedForProject,
   type LibrarySkill,
 } from '@/renderer/pages/settings/SkillsSettings/skillLibraryModel';
-import { conversationIdOfPath } from '@/renderer/components/settings/SettingsModal/library/useOriginProjectId';
+import {
+  conversationIdOfPath,
+  projectIdOfHash,
+} from '@/renderer/components/settings/SettingsModal/library/useOriginProjectId';
 
 const kit = (over: Partial<KitResponse>): KitResponse => ({
   id: 'k',
@@ -259,5 +262,13 @@ describe('origin scope', () => {
     expect(conversationIdOfPath('/conversation/abc-1?x=1')).toBe('abc-1');
     expect(conversationIdOfPath('/guid')).toBeNull();
     expect(conversationIdOfPath(null)).toBeNull();
+  });
+
+  it("reads ?project= of a settings route (the project page's Manage links, C42)", () => {
+    expect(projectIdOfHash('#/settings/rules?project=p%201')).toBe('p 1');
+    expect(projectIdOfHash('#/settings/tools?tab=x&project=p1')).toBe('p1');
+    expect(projectIdOfHash('#/settings/rules?project=')).toBeNull();
+    expect(projectIdOfHash('#/settings/rules')).toBeNull();
+    expect(projectIdOfHash(null)).toBeNull();
   });
 });

@@ -24,7 +24,6 @@
 import { Button, Message, Modal, Skeleton, Tag } from '@arco-design/web-react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 import type { IMcpServer, McpMarketInstance, McpMarketTemplate } from '@/common/config/storage';
 import { CategoryIcon, mcpCategoryVisualId } from '@/renderer/components/settings/SettingsModal/library/categoryVisual';
 import LibraryCard from '@/renderer/components/settings/SettingsModal/library/LibraryCard';
@@ -100,9 +99,7 @@ const McpMarketView: React.FC<McpMarketViewProps> = ({
   const isMobile = useIsMobileLayout();
   const market = useMcpMarket();
   const projects = useStandardProjects(null);
-  // `?project=<id>`: open on that project (the project page's Manage links).
-  const [searchParams] = useSearchParams();
-  const originProjectId = useOriginProjectId(searchParams.get('project'));
+  const originProjectId = useOriginProjectId(null);
   const { kits } = useKitList();
   const { attachments } = useKitAttachments(ALL);
   const [chosenScope, setChosenScope] = useState<string | null>(null);

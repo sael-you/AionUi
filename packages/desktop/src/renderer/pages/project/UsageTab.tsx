@@ -37,7 +37,7 @@ const RankRow: React.FC<{
     >
       <span className='flex items-baseline gap-6px min-w-0 text-13px text-t-primary'>
         <span className='truncate'>{name}</span>
-        {note ? <span className='shrink-0 text-12px text-t-tertiary'>{note}</span> : null}
+        {note ? <span className='shrink-0 text-12px text-t-secondary'>{note}</span> : null}
       </span>
       <span className='text-12px text-t-secondary tabular-nums whitespace-nowrap'>
         {formatTokens(tokens, i18n.language)}
@@ -96,7 +96,7 @@ const UsageTab: React.FC<{ projectId: string }> = ({ projectId }) => {
         {range}
         <span className='flex-1' />
         {usage.since !== undefined ? (
-          <span className='text-12px text-t-tertiary' data-testid='usage-since'>
+          <span className='text-12px text-t-secondary' data-testid='usage-since'>
             {t('conversation.projectPage.usage.since', {
               date: new Date(usage.since).toLocaleDateString(i18n.language),
             })}
@@ -184,7 +184,7 @@ const UsageTab: React.FC<{ projectId: string }> = ({ projectId }) => {
             ) : (
               <UsageChart days={usage.days} />
             )}
-            <span className='text-12px text-t-tertiary'>{t('conversation.projectPage.usage.utc')}</span>
+            <span className='text-12px text-t-secondary'>{t('conversation.projectPage.usage.utc')}</span>
           </Panel>
 
           <div className='grid gap-12px lg:grid-cols-2'>
@@ -204,7 +204,7 @@ const UsageTab: React.FC<{ projectId: string }> = ({ projectId }) => {
                           {row.name}
                         </Link>
                       ) : (
-                        <span className='text-t-tertiary'>
+                        <span className='text-t-secondary'>
                           {t('conversation.projectPage.usage.deletedConversation')}
                         </span>
                       )
