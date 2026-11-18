@@ -1,1 +1,3 @@
 mobile/
+# Wire fixtures: the exact output of the companion serialiser, kept byte for byte.
+packages/android-companion/app/src/test/resources/wire/*.json
