@@ -1931,7 +1931,8 @@
         "imported": "Importado",
         "managed": "Entregue",
         "pointer": "Só ponteiro",
-        "missing": "Não encontrado"
+        "missing": "Não encontrado",
+        "refused": "Recusado"
       }
     },
     "errors": {
@@ -1943,7 +1944,8 @@
       "confirmRequired": "Confirme o passo primeiro.",
       "notFound": "Esta regra não existe mais.",
       "sessionRequired": "Entre de novo para alterar regras.",
-      "csrf": "A página está desatualizada; recarregue e tente de novo."
+      "csrf": "A página está desatualizada; recarregue e tente de novo.",
+      "fileChanged": "O arquivo mudou desde a importação, então nada foi gravado. Revise a diferença e importe de novo ou restaure o arquivo."
     }
   }
 }

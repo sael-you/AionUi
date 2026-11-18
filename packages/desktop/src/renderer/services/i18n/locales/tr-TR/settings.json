@@ -1928,7 +1928,8 @@
         "imported": "İçe aktarıldı",
         "managed": "Devredildi",
         "pointer": "Yalnızca yönlendirme",
-        "missing": "Bulunamadı"
+        "missing": "Bulunamadı",
+        "refused": "Reddedildi"
       }
     },
     "errors": {
@@ -1940,7 +1941,8 @@
       "confirmRequired": "Önce adımı onayla.",
       "notFound": "Bu kural artık yok.",
       "sessionRequired": "Kuralları değiştirmek için yeniden giriş yap.",
-      "csrf": "Sayfa güncel değil; yenileyip tekrar dene."
+      "csrf": "Sayfa güncel değil; yenileyip tekrar dene.",
+      "fileChanged": "Dosya içe aktarıldıktan sonra değişti, bu yüzden hiçbir şey yazılmadı. Farkı inceleyin, sonra yeniden içe aktarın veya dosyayı geri yükleyin."
     }
   }
 }

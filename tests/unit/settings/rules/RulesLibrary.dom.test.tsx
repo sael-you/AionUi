@@ -343,6 +343,19 @@ describe('Settings → Rules (C37)', () => {
     expect(manage).toBeDisabled();
     fireEvent.click(within(handOver).getByText('settings.rules.import.ackProject'));
     await waitFor(() => expect(manage).not.toBeDisabled());
+    // A file changed since its import: core writes nothing and sends the diff, shown in place.
+    api.manage.mockRejectedValueOnce(
+      new BackendHttpError({
+        method: 'POST',
+        path: '/api/rules/files/manage',
+        status: 409,
+        body: { code: 'RULE_FILE_CHANGED', error: '-old line\n+new line' },
+      })
+    );
+    fireEvent.click(manage);
+    const changed = await within(handOver).findByTestId('rule-import-file-changed');
+    expect(changed).toHaveTextContent('settings.rules.errors.fileChanged');
+    expect(changed).toHaveTextContent('+new line');
     fireEvent.click(manage);
     await waitFor(() => expect(api.manage).toHaveBeenCalledWith({ scope: 'project', project_id: 'p1', confirm: true }));
   });

@@ -113,6 +113,8 @@ export const describeRuleError = (t: TFn, error: unknown): string => {
       return t('settings.rules.errors.stale');
     case 'RULE_ALREADY_IMPORTED':
       return t('settings.rules.errors.alreadyImported');
+    case 'RULE_FILE_CHANGED':
+      return t('settings.rules.errors.fileChanged');
     case 'RULE_CONFIRM_REQUIRED':
       return t('settings.rules.errors.confirmRequired');
     case 'RULE_NOT_FOUND':
