@@ -44,4 +44,23 @@
     <string name="scan_prompt">扫描 AionUi 中显示的配对二维码</string>
     <string name="not_a_pairing_code">此二维码不是 AionUi 配对码</string>
     <string name="scan_other_code">这个二维码不是配对码。请扫描标明用于配对的那个。</string>
+    <string name="update_title">应用更新</string>
+    <string name="update_auto">自动</string>
+    <string name="update_ask">先询问</string>
+    <string name="update_off">关闭</string>
+    <string name="update_check">立即检查</string>
+    <string name="update_install">安装</string>
+    <string name="update_state_idle">更新来自你的 AionUi。</string>
+    <string name="update_state_checking">正在检查…</string>
+    <string name="update_state_uptodate">已是最新</string>
+    <string name="update_state_available">版本 %1$s 可用</string>
+    <string name="update_state_downloading">正在下载版本 %1$s…</string>
+    <string name="update_state_verifying">正在校验版本 %1$s…</string>
+    <string name="update_state_ready">版本 %1$s 已就绪，将在智能体完成后安装</string>
+    <string name="update_state_confirm">Android 请你确认版本 %1$s</string>
+    <string name="update_state_installing">正在安装版本 %1$s…</string>
+    <string name="update_state_failed">更新未成功（%1$s）</string>
+    <string name="status_updated">%1$s · 已更新到 %2$s</string>
+    <string name="check_install">安装更新</string>
+    <string name="check_install_hint">允许应用从你的 AionUi 安装自身的更新。第一次由 Android 请你确认；之后在 Android 12 及更高版本上会自动安装。</string>
 </resources>

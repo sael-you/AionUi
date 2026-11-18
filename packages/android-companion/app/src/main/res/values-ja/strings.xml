@@ -44,4 +44,23 @@
     <string name="scan_prompt">AionUi に表示されたペアリング QR コードを読み取ってください</string>
     <string name="not_a_pairing_code">この QR コードは AionUi のペアリングコードではありません</string>
     <string name="scan_other_code">この QR コードはペアリング用ではありません。ペアリング用と表示されたコードをスキャンしてください。</string>
+    <string name="update_title">アプリの更新</string>
+    <string name="update_auto">自動</string>
+    <string name="update_ask">確認する</string>
+    <string name="update_off">オフ</string>
+    <string name="update_check">今すぐ確認</string>
+    <string name="update_install">インストール</string>
+    <string name="update_state_idle">更新はお使いの AionUi から届きます。</string>
+    <string name="update_state_checking">確認中…</string>
+    <string name="update_state_uptodate">最新です</string>
+    <string name="update_state_available">バージョン %1$s を利用できます</string>
+    <string name="update_state_downloading">バージョン %1$s をダウンロード中…</string>
+    <string name="update_state_verifying">バージョン %1$s を検証中…</string>
+    <string name="update_state_ready">バージョン %1$s の準備ができました。エージェントの作業が終わるとインストールします</string>
+    <string name="update_state_confirm">Android がバージョン %1$s の確認を求めています</string>
+    <string name="update_state_installing">バージョン %1$s をインストール中…</string>
+    <string name="update_state_failed">更新に失敗しました（%1$s）</string>
+    <string name="status_updated">%1$s · %2$s に更新しました</string>
+    <string name="check_install">更新のインストール</string>
+    <string name="check_install_hint">お使いの AionUi からアプリ自身の更新をインストールできるようにします。最初の 1 回は Android が確認を求め、以降は Android 12 以降で自動的にインストールされます。</string>
 </resources>

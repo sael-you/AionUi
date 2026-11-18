@@ -248,6 +248,16 @@ class RelaySessionTest {
     }
 
     @Test
+    fun `an update offer from core reaches the app once welcomed`() {
+        connected()
+        sockets.last.receive(
+            """{"type":"update_available","version":"0.2.2","version_code":5,"sha256":"${"a".repeat(64)}","url":"/api/devices/companion.apk?t=T","size":10,"expires_at":99}""",
+        )
+        scheduler.drain()
+        assertEquals(5, callbacks.offers.single().versionCode)
+    }
+
+    @Test
     fun `redial drops the socket and connects at once, also out of a backoff`() {
         val session = connected()
         val first = sockets.last

@@ -44,4 +44,23 @@
     <string name="scan_prompt">کد QR جفت‌سازی نمایش‌داده‌شده در AionUi را اسکن کنید</string>
     <string name="not_a_pairing_code">این کد QR کد جفت‌سازی AionUi نیست</string>
     <string name="scan_other_code">این کد QR کد جفت‌سازی نیست. کدی را اسکن کنید که برای جفت‌سازی مشخص شده است.</string>
+    <string name="update_title">به‌روزرسانی برنامه</string>
+    <string name="update_auto">خودکار</string>
+    <string name="update_ask">اول بپرس</string>
+    <string name="update_off">خاموش</string>
+    <string name="update_check">اکنون بررسی کن</string>
+    <string name="update_install">نصب</string>
+    <string name="update_state_idle">به‌روزرسانی‌ها از AionUi شما می‌آیند.</string>
+    <string name="update_state_checking">در حال بررسی…</string>
+    <string name="update_state_uptodate">به‌روز است</string>
+    <string name="update_state_available">نسخه %1$s در دسترس است</string>
+    <string name="update_state_downloading">در حال دانلود نسخه %1$s…</string>
+    <string name="update_state_verifying">در حال بررسی نسخه %1$s…</string>
+    <string name="update_state_ready">نسخه %1$s آماده است و پس از پایان کار عامل‌ها نصب می‌شود</string>
+    <string name="update_state_confirm">Android از شما می‌خواهد نسخه %1$s را تأیید کنید</string>
+    <string name="update_state_installing">در حال نصب نسخه %1$s…</string>
+    <string name="update_state_failed">به‌روزرسانی انجام نشد (%1$s)</string>
+    <string name="status_updated">%1$s · به %2$s به‌روز شد</string>
+    <string name="check_install">نصب به‌روزرسانی‌ها</string>
+    <string name="check_install_hint">به برنامه اجازه می‌دهد به‌روزرسانی‌های خودش را از AionUi شما نصب کند. اولین بار Android از شما تأیید می‌خواهد؛ دفعات بعد در Android 12 و بالاتر خودکار نصب می‌شود.</string>
 </resources>

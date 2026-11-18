@@ -1,5 +1,6 @@
 package com.aionui.companion.protocol
 
+import com.aionui.companion.update.UpdateOffer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -66,6 +67,8 @@ sealed interface Inbound {
     data class Request(val id: JsonPrimitive, val device: String, val verb: String, val args: JsonObject) : Inbound
     data class Stop(val device: String) : Inbound
     data object Pong : Inbound
+    /** A newer build of this app is published on the paired AionUi. */
+    data class UpdateAvailable(val offer: UpdateOffer) : Inbound
     /** Anything this version does not know (ignored, never fatal). */
     data class Unknown(val type: String) : Inbound
 }
@@ -96,23 +99,27 @@ object Frames {
             }
             "stop" -> Inbound.Stop(obj.string("device") ?: Relay.SELF)
             "pong" -> Inbound.Pong
+            // A malformed offer is ignored like any frame this version does not know.
+            "update_available" -> UpdateOffer.parse(obj)?.let { Inbound.UpdateAvailable(it) } ?: Inbound.Unknown(type)
             else -> Inbound.Unknown(type)
         }
     }
 
-    fun pair(code: String, name: String, version: String, health: Health? = null): String = encode("pair") {
+    fun pair(code: String, name: String, version: String, health: Health? = null, versionCode: Int? = null): String = encode("pair") {
         put("code", code)
         put("kind", Relay.KIND)
         put("name", name)
         put("version", version)
+        versionCode?.let { put("version_code", it) }
         put("capabilities", capabilities())
         health?.let { put("health", it.toJson()) }
     }
 
-    fun hello(token: String, version: String, health: Health? = null): String = encode("hello") {
+    fun hello(token: String, version: String, health: Health? = null, versionCode: Int? = null): String = encode("hello") {
         put("token", token)
         put("kind", Relay.KIND)
         put("version", version)
+        versionCode?.let { put("version_code", it) }
         put("capabilities", capabilities())
         health?.let { put("health", it.toJson()) }
     }
@@ -155,6 +162,19 @@ object Frames {
         put("name", name)
         put("data", data)
     }
+
+    /** "Check now" or an expired link: core answers with a fresh `update_available`, or not at all. */
+    fun updateCheck(): String = event("update_check")
+
+    /** Where the update stands (core logs it). */
+    fun update(state: String, versionCode: Int, error: String? = null): String = event(
+        "update",
+        buildJsonObject {
+            put("state", state)
+            put("version_code", versionCode)
+            error?.let { put("error", it) }
+        },
+    )
 
     fun ping(): String = encode("ping") {}
 

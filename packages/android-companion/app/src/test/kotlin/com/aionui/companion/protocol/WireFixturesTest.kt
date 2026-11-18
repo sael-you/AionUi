@@ -84,4 +84,22 @@ class WireFixturesTest {
         val sent = reply("""{"type":"request","id":10,"device":"self","verb":"tap","args":{"x":1,"y":2}}""", Phone(on = false))
         assertEquals(json(fixture("response-error")), json(sent))
     }
+
+    @Test
+    fun `update - core's offer is read, the check and progress events are the agreed frames`() {
+        val offer = (Frames.parse(fixture("update-available")) as Inbound.UpdateAvailable).offer
+        assertEquals(5, offer.versionCode)
+        assertEquals("/api/devices/companion.apk?t=TOKEN", offer.url)
+        assertEquals(json(fixture("event-update-check")), json(Frames.updateCheck()))
+        assertEquals(json(fixture("event-update")), json(Frames.update("failed", 5, "signature_mismatch")))
+    }
+
+    @Test
+    fun `pair and hello carry version_code, and an offer this version cannot read is just unknown`() {
+        for (frame in listOf(Frames.pair("C", "n", "0.2.2", null, 5), Frames.hello("t", "0.2.2", null, 5))) {
+            assertEquals(json("5"), json(frame).let { (it as kotlinx.serialization.json.JsonObject)["version_code"] })
+        }
+        assertEquals(Inbound.Unknown("update_available"), Frames.parse("""{"type":"update_available","version":"x"}"""))
+        assertEquals(Inbound.Unknown("update_none"), Frames.parse("""{"type":"update_none"}"""))
+    }
 }

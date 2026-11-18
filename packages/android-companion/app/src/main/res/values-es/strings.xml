@@ -44,4 +44,23 @@
     <string name="scan_prompt">Escanea el código QR de vinculación que muestra AionUi</string>
     <string name="not_a_pairing_code">Este código QR no es un código de vinculación de AionUi</string>
     <string name="scan_other_code">Ese código QR no es el de emparejamiento. Escanea el que está marcado para emparejar.</string>
+    <string name="update_title">Actualizaciones de la app</string>
+    <string name="update_auto">Automáticas</string>
+    <string name="update_ask">Preguntar antes</string>
+    <string name="update_off">Desactivadas</string>
+    <string name="update_check">Comprobar ahora</string>
+    <string name="update_install">Instalar</string>
+    <string name="update_state_idle">Las actualizaciones vienen de tu AionUi.</string>
+    <string name="update_state_checking">Comprobando…</string>
+    <string name="update_state_uptodate">Al día</string>
+    <string name="update_state_available">La versión %1$s está disponible</string>
+    <string name="update_state_downloading">Descargando la versión %1$s…</string>
+    <string name="update_state_verifying">Comprobando la versión %1$s…</string>
+    <string name="update_state_ready">La versión %1$s está lista y se instalará cuando terminen los agentes</string>
+    <string name="update_state_confirm">Android te pide confirmar la versión %1$s</string>
+    <string name="update_state_installing">Instalando la versión %1$s…</string>
+    <string name="update_state_failed">La actualización no funcionó (%1$s)</string>
+    <string name="status_updated">%1$s · actualizada a %2$s</string>
+    <string name="check_install">Instalar actualizaciones</string>
+    <string name="check_install_hint">Permite que la app instale sus propias actualizaciones desde tu AionUi. Android te pide confirmar la primera; las siguientes se instalan solas en Android 12 y posteriores.</string>
 </resources>
