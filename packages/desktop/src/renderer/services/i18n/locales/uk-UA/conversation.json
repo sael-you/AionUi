@@ -1191,11 +1191,11 @@
         "symlink": "Посилання",
         "other": "Інше"
       },
-      "entries": "{{count}} файлу й теки",
-      "entries_one": "{{count}} файл або тека",
-      "entries_few": "{{count}} файли й теки",
-      "entries_many": "{{count}} файлів і тек",
-      "entries_other": "{{count}} файлу й теки"
+      "entries": "{{shown}} файлу й теки",
+      "entries_one": "{{shown}} файл або тека",
+      "entries_few": "{{shown}} файли й теки",
+      "entries_many": "{{shown}} файлів і тек",
+      "entries_other": "{{shown}} файлу й теки"
     },
     "usage": {
       "range": "Період",

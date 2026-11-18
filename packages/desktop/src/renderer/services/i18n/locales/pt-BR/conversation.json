@@ -1159,9 +1159,9 @@
         "symlink": "Link",
         "other": "Outro"
       },
-      "entries": "{{count}} arquivos e pastas",
-      "entries_one": "{{count}} arquivo ou pasta",
-      "entries_other": "{{count}} arquivos e pastas"
+      "entries": "{{shown}} arquivos e pastas",
+      "entries_one": "{{shown}} arquivo ou pasta",
+      "entries_other": "{{shown}} arquivos e pastas"
     },
     "usage": {
       "range": "Período",

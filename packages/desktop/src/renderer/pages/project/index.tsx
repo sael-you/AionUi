@@ -55,7 +55,7 @@ const ProjectPage: React.FC = () => {
       data-testid='project-page'
     >
       <header className='flex flex-wrap items-center gap-8px border-0 border-b border-solid border-3 bg-base px-16px py-10px'>
-        <h1 className='m-0 flex min-w-0 flex-1 items-center gap-8px text-16px font-600 text-t-primary'>
+        <h1 className='m-0 flex min-w-0 basis-full items-center gap-8px text-16px font-600 text-t-primary md:basis-0 md:flex-1'>
           <span
             className='size-10px shrink-0 rd-full'
             style={{ background: 'var(--project-accent, var(--primary))' }}

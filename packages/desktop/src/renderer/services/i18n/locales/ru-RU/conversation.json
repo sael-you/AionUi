@@ -1191,11 +1191,11 @@
         "symlink": "Ссылка",
         "other": "Другое"
       },
-      "entries": "{{count}} файла и папки",
-      "entries_one": "{{count}} файл или папка",
-      "entries_few": "{{count}} файла и папки",
-      "entries_many": "{{count}} файлов и папок",
-      "entries_other": "{{count}} файла и папки"
+      "entries": "{{shown}} файла и папки",
+      "entries_one": "{{shown}} файл или папка",
+      "entries_few": "{{shown}} файла и папки",
+      "entries_many": "{{shown}} файлов и папок",
+      "entries_other": "{{shown}} файла и папки"
     },
     "usage": {
       "range": "Период",

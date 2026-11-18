@@ -1153,9 +1153,9 @@
         "symlink": "連結",
         "other": "其他"
       },
-      "entries": "{{count}} 個檔案和資料夾",
-      "entries_one": "{{count}} 個檔案和資料夾",
-      "entries_other": "{{count}} 個檔案和資料夾"
+      "entries": "{{shown}} 個檔案和資料夾",
+      "entries_one": "{{shown}} 個檔案和資料夾",
+      "entries_other": "{{shown}} 個檔案和資料夾"
     },
     "usage": {
       "range": "範圍",

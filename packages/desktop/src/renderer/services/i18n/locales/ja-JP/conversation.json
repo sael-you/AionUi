@@ -1153,9 +1153,9 @@
         "symlink": "リンク",
         "other": "その他"
       },
-      "entries": "{{count}} 個のファイルとフォルダー",
-      "entries_one": "{{count}} 個のファイルとフォルダー",
-      "entries_other": "{{count}} 個のファイルとフォルダー"
+      "entries": "{{shown}} 個のファイルとフォルダー",
+      "entries_one": "{{shown}} 個のファイルとフォルダー",
+      "entries_other": "{{shown}} 個のファイルとフォルダー"
     },
     "usage": {
       "range": "期間",

@@ -1155,9 +1155,9 @@
         "symlink": "Bağlantı",
         "other": "Diğer"
       },
-      "entries": "{{count}} dosya ve klasör",
-      "entries_one": "{{count}} dosya veya klasör",
-      "entries_other": "{{count}} dosya ve klasör"
+      "entries": "{{shown}} dosya ve klasör",
+      "entries_one": "{{shown}} dosya veya klasör",
+      "entries_other": "{{shown}} dosya ve klasör"
     },
     "usage": {
       "range": "Aralık",

@@ -53,7 +53,7 @@ const OverviewTab: React.FC<{
           label={t('conversation.projectPage.overview.tokensToday')}
           value={formatTokens(tokensOf(overview.tokens_today), i18n.language)}
           sub={
-            <Link className='!text-12px' onClick={() => onTab('usage')}>
+            <Link className='!p-0 !text-12px' onClick={() => onTab('usage')}>
               {t('conversation.projectPage.overview.turns', { count: overview.tokens_today.turns })}
             </Link>
           }
@@ -63,7 +63,7 @@ const OverviewTab: React.FC<{
           label={t('conversation.projectPage.overview.disk')}
           value={storage ? formatBytes(storage.total_bytes) : '—'}
           sub={
-            <Link className='!text-12px' onClick={() => onTab('storage')}>
+            <Link className='!p-0 !text-12px' onClick={() => onTab('storage')}>
               {!storage
                 ? t('conversation.projectPage.overview.diskNotScanned')
                 : diskShare === null

@@ -1153,9 +1153,9 @@
         "symlink": "링크",
         "other": "기타"
       },
-      "entries": "파일 및 폴더 {{count}}개",
-      "entries_one": "파일 및 폴더 {{count}}개",
-      "entries_other": "파일 및 폴더 {{count}}개"
+      "entries": "파일 및 폴더 {{shown}}개",
+      "entries_one": "파일 및 폴더 {{shown}}개",
+      "entries_other": "파일 및 폴더 {{shown}}개"
     },
     "usage": {
       "range": "기간",

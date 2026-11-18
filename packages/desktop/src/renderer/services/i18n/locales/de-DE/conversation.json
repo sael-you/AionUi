@@ -1154,9 +1154,9 @@
         "symlink": "Verknüpfung",
         "other": "Sonstiges"
       },
-      "entries": "{{count}} Dateien und Ordner",
-      "entries_one": "{{count}} Datei oder Ordner",
-      "entries_other": "{{count}} Dateien und Ordner"
+      "entries": "{{shown}} Dateien und Ordner",
+      "entries_one": "{{shown}} Datei oder Ordner",
+      "entries_other": "{{shown}} Dateien und Ordner"
     },
     "usage": {
       "range": "Zeitraum",

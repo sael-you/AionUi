@@ -198,7 +198,7 @@ const UsageTab: React.FC<{ projectId: string }> = ({ projectId }) => {
                     name={
                       row.name ? (
                         <Link
-                          className='!text-13px !text-t-primary hover:underline'
+                          className='!p-0 !text-13px !text-t-primary hover:underline'
                           onClick={() => void navigate(`/conversation/${encodeURIComponent(row.conversation_id)}`)}
                         >
                           {row.name}

@@ -243,11 +243,11 @@ describe('Project page (C42)', () => {
 
   describe('Overview', () => {
     it('loading, then the four tiles and what conversations get', async () => {
-      let resolve: (value: ProjectOverviewResponse) => void = () => undefined;
-      api.overview.mockReturnValue(new Promise<ProjectOverviewResponse>((done) => (resolve = done)));
+      const gate: { open?: (value: ProjectOverviewResponse) => void } = {};
+      api.overview.mockReturnValue(new Promise<ProjectOverviewResponse>((done) => (gate.open = done)));
       renderPage();
       expect(await screen.findByLabelText('conversation.projectPage.loading')).toHaveAttribute('aria-busy', 'true');
-      resolve(OVERVIEW);
+      gate.open?.(OVERVIEW);
 
       expect(await screen.findByTestId('project-tile-conversations')).toHaveTextContent('4');
       expect(screen.getByTestId('project-tile-conversations')).toHaveTextContent('conversationsSub:9');

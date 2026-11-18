@@ -142,9 +142,10 @@ const UsageChart: React.FC<{ days: UsageDay[] }> = ({ days }) => {
             ))}
             {layout.labelled.includes(index) ? (
               <text
-                x={bar.x + bar.width / 2}
+                // The last label is right-aligned to its bar so it cannot run out of the plot.
+                x={index === layout.bars.length - 1 ? bar.x + bar.width : bar.x + bar.width / 2}
                 y={layout.plot.top + layout.plot.height + 15}
-                textAnchor='middle'
+                textAnchor={index === layout.bars.length - 1 ? 'end' : 'middle'}
                 fontSize={11}
                 fill='var(--color-text-3)'
               >

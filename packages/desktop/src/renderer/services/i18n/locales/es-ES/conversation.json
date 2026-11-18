@@ -1154,9 +1154,9 @@
         "symlink": "Enlace",
         "other": "Otro"
       },
-      "entries": "{{count}} archivos y carpetas",
-      "entries_one": "{{count}} archivo o carpeta",
-      "entries_other": "{{count}} archivos y carpetas"
+      "entries": "{{shown}} archivos y carpetas",
+      "entries_one": "{{shown}} archivo o carpeta",
+      "entries_other": "{{shown}} archivos y carpetas"
     },
     "usage": {
       "range": "Periodo",

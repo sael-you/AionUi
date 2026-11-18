@@ -1153,9 +1153,9 @@
         "symlink": "Lien",
         "other": "Autre"
       },
-      "entries": "{{count}} fichiers et dossiers",
-      "entries_one": "{{count}} fichier ou dossier",
-      "entries_other": "{{count}} fichiers et dossiers"
+      "entries": "{{shown}} fichiers et dossiers",
+      "entries_one": "{{shown}} fichier ou dossier",
+      "entries_other": "{{shown}} fichiers et dossiers"
     },
     "usage": {
       "range": "Période",

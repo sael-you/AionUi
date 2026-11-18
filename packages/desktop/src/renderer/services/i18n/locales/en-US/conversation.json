@@ -1153,9 +1153,9 @@
         "symlink": "Link",
         "other": "Other"
       },
-      "entries": "{{count}} files and folders",
-      "entries_one": "{{count}} file or folder",
-      "entries_other": "{{count}} files and folders"
+      "entries": "{{shown}} files and folders",
+      "entries_one": "{{shown}} file or folder",
+      "entries_other": "{{shown}} files and folders"
     },
     "usage": {
       "range": "Range",

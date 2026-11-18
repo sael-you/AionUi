@@ -1153,9 +1153,9 @@
         "symlink": "链接",
         "other": "其他"
       },
-      "entries": "{{count}} 个文件和文件夹",
-      "entries_one": "{{count}} 个文件和文件夹",
-      "entries_other": "{{count}} 个文件和文件夹"
+      "entries": "{{shown}} 个文件和文件夹",
+      "entries_one": "{{shown}} 个文件和文件夹",
+      "entries_other": "{{shown}} 个文件和文件夹"
     },
     "usage": {
       "range": "范围",

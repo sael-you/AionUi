@@ -50,7 +50,7 @@ const SizeRow: React.FC<{ name: string; bytes: number; whole: number; icon?: Rea
 );
 
 const RootPanel: React.FC<{ root: StorageRoot }> = ({ root }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const title = t(`conversation.projectPage.storage.root.${root.label}`, { defaultValue: root.label });
   return (
     <Panel
@@ -71,7 +71,10 @@ const RootPanel: React.FC<{ root: StorageRoot }> = ({ root }) => {
             />
           ) : null}
           <span className='text-12px text-t-tertiary'>
-            {t('conversation.projectPage.storage.entries', { count: root.entries })}
+            {t('conversation.projectPage.storage.entries', {
+              count: root.entries,
+              shown: root.entries.toLocaleString(i18n.language),
+            })}
           </span>
           {root.children.length === 0 ? (
             <span className='text-12px text-t-tertiary'>{t('conversation.projectPage.storage.emptyRoot')}</span>

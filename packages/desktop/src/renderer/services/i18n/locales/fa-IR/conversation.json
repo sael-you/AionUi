@@ -1153,9 +1153,9 @@
         "symlink": "پیوند",
         "other": "سایر"
       },
-      "entries": "{{count}} فایل و پوشه",
-      "entries_one": "{{count}} فایل یا پوشه",
-      "entries_other": "{{count}} فایل و پوشه"
+      "entries": "{{shown}} فایل و پوشه",
+      "entries_one": "{{shown}} فایل یا پوشه",
+      "entries_other": "{{shown}} فایل و پوشه"
     },
     "usage": {
       "range": "بازه",
