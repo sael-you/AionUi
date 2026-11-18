@@ -1078,5 +1078,111 @@
   "pendingUpload": {
     "waiting": "接続を待ってアップロードします:",
     "tooLarge": "{{name}} は大きすぎてオフラインで保持できません（最大 {{max}} MB）— オンラインになったら添付し直してください"
+  },
+  "projectPage": {
+    "title": "プロジェクト",
+    "open": "プロジェクトを開く",
+    "tabsLabel": "プロジェクトのセクション",
+    "loading": "読み込み中",
+    "retry": "再試行",
+    "tabs": {
+      "overview": "概要",
+      "kit": "キット",
+      "storage": "ストレージ",
+      "usage": "使用量"
+    },
+    "errors": {
+      "notFound": "このプロジェクトはもう存在しません。",
+      "generic": "このプロジェクトの読み込み中に問題が発生しました。"
+    },
+    "overview": {
+      "conversations": "アクティブな会話",
+      "conversationsSub": "合計 {{total}}",
+      "tokensToday": "今日のトークン",
+      "disk": "ディスク使用量",
+      "diskShare": "ディスクの {{percent}}%",
+      "diskNotScanned": "未計測",
+      "openCards": "未完了のボードカード",
+      "openCardsSub": "完了列以外",
+      "getsTitle": "ここの会話が受け取るもの",
+      "gets": {
+        "skills": "スキル",
+        "mcps": "MCP サーバー",
+        "rules": "ルール",
+        "servers": "サーバー",
+        "memory": "メモリファイル"
+      },
+      "turns": "{{count}} ターン",
+      "turns_one": "{{count}} ターン",
+      "turns_other": "{{count}} ターン"
+    },
+    "kit": {
+      "intro": "このプロジェクトの会話が開始時に受け取るものを、提供元ごとにまとめています。変更するには、それを管理するページを開いてください。",
+      "empty": "ここの会話はまだ追加で何も受け取りません。",
+      "manage": {
+        "skill": "スキルを管理 ({{n}})",
+        "mcp": "MCP サーバーを管理 ({{n}})",
+        "rule": "ルールを管理 ({{n}})",
+        "server": "サーバーを管理 ({{n}})"
+      },
+      "source": {
+        "project": "このプロジェクト",
+        "global": "グローバル",
+        "kit": "キット：{{name}}"
+      }
+    },
+    "storage": {
+      "total": "ディスク上の合計",
+      "shareOfDisk": "{{total}} のディスクの {{percent}}% · 空き {{free}}",
+      "scanned": "{{ago}}に計測",
+      "scannedNow": "たった今計測",
+      "rescan": "再計測",
+      "scanning": "フォルダーを計測しています。数秒かかることがあります。",
+      "root": {
+        "workspace": "ワークスペース",
+        "attached": "追加フォルダー",
+        "memory": "メモリ"
+      },
+      "missing": "このフォルダーは存在しません。",
+      "truncated": "スキャンが途中で停止したため、実際のサイズはこれより大きくなります。",
+      "emptyRoot": "このフォルダーは空です。",
+      "empty": "このプロジェクトには計測するフォルダーがありません。",
+      "topLevel": "最上位で大きいもの",
+      "largestFiles": "最大のファイル",
+      "kind": {
+        "symlink": "リンク",
+        "other": "その他"
+      },
+      "entries": "{{count}} 個のファイルとフォルダー",
+      "entries_one": "{{count}} 個のファイルとフォルダー",
+      "entries_other": "{{count}} 個のファイルとフォルダー"
+    },
+    "usage": {
+      "range": "期間",
+      "perDay": "1 日あたりのトークン",
+      "since": "{{date}} から記録。それ以前のターンは含まれません。",
+      "none": "使用量はまだ記録されていません。このプロジェクトの次のターン後に表示されます。",
+      "series": {
+        "input": "入力",
+        "output": "出力",
+        "cache_read": "キャッシュ読み取り",
+        "cache_write": "キャッシュ書き込み"
+      },
+      "total": "合計",
+      "totalTokens": "合計トークン",
+      "cost": "コスト",
+      "cache": "キャッシュ",
+      "showTable": "表で表示",
+      "day": "日",
+      "byConversation": "会話別（上位 10）",
+      "byModel": "モデル別",
+      "deletedConversation": "削除された会話",
+      "unknownModel": "不明なモデル",
+      "chartLabel": "1 日あたりのトークン。左右の矢印キーで各日を読み上げます。",
+      "utc": "日付は UTC です。",
+      "rangeDays": "{{count}} 日",
+      "rangeDays_one": "{{count}} 日",
+      "rangeDays_other": "{{count}} 日"
+    }
   }
 }

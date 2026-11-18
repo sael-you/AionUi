@@ -1078,5 +1078,111 @@
   "pendingUpload": {
     "waiting": "等待连接恢复后上传：",
     "tooLarge": "{{name}} 太大，无法离线保存（最大 {{max}} MB）— 请在联网后重新添加"
+  },
+  "projectPage": {
+    "title": "项目",
+    "open": "打开项目",
+    "tabsLabel": "项目分区",
+    "loading": "加载中",
+    "retry": "重试",
+    "tabs": {
+      "overview": "概览",
+      "kit": "套件",
+      "storage": "存储",
+      "usage": "用量"
+    },
+    "errors": {
+      "notFound": "此项目已不存在。",
+      "generic": "加载此项目时出了问题。"
+    },
+    "overview": {
+      "conversations": "活跃对话",
+      "conversationsSub": "共 {{total}} 个",
+      "tokensToday": "今日令牌",
+      "disk": "磁盘占用",
+      "diskShare": "占磁盘 {{percent}}%",
+      "diskNotScanned": "尚未测量",
+      "openCards": "未完成的看板卡片",
+      "openCardsSub": "不在完成列中",
+      "getsTitle": "这里的对话会获得什么",
+      "gets": {
+        "skills": "技能",
+        "mcps": "MCP 服务器",
+        "rules": "规则",
+        "servers": "服务器",
+        "memory": "记忆文件"
+      },
+      "turns": "{{count}} 轮",
+      "turns_one": "{{count}} 轮",
+      "turns_other": "{{count}} 轮"
+    },
+    "kit": {
+      "intro": "此项目中的对话开始时获得的全部内容，按来源分组。要更改，请打开管理它的页面。",
+      "empty": "这里的对话暂时没有额外内容。",
+      "manage": {
+        "skill": "管理技能（{{n}}）",
+        "mcp": "管理 MCP 服务器（{{n}}）",
+        "rule": "管理规则（{{n}}）",
+        "server": "管理服务器（{{n}}）"
+      },
+      "source": {
+        "project": "此项目",
+        "global": "全局",
+        "kit": "套件：{{name}}"
+      }
+    },
+    "storage": {
+      "total": "磁盘总占用",
+      "shareOfDisk": "占 {{total}} 磁盘的 {{percent}}% · 剩余 {{free}}",
+      "scanned": "{{ago}}测量",
+      "scannedNow": "刚刚测量",
+      "rescan": "重新测量",
+      "scanning": "正在测量文件夹，可能需要几秒钟。",
+      "root": {
+        "workspace": "工作区",
+        "attached": "附加文件夹",
+        "memory": "记忆"
+      },
+      "missing": "此文件夹不存在。",
+      "truncated": "扫描提前停止，实际大小更大。",
+      "emptyRoot": "此文件夹为空。",
+      "empty": "此项目没有可测量的文件夹。",
+      "topLevel": "顶层最大的项",
+      "largestFiles": "最大的文件",
+      "kind": {
+        "symlink": "链接",
+        "other": "其他"
+      },
+      "entries": "{{count}} 个文件和文件夹",
+      "entries_one": "{{count}} 个文件和文件夹",
+      "entries_other": "{{count}} 个文件和文件夹"
+    },
+    "usage": {
+      "range": "范围",
+      "perDay": "每日令牌",
+      "since": "自 {{date}} 起记录，更早的轮次不计入。",
+      "none": "尚无用量记录。此项目下一轮对话后会显示。",
+      "series": {
+        "input": "输入",
+        "output": "输出",
+        "cache_read": "缓存读取",
+        "cache_write": "缓存写入"
+      },
+      "total": "合计",
+      "totalTokens": "令牌总数",
+      "cost": "费用",
+      "cache": "缓存",
+      "showTable": "以表格显示",
+      "day": "日期",
+      "byConversation": "按对话（前 10）",
+      "byModel": "按模型",
+      "deletedConversation": "已删除的对话",
+      "unknownModel": "未知模型",
+      "chartLabel": "每日令牌。使用左右方向键逐日读取。",
+      "utc": "日期为 UTC。",
+      "rangeDays": "{{count}} 天",
+      "rangeDays_one": "{{count}} 天",
+      "rangeDays_other": "{{count}} 天"
+    }
   }
 }

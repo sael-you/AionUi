@@ -17,7 +17,7 @@ import { useRovingTree } from '@/renderer/hooks/ui/useRovingTree';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Button, Dropdown, Input, Menu, Modal, Tooltip } from '@arco-design/web-react';
-import { Box, Brain, Comment, FolderClose, MoreOne, Plus, ViewGridDetail } from '@icon-park/react';
+import { Box, Brain, Comment, Dashboard, FolderClose, MoreOne, Plus, ViewGridDetail } from '@icon-park/react';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import ConversationChildren from './components/ConversationChildren';
 import MoveUnderModal from './components/MoveUnderModal';
+import { projectPagePath } from '@/renderer/pages/project/projectModel';
 import KitLevelModal from '@/renderer/pages/settings/ToolsSettings/kits/KitLevelModal';
 import NeedsYouBox, { RunStateAnnouncer, type NeedsYouItem } from './components/NeedsYouBox';
 import ProjectGroup from './components/ProjectGroup';
@@ -859,12 +860,19 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                     void navigate('/guid', { state: { workspace: group.workspace } });
                     onSessionClick?.();
                   };
+                  const openProject = (): void => {
+                    if (!group.source.projectId) return;
+                    void navigate(projectPagePath(group.source.projectId));
+                    onSessionClick?.();
+                  };
                   const status = projectStatusOf(group.source.conversations);
                   const projectMenu = (
                     <Menu
                       onClickMenuItem={(key) => {
                         if (key === 'new') {
                           startConversation();
+                        } else if (key === 'open' && group.source.projectId) {
+                          openProject();
                         } else if (key === 'board' && group.source.projectId) {
                           void navigate(`/board/${encodeURIComponent(group.source.projectId)}`);
                           onSessionClick?.();
@@ -890,6 +898,13 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         <span className='flex items-center gap-8px'>
                           <Plus theme='outline' size='14' />
                           {t('conversation.history.newConversationInProject')}
+                        </span>
+                      </Menu.Item>
+                      {/* The project page (C42); also the keyboard path to it. */}
+                      <Menu.Item key='open' disabled={!group.source.projectId}>
+                        <span className='flex items-center gap-8px'>
+                          <Dashboard theme='outline' size='14' />
+                          {t('conversation.projectPage.open')}
                         </span>
                       </Menu.Item>
                       {/* The project board (D40). Also the keyboard path: row buttons are out of the Tab order. */}
@@ -1017,6 +1032,7 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                       name={group.displayName}
                       expanded={filtering || expandedWorkspaces.includes(group.workspace)}
                       onToggle={() => handleToggleWorkspace(group.workspace)}
+                      onOpen={group.source.projectId ? openProject : undefined}
                       active={isCurrentProject}
                       count={group.source.conversations.length}
                       running={status.running}

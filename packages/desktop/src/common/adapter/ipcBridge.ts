@@ -12,6 +12,12 @@
  * native dialogs, auto-update, devtools, zoom, CDP, deep links) remain as IPC.
  */
 
+import type {
+  ProjectOverviewResponse,
+  ProjectStorageResponse,
+  ProjectUsageResponse,
+  UsageRangeDays,
+} from '../types/platform/projectPage';
 import type { IConfirmation } from '@/common/chat/chatLib';
 import type { AcpSlashCommandApiItem } from '@/common/chat/slash/types';
 import { bridge } from '@/common/platform/bridge';
@@ -732,6 +738,27 @@ export const project = {
 const memoryPath = (projectId: string): string => `/api/projects/${encodeURIComponent(projectId)}/memory`;
 const memoryFilePath = (projectId: string, file: string): string =>
   `${memoryPath(projectId)}/${encodeURIComponent(file)}`;
+
+// ---------------------------------------------------------------------------
+// Project page (C42): overview tiles, usage and disk usage of one project.
+// ---------------------------------------------------------------------------
+
+const projectPagePath = (projectId: string, leaf: string): string =>
+  `/api/projects/${encodeURIComponent(projectId)}/${leaf}`;
+
+export const projectPage = {
+  overview: httpGet<ProjectOverviewResponse, { project_id: string }>((p) => projectPagePath(p.project_id, 'overview')),
+  usage: httpGet<ProjectUsageResponse, { project_id: string; days: UsageRangeDays }>(
+    (p) => `${projectPagePath(p.project_id, 'usage')}?days=${p.days}`
+  ),
+  /** Cached up to 10 minutes; the first call scans (seconds). */
+  storage: httpGet<ProjectStorageResponse, { project_id: string }>((p) => projectPagePath(p.project_id, 'storage')),
+  /** Scans now and answers with the new result. */
+  rescanStorage: httpPost<ProjectStorageResponse, { project_id: string }>(
+    (p) => projectPagePath(p.project_id, 'storage/rescan'),
+    () => undefined
+  ),
+};
 
 export const memory = {
   /** GET /api/projects/{pid}/memory → files (no bodies), index size, lint. */

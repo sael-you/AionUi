@@ -1079,5 +1079,111 @@
   "pendingUpload": {
     "waiting": "Esperando la conexión para subir:",
     "tooLarge": "{{name}} es demasiado grande para guardarlo sin conexión (máx. {{max}} MB): vuelve a adjuntarlo cuando tengas conexión"
+  },
+  "projectPage": {
+    "title": "Proyecto",
+    "open": "Abrir proyecto",
+    "tabsLabel": "Secciones del proyecto",
+    "loading": "Cargando",
+    "retry": "Reintentar",
+    "tabs": {
+      "overview": "Resumen",
+      "kit": "Kit",
+      "storage": "Almacenamiento",
+      "usage": "Uso"
+    },
+    "errors": {
+      "notFound": "Este proyecto ya no existe.",
+      "generic": "Algo salió mal al cargar este proyecto."
+    },
+    "overview": {
+      "conversations": "Conversaciones activas",
+      "conversationsSub": "{{total}} en total",
+      "tokensToday": "Tokens hoy",
+      "disk": "Disco usado",
+      "diskShare": "{{percent}} % del disco",
+      "diskNotScanned": "Aún sin medir",
+      "openCards": "Tarjetas abiertas del tablero",
+      "openCardsSub": "Fuera de una columna de hecho",
+      "getsTitle": "Qué reciben las conversaciones aquí",
+      "gets": {
+        "skills": "Skills",
+        "mcps": "Servidores MCP",
+        "rules": "Reglas",
+        "servers": "Servidores",
+        "memory": "Archivos de memoria"
+      },
+      "turns": "{{count}} turnos",
+      "turns_one": "{{count}} turno",
+      "turns_other": "{{count}} turnos"
+    },
+    "kit": {
+      "intro": "Todo aquello con lo que empieza una conversación de este proyecto, agrupado por origen. Para cambiarlo, abre la página que lo gestiona.",
+      "empty": "Las conversaciones aún no reciben nada adicional aquí.",
+      "manage": {
+        "skill": "Gestionar skills ({{n}})",
+        "mcp": "Gestionar servidores MCP ({{n}})",
+        "rule": "Gestionar reglas ({{n}})",
+        "server": "Gestionar servidores ({{n}})"
+      },
+      "source": {
+        "project": "Este proyecto",
+        "global": "Global",
+        "kit": "Kit: {{name}}"
+      }
+    },
+    "storage": {
+      "total": "Total en disco",
+      "shareOfDisk": "{{percent}} % de un disco de {{total}} · {{free}} libres",
+      "scanned": "Medido {{ago}}",
+      "scannedNow": "Medido ahora mismo",
+      "rescan": "Medir de nuevo",
+      "scanning": "Midiendo las carpetas. Puede tardar unos segundos.",
+      "root": {
+        "workspace": "Espacio de trabajo",
+        "attached": "Carpeta adjunta",
+        "memory": "Memoria"
+      },
+      "missing": "Esta carpeta no existe.",
+      "truncated": "El análisis se detuvo antes de terminar; el tamaño real es mayor.",
+      "emptyRoot": "Esta carpeta está vacía.",
+      "empty": "Este proyecto no tiene ninguna carpeta que medir.",
+      "topLevel": "Lo más grande del primer nivel",
+      "largestFiles": "Archivos más grandes",
+      "kind": {
+        "symlink": "Enlace",
+        "other": "Otro"
+      },
+      "entries": "{{count}} archivos y carpetas",
+      "entries_one": "{{count}} archivo o carpeta",
+      "entries_other": "{{count}} archivos y carpetas"
+    },
+    "usage": {
+      "range": "Periodo",
+      "perDay": "Tokens por día",
+      "since": "Registrado desde {{date}}. Los turnos anteriores no se cuentan.",
+      "none": "Aún no hay uso registrado. Aparecerá tras el próximo turno en este proyecto.",
+      "series": {
+        "input": "Entrada",
+        "output": "Salida",
+        "cache_read": "Lectura de caché",
+        "cache_write": "Escritura de caché"
+      },
+      "total": "Total",
+      "totalTokens": "Tokens totales",
+      "cost": "Coste",
+      "cache": "Caché",
+      "showTable": "Mostrar como tabla",
+      "day": "Día",
+      "byConversation": "Por conversación (top 10)",
+      "byModel": "Por modelo",
+      "deletedConversation": "Conversación eliminada",
+      "unknownModel": "Modelo desconocido",
+      "chartLabel": "Tokens por día. Usa las flechas izquierda y derecha para leer cada día.",
+      "utc": "Los días son UTC.",
+      "rangeDays": "{{count}} días",
+      "rangeDays_one": "{{count}} día",
+      "rangeDays_other": "{{count}} días"
+    }
   }
 }

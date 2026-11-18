@@ -1078,5 +1078,111 @@
   "pendingUpload": {
     "waiting": "연결되면 업로드합니다:",
     "tooLarge": "{{name}} 파일이 너무 커서 오프라인으로 보관할 수 없습니다(최대 {{max}}MB) — 온라인이 되면 다시 첨부하세요"
+  },
+  "projectPage": {
+    "title": "프로젝트",
+    "open": "프로젝트 열기",
+    "tabsLabel": "프로젝트 섹션",
+    "loading": "불러오는 중",
+    "retry": "다시 시도",
+    "tabs": {
+      "overview": "개요",
+      "kit": "키트",
+      "storage": "저장 공간",
+      "usage": "사용량"
+    },
+    "errors": {
+      "notFound": "이 프로젝트는 더 이상 없습니다.",
+      "generic": "이 프로젝트를 불러오는 중 문제가 발생했습니다."
+    },
+    "overview": {
+      "conversations": "활성 대화",
+      "conversationsSub": "전체 {{total}}개",
+      "tokensToday": "오늘 토큰",
+      "disk": "디스크 사용량",
+      "diskShare": "디스크의 {{percent}}%",
+      "diskNotScanned": "아직 측정 안 됨",
+      "openCards": "열린 보드 카드",
+      "openCardsSub": "완료 열이 아닌 카드",
+      "getsTitle": "여기 대화가 받는 것",
+      "gets": {
+        "skills": "스킬",
+        "mcps": "MCP 서버",
+        "rules": "규칙",
+        "servers": "서버",
+        "memory": "메모리 파일"
+      },
+      "turns": "{{count}}턴",
+      "turns_one": "{{count}}턴",
+      "turns_other": "{{count}}턴"
+    },
+    "kit": {
+      "intro": "이 프로젝트의 대화가 시작할 때 받는 모든 것을 출처별로 묶었습니다. 변경하려면 이를 관리하는 페이지를 여세요.",
+      "empty": "여기 대화는 아직 추가로 받는 것이 없습니다.",
+      "manage": {
+        "skill": "스킬 관리 ({{n}})",
+        "mcp": "MCP 서버 관리 ({{n}})",
+        "rule": "규칙 관리 ({{n}})",
+        "server": "서버 관리 ({{n}})"
+      },
+      "source": {
+        "project": "이 프로젝트",
+        "global": "전역",
+        "kit": "키트: {{name}}"
+      }
+    },
+    "storage": {
+      "total": "디스크 합계",
+      "shareOfDisk": "{{total}} 디스크의 {{percent}}% · {{free}} 남음",
+      "scanned": "{{ago}} 측정",
+      "scannedNow": "방금 측정",
+      "rescan": "다시 측정",
+      "scanning": "폴더를 측정하는 중입니다. 몇 초 걸릴 수 있습니다.",
+      "root": {
+        "workspace": "워크스페이스",
+        "attached": "연결된 폴더",
+        "memory": "메모리"
+      },
+      "missing": "이 폴더가 없습니다.",
+      "truncated": "스캔이 일찍 중단되어 실제 크기는 더 큽니다.",
+      "emptyRoot": "이 폴더는 비어 있습니다.",
+      "empty": "이 프로젝트에는 측정할 폴더가 없습니다.",
+      "topLevel": "최상위에서 가장 큰 항목",
+      "largestFiles": "가장 큰 파일",
+      "kind": {
+        "symlink": "링크",
+        "other": "기타"
+      },
+      "entries": "파일 및 폴더 {{count}}개",
+      "entries_one": "파일 및 폴더 {{count}}개",
+      "entries_other": "파일 및 폴더 {{count}}개"
+    },
+    "usage": {
+      "range": "기간",
+      "perDay": "일별 토큰",
+      "since": "{{date}}부터 기록됨. 이전 턴은 포함되지 않습니다.",
+      "none": "아직 기록된 사용량이 없습니다. 이 프로젝트의 다음 턴 이후에 표시됩니다.",
+      "series": {
+        "input": "입력",
+        "output": "출력",
+        "cache_read": "캐시 읽기",
+        "cache_write": "캐시 쓰기"
+      },
+      "total": "합계",
+      "totalTokens": "총 토큰",
+      "cost": "비용",
+      "cache": "캐시",
+      "showTable": "표로 보기",
+      "day": "날짜",
+      "byConversation": "대화별 (상위 10)",
+      "byModel": "모델별",
+      "deletedConversation": "삭제된 대화",
+      "unknownModel": "알 수 없는 모델",
+      "chartLabel": "일별 토큰. 왼쪽과 오른쪽 화살표 키로 각 날짜를 읽습니다.",
+      "utc": "날짜는 UTC 기준입니다.",
+      "rangeDays": "{{count}}일",
+      "rangeDays_one": "{{count}}일",
+      "rangeDays_other": "{{count}}일"
+    }
   }
 }

@@ -31,6 +31,7 @@ const TaskDetailPage = React.lazy(() => import('@renderer/pages/cron/ScheduledTa
 const TeamIndex = React.lazy(() => import('@renderer/pages/team'));
 const BoardRoute = React.lazy(() => import('@renderer/pages/board'));
 const MemoryRoute = React.lazy(() => import('@renderer/pages/memory'));
+const ProjectRoute = React.lazy(() => import('@renderer/pages/project'));
 const MemorySettings = React.lazy(() => import('@renderer/pages/settings/MemorySettings'));
 
 const withRouteFallback = (Component: React.LazyExoticComponent<React.ComponentType>) => (
@@ -126,6 +127,7 @@ const PanelRoute: React.FC<{ layout: React.ReactElement }> = ({ layout }) => {
           <Route path='/scheduled/:job_id' element={withRouteFallback(TaskDetailPage)} />
           <Route path='/board/:projectId' element={withRouteFallback(BoardRoute)} />
           <Route path='/memory/:projectId' element={withRouteFallback(MemoryRoute)} />
+          <Route path='/project/:projectId' element={withRouteFallback(ProjectRoute)} />
         </Route>
         <Route path='*' element={<Navigate to={status === 'authenticated' ? '/guid' : '/login'} replace />} />
       </Routes>

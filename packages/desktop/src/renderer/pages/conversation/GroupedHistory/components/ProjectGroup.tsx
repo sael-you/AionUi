@@ -57,6 +57,8 @@ export type ProjectGroupProps = {
   name: string;
   expanded: boolean;
   onToggle: () => void;
+  /** Open the project page (C42): the name is its link; the rest of the row still folds. */
+  onOpen?: () => void;
   /** The project shown in the main area (C8): tint + accent bar on this row. */
   active?: boolean;
   /** Root conversations in the project. */
@@ -102,6 +104,7 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
   name,
   expanded,
   onToggle,
+  onOpen,
   active = false,
   count,
   running = false,
@@ -187,7 +190,19 @@ const ProjectGroup: React.FC<ProjectGroupProps> = ({
           >
             {/* C24: a quiet label, the chevron AFTER the name, no count; one dot for
                 the most urgent state inside (needs you › failed › running). */}
-            <span className={styles.projectName} title={name}>
+            <span
+              className={classNames(styles.projectName, { [styles.projectNameLink]: Boolean(onOpen) })}
+              title={name}
+              data-testid={onOpen ? `project-open-${workspace}` : undefined}
+              onClick={
+                onOpen
+                  ? (event) => {
+                      event.stopPropagation();
+                      onOpen();
+                    }
+                  : undefined
+              }
+            >
               {name}
             </span>
             <span className={styles.chevron} aria-hidden='true'>

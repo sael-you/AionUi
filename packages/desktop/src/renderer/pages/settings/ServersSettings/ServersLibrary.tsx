@@ -22,6 +22,7 @@ import { Button, Message, Skeleton, Tag } from '@arco-design/web-react';
 import { Plus } from '@icon-park/react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { SERVER_ENVIRONMENTS, type ServerResponse } from '@/common/types/platform/serverPools';
 import LibraryCard from '@/renderer/components/settings/SettingsModal/library/LibraryCard';
 import LibraryLayout from '@/renderer/components/settings/SettingsModal/library/LibraryLayout';
@@ -96,7 +97,9 @@ const ServersLibrary: React.FC = () => {
   const { servers, error, isLoading, reload } = useServerList();
   const { attachments } = useKitAttachments(ALL);
   const projects = useStandardProjects(null);
-  const originProjectId = useOriginProjectId(null);
+  // `?project=<id>`: open on that project (the project page's Manage links).
+  const [searchParams] = useSearchParams();
+  const originProjectId = useOriginProjectId(searchParams.get('project'));
   const actions = useServerActions();
   const [chosenScope, setChosenScope] = useState<string | null>(null);
   const scopeKey = chosenScope ?? (originProjectId ? projectScopeKey(originProjectId) : GLOBAL_SCOPE_KEY);
