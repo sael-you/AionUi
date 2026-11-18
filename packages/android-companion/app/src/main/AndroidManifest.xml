@@ -49,6 +49,12 @@
             </intent-filter>
         </activity>
 
+        <!-- The pairing scanner: no screenOrientation, so it follows the phone (the library's own
+             CaptureActivity is fixed to landscape). -->
+        <activity
+            android:name=".ui.ScanActivity"
+            android:exported="false" />
+
         <service
             android:name=".service.CompanionService"
             android:exported="false"

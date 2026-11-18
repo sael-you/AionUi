@@ -41,4 +41,5 @@
     <string name="version_label">버전 %1$s (%2$d)</string>
     <string name="scan_prompt">AionUi에 표시된 페어링 QR 코드를 스캔하세요</string>
     <string name="not_a_pairing_code">이 QR 코드는 AionUi 페어링 코드가 아닙니다</string>
+    <string name="scan_other_code">이 QR 코드는 페어링 코드가 아닙니다. 페어링용으로 표시된 코드를 스캔하세요.</string>
 </resources>

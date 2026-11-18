@@ -41,4 +41,5 @@
     <string name="version_label">Sürüm %1$s (%2$d)</string>
     <string name="scan_prompt">AionUi\'de gösterilen eşleme QR kodunu tara</string>
     <string name="not_a_pairing_code">Bu QR kodu bir AionUi eşleme kodu değil</string>
+    <string name="scan_other_code">Bu QR kodu eşleştirme kodu değil. Eşleştirme için gösterilen kodu tarayın.</string>
 </resources>
