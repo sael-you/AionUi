@@ -564,6 +564,45 @@
     "cachedRead": "Lecture du cache",
     "cachedWrite": "Écriture du cache"
   },
+  "context": {
+    "used": "{{percent}} utilisé",
+    "open": "Ouvrir le détail du contexte",
+    "refresh": "Actualiser le contexte",
+    "autoCompactAt": "Compactage automatique à",
+    "autoCompactHint": "Une valeur plus basse consomme moins de votre limite. L’agent résume plus tôt les anciens messages.",
+    "autoCompactNextStart": "S’applique au prochain démarrage de l’agent.",
+    "autoCompactSaveFailed": "Impossible d’enregistrer le réglage du compactage automatique",
+    "mode": {
+      "auto": "Automatique",
+      "off": "Désactivé"
+    },
+    "otherServer": "Autres",
+    "estimatedTooltip": "Estimé par AionUi ; cet agent ne communique pas cette valeur",
+    "untilAutoCompact": "{{tokens}} avant le compactage automatique",
+    "compact": "Compacter la session",
+    "compacting": "Compactage…",
+    "compactTurnRunning": "Attendez la fin du tour en cours",
+    "compactFailed": "Impossible de compacter la session",
+    "empty": "Aucune utilisation pour l’instant",
+    "loadFailed": "Impossible de charger le contexte",
+    "category": {
+      "messages": "Messages",
+      "mcp_tools": "Outils MCP",
+      "system_tools": "Outils système",
+      "memory_files": "Fichiers mémoire",
+      "system_prompt": "Prompt système",
+      "skills": "Skills",
+      "custom_agents": "Agents personnalisés",
+      "mcp_instructions": "Instructions des serveurs MCP",
+      "autocompact_buffer": "Réserve de compactage automatique",
+      "compact_buffer": "Réserve de compactage",
+      "free_space": "Espace libre",
+      "mcp_tools_deferred": "Outils MCP (différés)",
+      "system_tools_deferred": "Outils système (différés)",
+      "other": "Autres"
+    },
+    "compactUnsupported": "Cet agent ne peut pas compacter la session"
+  },
   "skill_generator": {
     "title": "Générer une compétence/règle",
     "generate": "Générer",
@@ -725,7 +764,8 @@
     "newDirFailed": "Échec de la création du dossier",
     "tabs": {
       "files": "Fichiers",
-      "changes": "Modifications"
+      "changes": "Modifications",
+      "context": "Contexte"
     },
     "addedToChat": "{{name}} ajouté au chat",
     "imported": "{{count}} fichier(s) importé(s)",

@@ -549,6 +549,45 @@
     "cachedRead": "Önbellek okuma",
     "cachedWrite": "Önbellek yazma"
   },
+  "context": {
+    "used": "{{percent}} kullanıldı",
+    "open": "Bağlam ayrıntılarını aç",
+    "refresh": "Bağlamı yenile",
+    "autoCompactAt": "Otomatik sıkıştırma eşiği",
+    "autoCompactHint": "Düşük değer limitinizi daha az kullanır. Ajan eski mesajları daha erken özetler.",
+    "autoCompactNextStart": "Ajan bir sonraki başlatıldığında geçerli olur.",
+    "autoCompactSaveFailed": "Otomatik sıkıştırma ayarı kaydedilemedi",
+    "mode": {
+      "auto": "Otomatik",
+      "off": "Kapalı"
+    },
+    "otherServer": "Diğer",
+    "estimatedTooltip": "AionUi tarafından tahmin edildi; bu ajan bunu bildirmiyor",
+    "untilAutoCompact": "Otomatik sıkıştırmaya {{tokens}} kaldı",
+    "compact": "Oturumu sıkıştır",
+    "compacting": "Sıkıştırılıyor…",
+    "compactTurnRunning": "Geçerli turun bitmesini bekleyin",
+    "compactFailed": "Oturum sıkıştırılamadı",
+    "empty": "Henüz kullanım yok",
+    "loadFailed": "Bağlam yüklenemedi",
+    "category": {
+      "messages": "Mesajlar",
+      "mcp_tools": "MCP araçları",
+      "system_tools": "Sistem araçları",
+      "memory_files": "Bellek dosyaları",
+      "system_prompt": "Sistem istemi",
+      "skills": "Beceriler",
+      "custom_agents": "Özel ajanlar",
+      "mcp_instructions": "MCP sunucu yönergeleri",
+      "autocompact_buffer": "Otomatik sıkıştırma tamponu",
+      "compact_buffer": "Sıkıştırma tamponu",
+      "free_space": "Boş alan",
+      "mcp_tools_deferred": "MCP araçları (ertelenmiş)",
+      "system_tools_deferred": "Sistem araçları (ertelenmiş)",
+      "other": "Diğer"
+    },
+    "compactUnsupported": "Bu ajan oturumu sıkıştıramıyor"
+  },
   "skill_generator": {
     "title": "Yetenek/Kural Oluştur",
     "generate": "Oluştur",
@@ -727,7 +766,8 @@
     "newDirFailed": "Klasör oluşturulamadı",
     "tabs": {
       "files": "Dosyalar",
-      "changes": "Değişiklikler"
+      "changes": "Değişiklikler",
+      "context": "Bağlam"
     },
     "addedToChat": "{{name}} sohbete eklendi",
     "imported": "{{count}} dosya içe aktarıldı",

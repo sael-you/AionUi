@@ -564,6 +564,45 @@
     "cachedRead": "缓存读",
     "cachedWrite": "缓存写"
   },
+  "context": {
+    "used": "已使用 {{percent}}",
+    "open": "打开上下文详情",
+    "refresh": "刷新上下文",
+    "autoCompactAt": "自动压缩阈值",
+    "autoCompactHint": "数值越低，占用的额度越少。智能体会更早总结较旧的消息。",
+    "autoCompactNextStart": "将在智能体下次启动时生效。",
+    "autoCompactSaveFailed": "无法保存自动压缩设置",
+    "mode": {
+      "auto": "自动",
+      "off": "关闭"
+    },
+    "otherServer": "其他",
+    "estimatedTooltip": "由 AionUi 估算；该智能体不提供此数据",
+    "untilAutoCompact": "距自动压缩还有 {{tokens}}",
+    "compact": "压缩会话",
+    "compacting": "正在压缩…",
+    "compactTurnRunning": "请等待当前回合结束",
+    "compactFailed": "无法压缩会话",
+    "empty": "暂无用量",
+    "loadFailed": "无法加载上下文",
+    "category": {
+      "messages": "消息",
+      "mcp_tools": "MCP 工具",
+      "system_tools": "系统工具",
+      "memory_files": "记忆文件",
+      "system_prompt": "系统提示词",
+      "skills": "技能",
+      "custom_agents": "自定义智能体",
+      "mcp_instructions": "MCP 服务器说明",
+      "autocompact_buffer": "自动压缩缓冲",
+      "compact_buffer": "压缩缓冲",
+      "free_space": "可用空间",
+      "mcp_tools_deferred": "MCP 工具（延迟加载）",
+      "system_tools_deferred": "系统工具（延迟加载）",
+      "other": "其他"
+    },
+    "compactUnsupported": "该智能体不支持压缩会话"
+  },
   "skill_generator": {
     "title": "生成 Skill/规则",
     "generate": "生成",
@@ -725,7 +764,8 @@
     "newDirFailed": "新建目录失败",
     "tabs": {
       "files": "文件",
-      "changes": "变更"
+      "changes": "变更",
+      "context": "上下文"
     },
     "addedToChat": "已将 {{name}} 添加到聊天",
     "imported": "已导入 {{count}} 个文件",

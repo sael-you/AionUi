@@ -564,6 +564,45 @@
     "cachedRead": "快取讀取",
     "cachedWrite": "快取寫入"
   },
+  "context": {
+    "used": "已使用 {{percent}}",
+    "open": "開啟上下文詳情",
+    "refresh": "重新整理上下文",
+    "autoCompactAt": "自動壓縮門檻",
+    "autoCompactHint": "數值越低，佔用的額度越少。智慧體會更早摘要較舊的訊息。",
+    "autoCompactNextStart": "將在智慧體下次啟動時生效。",
+    "autoCompactSaveFailed": "無法儲存自動壓縮設定",
+    "mode": {
+      "auto": "自動",
+      "off": "關閉"
+    },
+    "otherServer": "其他",
+    "estimatedTooltip": "由 AionUi 估算；此智慧體不提供這項資料",
+    "untilAutoCompact": "距自動壓縮還有 {{tokens}}",
+    "compact": "壓縮工作階段",
+    "compacting": "正在壓縮…",
+    "compactTurnRunning": "請等待目前回合結束",
+    "compactFailed": "無法壓縮工作階段",
+    "empty": "尚無用量",
+    "loadFailed": "無法載入上下文",
+    "category": {
+      "messages": "訊息",
+      "mcp_tools": "MCP 工具",
+      "system_tools": "系統工具",
+      "memory_files": "記憶檔案",
+      "system_prompt": "系統提示詞",
+      "skills": "技能",
+      "custom_agents": "自訂智慧體",
+      "mcp_instructions": "MCP 伺服器說明",
+      "autocompact_buffer": "自動壓縮緩衝",
+      "compact_buffer": "壓縮緩衝",
+      "free_space": "可用空間",
+      "mcp_tools_deferred": "MCP 工具（延遲載入）",
+      "system_tools_deferred": "系統工具（延遲載入）",
+      "other": "其他"
+    },
+    "compactUnsupported": "此智慧體不支援壓縮工作階段"
+  },
   "skill_generator": {
     "title": "Generate Skill/Rule",
     "generate": "Generate",
@@ -725,7 +764,8 @@
     "newDirFailed": "建立資料夾失敗",
     "tabs": {
       "files": "檔案",
-      "changes": "變更"
+      "changes": "變更",
+      "context": "上下文"
     },
     "addedToChat": "已將 {{name}} 加入對話",
     "imported": "已匯入 {{count}} 個檔案",

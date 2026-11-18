@@ -564,6 +564,45 @@
     "cachedRead": "キャッシュ読み取り",
     "cachedWrite": "キャッシュ書き込み"
   },
+  "context": {
+    "used": "{{percent}} 使用中",
+    "open": "コンテキストの詳細を開く",
+    "refresh": "コンテキストを更新",
+    "autoCompactAt": "自動圧縮のしきい値",
+    "autoCompactHint": "低くすると上限の消費が減ります。エージェントは古いメッセージをより早く要約します。",
+    "autoCompactNextStart": "エージェントの次回起動時に適用されます。",
+    "autoCompactSaveFailed": "自動圧縮の設定を保存できませんでした",
+    "mode": {
+      "auto": "自動",
+      "off": "オフ"
+    },
+    "otherServer": "その他",
+    "estimatedTooltip": "AionUi による推定値です。このエージェントは報告しません",
+    "untilAutoCompact": "自動圧縮まで {{tokens}}",
+    "compact": "セッションを圧縮",
+    "compacting": "圧縮中…",
+    "compactTurnRunning": "現在のターンが終わるまでお待ちください",
+    "compactFailed": "セッションを圧縮できませんでした",
+    "empty": "まだ使用量がありません",
+    "loadFailed": "コンテキストを読み込めませんでした",
+    "category": {
+      "messages": "メッセージ",
+      "mcp_tools": "MCP ツール",
+      "system_tools": "システムツール",
+      "memory_files": "メモリファイル",
+      "system_prompt": "システムプロンプト",
+      "skills": "スキル",
+      "custom_agents": "カスタムエージェント",
+      "mcp_instructions": "MCP サーバーの指示",
+      "autocompact_buffer": "自動圧縮バッファ",
+      "compact_buffer": "圧縮バッファ",
+      "free_space": "空き容量",
+      "mcp_tools_deferred": "MCP ツール（遅延）",
+      "system_tools_deferred": "システムツール（遅延）",
+      "other": "その他"
+    },
+    "compactUnsupported": "このエージェントはセッションを圧縮できません"
+  },
   "skill_generator": {
     "title": "Generate Skill/Rule",
     "generate": "Generate",
@@ -725,7 +764,8 @@
     "newDirFailed": "フォルダーの作成に失敗しました",
     "tabs": {
       "files": "ファイル",
-      "changes": "変更"
+      "changes": "変更",
+      "context": "コンテキスト"
     },
     "addedToChat": "{{name}} をチャットに追加しました",
     "imported": "{{count}} 件のファイルをインポートしました",

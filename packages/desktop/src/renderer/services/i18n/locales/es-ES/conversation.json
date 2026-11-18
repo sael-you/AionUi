@@ -565,6 +565,45 @@
     "cachedRead": "Lectura de caché",
     "cachedWrite": "Escritura de caché"
   },
+  "context": {
+    "used": "{{percent}} usado",
+    "open": "Abrir detalles del contexto",
+    "refresh": "Actualizar contexto",
+    "autoCompactAt": "Compactar automáticamente al",
+    "autoCompactHint": "Un valor más bajo consume menos de tu límite. El agente resume antes los mensajes antiguos.",
+    "autoCompactNextStart": "Se aplica la próxima vez que se inicie el agente.",
+    "autoCompactSaveFailed": "No se pudo guardar el ajuste de compactación automática",
+    "mode": {
+      "auto": "Automático",
+      "off": "Desactivado"
+    },
+    "otherServer": "Otros",
+    "estimatedTooltip": "Estimado por AionUi; este agente no informa de este valor",
+    "untilAutoCompact": "{{tokens}} hasta la compactación automática",
+    "compact": "Compactar sesión",
+    "compacting": "Compactando…",
+    "compactTurnRunning": "Espera a que termine el turno actual",
+    "compactFailed": "No se pudo compactar la sesión",
+    "empty": "Aún no hay uso",
+    "loadFailed": "No se pudo cargar el contexto",
+    "category": {
+      "messages": "Mensajes",
+      "mcp_tools": "Herramientas MCP",
+      "system_tools": "Herramientas del sistema",
+      "memory_files": "Archivos de memoria",
+      "system_prompt": "Prompt del sistema",
+      "skills": "Skills",
+      "custom_agents": "Agentes personalizados",
+      "mcp_instructions": "Instrucciones de servidores MCP",
+      "autocompact_buffer": "Reserva de compactación automática",
+      "compact_buffer": "Reserva de compactación",
+      "free_space": "Espacio libre",
+      "mcp_tools_deferred": "Herramientas MCP (diferidas)",
+      "system_tools_deferred": "Herramientas del sistema (diferidas)",
+      "other": "Otros"
+    },
+    "compactUnsupported": "Este agente no puede compactar la sesión"
+  },
   "skill_generator": {
     "title": "Generar habilidad/regla",
     "generate": "Generar",
@@ -726,7 +765,8 @@
     "newDirFailed": "No se pudo crear la carpeta",
     "tabs": {
       "files": "Archivos",
-      "changes": "Cambios"
+      "changes": "Cambios",
+      "context": "Contexto"
     },
     "addedToChat": "Se añadió {{name}} al chat",
     "imported": "{{count}} archivo(s) importado(s)",

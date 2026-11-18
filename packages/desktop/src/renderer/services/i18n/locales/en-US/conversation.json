@@ -564,6 +564,45 @@
     "cachedRead": "Cache read",
     "cachedWrite": "Cache write"
   },
+  "context": {
+    "used": "{{percent}} used",
+    "open": "Open context details",
+    "refresh": "Refresh context",
+    "autoCompactAt": "Auto-compact at",
+    "autoCompactHint": "Lower uses less of your limit. The agent summarises older messages sooner.",
+    "autoCompactNextStart": "Applies the next time the agent starts.",
+    "autoCompactSaveFailed": "Could not save the auto-compact setting",
+    "mode": {
+      "auto": "Auto",
+      "off": "Off"
+    },
+    "otherServer": "Other",
+    "estimatedTooltip": "Estimated by AionUi; this agent does not report it",
+    "untilAutoCompact": "{{tokens}} until auto-compact",
+    "compact": "Compact session",
+    "compacting": "Compacting…",
+    "compactTurnRunning": "Wait for the current turn to finish",
+    "compactFailed": "Could not compact the session",
+    "empty": "No usage yet",
+    "loadFailed": "Could not load the context",
+    "category": {
+      "messages": "Messages",
+      "mcp_tools": "MCP tools",
+      "system_tools": "System tools",
+      "memory_files": "Memory files",
+      "system_prompt": "System prompt",
+      "skills": "Skills",
+      "custom_agents": "Custom agents",
+      "mcp_instructions": "MCP server instructions",
+      "autocompact_buffer": "Autocompact buffer",
+      "compact_buffer": "Compact buffer",
+      "free_space": "Free space",
+      "mcp_tools_deferred": "MCP tools (deferred)",
+      "system_tools_deferred": "System tools (deferred)",
+      "other": "Other"
+    },
+    "compactUnsupported": "This agent cannot compact the session"
+  },
   "skill_generator": {
     "title": "Generate Skill/Rule",
     "generate": "Generate",
@@ -725,7 +764,8 @@
     "newDirFailed": "Couldn't create folder",
     "tabs": {
       "files": "Files",
-      "changes": "Changes"
+      "changes": "Changes",
+      "context": "Context"
     },
     "addedToChat": "Added {{name}} to chat",
     "imported": "Imported {{count}} file(s)",

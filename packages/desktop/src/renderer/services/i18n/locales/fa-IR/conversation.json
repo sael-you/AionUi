@@ -564,6 +564,45 @@
     "cachedRead": "خواندن حافظه پنهان",
     "cachedWrite": "نوشتن حافظه پنهان"
   },
+  "context": {
+    "used": "{{percent}} استفاده‌شده",
+    "open": "باز کردن جزئیات زمینه",
+    "refresh": "تازه‌سازی زمینه",
+    "autoCompactAt": "فشرده‌سازی خودکار در",
+    "autoCompactHint": "مقدار کمتر، سهم کمتری از سقف شما مصرف می‌کند. عامل پیام‌های قدیمی را زودتر خلاصه می‌کند.",
+    "autoCompactNextStart": "از شروع بعدی عامل اعمال می‌شود.",
+    "autoCompactSaveFailed": "تنظیم فشرده‌سازی خودکار ذخیره نشد",
+    "mode": {
+      "auto": "خودکار",
+      "off": "خاموش"
+    },
+    "otherServer": "سایر",
+    "estimatedTooltip": "برآورد AionUi؛ این عامل این مقدار را گزارش نمی‌کند",
+    "untilAutoCompact": "{{tokens}} تا فشرده‌سازی خودکار",
+    "compact": "فشرده‌سازی نشست",
+    "compacting": "در حال فشرده‌سازی…",
+    "compactTurnRunning": "تا پایان نوبت فعلی صبر کنید",
+    "compactFailed": "فشرده‌سازی نشست انجام نشد",
+    "empty": "هنوز مصرفی ثبت نشده است",
+    "loadFailed": "بارگیری زمینه انجام نشد",
+    "category": {
+      "messages": "پیام‌ها",
+      "mcp_tools": "ابزارهای MCP",
+      "system_tools": "ابزارهای سیستم",
+      "memory_files": "فایل‌های حافظه",
+      "system_prompt": "پرامپت سیستم",
+      "skills": "مهارت‌ها",
+      "custom_agents": "عامل‌های سفارشی",
+      "mcp_instructions": "دستورالعمل‌های سرورهای MCP",
+      "autocompact_buffer": "ذخیرهٔ فشرده‌سازی خودکار",
+      "compact_buffer": "ذخیرهٔ فشرده‌سازی",
+      "free_space": "فضای آزاد",
+      "mcp_tools_deferred": "ابزارهای MCP (معوق)",
+      "system_tools_deferred": "ابزارهای سیستم (معوق)",
+      "other": "سایر"
+    },
+    "compactUnsupported": "این عامل نمی‌تواند نشست را فشرده کند"
+  },
   "skill_generator": {
     "title": "ساخت مهارت/قانون",
     "generate": "ساخت",
@@ -725,7 +764,8 @@
     "newDirFailed": "ایجاد پوشه ناموفق بود",
     "tabs": {
       "files": "پرونده‌ها",
-      "changes": "تغییرات"
+      "changes": "تغییرات",
+      "context": "زمینه"
     },
     "addedToChat": "{{name}} به گفتگو افزوده شد",
     "imported": "{{count}} فایل وارد شد",

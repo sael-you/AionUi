@@ -288,6 +288,7 @@ export const useAcpMessage = (
           'start',
           'request_trace',
           'acp_context_usage',
+          'acp_context_report',
           'acp_model_info',
           'acp_config_option',
           'codex_model_info',
@@ -483,6 +484,11 @@ export const useAcpMessage = (
           // frame can trail the turn's Finish (final exit snapshot), so it
           // must not re-light turn state like the default arm does.
           mergeLiveMessage(transformedMessage);
+          break;
+        case 'acp_context_report':
+          // "The context breakdown is ready" (C41): the Context panel re-fetches on
+          // it. It lands seconds after a turn ended and must never look like
+          // agent activity here (the default branch would light `running`).
           break;
         case 'acp_context_usage': {
           const usageData = message.data as {

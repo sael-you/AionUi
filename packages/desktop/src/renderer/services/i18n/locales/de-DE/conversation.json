@@ -565,6 +565,45 @@
     "cachedRead": "Cache-Lesen",
     "cachedWrite": "Cache-Schreiben"
   },
+  "context": {
+    "used": "{{percent}} belegt",
+    "open": "Kontextdetails öffnen",
+    "refresh": "Kontext aktualisieren",
+    "autoCompactAt": "Automatisch komprimieren bei",
+    "autoCompactHint": "Ein niedrigerer Wert verbraucht weniger von deinem Limit. Der Agent fasst ältere Nachrichten früher zusammen.",
+    "autoCompactNextStart": "Gilt ab dem nächsten Start des Agenten.",
+    "autoCompactSaveFailed": "Die Einstellung für die automatische Komprimierung konnte nicht gespeichert werden",
+    "mode": {
+      "auto": "Automatisch",
+      "off": "Aus"
+    },
+    "otherServer": "Sonstige",
+    "estimatedTooltip": "Von AionUi geschätzt; dieser Agent meldet den Wert nicht",
+    "untilAutoCompact": "{{tokens}} bis zur automatischen Komprimierung",
+    "compact": "Sitzung komprimieren",
+    "compacting": "Wird komprimiert…",
+    "compactTurnRunning": "Warte, bis der aktuelle Zug beendet ist",
+    "compactFailed": "Die Sitzung konnte nicht komprimiert werden",
+    "empty": "Noch keine Nutzung",
+    "loadFailed": "Der Kontext konnte nicht geladen werden",
+    "category": {
+      "messages": "Nachrichten",
+      "mcp_tools": "MCP-Tools",
+      "system_tools": "System-Tools",
+      "memory_files": "Memory-Dateien",
+      "system_prompt": "System-Prompt",
+      "skills": "Skills",
+      "custom_agents": "Eigene Agenten",
+      "mcp_instructions": "Anweisungen der MCP-Server",
+      "autocompact_buffer": "Puffer für automatische Komprimierung",
+      "compact_buffer": "Puffer für Komprimierung",
+      "free_space": "Freier Platz",
+      "mcp_tools_deferred": "MCP-Tools (zurückgestellt)",
+      "system_tools_deferred": "System-Tools (zurückgestellt)",
+      "other": "Sonstige"
+    },
+    "compactUnsupported": "Dieser Agent kann die Sitzung nicht komprimieren"
+  },
   "skill_generator": {
     "title": "Skill/Regel generieren",
     "generate": "Generieren",
@@ -726,7 +765,8 @@
     "newDirFailed": "Ordner konnte nicht erstellt werden",
     "tabs": {
       "files": "Dateien",
-      "changes": "Änderungen"
+      "changes": "Änderungen",
+      "context": "Kontext"
     },
     "addedToChat": "{{name}} zum Chat hinzugefügt",
     "imported": "{{count}} Datei(en) importiert",

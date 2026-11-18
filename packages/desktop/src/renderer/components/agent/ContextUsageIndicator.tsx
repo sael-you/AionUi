@@ -21,6 +21,8 @@ interface ContextUsageIndicatorProps {
   context_limit: number;
   className?: string;
   size?: number;
+  /** Opens the Context panel (C41). With it the ring is a button, not just a readout. */
+  onClick?: () => void;
 }
 
 const ContextUsageIndicator: React.FC<ContextUsageIndicatorProps> = ({
@@ -28,6 +30,7 @@ const ContextUsageIndicator: React.FC<ContextUsageIndicatorProps> = ({
   context_limit,
   className = '',
   size = 20,
+  onClick,
 }) => {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
@@ -160,6 +163,19 @@ const ContextUsageIndicator: React.FC<ContextUsageIndicatorProps> = ({
       <div
         className={`context-usage-indicator cursor-pointer flex items-center justify-center ${className}`}
         style={{ width: 32, height: 32 }}
+        {...(onClick
+          ? {
+              role: 'button',
+              tabIndex: 0,
+              'aria-label': t('conversation.context.open'),
+              onClick,
+              onKeyDown: (event: React.KeyboardEvent) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                onClick();
+              },
+            }
+          : {})}
       >
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
           {/* 背景圆环 */}

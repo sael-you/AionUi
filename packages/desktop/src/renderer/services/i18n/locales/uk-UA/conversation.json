@@ -572,6 +572,45 @@
     "cachedRead": "Читання кешу",
     "cachedWrite": "Запис кешу"
   },
+  "context": {
+    "used": "Використано {{percent}}",
+    "open": "Відкрити відомості про контекст",
+    "refresh": "Оновити контекст",
+    "autoCompactAt": "Автостиснення при",
+    "autoCompactHint": "Що нижче значення, то менше витрачається ліміт. Агент раніше підсумовує старі повідомлення.",
+    "autoCompactNextStart": "Набуде чинності під час наступного запуску агента.",
+    "autoCompactSaveFailed": "Не вдалося зберегти налаштування автостиснення",
+    "mode": {
+      "auto": "Авто",
+      "off": "Вимк."
+    },
+    "otherServer": "Інше",
+    "estimatedTooltip": "Оцінка AionUi; цей агент не повідомляє це значення",
+    "untilAutoCompact": "{{tokens}} до автостиснення",
+    "compact": "Стиснути сесію",
+    "compacting": "Стиснення…",
+    "compactTurnRunning": "Дочекайтеся завершення поточного ходу",
+    "compactFailed": "Не вдалося стиснути сесію",
+    "empty": "Даних про використання ще немає",
+    "loadFailed": "Не вдалося завантажити контекст",
+    "category": {
+      "messages": "Повідомлення",
+      "mcp_tools": "Інструменти MCP",
+      "system_tools": "Системні інструменти",
+      "memory_files": "Файли пам’яті",
+      "system_prompt": "Системний промпт",
+      "skills": "Навички",
+      "custom_agents": "Власні агенти",
+      "mcp_instructions": "Інструкції серверів MCP",
+      "autocompact_buffer": "Буфер автостиснення",
+      "compact_buffer": "Буфер стиснення",
+      "free_space": "Вільно",
+      "mcp_tools_deferred": "Інструменти MCP (відкладені)",
+      "system_tools_deferred": "Системні інструменти (відкладені)",
+      "other": "Інше"
+    },
+    "compactUnsupported": "Цей агент не вміє стискати сесію"
+  },
   "skill_generator": {
     "title": "Створити Навичку/Правило",
     "generate": "Створити",
@@ -735,7 +774,8 @@
     "newDirFailed": "Не вдалося створити папку",
     "tabs": {
       "files": "Файли",
-      "changes": "Зміни"
+      "changes": "Зміни",
+      "context": "Контекст"
     },
     "addedToChat": "{{name}} додано в чат",
     "imported": "Імпортовано файлів: {{count}}",

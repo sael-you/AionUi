@@ -564,6 +564,45 @@
     "cachedRead": "캐시 읽기",
     "cachedWrite": "캐시 쓰기"
   },
+  "context": {
+    "used": "{{percent}} 사용 중",
+    "open": "컨텍스트 세부 정보 열기",
+    "refresh": "컨텍스트 새로 고침",
+    "autoCompactAt": "자동 압축 기준",
+    "autoCompactHint": "낮출수록 한도를 덜 사용합니다. 에이전트가 오래된 메시지를 더 일찍 요약합니다.",
+    "autoCompactNextStart": "에이전트가 다음에 시작될 때 적용됩니다.",
+    "autoCompactSaveFailed": "자동 압축 설정을 저장하지 못했습니다",
+    "mode": {
+      "auto": "자동",
+      "off": "끔"
+    },
+    "otherServer": "기타",
+    "estimatedTooltip": "AionUi가 추정한 값입니다. 이 에이전트는 보고하지 않습니다",
+    "untilAutoCompact": "자동 압축까지 {{tokens}}",
+    "compact": "세션 압축",
+    "compacting": "압축 중…",
+    "compactTurnRunning": "현재 턴이 끝날 때까지 기다려 주세요",
+    "compactFailed": "세션을 압축하지 못했습니다",
+    "empty": "아직 사용량이 없습니다",
+    "loadFailed": "컨텍스트를 불러오지 못했습니다",
+    "category": {
+      "messages": "메시지",
+      "mcp_tools": "MCP 도구",
+      "system_tools": "시스템 도구",
+      "memory_files": "메모리 파일",
+      "system_prompt": "시스템 프롬프트",
+      "skills": "스킬",
+      "custom_agents": "사용자 지정 에이전트",
+      "mcp_instructions": "MCP 서버 지침",
+      "autocompact_buffer": "자동 압축 버퍼",
+      "compact_buffer": "압축 버퍼",
+      "free_space": "여유 공간",
+      "mcp_tools_deferred": "MCP 도구(지연)",
+      "system_tools_deferred": "시스템 도구(지연)",
+      "other": "기타"
+    },
+    "compactUnsupported": "이 에이전트는 세션을 압축할 수 없습니다"
+  },
   "skill_generator": {
     "title": "스킬/규칙 생성",
     "generate": "생성",
@@ -725,7 +764,8 @@
     "newDirFailed": "폴더를 만들지 못했습니다",
     "tabs": {
       "files": "파일",
-      "changes": "변경"
+      "changes": "변경",
+      "context": "컨텍스트"
     },
     "addedToChat": "{{name}}을(를) 채팅에 추가했습니다",
     "imported": "{{count}}개 파일을 가져왔습니다",

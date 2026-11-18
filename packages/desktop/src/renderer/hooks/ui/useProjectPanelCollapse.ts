@@ -27,6 +27,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { useContextTabRequests } from '@/renderer/pages/conversation/explorer/context/contextPanelStore';
 import { WORKSPACE_TOGGLE_EVENT, dispatchWorkspaceStateEvent } from '@/renderer/utils/workspace/workspaceEvents';
 
 const COLLAPSE_KEY_PREFIX = 'project-panel-collapse:';
@@ -97,6 +98,24 @@ export function useProjectPanelCollapse({
     window.addEventListener(WORKSPACE_TOGGLE_EVENT, handleToggle);
     return () => window.removeEventListener(WORKSPACE_TOGGLE_EVENT, handleToggle);
   }, [active, projectId, isMobile]);
+
+  // The ring beside the composer asks for the Context tab (C41): a collapsed
+  // desktop column opens for it. Only a NEW request counts, so a project switch
+  // or remount never re-opens a column the owner closed. Mobile shows a sheet
+  // instead and never asks.
+  const contextTabRequests = useContextTabRequests();
+  const seenContextTabRequests = useRef(contextTabRequests);
+  useEffect(() => {
+    if (contextTabRequests === seenContextTabRequests.current) return;
+    seenContextTabRequests.current = contextTabRequests;
+    if (!active || !projectId || isMobile || !collapsedRef.current) return;
+    setCollapsed(false);
+    try {
+      localStorage.setItem(collapseKey(projectId), 'expanded');
+    } catch {
+      // ignore persistence errors
+    }
+  }, [contextTabRequests, active, projectId, isMobile]);
 
   // Broadcast collapse state so the mac Titlebar workspace button's icon stays in
   // sync (it listens for WORKSPACE_STATE_EVENT). Only when this host is live —

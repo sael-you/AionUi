@@ -941,6 +941,7 @@ const transformMessageInner = (message: IResponseMessage): TMessage | undefined 
     case 'acp_config_option': // Config-options catalog updates, handled by useAcpConfigOptions
     case 'codex_model_info': // Legacy Codex model info updates
     case 'acp_context_usage': // Context usage updates, handled by AcpSendBox
+    case 'acp_context_report': // Context breakdown is ready, handled by the Context panel (useContextReport)
     case 'request_trace': // Request trace events, logged to F12 console (not persisted)
       return undefined;
     default: {

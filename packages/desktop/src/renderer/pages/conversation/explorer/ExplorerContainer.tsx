@@ -20,7 +20,7 @@
 
 import { Button, Input, Message, Modal, Spin, Tooltip } from '@arco-design/web-react';
 import { FoldUpOne, FolderPlus, Refresh } from '@icon-park/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
@@ -66,6 +66,9 @@ import {
 import { initExplorerRuntime } from './monitorTransport';
 import { toRootRefs } from './projectRoots';
 import { collapseAll, refreshRoot, reveal, select } from './explorerStore';
+import ContextPanel from './context/ContextPanel';
+import { useContextTabRequests } from './context/contextPanelStore';
+import { reloadConversationContext } from './context/useContextReport';
 import { useCurrentConversation } from './currentConversationStore';
 import { TasksTab } from '@/renderer/components/board/TasksTab';
 import { useBoard } from '@/renderer/components/board/hooks/useBoard';
@@ -93,6 +96,9 @@ const pathToFileUri = (p: string): string => {
  * (`''` = pe root). One dialog serves all three so the modal + submit path have
  * a single implementation.
  */
+/** The panel's tabs: Files, Changes, Tasks (project board) and Context (per conversation). */
+type ExplorerTab = 'files' | 'changes' | 'tasks' | 'context';
+
 type NameDialogState =
   | ({ mode: 'rename' } & RenameRequest)
   | { mode: 'newFile'; peId: string; targetDir: string }
@@ -262,13 +268,28 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
   // unmounts the inactive one for `changes`, which is safe because the SCM
   // subscription is owned by its store per project, not by the component's mount
   // (see ScmPanel's lifecycle note) — a tab switch never drops the backend watch.
-  const [selectedTab, setActiveTab] = useState<'files' | 'changes' | 'tasks'>('files');
+  const [selectedTab, setActiveTab] = useState<ExplorerTab>('files');
   // The project board backs the Tasks tab. It stays hidden until the board answers
   // (no flash for temp projects) and for projects that have no board at all; any
   // other failure keeps the tab so its error state can offer a retry.
   const board = useBoard(projectId);
   const tasksAvailable = Boolean(board.snapshot) || (Boolean(board.error) && !board.unavailable);
-  const activeTab = selectedTab === 'tasks' && !tasksAvailable ? 'files' : selectedTab;
+  // The Context tab is per conversation: without an active one (project page,
+  // non-chat route) there is nothing to show, so it hides like Tasks does.
+  const contextAvailable = Boolean(activeConversationId);
+  const activeTab: ExplorerTab =
+    (selectedTab === 'tasks' && !tasksAvailable) || (selectedTab === 'context' && !contextAvailable)
+      ? 'files'
+      : selectedTab;
+  // The ring beside the composer asks for this tab (see contextPanelStore). Only a
+  // NEW request switches, so a remount never steals the owner's current tab.
+  const contextTabRequests = useContextTabRequests();
+  const seenContextTabRequests = useRef(contextTabRequests);
+  useEffect(() => {
+    if (contextTabRequests === seenContextTabRequests.current) return;
+    seenContextTabRequests.current = contextTabRequests;
+    setActiveTab('context');
+  }, [contextTabRequests]);
   // Project colour identity of the route, only when it belongs to this panel's
   // project (a switch publishes the new identity once the conversation loads).
   const identity = useCurrentProjectIdentity();
@@ -523,6 +544,8 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
         await Promise.all([rediscoverRepos(), refreshAllRepos()]);
       } else if (activeTab === 'tasks') {
         await board.reload();
+      } else if (activeTab === 'context') {
+        if (activeConversationId) await reloadConversationContext(activeConversationId);
       } else {
         await Promise.all([mutate(), ...roots.map((root) => refreshRoot(root.pe_id))]);
       }
@@ -536,9 +559,11 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
       ? t('conversation.explorer.refreshChanges')
       : activeTab === 'tasks'
         ? t('board.refresh')
-        : t('conversation.explorer.refreshFiles');
+        : activeTab === 'context'
+          ? t('conversation.context.refresh')
+          : t('conversation.explorer.refreshFiles');
 
-  const tabButton = (key: 'files' | 'changes' | 'tasks', label: string) => (
+  const tabButton = (key: ExplorerTab, label: string) => (
     <Button
       type='text'
       size='small'
@@ -590,6 +615,7 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
           {tabButton('files', t('conversation.explorer.tabs.files'))}
           {tabButton('changes', t('conversation.explorer.tabs.changes'))}
           {tasksAvailable && tabButton('tasks', t('board.tasksTab'))}
+          {contextAvailable && tabButton('context', t('conversation.explorer.tabs.context'))}
         </div>
         <div className='flex items-center gap-2px flex-shrink-0'>
           {/* Right cluster order (VS Code parity): project-scope actions first (add
@@ -685,6 +711,11 @@ export const ExplorerContainer: React.FC<ExplorerContainerProps> = ({ projectId 
       {activeTab === 'tasks' && (
         <div className='flex-1 min-h-0'>
           <TasksTab board={board} />
+        </div>
+      )}
+      {activeTab === 'context' && (
+        <div className='flex-1 min-h-0'>
+          <ContextPanel conversationId={activeConversationId} />
         </div>
       )}
       <Modal

@@ -850,6 +850,23 @@ const initializeConversationListSyncStore = () => {
   });
 };
 
+/**
+ * Whether a turn is running in one conversation, for surfaces outside the
+ * sidebar (the Context panel disables "Compact session" meanwhile). Reads the
+ * same store the sidebar spinner uses, so both always agree.
+ */
+export const useIsConversationGenerating = (conversation_id: string | null | undefined): boolean => {
+  useEffect(() => {
+    initializeConversationListSyncStore();
+  }, []);
+  const ids = useSyncExternalStore(
+    subscribeConversationListSync,
+    () => getConversationListSyncSnapshot().generatingConversationIds,
+    () => getConversationListSyncSnapshot().generatingConversationIds
+  );
+  return Boolean(conversation_id) && ids.has(conversation_id as string);
+};
+
 export const useConversationListSync = () => {
   useEffect(() => {
     initializeConversationListSyncStore();

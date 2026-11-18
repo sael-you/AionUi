@@ -572,6 +572,45 @@
     "cachedRead": "Чтение кэша",
     "cachedWrite": "Запись кэша"
   },
+  "context": {
+    "used": "Использовано {{percent}}",
+    "open": "Открыть сведения о контексте",
+    "refresh": "Обновить контекст",
+    "autoCompactAt": "Автосжатие при",
+    "autoCompactHint": "Чем ниже значение, тем меньше расходуется лимит. Агент раньше подытоживает старые сообщения.",
+    "autoCompactNextStart": "Вступит в силу при следующем запуске агента.",
+    "autoCompactSaveFailed": "Не удалось сохранить настройку автосжатия",
+    "mode": {
+      "auto": "Авто",
+      "off": "Выкл."
+    },
+    "otherServer": "Прочее",
+    "estimatedTooltip": "Оценка AionUi; этот агент не сообщает это значение",
+    "untilAutoCompact": "{{tokens}} до автосжатия",
+    "compact": "Сжать сессию",
+    "compacting": "Сжатие…",
+    "compactTurnRunning": "Дождитесь окончания текущего хода",
+    "compactFailed": "Не удалось сжать сессию",
+    "empty": "Данных об использовании пока нет",
+    "loadFailed": "Не удалось загрузить контекст",
+    "category": {
+      "messages": "Сообщения",
+      "mcp_tools": "Инструменты MCP",
+      "system_tools": "Системные инструменты",
+      "memory_files": "Файлы памяти",
+      "system_prompt": "Системный промпт",
+      "skills": "Навыки",
+      "custom_agents": "Пользовательские агенты",
+      "mcp_instructions": "Инструкции серверов MCP",
+      "autocompact_buffer": "Буфер автосжатия",
+      "compact_buffer": "Буфер сжатия",
+      "free_space": "Свободно",
+      "mcp_tools_deferred": "Инструменты MCP (отложенные)",
+      "system_tools_deferred": "Системные инструменты (отложенные)",
+      "other": "Прочее"
+    },
+    "compactUnsupported": "Этот агент не умеет сжимать сессию"
+  },
   "skill_generator": {
     "title": "Создать навык/правило",
     "generate": "Создать",
@@ -735,7 +774,8 @@
     "newDirFailed": "Не удалось создать папку",
     "tabs": {
       "files": "Файлы",
-      "changes": "Изменения"
+      "changes": "Изменения",
+      "context": "Контекст"
     },
     "addedToChat": "{{name}} добавлен в чат",
     "imported": "Импортировано файлов: {{count}}",

@@ -31,6 +31,10 @@ import {
   useConversationCommandQueue,
   type ConversationCommandQueueItem,
 } from '@/renderer/pages/conversation/platforms/useConversationCommandQueue';
+import ContextSheet from '@/renderer/pages/conversation/explorer/context/ContextSheet';
+import { requestContextTab } from '@/renderer/pages/conversation/explorer/context/contextPanelStore';
+import { getCurrentConversation } from '@/renderer/pages/conversation/explorer/currentConversationStore';
+import { getCurrentProject } from '@/renderer/pages/conversation/explorer/currentProjectStore';
 import { usePreviewContext } from '@/renderer/pages/conversation/Preview';
 import { useConversationRuntimeView } from '@/renderer/pages/conversation/runtime/useConversationRuntimeView';
 import { getConversationRuntimeWorkspaceErrorMessage } from '@/renderer/pages/conversation/utils/conversationCreateError';
@@ -137,6 +141,15 @@ const AcpSendBox: React.FC<{
   const { atPath, uploadFile, setAtPath, setUploadFile, content, setContent } = useSendBoxDraft(conversation_id);
   const layout = useLayoutContext();
   const isMobile = Boolean(layout?.isMobile);
+  // Context panel (C41): the ring opens the sidebar's Context tab when this
+  // conversation owns the desktop project panel; a phone, a conversation without
+  // a project, or a team column that is not the active one gets the sheet.
+  const [contextSheetOpen, setContextSheetOpen] = useState(false);
+  const openContextPanel = useCallback(() => {
+    const ownsProjectPanel = Boolean(getCurrentProject()) && getCurrentConversation() === conversation_id;
+    if (!isMobile && ownsProjectPanel) requestContextTab();
+    else setContextSheetOpen(true);
+  }, [conversation_id, isMobile]);
   const conversationContext = useConversationContextSafe();
   const loadedSkills = conversationContext?.loadedSkills ?? [];
   const loadedMcpStatuses =
@@ -998,7 +1011,15 @@ Please check your local CLI tool authentication status`,
                 {t('team.interruptAndSend')}
               </Button>
             )}
-            {tokenUsage ? <ContextUsageIndicator tokenUsage={tokenUsage} context_limit={context_limit} /> : undefined}
+            {tokenUsage ? (
+              <ContextUsageIndicator tokenUsage={tokenUsage} context_limit={context_limit} onClick={openContextPanel} />
+            ) : undefined}
+            <ContextSheet
+              conversationId={conversation_id}
+              visible={contextSheetOpen}
+              fullScreen={isMobile}
+              onClose={() => setContextSheetOpen(false)}
+            />
           </>
         }
         onAddToDraft={handleAddToQueue}

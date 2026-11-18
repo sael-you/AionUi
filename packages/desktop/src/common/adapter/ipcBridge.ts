@@ -199,6 +199,12 @@ import type {
   UpdateBoardSettingsRequest,
 } from '@/common/types/board';
 import type { ChatFileRef, ContentEncoding } from '@/common/types/chatFile';
+import type {
+  ContextAutoCompact,
+  ContextAutoCompactMode,
+  ConversationCompactResult,
+  ConversationContextReport,
+} from '@/common/types/conversationContext';
 import type { ProtocolDetectionRequest, ProtocolDetectionResponse } from '../utils/protocolDetector';
 import {
   buildCreateConversationBody,
@@ -528,6 +534,23 @@ export const conversation = {
     } | null,
     { conversation_id: string }
   >((p) => `/api/conversations/${p.conversation_id}/usage`),
+  // Context panel (C41): what fills the context window, by category, plus the
+  // auto-compact setting. Null until the agent has reported usage.
+  getContext: httpGet<ConversationContextReport | null, { conversation_id: string }>(
+    (p) => `/api/conversations/${p.conversation_id}/context`
+  ),
+  // Ask the agent to compact the session now.
+  // 202: the compact runs as a turn and the new numbers arrive over WS.
+  // 409 TURN_RUNNING / COMPACT_UNSUPPORTED.
+  compact: httpPost<ConversationCompactResult, { conversation_id: string }>(
+    (p) => `/api/conversations/${p.conversation_id}/compact`,
+    () => undefined
+  ),
+  // Per-conversation auto-compact threshold; applies at the next agent start.
+  setAutoCompact: httpPut<ContextAutoCompact, { conversation_id: string; mode: ContextAutoCompactMode }>(
+    (p) => `/api/conversations/${p.conversation_id}/auto-compact`,
+    (p) => ({ mode: p.mode })
+  ),
   askSideQuestion: httpPost<ConversationSideQuestionResult, { conversation_id: string; question: string }>(
     (p) => `/api/conversations/${p.conversation_id}/side-question`,
     (p) => ({ question: p.question })
