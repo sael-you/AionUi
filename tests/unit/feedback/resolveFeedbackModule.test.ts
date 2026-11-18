@@ -21,6 +21,7 @@ describe('resolveFeedbackModule', () => {
     ['/scheduled', 'scheduled-task'],
     ['/scheduled/job-42', 'scheduled-task'],
     ['/board/project-1', 'workspace-preview'],
+    ['/project/project-1', 'workspace-preview'],
     ['/assistants', 'assistant-preset'],
     ['/settings/agent', 'agent-detection'],
     ['/settings/agent/claude/repair', 'agent-detection'],
