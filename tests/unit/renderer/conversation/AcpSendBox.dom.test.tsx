@@ -4,12 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import React from 'react';
 import { resetOfflineOwnerForTests } from '@/renderer/services/pendingUploads/offlineOwner';
 import { BackendHttpError } from '@/common/adapter/httpBridge';
 import AcpSendBox from '@/renderer/pages/conversation/platforms/acp/AcpSendBox';
+import { getContextTabRequests as contextTabRequests } from '@/renderer/pages/conversation/explorer/context/contextPanelStore';
+import { setCurrentConversation } from '@/renderer/pages/conversation/explorer/currentConversationStore';
+import { setCurrentProject } from '@/renderer/pages/conversation/explorer/currentProjectStore';
 import type { UseAcpMessageReturn } from '@/renderer/pages/conversation/platforms/acp/useAcpMessage';
 import type { TeamSendBoxRuntime } from '@/renderer/pages/team/components/teamSendRuntime';
 
@@ -302,6 +305,24 @@ vi.mock('@/renderer/utils/file/messageFiles', () => ({
 vi.mock('@/renderer/pages/conversation/platforms/acp/useAcpInitialMessage', () => ({
   useAcpInitialMessage: vi.fn(),
 }));
+// The Context sheet (C41) is its own surface with its own suite; here only
+// whether the ring opens it matters.
+vi.mock('@/renderer/pages/conversation/explorer/context/ContextSheet', () => ({
+  default: ({
+    visible,
+    fullScreen,
+    conversationId,
+  }: {
+    visible: boolean;
+    fullScreen: boolean;
+    conversationId: string;
+  }) =>
+    visible ? (
+      <div data-testid='context-sheet' data-full-screen={String(fullScreen)}>
+        {conversationId}
+      </div>
+    ) : null,
+}));
 vi.mock('@arco-design/web-react', () => ({
   Message: {
     success: vi.fn(),
@@ -422,6 +443,50 @@ describe('AcpSendBox', () => {
     expect(sendMessageInvokeMock.mock.calls[1]?.[0]).toMatchObject({ input: 'Hello', conversation_id: 'conv-1' });
     await waitFor(() => expect(screen.queryByTestId('unsent-message-banner')).toBeNull());
     expect(window.localStorage.getItem('aionui.unsentMessage.u1.conv-1')).toBeNull();
+  });
+
+  it('opens the Context tab from the ring when this conversation owns the desktop project panel', () => {
+    const { container, queryByTestId } = render(
+      <AcpSendBox
+        conversation_id='conv-1'
+        backend='gemini'
+        workspacePath='/tmp/workspace'
+        messageState={{ ...makeMessageState(), tokenUsage: { total_tokens: 500_000 }, context_limit: 1_000_000 }}
+      />
+    );
+    const ring = container.querySelector('.context-usage-indicator') as HTMLElement;
+    const requests = contextTabRequests();
+
+    // No project panel for this conversation → the sheet (a side sheet on desktop).
+    fireEvent.click(ring);
+    expect(queryByTestId('context-sheet')).toHaveAttribute('data-full-screen', 'false');
+    expect(contextTabRequests()).toBe(requests);
+  });
+
+  it('asks the project panel for its Context tab instead of a sheet, except on a phone', () => {
+    setCurrentProject('proj-1');
+    setCurrentConversation('conv-1');
+    const props = {
+      conversation_id: 'conv-1',
+      backend: 'gemini',
+      workspacePath: '/tmp/workspace',
+      messageState: { ...makeMessageState(), tokenUsage: { total_tokens: 500_000 }, context_limit: 1_000_000 },
+    };
+    const { container, queryByTestId, rerender } = render(<AcpSendBox {...props} />);
+    const requests = contextTabRequests();
+    fireEvent.click(container.querySelector('.context-usage-indicator') as HTMLElement);
+    expect(contextTabRequests()).toBe(requests + 1);
+    expect(queryByTestId('context-sheet')).toBeNull();
+
+    // A phone has no sidebar column: full-height sheet, no tab request.
+    isMobileMock.current = true;
+    rerender(<AcpSendBox {...props} />);
+    fireEvent.click(container.querySelector('.context-usage-indicator') as HTMLElement);
+    expect(queryByTestId('context-sheet')).toHaveAttribute('data-full-screen', 'true');
+    expect(contextTabRequests()).toBe(requests + 1);
+    isMobileMock.current = false;
+    setCurrentProject(null);
+    setCurrentConversation(null);
   });
 
   it('shows a progress ring with a window size, a hollow ring without one, and nothing without usage', () => {

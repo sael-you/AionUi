@@ -33,10 +33,12 @@ const subscribe = (listener: () => void): (() => void) => {
   };
 };
 
-const getRequests = (): number => requests;
+/** Number of open requests so far (0 = none yet); the non-React read. */
+export const getContextTabRequests = (): number => requests;
 
 /** Number of open requests so far (0 = none yet). */
-export const useContextTabRequests = (): number => useSyncExternalStore(subscribe, getRequests, getRequests);
+export const useContextTabRequests = (): number =>
+  useSyncExternalStore(subscribe, getContextTabRequests, getContextTabRequests);
 
 /** Test hook: reset module state. */
 export const resetContextPanelStoreForTest = (): void => {
