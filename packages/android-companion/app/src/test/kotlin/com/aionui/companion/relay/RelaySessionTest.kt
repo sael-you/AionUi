@@ -217,6 +217,37 @@ class RelaySessionTest {
     }
 
     @Test
+    fun `a probe keeps a socket that answers, with the request in flight on it`() {
+        val session = connected()
+        val socket = sockets.last
+        socket.receive("""{"type":"request","id":5,"device":"self","verb":"tap","args":{"x":1,"y":2}}""")
+        session.probe("network change")
+        scheduler.drain()
+        assertEquals("ping", socket.types().last())
+        scheduler.advance(1_000)
+        socket.receive("""{"type":"pong"}""")
+        scheduler.advance(10_000)
+        assertNull(socket.closed)
+        assertEquals(1, sockets.opened.size)
+        // The request that was running is answered on the same socket.
+        handler.pending.single()(VerbResult.Ok(null))
+        scheduler.drain()
+        assertEquals(JsonPrimitive(5), socket.frames().last()["id"])
+    }
+
+    @Test
+    fun `a probe gives a silent socket up after 5 s and dials again`() {
+        val session = connected()
+        val socket = sockets.last
+        session.probe("network change")
+        scheduler.advance(4_900)
+        assertNull(socket.closed)
+        scheduler.advance(200)
+        assertNotNull(socket.closed)
+        assertTrue(session.status is RelayStatus.Retrying)
+    }
+
+    @Test
     fun `redial drops the socket and connects at once, also out of a backoff`() {
         val session = connected()
         val first = sockets.last

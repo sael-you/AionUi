@@ -70,8 +70,11 @@ class RelaySession(
     private var running = false
     private var welcomed = false
     private var lastFrameAt = 0L
+    /** Frames received on any socket: a probe is answered when this moved. */
+    private var framesSeen = 0L
     private var openTimer: Cancellable? = null
     private var pingTimer: Cancellable? = null
+    private var probeTimer: Cancellable? = null
     private var retry: Cancellable? = null
 
     var status: RelayStatus = RelayStatus.Stopped
@@ -100,6 +103,23 @@ class RelaySession(
         dropSocket(1001, reason)
         backoff.reset()
         connect()
+    }
+
+    /**
+     * Is this socket still alive? One ping now; it is given up only if no frame at all
+     * arrives within [Relay.PROBE_TIMEOUT_SECONDS]. A healthy socket, and the requests
+     * running on it, are left alone.
+     */
+    fun probe(reason: String) = scheduler.post {
+        if (!running || !welcomed) return@post
+        val seen = framesSeen
+        val sentOn = generation
+        socket?.send(Frames.ping())
+        probeTimer?.cancel()
+        probeTimer = scheduler.schedule(Relay.PROBE_TIMEOUT_SECONDS * 1000) {
+            probeTimer = null
+            if (sentOn == generation && framesSeen == seen) lost("no answer after $reason")
+        }
     }
 
     /** Something in the inventory changed (switch, name): tell core now. */
@@ -163,6 +183,7 @@ class RelaySession(
 
     private fun received(text: String) {
         lastFrameAt = scheduler.now()
+        framesSeen += 1
         when (val frame = Frames.parse(text)) {
             is Inbound.Welcome -> welcome(frame)
             is Inbound.Error -> refused(frame)
@@ -245,6 +266,8 @@ class RelaySession(
         openTimer = null
         pingTimer?.cancel()
         pingTimer = null
+        probeTimer?.cancel()
+        probeTimer = null
         generation += 1
         welcomed = false
         socket?.close(code, reason.take(120))

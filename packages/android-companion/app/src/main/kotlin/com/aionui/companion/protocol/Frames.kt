@@ -28,6 +28,8 @@ object Relay {
     const val PING_SECONDS = 20L
     const val IDLE_CLOSE_SECONDS = 60L
     const val OPEN_TIMEOUT_SECONDS = 5L
+    /** After a network change: how long a connected socket has to answer one ping. */
+    const val PROBE_TIMEOUT_SECONDS = 5L
     const val MAX_FRAME_BYTES = 16 * 1024 * 1024
 
     /** Verbs this app serves (advertised as `capabilities`; core never routes others here). */

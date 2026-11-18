@@ -348,10 +348,15 @@ class CompanionService : Service() {
     private fun watchNetwork() {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                val redial = synchronized(networkRedial) {
+                val action = synchronized(networkRedial) {
                     networkRedial.onAvailable(network.networkHandle, CompanionState.relay.value)
                 }
-                if (redial) session?.redial("network changed")
+                when (action) {
+                    NetworkRedial.Action.REDIAL -> session?.redial("network back")
+                    // Connected: never dropped on a callback alone, only if a ping gets no answer.
+                    NetworkRedial.Action.PROBE -> session?.probe("network change")
+                    NetworkRedial.Action.NONE -> Unit
+                }
             }
 
             override fun onLost(network: Network) {
