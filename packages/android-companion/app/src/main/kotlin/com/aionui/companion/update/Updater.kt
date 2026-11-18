@@ -22,12 +22,13 @@ import java.io.File
  * @param send a frame for core (`update_check`, `update` progress); dropped when offline.
  */
 class Updater(
-    private val context: Context,
+    appContext: Context,
     private val scope: CoroutineScope,
     private val pairedHost: () -> String?,
     private val agentBusy: () -> Boolean,
     private val send: (String) -> Unit,
-) {
+) : UpdateSignals {
+    private val context: Context = appContext.applicationContext
     private val machine = UpdateMachine(BuildConfig.VERSION_CODE)
     private val downloader = UpdateDownloader(OkHttpSockets.defaultClient(), File(context.cacheDir, "update"))
     private var work: Job? = null
@@ -46,8 +47,8 @@ class Updater(
     fun offered(offer: UpdateOffer) = dispatch(UpdateEvent.Offered(offer))
     fun checkNow() = dispatch(UpdateEvent.CheckRequested)
     fun accept() = dispatch(UpdateEvent.Accepted)
-    fun confirmNeeded() = dispatch(UpdateEvent.ConfirmNeeded)
-    fun failed(reason: UpdateRefusal) = dispatch(UpdateEvent.Failure(reason))
+    override fun confirmNeeded() = dispatch(UpdateEvent.ConfirmNeeded)
+    override fun failed(reason: UpdateRefusal) = dispatch(UpdateEvent.Failure(reason))
 
     @Synchronized
     private fun dispatch(event: UpdateEvent) {

@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity() {
         pairing?.let { findViewById<TextView>(R.id.paired_with).text = getString(R.string.paired_with, it.host) }
 
         val line = ConnectionLine.of(CompanionState.relay.value, CompanionState.offlineSince.value, System.currentTimeMillis())
-        findViewById<TextView>(R.id.status).text = when (line) {
+        val connection = when (line) {
             ConnectionLine.NotConnected -> getString(R.string.status_stopped)
             ConnectionLine.Reconnecting -> getString(R.string.status_reconnecting)
             ConnectionLine.Connected -> getString(R.string.status_connected)
@@ -269,10 +269,9 @@ class MainActivity : AppCompatActivity() {
             ConnectionLine.NeedsPairing -> getString(R.string.status_needs_pairing)
         }
         // The new build says once, for a day, that it is the result of an update.
-        CompanionState.updatedTo(this, BuildConfig.VERSION_CODE, System.currentTimeMillis())?.let { version ->
-            val status = findViewById<TextView>(R.id.status)
-            status.text = getString(R.string.status_updated, status.text, version)
-        }
+        val updatedTo = CompanionState.updatedTo(this, BuildConfig.VERSION_CODE, System.currentTimeMillis())
+        findViewById<TextView>(R.id.status).text =
+            if (updatedTo == null) connection else getString(R.string.status_updated, connection, updatedTo)
         val update = CompanionState.update.value
         findViewById<TextView>(R.id.update_state).text = updateLine(update)
         findViewById<MaterialButton>(R.id.update_install).apply {

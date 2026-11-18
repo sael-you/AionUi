@@ -93,7 +93,7 @@ class CompanionService : Service() {
         overlay = OverlayChip(this) { ownerStop() }
         dispatcher = VerbDispatcher(AndroidDeviceActions(this) { capture }, scope)
         updater = Updater(
-            context = this,
+            appContext = this,
             scope = scope,
             pairedHost = { tokens.load()?.host },
             agentBusy = { dispatcher.busy() },

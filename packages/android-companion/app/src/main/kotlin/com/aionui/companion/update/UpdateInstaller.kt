@@ -64,10 +64,16 @@ class UpdateResultReceiver : BroadcastReceiver() {
     }
 }
 
+/** What Android's answer to an install means for the running update. */
+interface UpdateSignals {
+    fun confirmNeeded()
+    fun failed(reason: UpdateRefusal)
+}
+
 /** Where Android's install answers reach the running updater (the receiver has no other way to it). */
 object UpdateCenter {
     @Volatile
-    var updater: Updater? = null
+    var updater: UpdateSignals? = null
 
     /** Android's own install question, kept so the app's Install button can show it again. */
     @Volatile
