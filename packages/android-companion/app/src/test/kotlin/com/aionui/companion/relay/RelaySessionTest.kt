@@ -1,5 +1,6 @@
 package com.aionui.companion.relay
 
+import com.aionui.companion.protocol.Health
 import com.aionui.companion.protocol.Relay
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
@@ -195,6 +196,24 @@ class RelaySessionTest {
         handler.pending.single()(VerbResult.Ok(null))
         scheduler.drain()
         assertEquals(JsonPrimitive("abc"), socket.frames().last()["id"])
+    }
+
+    @Test
+    fun `health rides in hello and a change is sent as the health event once welcomed`() {
+        callbacks.health = Health(80, true, locked = false, accessibilityOn = true, androidVersion = "15", model = "Pixel 8")
+        val session = connected()
+        val socket = sockets.last
+        val hello = socket.frames().first { it["type"]!!.jsonPrimitive.content == "hello" }
+        assertEquals("80", hello["health"]!!.jsonObject["battery_percent"]!!.jsonPrimitive.content)
+
+        callbacks.health = callbacks.health!!.copy(batteryPercent = 5, locked = true)
+        session.healthChanged()
+        scheduler.drain()
+        val event = socket.frames().last()
+        assertEquals("event", event["type"]!!.jsonPrimitive.content)
+        assertEquals("health", event["name"]!!.jsonPrimitive.content)
+        assertEquals("5", event["data"]!!.jsonObject["battery_percent"]!!.jsonPrimitive.content)
+        assertEquals("true", event["data"]!!.jsonObject["locked"]!!.jsonPrimitive.content)
     }
 
     @Test

@@ -72,10 +72,10 @@ class ScreenCapture(
     }
 
     /** The latest frame; PNG at full size, JPEG q80 when scaled down (W2 contract). */
-    fun capture(scale: Double): Screenshot {
+    fun capture(scale: Double, format: String? = null): Screenshot {
         val frame = synchronized(lock) { lastFrame?.copy(Bitmap.Config.ARGB_8888, false) }
             ?: throw VerbException(VerbError.FAILED, "no screen frame yet, try again")
-        return encodeScreenshot(frame, scale)
+        return encodeScreenshot(frame, scale, format)
     }
 
     fun release() {
@@ -90,14 +90,14 @@ class ScreenCapture(
     }
 }
 
-/** PNG at full size, JPEG q80 when scaled down (W2 contract). */
-internal fun encodeScreenshot(frame: Bitmap, scale: Double): Screenshot {
+/** PNG at full size, JPEG q80 when scaled down (W2 contract); [format] `png` / `jpeg` overrides that. */
+internal fun encodeScreenshot(frame: Bitmap, scale: Double, format: String? = null): Screenshot {
     val scaled = if (scale < 1.0) {
         Bitmap.createScaledBitmap(frame, (frame.width * scale).toInt().coerceAtLeast(1), (frame.height * scale).toInt().coerceAtLeast(1), true)
     } else {
         frame
     }
-    val png = scale >= 1.0
+    val png = ScreenshotPolicy.png(scale, format)
     val bytes = ByteArrayOutputStream().use { out ->
         scaled.compress(if (png) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG, if (png) 100 else 80, out)
         out.toByteArray()

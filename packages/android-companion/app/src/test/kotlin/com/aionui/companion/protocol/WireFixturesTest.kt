@@ -3,6 +3,7 @@ package com.aionui.companion.protocol
 import com.aionui.companion.device.DeviceActions
 import com.aionui.companion.device.Screenshot
 import com.aionui.companion.device.TextClick
+import com.aionui.companion.device.UiTreeDump
 import com.aionui.companion.device.VerbDispatcher
 import com.aionui.companion.relay.VerbResult
 import kotlinx.coroutines.CompletableDeferred
@@ -25,8 +26,10 @@ import org.junit.Test
 class WireFixturesTest {
     private class Phone(var on: Boolean = true) : DeviceActions {
         override fun switchOn() = on
-        override suspend fun screenshot(scale: Double) = Screenshot("png", 2, 3, byteArrayOf(1, 2, 3))
-        override suspend fun uiTree() = "<hierarchy/>"
+        override suspend fun screenshot(scale: Double, format: String?) = Screenshot("png", 2, 3, byteArrayOf(1, 2, 3))
+        override suspend fun uiTree() = UiTreeDump("<hierarchy/>", 0, false)
+        override suspend fun global(action: String) = Unit
+        override suspend fun openUrl(url: String) = Unit
         override suspend fun tap(x: Int, y: Int) = Unit
         override suspend fun swipe(x1: Int, y1: Int, x2: Int, y2: Int, durationMs: Long) = Unit
         override suspend fun text(value: String) = Unit

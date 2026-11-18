@@ -11,6 +11,7 @@ class WireDumpTest {
     @Test
     fun `dump the frames`() {
         val phone = PhoneInfo(name = "OnePlus Nord 4", model = "CPH2663", androidVersion = "15", enabled = true)
+        val health = Health(80, true, locked = false, accessibilityOn = true, androidVersion = "15", model = "CPH2663")
         val screenshot = buildJsonObject {
             put("format", "png")
             put("width", 2)
@@ -18,8 +19,9 @@ class WireDumpTest {
             put("data_base64", "AQID")
         }
         val frames = listOf(
-            "pair" to Frames.pair("<CODE>", "OnePlus Nord 4", "0.2.0"),
-            "hello" to Frames.hello("<TOKEN>", "0.2.0"),
+            "pair" to Frames.pair("<CODE>", "OnePlus Nord 4", "0.2.0", health),
+            "hello" to Frames.hello("<TOKEN>", "0.2.0", health),
+            "event health" to Frames.health(health.copy(batteryPercent = 5, locked = true)),
             "inventory" to Frames.inventory(phone),
             "response ok, no result" to Frames.ok(JsonPrimitive(1), null),
             "response ok, foreground" to Frames.ok(JsonPrimitive(2), buildJsonObject { put("package", "com.example.app") }),

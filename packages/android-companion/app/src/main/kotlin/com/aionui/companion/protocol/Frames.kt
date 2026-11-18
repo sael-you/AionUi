@@ -32,7 +32,8 @@ object Relay {
 
     /** Verbs this app serves (advertised as `capabilities`; core never routes others here). */
     val VERBS = listOf(
-        "screenshot", "ui_tree", "tap", "swipe", "text", "key", "launch", "foreground", "click_text", "set_text", "stop",
+        "screenshot", "ui_tree", "tap", "swipe", "text", "key", "global", "launch", "open_url", "foreground",
+        "click_text", "set_text", "stop",
     )
 }
 
@@ -97,20 +98,25 @@ object Frames {
         }
     }
 
-    fun pair(code: String, name: String, version: String): String = encode("pair") {
+    fun pair(code: String, name: String, version: String, health: Health? = null): String = encode("pair") {
         put("code", code)
         put("kind", Relay.KIND)
         put("name", name)
         put("version", version)
         put("capabilities", capabilities())
+        health?.let { put("health", it.toJson()) }
     }
 
-    fun hello(token: String, version: String): String = encode("hello") {
+    fun hello(token: String, version: String, health: Health? = null): String = encode("hello") {
         put("token", token)
         put("kind", Relay.KIND)
         put("version", version)
         put("capabilities", capabilities())
+        health?.let { put("health", it.toJson()) }
     }
+
+    /** The `health` event: sent whenever a field changed. */
+    fun health(health: Health): String = event("health", health.toJson())
 
     fun inventory(phone: PhoneInfo): String = encode("inventory") {
         put("phones", buildJsonArray {
@@ -160,6 +166,9 @@ object Frames {
 }
 
 internal fun JsonObject.string(key: String): String? = (this[key] as? JsonPrimitive)?.contentOrNull
+
+internal fun JsonObject.boolean(key: String): Boolean? =
+    (this[key] as? JsonPrimitive)?.takeIf { !it.isString }?.contentOrNull?.toBooleanStrictOrNull()
 
 internal fun JsonObject.number(key: String): Double? =
     (this[key] as? JsonPrimitive)?.takeIf { !it.isString }?.contentOrNull?.toDoubleOrNull()

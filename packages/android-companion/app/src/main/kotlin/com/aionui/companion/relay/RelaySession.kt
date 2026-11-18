@@ -1,6 +1,7 @@
 package com.aionui.companion.relay
 
 import com.aionui.companion.protocol.Frames
+import com.aionui.companion.protocol.Health
 import com.aionui.companion.protocol.Inbound
 import com.aionui.companion.protocol.OpenError
 import com.aionui.companion.protocol.PhoneInfo
@@ -43,6 +44,8 @@ interface SessionCallbacks {
     /** The stored token is no longer valid: forget it. */
     fun forgetToken()
     fun phone(): PhoneInfo
+    /** Battery, lock screen, accessibility: for `health` in the first frame and the `health` event. */
+    fun health(): Health? = null
 }
 
 /**
@@ -104,6 +107,12 @@ class RelaySession(
         if (welcomed) socket?.send(Frames.inventory(callbacks.phone()))
     }
 
+    /** Battery, lock screen or accessibility changed: tell core. */
+    fun healthChanged() = scheduler.post {
+        val health = callbacks.health() ?: return@post
+        if (welcomed) socket?.send(Frames.health(health))
+    }
+
     /** A device event for core (`local_switch_off`, `foreground`). */
     fun sendEvent(name: String, data: JsonObject = JsonObject(emptyMap())) = scheduler.post {
         if (welcomed) socket?.send(Frames.event(name, data))
@@ -130,8 +139,8 @@ class RelaySession(
     private fun opened() {
         lastFrameAt = scheduler.now()
         val first = when (val creds = credentials) {
-            is Credentials.Code -> Frames.pair(creds.code, creds.name, version)
-            is Credentials.Token -> Frames.hello(creds.token, version)
+            is Credentials.Code -> Frames.pair(creds.code, creds.name, version, callbacks.health())
+            is Credentials.Token -> Frames.hello(creds.token, version, callbacks.health())
         }
         socket?.send(first)
         // No welcome within 5 s: give up on this socket.

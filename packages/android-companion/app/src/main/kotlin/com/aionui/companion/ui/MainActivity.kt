@@ -1,6 +1,7 @@
 package com.aionui.companion.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -175,7 +176,12 @@ class MainActivity : AppCompatActivity() {
     private fun batteryUnrestricted(): Boolean =
         getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
 
-    /** Android's own "let this app run in the background" question; the list of apps where it is missing. */
+    /**
+     * Android's own "let this app run in the background" question; the list of apps where it is
+     * missing. The app is installed from the owner's own server, not from Play, and has to stay
+     * on the relay with the screen off: the case this exemption exists for.
+     */
+    @SuppressLint("BatteryLife")
     private fun openBatterySettings() {
         val ask = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.fromParts("package", packageName, null))
         val opened = !batteryUnrestricted() && runCatching { startActivity(ask) }.isSuccess

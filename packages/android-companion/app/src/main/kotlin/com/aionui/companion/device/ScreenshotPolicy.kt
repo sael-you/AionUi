@@ -42,6 +42,11 @@ object ScreenshotPolicy {
         else -> throw VerbException(VerbError.REFUSED, "screen capture consent needed")
     }
 
+    val FORMATS = listOf("png", "jpeg")
+
+    /** PNG or JPEG: what was asked for, else PNG at full size and JPEG when scaled down. */
+    fun png(scale: Double, format: String?): Boolean = if (format == null) scale >= 1.0 else format == "png"
+
     /** How long to wait before the next accessibility screenshot so Android's limit is kept. */
     fun waitMs(lastShotAt: Long?, now: Long): Long =
         if (lastShotAt == null) 0 else (MIN_INTERVAL_MS - (now - lastShotAt)).coerceIn(0, MIN_INTERVAL_MS)
