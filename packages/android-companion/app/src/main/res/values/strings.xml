@@ -41,4 +41,5 @@
     <string name="version_label">Version %1$s (%2$d)</string>
     <string name="scan_prompt">Scan the pairing QR code shown in AionUi</string>
     <string name="not_a_pairing_code">This QR code is not an AionUi pairing code</string>
+    <string name="scan_other_code">That QR code is not the pairing code. Scan the one labelled for pairing.</string>
 </resources>

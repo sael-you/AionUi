@@ -41,4 +41,5 @@
     <string name="version_label">版本 %1$s (%2$d)</string>
     <string name="scan_prompt">扫描 AionUi 中显示的配对二维码</string>
     <string name="not_a_pairing_code">此二维码不是 AionUi 配对码</string>
+    <string name="scan_other_code">这个二维码不是配对码。请扫描标明用于配对的那个。</string>
 </resources>

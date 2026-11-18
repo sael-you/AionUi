@@ -75,7 +75,14 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.version).text =
             getString(R.string.version_label, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
         findViewById<MaterialButton>(R.id.pair_scan).setOnClickListener {
-            scan.launch(ScanOptions().setPrompt(getString(R.string.scan_prompt)).setBeepEnabled(false).setOrientationLocked(false))
+            scan.launch(
+                ScanOptions()
+                    .setCaptureActivity(ScanActivity::class.java)
+                    .setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                    .setPrompt(getString(R.string.scan_prompt))
+                    .setBeepEnabled(false)
+                    .setOrientationLocked(false),
+            )
         }
         findViewById<MaterialButton>(R.id.pair_button).setOnClickListener { pair() }
         findViewById<MaterialButton>(R.id.unpair).setOnClickListener { confirmUnpair() }

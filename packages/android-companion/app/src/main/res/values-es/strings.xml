@@ -41,4 +41,5 @@
     <string name="version_label">Versión %1$s (%2$d)</string>
     <string name="scan_prompt">Escanea el código QR de vinculación que muestra AionUi</string>
     <string name="not_a_pairing_code">Este código QR no es un código de vinculación de AionUi</string>
+    <string name="scan_other_code">Ese código QR no es el de emparejamiento. Escanea el que está marcado para emparejar.</string>
 </resources>
