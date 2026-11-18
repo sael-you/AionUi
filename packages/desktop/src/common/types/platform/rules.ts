@@ -79,8 +79,11 @@ export type RuleImportProposal = {
   name_taken: boolean;
 };
 
-/** `new` | `imported` | `managed` | `pointer` (only refers to another file) | `missing`. */
-export type RuleImportFileStatus = 'new' | 'imported' | 'managed' | 'pointer' | 'missing';
+/**
+ * `new` | `imported` | `managed` | `pointer` (only refers to another file) | `missing` |
+ * `refused` (a symlink leaving the project, not a regular file, or over 512 KB; no rules).
+ */
+export type RuleImportFileStatus = 'new' | 'imported' | 'managed' | 'pointer' | 'missing' | 'refused';
 
 export type RuleImportFile = {
   path: string;

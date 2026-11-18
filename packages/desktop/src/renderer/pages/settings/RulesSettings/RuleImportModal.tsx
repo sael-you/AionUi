@@ -32,6 +32,7 @@ import { useTranslation } from 'react-i18next';
 import type { RuleImportFile, RuleImportScope } from '@/common/types/platform/rules';
 import MarkdownView from '@/renderer/components/Markdown';
 import type { StandardProject } from '@/renderer/pages/conversation/GroupedHistory/utils/standardProjects';
+import { isBackendHttpError } from '@/common/adapter/httpBridge';
 import { describeRuleError, formatBytes } from './ruleModel';
 import { useRuleActions, useRuleImportPreview, useRuleSources } from './useRules';
 
@@ -41,6 +42,7 @@ const STATUS_COLORS: Record<string, string> = {
   managed: 'gray',
   pointer: 'gray',
   missing: 'gray',
+  refused: 'red',
 };
 
 const FileRow: React.FC<{ file: RuleImportFile }> = ({ file }) => {
@@ -96,12 +98,15 @@ const RuleImportModal: React.FC<{
   const [projectId, setProjectId] = useState<string | null>(initialProjectId);
   const [busy, setBusy] = useState<'import' | 'manage' | null>(null);
   const [acknowledged, setAcknowledged] = useState(false);
+  /** Core's line diff (or reason) when a file changed since its import: nothing was written. */
+  const [fileChanged, setFileChanged] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible) return;
     setScope(initialProjectId ? 'project' : 'global');
     setProjectId(initialProjectId);
     setAcknowledged(false);
+    setFileChanged(null);
   }, [visible, initialProjectId]);
 
   const ready = visible && (scope === 'global' || Boolean(projectId));
@@ -131,12 +136,17 @@ const RuleImportModal: React.FC<{
 
   const runManage = async () => {
     setBusy('manage');
+    setFileChanged(null);
     try {
       const result = await actions.manageFiles(scope, projectId);
       Message.success(t('settings.rules.import.handedOver', { count: result.written.length }));
       setAcknowledged(false);
     } catch (manageError) {
-      Message.error(describeRuleError(t, manageError));
+      if (isBackendHttpError(manageError) && manageError.code === 'RULE_FILE_CHANGED') {
+        setFileChanged(manageError.backendMessage);
+      } else {
+        Message.error(describeRuleError(t, manageError));
+      }
     } finally {
       setBusy(null);
     }
@@ -235,6 +245,20 @@ const RuleImportModal: React.FC<{
                 </li>
               ))}
             </ul>
+            {fileChanged !== null ? (
+              <Alert
+                type='error'
+                title={t('settings.rules.errors.fileChanged')}
+                content={
+                  fileChanged ? (
+                    <pre className='m-0 max-h-200px overflow-auto whitespace-pre-wrap break-words text-12px'>
+                      {fileChanged}
+                    </pre>
+                  ) : undefined
+                }
+                data-testid='rule-import-file-changed'
+              />
+            ) : null}
             <Checkbox checked={acknowledged} onChange={setAcknowledged} data-testid='rule-import-acknowledge'>
               {t(scope === 'global' ? 'settings.rules.import.ackGlobal' : 'settings.rules.import.ackProject')}
             </Checkbox>

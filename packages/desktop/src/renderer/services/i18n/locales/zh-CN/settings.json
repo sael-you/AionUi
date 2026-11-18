@@ -2126,7 +2126,8 @@
         "imported": "已导入",
         "managed": "已交出",
         "pointer": "仅引用",
-        "missing": "未找到"
+        "missing": "未找到",
+        "refused": "已拒绝"
       }
     },
     "errors": {
@@ -2138,7 +2139,8 @@
       "confirmRequired": "请先确认该步骤。",
       "notFound": "此规则已不存在。",
       "sessionRequired": "请重新登录后再修改规则。",
-      "csrf": "页面已过期，请刷新后重试。"
+      "csrf": "页面已过期，请刷新后重试。",
+      "fileChanged": "文件在导入后发生了更改，因此未写入任何内容。请查看差异，然后重新导入或恢复该文件。"
     }
   }
 }

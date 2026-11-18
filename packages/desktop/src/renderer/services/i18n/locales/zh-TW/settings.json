@@ -2127,7 +2127,8 @@
         "imported": "已匯入",
         "managed": "已交出",
         "pointer": "僅參照",
-        "missing": "找不到"
+        "missing": "找不到",
+        "refused": "已拒絕"
       }
     },
     "errors": {
@@ -2139,7 +2140,8 @@
       "confirmRequired": "請先確認該步驟。",
       "notFound": "這條規則已不存在。",
       "sessionRequired": "請重新登入後再修改規則。",
-      "csrf": "頁面已過期，請重新整理後再試一次。"
+      "csrf": "頁面已過期，請重新整理後再試一次。",
+      "fileChanged": "檔案在匯入後有變更，因此沒有寫入任何內容。請檢查差異，然後重新匯入或還原檔案。"
     }
   }
 }

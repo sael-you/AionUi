@@ -2125,7 +2125,8 @@
         "imported": "Importiert",
         "managed": "Übergeben",
         "pointer": "Nur Verweis",
-        "missing": "Nicht gefunden"
+        "missing": "Nicht gefunden",
+        "refused": "Abgelehnt"
       }
     },
     "errors": {
@@ -2137,7 +2138,8 @@
       "confirmRequired": "Bestätige zuerst den Schritt.",
       "notFound": "Diese Regel gibt es nicht mehr.",
       "sessionRequired": "Melde dich erneut an, um Regeln zu ändern.",
-      "csrf": "Die Seite ist veraltet; lade sie neu und versuche es erneut."
+      "csrf": "Die Seite ist veraltet; lade sie neu und versuche es erneut.",
+      "fileChanged": "Die Datei wurde seit dem Import geändert, daher wurde nichts geschrieben. Prüfe den Unterschied und importiere erneut oder stelle die Datei wieder her."
     }
   }
 }

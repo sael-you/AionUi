@@ -2125,7 +2125,8 @@
         "imported": "Importé",
         "managed": "Confié",
         "pointer": "Renvoi seul",
-        "missing": "Introuvable"
+        "missing": "Introuvable",
+        "refused": "Refusé"
       }
     },
     "errors": {
@@ -2137,7 +2138,8 @@
       "confirmRequired": "Confirmez d'abord l'étape.",
       "notFound": "Cette règle n'existe plus.",
       "sessionRequired": "Reconnectez-vous pour modifier les règles.",
-      "csrf": "La page n'est plus à jour ; rechargez-la et réessayez."
+      "csrf": "La page n'est plus à jour ; rechargez-la et réessayez.",
+      "fileChanged": "Le fichier a changé depuis son import : rien n'a été écrit. Vérifiez la différence, puis réimportez ou restaurez le fichier."
     }
   }
 }
