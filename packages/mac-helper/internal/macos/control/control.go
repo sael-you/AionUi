@@ -108,6 +108,11 @@ const MaxTypeLen = 1000
 // Handle implements agent.Mac.
 func (c *Controller) Handle(ctx context.Context, verb string, args []byte) (any, error) {
 	switch verb {
+	case "mac_foreground":
+		if err := decode(args, &struct{}{}); err != nil {
+			return nil, err
+		}
+		return map[string]string{"bundle_id": c.frontBundleID(ctx)}, nil
 	case "mac_screenshot":
 		if err := decode(args, &struct{}{}); err != nil {
 			return nil, err
@@ -175,6 +180,35 @@ func (c *Controller) Handle(ctx context.Context, verb string, args []byte) (any,
 		return nil, err
 	}
 	return nil, wire.Errorf(wire.ErrRefused, "unknown verb %q", verb)
+}
+
+var lsappinfoBundle = regexp.MustCompile(`"CFBundleIdentifier"\s*=\s*"([^"]+)"`)
+
+// frontBundleID is the frontmost application's bundle id, "" when unknown
+// (core then asks the owner before every Mac action). Needs no macOS
+// permission: LaunchServices' `lsappinfo`, then AppleScript's own
+// `path to frontmost application` as fallback.
+func (c *Controller) frontBundleID(ctx context.Context) string {
+	fctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	if asn, err := c.Run(fctx, "/usr/bin/lsappinfo", "front"); err == nil {
+		if a := strings.TrimSpace(string(asn)); a != "" && !strings.ContainsAny(a, " \n") {
+			if out, err := c.Run(fctx, "/usr/bin/lsappinfo", "info", "-only", "bundleid", a); err == nil {
+				if m := lsappinfoBundle.FindStringSubmatch(string(out)); m != nil && validBundle(m[1]) {
+					return m[1]
+				}
+			}
+		}
+	}
+	out, err := c.Run(fctx, "/usr/bin/osascript", "-e", "id of application (path to frontmost application as text)")
+	if id := strings.TrimSpace(string(out)); err == nil && validBundle(id) {
+		return id
+	}
+	return ""
+}
+
+func validBundle(id string) bool {
+	return len(id) <= 200 && bundlePattern.MatchString(id)
 }
 
 func (c *Controller) screenshot(ctx context.Context) (any, error) {
