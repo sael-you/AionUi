@@ -118,7 +118,7 @@ func capabilities() []string {
 	}
 	caps = append(caps, "addon_install", "addon_remove", "addon_run", "addon_stop")
 	if control.Supported() {
-		caps = append(caps, "mac_screenshot", "mac_ax_tree", "mac_click", "mac_type", "mac_key", "mac_open_app")
+		caps = append(caps, "mac_foreground", "mac_screenshot", "mac_ax_tree", "mac_click", "mac_type", "mac_key", "mac_open_app")
 	}
 	return caps
 }

@@ -168,3 +168,46 @@ func TestAXTreeParsesJSON(t *testing.T) {
 		t.Fatalf("%v", tree)
 	}
 }
+
+func TestForegroundReportsTheFrontBundleIDOrEmpty(t *testing.T) {
+	in := &fakeInput{}
+	answers := map[string]string{
+		"/usr/bin/lsappinfo front":                                "ASN:0x0-0x1b01b:\n",
+		"/usr/bin/lsappinfo info -only bundleid ASN:0x0-0x1b01b:": "\"CFBundleIdentifier\"=\"com.apple.Safari\"\n",
+	}
+	c := controller(in, func(name string, args []string) ([]byte, error) {
+		if out, ok := answers[name+" "+strings.Join(args, " ")]; ok {
+			return []byte(out), nil
+		}
+		return nil, errors.New("no such tool")
+	})
+	get := func() string {
+		res, err := c.Handle(context.Background(), "mac_foreground", []byte(`{}`))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return res.(map[string]string)["bundle_id"]
+	}
+	// No permission is needed: fakeInput grants nothing.
+	if got := get(); got != "com.apple.Safari" {
+		t.Fatalf("lsappinfo: %q", got)
+	}
+	// lsappinfo unusable: AppleScript fallback.
+	answers = map[string]string{
+		"/usr/bin/osascript -e id of application (path to frontmost application as text)": "com.google.Chrome\n",
+	}
+	if got := get(); got != "com.google.Chrome" {
+		t.Fatalf("fallback: %q", got)
+	}
+	// Garbage or nothing: empty = unknown.
+	answers = map[string]string{
+		"/usr/bin/lsappinfo front":                            "ASN:0x0-0x1:\n",
+		"/usr/bin/lsappinfo info -only bundleid ASN:0x0-0x1:": "\"CFBundleIdentifier\"=\"not a bundle; rm -rf\"\n",
+	}
+	if got := get(); got != "" {
+		t.Fatalf("invalid id accepted: %q", got)
+	}
+	if _, err := c.Handle(context.Background(), "mac_foreground", []byte(`{"x":1}`)); code(err) != wire.ErrBadArgs {
+		t.Fatalf("unknown arg: %v", err)
+	}
+}
