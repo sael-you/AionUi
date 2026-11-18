@@ -172,4 +172,24 @@ describe('ProjectGroup row', () => {
     // Icon-only rows keep their normal size.
     expect(screen.getByTestId(`project-children-${WS}`).hasAttribute('data-project-children')).toBe(false);
   });
+
+  it('the name opens the project page without folding; the rest of the row still folds (C42)', () => {
+    const onOpen = vi.fn();
+    render(<Harness rows={2} onOpen={onOpen} />);
+    const row = projectRow();
+    fireEvent.click(screen.getByTestId(`project-open-${WS}`));
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    expect(row.getAttribute('aria-expanded')).toBe('true');
+
+    fireEvent.click(row);
+    expect(row.getAttribute('aria-expanded')).toBe('false');
+    expect(onOpen).toHaveBeenCalledTimes(1);
+  });
+
+  it('without a project page the name is plain text and a click on it folds', () => {
+    render(<Harness rows={2} />);
+    expect(screen.queryByTestId(`project-open-${WS}`)).toBeNull();
+    fireEvent.click(screen.getByTitle('aionui'));
+    expect(projectRow().getAttribute('aria-expanded')).toBe('false');
+  });
 });
