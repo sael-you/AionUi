@@ -498,6 +498,33 @@ describe('useAcpMessage', () => {
     expect(result.current.tokenUsage).toEqual({ total_tokens: 90_000 });
   });
 
+  it('does not treat the "context breakdown is ready" frame as agent activity', async () => {
+    // acp_context_report lands seconds after a turn ended (and on an idle,
+    // freshly opened conversation). It must neither light the running timer
+    // nor reach the unsupported-type warning.
+    vi.mocked(getConversationOrNull).mockResolvedValue(null);
+    getUsageInvokeMock.mockResolvedValue(null);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { result } = renderHook(() => useAcpMessage('conv-1'));
+    await waitFor(() => {
+      expect(result.current.hasHydratedRunningState).toBe(true);
+    });
+
+    act(() => {
+      responseStreamHandlerRef.current?.({
+        type: 'acp_context_report',
+        data: {},
+        msg_id: 'report-1',
+        conversation_id: 'conv-1',
+      } as unknown as IResponseMessage);
+    });
+
+    expect(result.current.running).toBe(false);
+    expect(warn.mock.calls.some((call) => String(call[0]).includes('acp_context_report'))).toBe(false);
+    warn.mockRestore();
+  });
+
   it('survives a failing usage snapshot request without touching indicator state', async () => {
     vi.mocked(getConversationOrNull).mockResolvedValue(null);
     getUsageInvokeMock.mockRejectedValue(new Error('no active task'));
