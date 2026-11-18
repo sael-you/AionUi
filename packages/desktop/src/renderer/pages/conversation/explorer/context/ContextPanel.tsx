@@ -140,7 +140,7 @@ const ContextPanel: React.FC<ContextPanelProps> = ({ conversationId, className }
     return (
       <li
         key={category.id}
-        className={classNames('flex items-center gap-8px min-h-24px', category.deferred && 'opacity-60')}
+        className='flex items-center gap-8px min-h-24px'
         data-category={category.id}
         data-deferred={category.deferred ? 'true' : undefined}
       >
@@ -149,7 +149,13 @@ const ContextPanel: React.FC<ContextPanelProps> = ({ conversationId, className }
           className='w-8px h-8px rd-2px flex-shrink-0'
           style={{ background: categoryColor(category) }}
         />
-        <span className='flex-1 min-w-0 truncate text-t-primary'>{categoryLabel(category)}</span>
+        {/* Deferred rows are quieter through the secondary text colour, not opacity:
+            opacity would drop the text below the 4.5:1 contrast the app keeps. */}
+        <span
+          className={classNames('flex-1 min-w-0 truncate', category.deferred ? 'text-t-secondary' : 'text-t-primary')}
+        >
+          {categoryLabel(category)}
+        </span>
         <span className='text-t-secondary tabular-nums'>{tokens(category.tokens, category.estimated)}</span>
         <span className='w-48px text-end text-t-secondary tabular-nums'>
           {share === null ? '—' : rowPercent(share, locale)}
@@ -163,7 +169,7 @@ const ContextPanel: React.FC<ContextPanelProps> = ({ conversationId, className }
       <span className='flex-1 min-w-0 truncate text-t-secondary' title={row.name}>
         {row.name}
       </span>
-      <span className='text-t-tertiary tabular-nums'>{formatTokenCount(row.tokens, locale)}</span>
+      <span className='text-t-secondary tabular-nums'>{formatTokenCount(row.tokens, locale)}</span>
     </li>
   );
 
@@ -183,7 +189,7 @@ const ContextPanel: React.FC<ContextPanelProps> = ({ conversationId, className }
           <span className='flex items-center gap-6px w-full text-13px'>
             {open ? <Down theme='outline' size='12' /> : <Right theme='outline' size='12' />}
             <span className='flex-1 min-w-0 truncate text-start'>{label}</span>
-            <span className='text-t-tertiary tabular-nums'>{formatNumber(list.count, locale)}</span>
+            <span className='text-t-secondary tabular-nums'>{formatNumber(list.count, locale)}</span>
           </span>
         </Button>
         {open && (
@@ -268,6 +274,7 @@ const ContextPanel: React.FC<ContextPanelProps> = ({ conversationId, className }
               size='small'
               bordered={false}
               triggerProps={{ autoAlignPopupWidth: false, position: 'br' }}
+              dropdownMenuStyle={{ maxHeight: 'none' }}
               className='!w-auto min-w-84px'
               value={autoCompact.mode}
               loading={ctx.savingAutoCompact}
