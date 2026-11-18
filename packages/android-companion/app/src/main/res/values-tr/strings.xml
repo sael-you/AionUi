@@ -44,4 +44,23 @@
     <string name="scan_prompt">AionUi\'de gösterilen eşleme QR kodunu tara</string>
     <string name="not_a_pairing_code">Bu QR kodu bir AionUi eşleme kodu değil</string>
     <string name="scan_other_code">Bu QR kodu eşleştirme kodu değil. Eşleştirme için gösterilen kodu tarayın.</string>
+    <string name="update_title">Uygulama güncellemeleri</string>
+    <string name="update_auto">Otomatik</string>
+    <string name="update_ask">Önce sor</string>
+    <string name="update_off">Kapalı</string>
+    <string name="update_check">Şimdi denetle</string>
+    <string name="update_install">Yükle</string>
+    <string name="update_state_idle">Güncellemeler AionUi\'nizden gelir.</string>
+    <string name="update_state_checking">Denetleniyor…</string>
+    <string name="update_state_uptodate">Güncel</string>
+    <string name="update_state_available">%1$s sürümü kullanılabilir</string>
+    <string name="update_state_downloading">%1$s sürümü indiriliyor…</string>
+    <string name="update_state_verifying">%1$s sürümü denetleniyor…</string>
+    <string name="update_state_ready">%1$s sürümü hazır; ajanlar bitince yüklenecek</string>
+    <string name="update_state_confirm">Android %1$s sürümünü onaylamanızı istiyor</string>
+    <string name="update_state_installing">%1$s sürümü yükleniyor…</string>
+    <string name="update_state_failed">Güncelleme başarısız oldu (%1$s)</string>
+    <string name="status_updated">%1$s · %2$s sürümüne güncellendi</string>
+    <string name="check_install">Güncellemeleri yükle</string>
+    <string name="check_install_hint">Uygulamanın kendi güncellemelerini AionUi\'nizden yüklemesine izin verir. İlkini Android\'de onaylarsınız; sonrakiler Android 12 ve sonrasında kendiliğinden yüklenir.</string>
 </resources>

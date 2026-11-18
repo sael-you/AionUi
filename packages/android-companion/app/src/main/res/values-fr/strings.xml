@@ -44,4 +44,23 @@
     <string name="scan_prompt">Scannez le QR code d\'association affiché dans AionUi</string>
     <string name="not_a_pairing_code">Ce QR code n\'est pas un code d\'association AionUi</string>
     <string name="scan_other_code">Ce code QR n\'est pas le code d\'association. Scannez celui indiqué pour l\'association.</string>
+    <string name="update_title">Mises à jour de l\'appli</string>
+    <string name="update_auto">Automatiques</string>
+    <string name="update_ask">Demander d\'abord</string>
+    <string name="update_off">Désactivées</string>
+    <string name="update_check">Vérifier maintenant</string>
+    <string name="update_install">Installer</string>
+    <string name="update_state_idle">Les mises à jour viennent de votre AionUi.</string>
+    <string name="update_state_checking">Vérification…</string>
+    <string name="update_state_uptodate">À jour</string>
+    <string name="update_state_available">La version %1$s est disponible</string>
+    <string name="update_state_downloading">Téléchargement de la version %1$s…</string>
+    <string name="update_state_verifying">Vérification de la version %1$s…</string>
+    <string name="update_state_ready">La version %1$s est prête et s\'installera quand les agents auront fini</string>
+    <string name="update_state_confirm">Android vous demande de confirmer la version %1$s</string>
+    <string name="update_state_installing">Installation de la version %1$s…</string>
+    <string name="update_state_failed">La mise à jour n\'a pas fonctionné (%1$s)</string>
+    <string name="status_updated">%1$s · mise à jour vers %2$s</string>
+    <string name="check_install">Installer les mises à jour</string>
+    <string name="check_install_hint">Permet à l\'appli d\'installer ses propres mises à jour depuis votre AionUi. Android vous demande de confirmer la première ; les suivantes s\'installent seules à partir d\'Android 12.</string>
 </resources>

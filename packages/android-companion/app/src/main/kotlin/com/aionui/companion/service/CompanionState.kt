@@ -2,6 +2,8 @@ package com.aionui.companion.service
 
 import android.content.Context
 import com.aionui.companion.relay.RelayStatus
+import com.aionui.companion.update.UpdateMode
+import com.aionui.companion.update.UpdateState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,6 +13,12 @@ object CompanionState {
     private const val PREFS = "companion_state"
     private const val KEY_SWITCH = "agents_allowed"
     private const val KEY_KEEP = "keep_connected"
+    private const val KEY_UPDATE_MODE = "update_mode"
+    private const val KEY_UPDATING_CODE = "updating_to_code"
+    private const val KEY_UPDATING_NAME = "updating_to_name"
+    private const val KEY_UPDATED_AT = "updated_at"
+    /** "Updated to x" stays in the status line this long. */
+    private const val UPDATED_NOTE_MS = 24 * 60 * 60 * 1000L
 
     private val _switchOn = MutableStateFlow(false)
     /** The owner's own switch: "Agents may use this phone". Off by default. */
@@ -22,6 +30,43 @@ object CompanionState {
     private val _offlineSince = MutableStateFlow<Long?>(null)
     /** When the phone left the relay while it keeps trying; null when connected or stopped. */
     val offlineSince: StateFlow<Long?> = _offlineSince.asStateFlow()
+
+    private val _update = MutableStateFlow<UpdateState>(UpdateState.Idle)
+    /** Where an update of the app stands. */
+    val update: StateFlow<UpdateState> = _update.asStateFlow()
+
+    fun setUpdate(state: UpdateState) {
+        _update.value = state
+    }
+
+    /** Auto-update is on unless the owner chose Ask or Off. */
+    fun updateMode(context: Context): UpdateMode {
+        val stored = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_UPDATE_MODE, null)
+        return UpdateMode.entries.firstOrNull { it.name == stored } ?: UpdateMode.AUTO
+    }
+
+    fun setUpdateMode(context: Context, mode: UpdateMode) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY_UPDATE_MODE, mode.name).apply()
+    }
+
+    /** Written just before an install, so the new build knows it is the result of an update. */
+    fun setUpdatingTo(context: Context, versionCode: Int, versionName: String) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putInt(KEY_UPDATING_CODE, versionCode)
+            .putString(KEY_UPDATING_NAME, versionName)
+            .apply()
+    }
+
+    /**
+     * The version this build was just updated to, for "Updated to x" in the status line;
+     * null when it was not an update, or a day has passed.
+     */
+    fun updatedTo(context: Context, ownVersionCode: Int, now: Long): String? {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        if (prefs.getInt(KEY_UPDATING_CODE, 0) != ownVersionCode) return null
+        val at = prefs.getLong(KEY_UPDATED_AT, 0L).takeIf { it > 0 } ?: now.also { prefs.edit().putLong(KEY_UPDATED_AT, it).apply() }
+        return if (now - at <= UPDATED_NOTE_MS) prefs.getString(KEY_UPDATING_NAME, null) else null
+    }
 
     private val _accessibilityOn = MutableStateFlow(false)
     val accessibilityOn: StateFlow<Boolean> = _accessibilityOn.asStateFlow()

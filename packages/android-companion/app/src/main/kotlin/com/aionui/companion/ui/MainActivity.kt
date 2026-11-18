@@ -30,7 +30,11 @@ import com.aionui.companion.service.CompanionService
 import com.aionui.companion.service.ConnectionLine
 import com.aionui.companion.service.CompanionState
 import com.aionui.companion.store.TokenStore
+import com.aionui.companion.update.UpdateCenter
+import com.aionui.companion.update.UpdateMode
+import com.aionui.companion.update.UpdateState
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.textfield.TextInputEditText
@@ -113,6 +117,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.open_battery).setOnClickListener { openBatterySettings() }
+        findViewById<MaterialButton>(R.id.open_install).setOnClickListener {
+            runCatching {
+                startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.fromParts("package", packageName, null)))
+            }
+        }
+        val modes = findViewById<MaterialButtonToggleGroup>(R.id.update_mode)
+        modes.check(buttonOf(CompanionState.updateMode(this)))
+        modes.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) CompanionState.setUpdateMode(this, modeOf(checkedId))
+        }
+        findViewById<MaterialButton>(R.id.update_check).setOnClickListener {
+            runCatching { startService(CompanionService.intent(this, CompanionService.ACTION_UPDATE_CHECK)) }
+        }
+        findViewById<MaterialButton>(R.id.update_install).setOnClickListener { installUpdate() }
         // The capture consent only exists where the accessibility screenshot does not.
         findViewById<View>(R.id.consent_hint).visibility = if (needsConsent()) View.VISIBLE else View.GONE
 
@@ -124,7 +142,8 @@ class MainActivity : AppCompatActivity() {
                     CompanionState.switchOn,
                     CompanionState.captureOn,
                     CompanionState.offlineSince,
-                ) { _, _, _, _ -> }
+                    CompanionState.update,
+                ) { _, _, _, _, _ -> }
                     .collect { render() }
             }
         }
@@ -171,6 +190,41 @@ class MainActivity : AppCompatActivity() {
         if (needsConsent()) consent.launch(getSystemService(MediaProjectionManager::class.java).createScreenCaptureIntent())
     }
 
+    private fun buttonOf(mode: UpdateMode): Int = when (mode) {
+        UpdateMode.AUTO -> R.id.update_mode_auto
+        UpdateMode.ASK -> R.id.update_mode_ask
+        UpdateMode.OFF -> R.id.update_mode_off
+    }
+
+    private fun modeOf(buttonId: Int): UpdateMode = when (buttonId) {
+        R.id.update_mode_ask -> UpdateMode.ASK
+        R.id.update_mode_off -> UpdateMode.OFF
+        else -> UpdateMode.AUTO
+    }
+
+    /** Android's own install question when it waits for the owner; else: start the update that is available. */
+    private fun installUpdate() {
+        val confirm = UpdateCenter.pendingConfirm
+        if (CompanionState.update.value is UpdateState.WaitingConfirm && confirm != null) {
+            runCatching { startActivity(confirm) }
+        } else {
+            runCatching { startService(CompanionService.intent(this, CompanionService.ACTION_UPDATE_INSTALL)) }
+        }
+    }
+
+    private fun updateLine(state: UpdateState): String = when (state) {
+        UpdateState.Idle -> getString(R.string.update_state_idle)
+        UpdateState.Checking -> getString(R.string.update_state_checking)
+        UpdateState.UpToDate -> getString(R.string.update_state_uptodate)
+        is UpdateState.Available -> getString(R.string.update_state_available, state.offer.version)
+        is UpdateState.Downloading -> getString(R.string.update_state_downloading, state.offer.version)
+        is UpdateState.Verifying -> getString(R.string.update_state_verifying, state.offer.version)
+        is UpdateState.Ready -> getString(R.string.update_state_ready, state.offer.version)
+        is UpdateState.WaitingConfirm -> getString(R.string.update_state_confirm, state.offer.version)
+        is UpdateState.Installing -> getString(R.string.update_state_installing, state.offer.version)
+        is UpdateState.Failed -> getString(R.string.update_state_failed, state.reason.code)
+    }
+
     private fun needsConsent(): Boolean = ScreenshotPolicy.needsConsent(Build.VERSION.SDK_INT)
 
     private fun batteryUnrestricted(): Boolean =
@@ -214,6 +268,16 @@ class MainActivity : AppCompatActivity() {
                 getString(R.string.status_offline_since, DateFormat.getTimeFormat(this).format(line.sinceMs))
             ConnectionLine.NeedsPairing -> getString(R.string.status_needs_pairing)
         }
+        // The new build says once, for a day, that it is the result of an update.
+        CompanionState.updatedTo(this, BuildConfig.VERSION_CODE, System.currentTimeMillis())?.let { version ->
+            val status = findViewById<TextView>(R.id.status)
+            status.text = getString(R.string.status_updated, status.text, version)
+        }
+        val update = CompanionState.update.value
+        findViewById<TextView>(R.id.update_state).text = updateLine(update)
+        findViewById<MaterialButton>(R.id.update_install).apply {
+            visibility = if (update is UpdateState.Available || update is UpdateState.WaitingConfirm) View.VISIBLE else View.GONE
+        }
         agentSwitch.isChecked = CompanionState.switchOn.value
         findViewById<TextView>(R.id.capture_state).visibility =
             if (needsConsent() && CompanionState.captureOn.value) View.VISIBLE else View.GONE
@@ -222,6 +286,7 @@ class MainActivity : AppCompatActivity() {
         setCheck(R.id.overlay_state, Settings.canDrawOverlays(this))
         setCheck(R.id.notifications_state, notificationsAllowed())
         setCheck(R.id.battery_state, batteryUnrestricted())
+        setCheck(R.id.install_state, packageManager.canRequestPackageInstalls())
     }
 
     private fun setCheck(id: Int, on: Boolean) {

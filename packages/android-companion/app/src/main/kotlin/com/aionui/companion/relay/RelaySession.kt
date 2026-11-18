@@ -7,6 +7,7 @@ import com.aionui.companion.protocol.OpenError
 import com.aionui.companion.protocol.PhoneInfo
 import com.aionui.companion.protocol.Relay
 import com.aionui.companion.protocol.VerbError
+import com.aionui.companion.update.UpdateOffer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
@@ -46,6 +47,8 @@ interface SessionCallbacks {
     fun phone(): PhoneInfo
     /** Battery, lock screen, accessibility: for `health` in the first frame and the `health` event. */
     fun health(): Health? = null
+    /** Core says a newer build of the app is published. */
+    fun updateOffered(offer: UpdateOffer) = Unit
 }
 
 /**
@@ -58,6 +61,8 @@ class RelaySession(
     private val url: String,
     private var credentials: Credentials,
     private val version: String,
+    /** Sent as `version_code` so core can tell whether a published build is newer. */
+    private val versionCode: Int? = null,
     private val sockets: SocketFactory,
     private val scheduler: Scheduler,
     private val handler: VerbHandler,
@@ -133,6 +138,11 @@ class RelaySession(
         if (welcomed) socket?.send(Frames.health(health))
     }
 
+    /** A whole frame built by `Frames` (update check and progress). */
+    fun send(frame: String) = scheduler.post {
+        if (welcomed) socket?.send(frame)
+    }
+
     /** A device event for core (`local_switch_off`, `foreground`). */
     fun sendEvent(name: String, data: JsonObject = JsonObject(emptyMap())) = scheduler.post {
         if (welcomed) socket?.send(Frames.event(name, data))
@@ -159,8 +169,8 @@ class RelaySession(
     private fun opened() {
         lastFrameAt = scheduler.now()
         val first = when (val creds = credentials) {
-            is Credentials.Code -> Frames.pair(creds.code, creds.name, version, callbacks.health())
-            is Credentials.Token -> Frames.hello(creds.token, version, callbacks.health())
+            is Credentials.Code -> Frames.pair(creds.code, creds.name, version, callbacks.health(), versionCode)
+            is Credentials.Token -> Frames.hello(creds.token, version, callbacks.health(), versionCode)
         }
         socket?.send(first)
         // No welcome within 5 s: give up on this socket.
@@ -189,6 +199,7 @@ class RelaySession(
             is Inbound.Error -> refused(frame)
             is Inbound.Request -> request(frame)
             is Inbound.Stop -> handler.stopAll()
+            is Inbound.UpdateAvailable -> if (welcomed) callbacks.updateOffered(frame.offer)
             Inbound.Pong, is Inbound.Unknown, null -> Unit
         }
     }

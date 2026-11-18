@@ -44,4 +44,23 @@
     <string name="scan_prompt">Scan the pairing QR code shown in AionUi</string>
     <string name="not_a_pairing_code">This QR code is not an AionUi pairing code</string>
     <string name="scan_other_code">That QR code is not the pairing code. Scan the one labelled for pairing.</string>
+    <string name="update_title">App updates</string>
+    <string name="update_auto">Automatic</string>
+    <string name="update_ask">Ask first</string>
+    <string name="update_off">Off</string>
+    <string name="update_check">Check now</string>
+    <string name="update_install">Install</string>
+    <string name="update_state_idle">Updates come from your AionUi.</string>
+    <string name="update_state_checking">Checking…</string>
+    <string name="update_state_uptodate">Up to date</string>
+    <string name="update_state_available">Version %1$s is available</string>
+    <string name="update_state_downloading">Downloading version %1$s…</string>
+    <string name="update_state_verifying">Checking version %1$s…</string>
+    <string name="update_state_ready">Version %1$s is ready and installs when the agents are done</string>
+    <string name="update_state_confirm">Android asks you to confirm version %1$s</string>
+    <string name="update_state_installing">Installing version %1$s…</string>
+    <string name="update_state_failed">The update did not work (%1$s)</string>
+    <string name="status_updated">%1$s · updated to %2$s</string>
+    <string name="check_install">Install updates</string>
+    <string name="check_install_hint">Lets the app install its own updates from your AionUi. Android asks you to confirm the first one; later ones install by themselves on Android 12 and newer.</string>
 </resources>
