@@ -19,8 +19,8 @@ class WireDumpTest {
             put("data_base64", "AQID")
         }
         val frames = listOf(
-            "pair" to Frames.pair("<CODE>", "OnePlus Nord 4", "0.2.0", health),
-            "hello" to Frames.hello("<TOKEN>", "0.2.0", health),
+            "pair" to Frames.pair("<CODE>", "OnePlus Nord 4", "0.2.2", health, 5),
+            "hello" to Frames.hello("<TOKEN>", "0.2.2", health, 5),
             "event health" to Frames.health(health.copy(batteryPercent = 5, locked = true)),
             "inventory" to Frames.inventory(phone),
             "response ok, no result" to Frames.ok(JsonPrimitive(1), null),
@@ -29,6 +29,9 @@ class WireDumpTest {
             "response failure" to Frames.failure(JsonPrimitive(4), VerbError.SWITCH_OFF, "the owner switched agents off on this phone"),
             "event local_switch_off" to Frames.event("local_switch_off"),
             "event foreground" to Frames.event("foreground", buildJsonObject { put("package", "com.example.app") }),
+            "event update_check" to Frames.updateCheck(),
+            "event update" to Frames.update("downloading", 5),
+            "event update failed" to Frames.update("failed", 5, "signature_mismatch"),
             "ping" to Frames.ping(),
         )
         val out = File("build/wire").apply { mkdirs() }

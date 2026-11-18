@@ -42,6 +42,9 @@ import com.aionui.companion.relay.SessionCallbacks
 import com.aionui.companion.store.Pairing
 import com.aionui.companion.store.TokenStore
 import com.aionui.companion.ui.MainActivity
+import com.aionui.companion.update.UpdateCenter
+import com.aionui.companion.update.UpdateOffer
+import com.aionui.companion.update.Updater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -70,6 +73,7 @@ class CompanionService : Service() {
     private var session: RelaySession? = null
     private var capture: ScreenCapture? = null
     private lateinit var dispatcher: VerbDispatcher
+    private lateinit var updater: Updater
     private var wakeLock: PowerManager.WakeLock? = null
     private var wifiLock: WifiManager.WifiLock? = null
     private val networkRedial = NetworkRedial()
@@ -88,6 +92,14 @@ class CompanionService : Service() {
         tokens = TokenStore(this)
         overlay = OverlayChip(this) { ownerStop() }
         dispatcher = VerbDispatcher(AndroidDeviceActions(this) { capture }, scope)
+        updater = Updater(
+            appContext = this,
+            scope = scope,
+            pairedHost = { tokens.load()?.host },
+            agentBusy = { dispatcher.busy() },
+            send = { frame -> session?.send(frame) },
+        )
+        UpdateCenter.updater = updater
         createChannel()
         watchNetwork()
         watchHealth()
@@ -142,6 +154,8 @@ class CompanionService : Service() {
                 if (data != null) startCapture(resultCode, data)
             }
             ACTION_STOP -> ownerStop()
+            ACTION_UPDATE_CHECK -> updater.checkNow()
+            ACTION_UPDATE_INSTALL -> updater.accept()
             ACTION_UNPAIR -> unpair()
             else -> Unit
         }
@@ -155,6 +169,7 @@ class CompanionService : Service() {
         session = null
         releaseCapture()
         overlay.hide()
+        if (UpdateCenter.updater === updater) UpdateCenter.updater = null
         unwatchNetwork()
         runCatching { unregisterReceiver(healthReceiver) }
         releaseLocks()
@@ -185,6 +200,7 @@ class CompanionService : Service() {
             url = PairingPayload.relayUrlFor(host),
             credentials = credentials,
             version = BuildConfig.VERSION_NAME,
+            versionCode = BuildConfig.VERSION_CODE,
             sockets = OkHttpSockets(),
             scheduler = scheduler,
             handler = dispatcher,
@@ -199,6 +215,8 @@ class CompanionService : Service() {
                 override fun forgetToken() = tokens.clear()
 
                 override fun health() = this@CompanionService.health
+
+                override fun updateOffered(offer: UpdateOffer) = updater.offered(offer)
 
                 override fun phone() = PhoneInfo(
                     name = deviceName(),
@@ -348,10 +366,15 @@ class CompanionService : Service() {
     private fun watchNetwork() {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                val redial = synchronized(networkRedial) {
+                val action = synchronized(networkRedial) {
                     networkRedial.onAvailable(network.networkHandle, CompanionState.relay.value)
                 }
-                if (redial) session?.redial("network changed")
+                when (action) {
+                    NetworkRedial.Action.REDIAL -> session?.redial("network back")
+                    // Connected: never dropped on a callback alone, only if a ping gets no answer.
+                    NetworkRedial.Action.PROBE -> session?.probe("network change")
+                    NetworkRedial.Action.NONE -> Unit
+                }
             }
 
             override fun onLost(network: Network) {
@@ -421,6 +444,8 @@ class CompanionService : Service() {
         const val ACTION_CONSENT = "com.aionui.companion.CONSENT"
         const val ACTION_STOP = "com.aionui.companion.STOP"
         const val ACTION_UNPAIR = "com.aionui.companion.UNPAIR"
+        const val ACTION_UPDATE_CHECK = "com.aionui.companion.UPDATE_CHECK"
+        const val ACTION_UPDATE_INSTALL = "com.aionui.companion.UPDATE_INSTALL"
         const val EXTRA_HOST = "host"
         const val EXTRA_CODE = "code"
         const val EXTRA_RESULT_CODE = "result_code"

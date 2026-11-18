@@ -44,4 +44,23 @@
     <string name="scan_prompt">Отсканируйте QR-код связывания из AionUi</string>
     <string name="not_a_pairing_code">Этот QR-код не является кодом связывания AionUi</string>
     <string name="scan_other_code">Этот QR-код не для сопряжения. Отсканируйте код, предназначенный для сопряжения.</string>
+    <string name="update_title">Обновления приложения</string>
+    <string name="update_auto">Автоматически</string>
+    <string name="update_ask">Сначала спросить</string>
+    <string name="update_off">Выкл.</string>
+    <string name="update_check">Проверить сейчас</string>
+    <string name="update_install">Установить</string>
+    <string name="update_state_idle">Обновления приходят из вашего AionUi.</string>
+    <string name="update_state_checking">Проверка…</string>
+    <string name="update_state_uptodate">Установлена последняя версия</string>
+    <string name="update_state_available">Доступна версия %1$s</string>
+    <string name="update_state_downloading">Загрузка версии %1$s…</string>
+    <string name="update_state_verifying">Проверка версии %1$s…</string>
+    <string name="update_state_ready">Версия %1$s готова и установится, когда агенты закончат</string>
+    <string name="update_state_confirm">Android просит подтвердить версию %1$s</string>
+    <string name="update_state_installing">Установка версии %1$s…</string>
+    <string name="update_state_failed">Обновление не удалось (%1$s)</string>
+    <string name="status_updated">%1$s · обновлено до %2$s</string>
+    <string name="check_install">Установка обновлений</string>
+    <string name="check_install_hint">Позволяет приложению устанавливать собственные обновления из вашего AionUi. Первое Android попросит подтвердить; следующие на Android 12 и новее устанавливаются сами.</string>
 </resources>

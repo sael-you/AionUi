@@ -80,6 +80,9 @@ class VerbDispatcher(
         job.invokeOnCompletion { synchronized(running) { running -= job } }
     }
 
+    /** An agent action is running or waiting its turn. */
+    fun busy(): Boolean = synchronized(running) { running.isNotEmpty() }
+
     override fun stopAll() {
         actions.cancelAll()
         synchronized(running) { running.toList() }.forEach { it.cancel() }

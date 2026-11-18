@@ -8,6 +8,7 @@ import android.os.SystemClock
 import com.aionui.companion.protocol.VerbError
 import com.aionui.companion.service.CompanionState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * [DeviceActions] on a real phone: the Accessibility Service (screenshots too, on Android 11+)
@@ -25,6 +26,10 @@ class AndroidDeviceActions(
 
     @Volatile
     private var lastShotAt: Long? = null
+
+    private companion object {
+        const val SHOT_TIMEOUT_MS = 6_000L
+    }
 
     override suspend fun screenshot(scale: Double, format: String?): Screenshot {
         val projection = capture()
@@ -48,7 +53,9 @@ class AndroidDeviceActions(
         // Android refuses screenshots that follow each other too closely: wait out the rest.
         delay(ScreenshotPolicy.waitMs(lastShotAt, SystemClock.elapsedRealtime()))
         val bitmap = try {
-            service.screenshot()
+            // Android always answers; the limit only guards against a service that went away meanwhile.
+            withTimeoutOrNull(SHOT_TIMEOUT_MS) { service.screenshot() }
+                ?: throw ShotFailedException(ShotFailure.NO_ACCESS)
         } finally {
             lastShotAt = SystemClock.elapsedRealtime()
         }
@@ -114,7 +121,8 @@ class AndroidDeviceActions(
         (ControlAccessibilityService.current ?: context).startActivity(intent)
     }
 
-    override fun foregroundPackage(): String? = CompanionState.foreground.value
+    /** Asked from the windows on screen now; refused at once when the service is off. */
+    override fun foregroundPackage(): String? = service().foregroundApp()
 
     override fun cancelAll() = Unit
 }

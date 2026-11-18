@@ -1,0 +1,1 @@
+{"type":"event","device":"self","name":"update","data":{"state":"failed","version_code":5,"error":"signature_mismatch"}}

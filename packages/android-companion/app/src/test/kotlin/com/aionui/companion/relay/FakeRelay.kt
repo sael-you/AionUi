@@ -90,6 +90,10 @@ class RecordingCallbacks(var enabled: Boolean = true) : SessionCallbacks {
     override fun phone() = PhoneInfo("Pixel", "Pixel 8", "15", enabled)
     var health: Health? = null
     override fun health() = health
+    val offers = mutableListOf<com.aionui.companion.update.UpdateOffer>()
+    override fun updateOffered(offer: com.aionui.companion.update.UpdateOffer) {
+        offers += offer
+    }
 }
 
 class RecordingHandler : VerbHandler {

@@ -44,4 +44,23 @@
     <string name="scan_prompt">Scanne den Kopplungs-QR-Code aus AionUi</string>
     <string name="not_a_pairing_code">Dieser QR-Code ist kein AionUi-Kopplungscode</string>
     <string name="scan_other_code">Dieser QR-Code ist nicht der Kopplungscode. Scanne den Code, der zum Koppeln gedacht ist.</string>
+    <string name="update_title">App-Updates</string>
+    <string name="update_auto">Automatisch</string>
+    <string name="update_ask">Erst fragen</string>
+    <string name="update_off">Aus</string>
+    <string name="update_check">Jetzt prüfen</string>
+    <string name="update_install">Installieren</string>
+    <string name="update_state_idle">Updates kommen von deinem AionUi.</string>
+    <string name="update_state_checking">Wird geprüft…</string>
+    <string name="update_state_uptodate">Aktuell</string>
+    <string name="update_state_available">Version %1$s ist verfügbar</string>
+    <string name="update_state_downloading">Version %1$s wird heruntergeladen…</string>
+    <string name="update_state_verifying">Version %1$s wird geprüft…</string>
+    <string name="update_state_ready">Version %1$s ist bereit und wird installiert, sobald die Agenten fertig sind</string>
+    <string name="update_state_confirm">Android bittet dich, Version %1$s zu bestätigen</string>
+    <string name="update_state_installing">Version %1$s wird installiert…</string>
+    <string name="update_state_failed">Das Update hat nicht funktioniert (%1$s)</string>
+    <string name="status_updated">%1$s · aktualisiert auf %2$s</string>
+    <string name="check_install">Updates installieren</string>
+    <string name="check_install_hint">Erlaubt der App, ihre eigenen Updates von deinem AionUi zu installieren. Das erste bestätigst du in Android; spätere installieren sich ab Android 12 von selbst.</string>
 </resources>
