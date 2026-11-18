@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 object CompanionState {
     private const val PREFS = "companion_state"
     private const val KEY_SWITCH = "agents_allowed"
+    private const val KEY_KEEP = "keep_connected"
 
     private val _switchOn = MutableStateFlow(false)
     /** The owner's own switch: "Agents may use this phone". Off by default. */
@@ -17,6 +18,10 @@ object CompanionState {
 
     private val _relay = MutableStateFlow<RelayStatus>(RelayStatus.Stopped)
     val relay: StateFlow<RelayStatus> = _relay.asStateFlow()
+
+    private val _offlineSince = MutableStateFlow<Long?>(null)
+    /** When the phone left the relay while it keeps trying; null when connected or stopped. */
+    val offlineSince: StateFlow<Long?> = _offlineSince.asStateFlow()
 
     private val _accessibilityOn = MutableStateFlow(false)
     val accessibilityOn: StateFlow<Boolean> = _accessibilityOn.asStateFlow()
@@ -38,7 +43,19 @@ object CompanionState {
     }
 
     fun setRelay(status: RelayStatus) {
+        _offlineSince.value = ConnectionLine.offlineSince(_offlineSince.value, status, System.currentTimeMillis())
         _relay.value = status
+    }
+
+    /**
+     * The owner wants this phone on the relay (paired or pressed Start, and did not press
+     * Stop): what a restart of the service, a reboot or an app update brings back.
+     */
+    fun keepConnected(context: Context): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_KEEP, false)
+
+    fun setKeepConnected(context: Context, keep: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_KEEP, keep).apply()
     }
 
     fun setAccessibilityOn(on: Boolean) {

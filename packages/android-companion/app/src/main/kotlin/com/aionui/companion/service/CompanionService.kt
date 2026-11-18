@@ -9,8 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.media.projection.MediaProjectionManager
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -24,6 +28,7 @@ import com.aionui.companion.protocol.PairingPayload
 import com.aionui.companion.protocol.PhoneInfo
 import com.aionui.companion.relay.Credentials
 import com.aionui.companion.relay.ExecutorScheduler
+import com.aionui.companion.relay.NetworkRedial
 import com.aionui.companion.relay.OkHttpSockets
 import com.aionui.companion.relay.RelaySession
 import com.aionui.companion.relay.RelayStatus
@@ -42,18 +47,25 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 /**
- * The companion session: a foreground service (its notification, with Stop, is
- * always shown while it runs) that keeps the outbound relay socket, answers verbs
- * and holds this session's screen capture. Stop switches agents off at once.
+ * The companion's connection: a foreground service (its notification, with Stop, is
+ * always shown while it runs) that keeps the outbound relay socket and answers verbs.
+ * It stays up: sticky, back after a reboot, redialling when the network changes, and
+ * holding the CPU and Wi-Fi awake while the owner's switch is on. Stop switches agents
+ * off at once and ends it until the owner starts it again.
  */
 class CompanionService : Service() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val scheduler = ExecutorScheduler()
     private lateinit var tokens: TokenStore
     private lateinit var overlay: OverlayChip
+    @Volatile
     private var session: RelaySession? = null
     private var capture: ScreenCapture? = null
     private lateinit var dispatcher: VerbDispatcher
+    private var wakeLock: PowerManager.WakeLock? = null
+    private var wifiLock: WifiManager.WifiLock? = null
+    private val networkRedial = NetworkRedial()
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -62,6 +74,7 @@ class CompanionService : Service() {
         overlay = OverlayChip(this) { ownerStop() }
         dispatcher = VerbDispatcher(AndroidDeviceActions(this) { capture }, scope)
         createChannel()
+        watchNetwork()
         scope.launch {
             CompanionState.switchOn.drop(1).collect { on ->
                 session?.inventoryChanged()
@@ -82,11 +95,20 @@ class CompanionService : Service() {
                 val host = intent.getStringExtra(EXTRA_HOST)
                 val code = intent.getStringExtra(EXTRA_CODE)
                 goForeground(withCapture = capture != null)
+                CompanionState.setKeepConnected(this, true)
                 if (host != null && code != null) pair(host, code)
             }
             ACTION_START -> {
                 goForeground(withCapture = capture != null)
+                CompanionState.setKeepConnected(this, true)
                 connectWithToken()
+            }
+            // Android restarted the service after killing it (START_STICKY): carry on.
+            null -> if (CompanionState.keepConnected(this)) {
+                goForeground(withCapture = false)
+                connectWithToken()
+            } else {
+                stopSelf()
             }
             ACTION_CONSENT -> {
                 val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
@@ -97,7 +119,7 @@ class CompanionService : Service() {
             ACTION_UNPAIR -> unpair()
             else -> Unit
         }
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -107,6 +129,8 @@ class CompanionService : Service() {
         session = null
         releaseCapture()
         overlay.hide()
+        unwatchNetwork()
+        releaseLocks()
         scope.cancel()
         scheduler.post { scheduler.shutdown() }
         CompanionState.setRelay(RelayStatus.Stopped)
@@ -179,6 +203,7 @@ class CompanionService : Service() {
     private fun ownerStop() {
         // First no new verb is accepted, then whatever runs or waits is cancelled, now:
         // not when the session closes after the flush below.
+        CompanionState.setKeepConnected(this, false)
         CompanionState.setSwitch(this, false)
         dispatcher.stopAll()
         releaseCapture()
@@ -198,6 +223,7 @@ class CompanionService : Service() {
         session?.stop()
         session = null
         tokens.clear()
+        CompanionState.setKeepConnected(this, false)
         CompanionState.setSwitch(this, false)
         releaseCapture()
         overlay.hide()
@@ -209,7 +235,68 @@ class CompanionService : Service() {
     private fun updateIndicators() {
         val live = CompanionState.switchOn.value && CompanionState.relay.value is RelayStatus.Connected
         if (live) overlay.show() else overlay.hide()
+        updateLocks()
         getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification())
+    }
+
+    /**
+     * While the owner's switch is on and the session runs: keep the CPU and the Wi-Fi
+     * radio awake, so pings keep flowing with the screen off. Released as soon as the
+     * switch goes off or the session ends.
+     */
+    private fun updateLocks() {
+        val status = CompanionState.relay.value
+        val wanted = CompanionState.switchOn.value && status !is RelayStatus.Stopped && status !is RelayStatus.NeedsPairing
+        if (!wanted) {
+            releaseLocks()
+            return
+        }
+        if (wakeLock == null) {
+            wakeLock = runCatching {
+                getSystemService(PowerManager::class.java)
+                    .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "aionui-companion:relay")
+                    .apply { setReferenceCounted(false) }
+            }.getOrNull()
+        }
+        if (wifiLock == null) {
+            wifiLock = runCatching {
+                applicationContext.getSystemService(WifiManager::class.java)
+                    .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "aionui-companion:relay")
+                    .apply { setReferenceCounted(false) }
+            }.getOrNull()
+        }
+        runCatching { wakeLock?.takeIf { !it.isHeld }?.acquire() }
+        runCatching { wifiLock?.takeIf { !it.isHeld }?.acquire() }
+    }
+
+    private fun releaseLocks() {
+        runCatching { wakeLock?.takeIf { it.isHeld }?.release() }
+        runCatching { wifiLock?.takeIf { it.isHeld }?.release() }
+    }
+
+    /** Dial again as soon as a network is back or the phone moved to another one. */
+    private fun watchNetwork() {
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                val redial = synchronized(networkRedial) {
+                    networkRedial.onAvailable(network.networkHandle, CompanionState.relay.value)
+                }
+                if (redial) session?.redial("network changed")
+            }
+
+            override fun onLost(network: Network) {
+                synchronized(networkRedial) { networkRedial.onLost(network.networkHandle) }
+            }
+        }
+        val registered = runCatching {
+            getSystemService(ConnectivityManager::class.java).registerDefaultNetworkCallback(callback)
+        }.isSuccess
+        if (registered) networkCallback = callback
+    }
+
+    private fun unwatchNetwork() {
+        networkCallback?.let { runCatching { getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(it) } }
+        networkCallback = null
     }
 
     private fun goForeground(withCapture: Boolean) {
@@ -231,7 +318,9 @@ class CompanionService : Service() {
         val stop = PendingIntent.getService(
             this, 1, Intent(this, CompanionService::class.java).setAction(ACTION_STOP), PendingIntent.FLAG_IMMUTABLE,
         )
+        val connected = CompanionState.relay.value is RelayStatus.Connected
         val text = when {
+            !connected -> getString(R.string.status_reconnecting)
             CompanionState.switchOn.value -> getString(R.string.notification_controlling)
             else -> getString(R.string.notification_connected_off)
         }

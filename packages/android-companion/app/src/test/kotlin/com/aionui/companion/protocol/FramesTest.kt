@@ -49,10 +49,10 @@ class FramesTest {
 
     @Test
     fun `responses and events have the W2 shape`() {
-        val ok = obj(Frames.ok("r1", JsonPrimitive("x")))
+        val ok = obj(Frames.ok(JsonPrimitive(1), JsonPrimitive("x")))
         assertEquals("response", ok["type"]!!.jsonPrimitive.content)
         assertTrue(ok["ok"]!!.jsonPrimitive.boolean)
-        val failed = obj(Frames.failure("r2", VerbError.BAD_ARGS, "nope"))
+        val failed = obj(Frames.failure(JsonPrimitive(2), VerbError.BAD_ARGS, "nope"))
         assertFalse(failed["ok"]!!.jsonPrimitive.boolean)
         assertEquals("bad_args", failed["error"]!!.jsonObject["code"]!!.jsonPrimitive.content)
         val event = obj(Frames.event("local_switch_off"))

@@ -3,6 +3,7 @@ package com.aionui.companion.protocol
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
@@ -30,7 +31,9 @@ object Relay {
     const val MAX_FRAME_BYTES = 16 * 1024 * 1024
 
     /** Verbs this app serves (advertised as `capabilities`; core never routes others here). */
-    val VERBS = listOf("screenshot", "ui_tree", "tap", "swipe", "text", "key", "launch", "foreground", "stop")
+    val VERBS = listOf(
+        "screenshot", "ui_tree", "tap", "swipe", "text", "key", "launch", "foreground", "click_text", "set_text", "stop",
+    )
 }
 
 /** Error codes in `response.error.code`. */
@@ -56,7 +59,8 @@ object OpenError {
 sealed interface Inbound {
     data class Welcome(val clientId: String, val token: String?) : Inbound
     data class Error(val code: String, val message: String?) : Inbound
-    data class Request(val id: String, val device: String, val verb: String, val args: JsonObject) : Inbound
+    /** `id` is echoed back exactly as it came: core sends a JSON number and matches the answer on it. */
+    data class Request(val id: JsonPrimitive, val device: String, val verb: String, val args: JsonObject) : Inbound
     data class Stop(val device: String) : Inbound
     data object Pong : Inbound
     /** Anything this version does not know (ignored, never fatal). */
@@ -82,7 +86,7 @@ object Frames {
             "welcome" -> obj.string("client_id")?.let { Inbound.Welcome(it, obj.string("token")) }
             "error" -> Inbound.Error(obj.string("code") ?: OpenError.BAD_MESSAGE, obj.string("message"))
             "request" -> {
-                val id = obj.string("id") ?: return null
+                val id = (obj["id"] as? JsonPrimitive)?.takeIf { it !is JsonNull } ?: return null
                 val verb = obj.string("verb") ?: return null
                 val args = (obj["args"] as? JsonObject) ?: JsonObject(emptyMap())
                 Inbound.Request(id, obj.string("device") ?: Relay.SELF, verb, args)
@@ -123,13 +127,13 @@ object Frames {
         put("addons", JsonArray(emptyList()))
     }
 
-    fun ok(id: String, result: JsonElement?): String = encode("response") {
+    fun ok(id: JsonPrimitive, result: JsonElement?): String = encode("response") {
         put("id", id)
         put("ok", true)
         if (result != null) put("result", result)
     }
 
-    fun failure(id: String, code: String, message: String): String = encode("response") {
+    fun failure(id: JsonPrimitive, code: String, message: String): String = encode("response") {
         put("id", id)
         put("ok", false)
         put("error", buildJsonObject {

@@ -126,6 +126,28 @@ class VerbDispatcher(
                 VerbResult.Ok(null)
             }
         }
+        "click_text" -> {
+            val text = args.string("text")?.trim().orEmpty()
+            if (text.isEmpty()) throw badArgs("text is required")
+            if (text.length > 500) throw badArgs("text is longer than 500 characters")
+            val index = (args.number("index") ?: 0.0).toInt()
+            if (index !in 0..99) throw badArgs("index must be 0..99")
+            suspend {
+                val click = actions.clickText(text, index)
+                VerbResult.Ok(buildJsonObject {
+                    put("matches", click.matches)
+                    put("method", click.method)
+                })
+            }
+        }
+        "set_text" -> {
+            val value = args.string("value") ?: throw badArgs("value is required")
+            if (value.length > 10_000) throw badArgs("value is longer than 10000 characters")
+            suspend {
+                actions.setText(value)
+                VerbResult.Ok(null)
+            }
+        }
         "key" -> {
             val code = args.number("code")?.toInt() ?: throw badArgs("code is required")
             if (code !in Keys.SERVED) throw badArgs("key $code is not served; use ${Keys.SERVED.sorted()}")

@@ -13,7 +13,8 @@ import com.aionui.companion.protocol.VerbError
 import java.io.ByteArrayOutputStream
 
 /**
- * Screenshots through MediaProjection. Android asks the owner for consent before
+ * Screenshots through MediaProjection: the fallback where the Accessibility Service cannot
+ * capture (below Android 11). Android asks the owner for consent before
  * every session and the grant is single use, so one capture lives exactly as long
  * as the session: created after consent, released on Stop (or when Android or the
  * owner ends the projection from the status bar).
@@ -74,17 +75,7 @@ class ScreenCapture(
     fun capture(scale: Double): Screenshot {
         val frame = synchronized(lock) { lastFrame?.copy(Bitmap.Config.ARGB_8888, false) }
             ?: throw VerbException(VerbError.FAILED, "no screen frame yet, try again")
-        val scaled = if (scale < 1.0) {
-            Bitmap.createScaledBitmap(frame, (frame.width * scale).toInt().coerceAtLeast(1), (frame.height * scale).toInt().coerceAtLeast(1), true)
-        } else {
-            frame
-        }
-        val png = scale >= 1.0
-        val bytes = ByteArrayOutputStream().use { out ->
-            scaled.compress(if (png) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG, if (png) 100 else 80, out)
-            out.toByteArray()
-        }
-        return Screenshot(if (png) "png" else "jpeg", scaled.width, scaled.height, bytes)
+        return encodeScreenshot(frame, scale)
     }
 
     fun release() {
@@ -97,4 +88,19 @@ class ScreenCapture(
         }
         thread.quitSafely()
     }
+}
+
+/** PNG at full size, JPEG q80 when scaled down (W2 contract). */
+internal fun encodeScreenshot(frame: Bitmap, scale: Double): Screenshot {
+    val scaled = if (scale < 1.0) {
+        Bitmap.createScaledBitmap(frame, (frame.width * scale).toInt().coerceAtLeast(1), (frame.height * scale).toInt().coerceAtLeast(1), true)
+    } else {
+        frame
+    }
+    val png = scale >= 1.0
+    val bytes = ByteArrayOutputStream().use { out ->
+        scaled.compress(if (png) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG, if (png) 100 else 80, out)
+        out.toByteArray()
+    }
+    return Screenshot(if (png) "png" else "jpeg", scaled.width, scaled.height, bytes)
 }

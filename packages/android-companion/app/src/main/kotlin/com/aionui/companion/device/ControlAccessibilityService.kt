@@ -2,21 +2,28 @@ package com.aionui.companion.device
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.graphics.Bitmap
 import android.graphics.Path
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.view.Display
+import androidx.annotation.RequiresApi
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.aionui.companion.protocol.VerbError
 import com.aionui.companion.service.CompanionState
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+
+/** Android's accessibility screenshot did not deliver; the caller decides about the fallback. */
+class ShotFailedException(val failure: ShotFailure) : Exception(failure.name)
 
 /**
  * The Accessibility Service the owner turns on (Settings → Accessibility; sideloaded
  * apps first need "Allow restricted settings", see README). It reads the screen's
- * accessibility tree and performs gestures, text entry and global keys — only for
+ * accessibility tree, takes screenshots (Android 11+) and performs gestures, text entry and global keys — only for
  * requests that passed the owner's switch here and core's checks.
  */
 class ControlAccessibilityService : AccessibilityService() {
@@ -117,6 +124,104 @@ class ControlAccessibilityService : AccessibilityService() {
         }
     }
 
+    /**
+     * The screen as Android's accessibility screenshot gives it: no "share your screen"
+     * prompt. Protected windows come back blanked (see [ScreenshotPolicy.isBlanked]).
+     */
+    @RequiresApi(Build.VERSION_CODES.R)
+    suspend fun screenshot(): Bitmap = suspendCancellableCoroutine { continuation ->
+        takeScreenshot(
+            Display.DEFAULT_DISPLAY,
+            mainExecutor,
+            object : TakeScreenshotCallback {
+                override fun onSuccess(screenshot: ScreenshotResult) {
+                    val buffer = screenshot.hardwareBuffer
+                    // A software copy: the hardware buffer goes back to Android right away.
+                    val bitmap = runCatching {
+                        Bitmap.wrapHardwareBuffer(buffer, screenshot.colorSpace)?.copy(Bitmap.Config.ARGB_8888, false)
+                    }.getOrNull()
+                    buffer.close()
+                    if (!continuation.isActive) {
+                        bitmap?.recycle()
+                    } else if (bitmap == null) {
+                        continuation.resumeWithException(ShotFailedException(ShotFailure.INTERNAL))
+                    } else {
+                        continuation.resume(bitmap)
+                    }
+                }
+
+                override fun onFailure(errorCode: Int) {
+                    if (continuation.isActive) continuation.resumeWithException(ShotFailedException(failureOf(errorCode)))
+                }
+            },
+        )
+    }
+
+    private fun failureOf(errorCode: Int): ShotFailure = when (errorCode) {
+        ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT -> ShotFailure.TOO_SOON
+        ERROR_TAKE_SCREENSHOT_NO_ACCESSIBILITY_ACCESS -> ShotFailure.NO_ACCESS
+        ERROR_TAKE_SCREENSHOT_INVALID_DISPLAY -> ShotFailure.INVALID_DISPLAY
+        ERROR_TAKE_SCREENSHOT_SECURE_WINDOW -> ShotFailure.SECURE_WINDOW
+        else -> ShotFailure.INTERNAL
+    }
+
+    /**
+     * Click the element whose text or description is exactly [wanted]: the node itself or
+     * its nearest clickable parent; when nothing takes the click, focus it and tap its centre.
+     */
+    suspend fun clickText(wanted: String, index: Int): TextClick {
+        val roots = runCatching { windows.mapNotNull { it.root } }.getOrDefault(emptyList())
+            .ifEmpty { listOfNotNull(rootInActiveWindow) }
+        // Android's search is a case-insensitive "contains" over text and description: narrowed below.
+        val nodes = roots.flatMap { it.findAccessibilityNodeInfosByText(wanted.trim()).orEmpty() }
+        val usable = TextTarget.usable(
+            wanted,
+            nodes.map { TextCandidate(it.text?.toString(), it.contentDescription?.toString(), it.isVisibleToUser, it.isEnabled) },
+        )
+        if (usable.isEmpty()) throw VerbException(VerbError.FAILED, "no visible, enabled element has exactly this text")
+        if (index >= usable.size) {
+            throw VerbException(VerbError.BAD_ARGS, "index $index is out of range: ${usable.size} element(s) match")
+        }
+        val node = nodes[usable[index]]
+        var target: AccessibilityNodeInfo? = node
+        var depth = 0
+        while (target != null && depth < CLICK_PARENT_DEPTH) {
+            if (target.isClickable && target.performAction(AccessibilityNodeInfo.ACTION_CLICK)) {
+                return TextClick(usable.size, "click")
+            }
+            target = target.parent
+            depth += 1
+        }
+        node.performAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS)
+        val bounds = Rect().also { node.getBoundsInScreen(it) }
+        if (bounds.isEmpty) throw VerbException(VerbError.FAILED, "the element has no place on the screen to tap")
+        gesture(Path().apply { moveTo(bounds.exactCenterX(), bounds.exactCenterY()) }, 50)
+        return TextClick(usable.size, "tap")
+    }
+
+    /** Replace the content of the focused (else the selected) editable field. */
+    fun setText(value: String) {
+        val root = rootInActiveWindow
+        val field = root?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)?.takeIf { it.isEditable }
+            ?: root?.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY)?.takeIf { it.isEditable }
+            ?: root?.let { selectedEditable(it, 0) }
+            ?: throw VerbException(VerbError.FAILED, "no editable field has the focus")
+        val args = Bundle().apply { putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, value) }
+        if (!field.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)) {
+            throw VerbException(VerbError.FAILED, "the field refused the text")
+        }
+    }
+
+    private fun selectedEditable(node: AccessibilityNodeInfo, depth: Int): AccessibilityNodeInfo? {
+        if (node.isEditable && (node.isSelected || node.isFocused)) return node
+        if (depth >= UiTreeXml.MAX_DEPTH) return null
+        for (index in 0 until node.childCount) {
+            val found = node.getChild(index)?.let { selectedEditable(it, depth + 1) }
+            if (found != null) return found
+        }
+        return null
+    }
+
     fun pressKey(code: Int) {
         val done = when (code) {
             Keys.HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
@@ -137,6 +242,8 @@ class ControlAccessibilityService : AccessibilityService() {
     }
 
     companion object {
+        private const val CLICK_PARENT_DEPTH = 8
+
         @Volatile
         var current: ControlAccessibilityService? = null
             private set

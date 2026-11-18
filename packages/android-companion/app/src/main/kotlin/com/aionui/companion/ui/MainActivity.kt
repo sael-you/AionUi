@@ -8,7 +8,9 @@ import android.media.projection.MediaProjectionManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
+import android.text.format.DateFormat
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -21,9 +23,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.aionui.companion.BuildConfig
 import com.aionui.companion.R
 import com.aionui.companion.device.ControlAccessibilityService
+import com.aionui.companion.device.ScreenshotPolicy
 import com.aionui.companion.protocol.PairingPayload
-import com.aionui.companion.relay.RelayStatus
 import com.aionui.companion.service.CompanionService
+import com.aionui.companion.service.ConnectionLine
 import com.aionui.companion.service.CompanionState
 import com.aionui.companion.store.TokenStore
 import com.google.android.material.button.MaterialButton
@@ -108,10 +111,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<MaterialButton>(R.id.open_battery).setOnClickListener { openBatterySettings() }
+        // The capture consent only exists where the accessibility screenshot does not.
+        findViewById<View>(R.id.consent_hint).visibility = if (needsConsent()) View.VISIBLE else View.GONE
+
         handleDeepLink(intent)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                combine(CompanionState.relay, CompanionState.switchOn, CompanionState.captureOn) { _, _, _ -> }
+                combine(
+                    CompanionState.relay,
+                    CompanionState.switchOn,
+                    CompanionState.captureOn,
+                    CompanionState.offlineSince,
+                ) { _, _, _, _ -> }
                     .collect { render() }
             }
         }
@@ -154,8 +166,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun startSession() {
         ContextCompat.startForegroundService(this, CompanionService.intent(this, CompanionService.ACTION_START))
-        // Android asks for this session's screen capture; the grant is single use.
-        consent.launch(getSystemService(MediaProjectionManager::class.java).createScreenCaptureIntent())
+        // Below Android 11 only: Android asks for this session's screen capture (single-use grant).
+        if (needsConsent()) consent.launch(getSystemService(MediaProjectionManager::class.java).createScreenCaptureIntent())
+    }
+
+    private fun needsConsent(): Boolean = ScreenshotPolicy.needsConsent(Build.VERSION.SDK_INT)
+
+    private fun batteryUnrestricted(): Boolean =
+        getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
+
+    /** Android's own "let this app run in the background" question; the list of apps where it is missing. */
+    private fun openBatterySettings() {
+        val ask = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.fromParts("package", packageName, null))
+        val opened = !batteryUnrestricted() && runCatching { startActivity(ask) }.isSuccess
+        if (!opened) runCatching { startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
     }
 
     private fun confirmUnpair() {
@@ -175,20 +199,23 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.session_section).visibility = if (pairing == null) View.GONE else View.VISIBLE
         pairing?.let { findViewById<TextView>(R.id.paired_with).text = getString(R.string.paired_with, it.host) }
 
-        findViewById<TextView>(R.id.status).text = when (val status = CompanionState.relay.value) {
-            RelayStatus.Stopped -> getString(R.string.status_stopped)
-            RelayStatus.Connecting -> getString(R.string.status_connecting)
-            is RelayStatus.Connected -> getString(R.string.status_connected)
-            is RelayStatus.Retrying -> getString(R.string.status_retrying, (status.inMs / 1000).toInt().coerceAtLeast(1))
-            is RelayStatus.NeedsPairing -> getString(R.string.status_needs_pairing)
+        val line = ConnectionLine.of(CompanionState.relay.value, CompanionState.offlineSince.value, System.currentTimeMillis())
+        findViewById<TextView>(R.id.status).text = when (line) {
+            ConnectionLine.NotConnected -> getString(R.string.status_stopped)
+            ConnectionLine.Reconnecting -> getString(R.string.status_reconnecting)
+            ConnectionLine.Connected -> getString(R.string.status_connected)
+            is ConnectionLine.OfflineSince ->
+                getString(R.string.status_offline_since, DateFormat.getTimeFormat(this).format(line.sinceMs))
+            ConnectionLine.NeedsPairing -> getString(R.string.status_needs_pairing)
         }
         agentSwitch.isChecked = CompanionState.switchOn.value
         findViewById<TextView>(R.id.capture_state).visibility =
-            if (CompanionState.captureOn.value) View.VISIBLE else View.GONE
+            if (needsConsent() && CompanionState.captureOn.value) View.VISIBLE else View.GONE
 
         setCheck(R.id.accessibility_state, accessibilityEnabled())
         setCheck(R.id.overlay_state, Settings.canDrawOverlays(this))
         setCheck(R.id.notifications_state, notificationsAllowed())
+        setCheck(R.id.battery_state, batteryUnrestricted())
     }
 
     private fun setCheck(id: Int, on: Boolean) {

@@ -40,6 +40,13 @@ class VerbDispatcherTest {
         override suspend fun text(value: String) {
             calls += "text $value"
         }
+        override suspend fun clickText(text: String, index: Int): TextClick {
+            calls += "click_text $text $index"
+            return TextClick(2, "click")
+        }
+        override suspend fun setText(value: String) {
+            calls += "set_text $value"
+        }
         override suspend fun key(code: Int) {
             calls += "key $code"
         }
@@ -143,6 +150,26 @@ class VerbDispatcherTest {
         actions.hang = true
         val result = run(dispatcher(timeoutMs = 5_000), "tap", """{"x":1,"y":1}""") as VerbResult.Failed
         assertEquals("timeout", result.code)
+    }
+
+    @Test
+    fun `click_text clicks the exact text and says how, set_text replaces the field`() = runTest {
+        val d = dispatcher()
+        val clicked = run(d, "click_text", """{"text":"  Sign in ","index":1}""") as VerbResult.Ok
+        assertEquals(2, clicked.result!!.jsonObject["matches"]!!.jsonPrimitive.content.toInt())
+        assertEquals("click", clicked.result!!.jsonObject["method"]!!.jsonPrimitive.content)
+        assertEquals(VerbResult.Ok(null), run(d, "set_text", """{"value":""}"""))
+        assertEquals(listOf("click_text Sign in 1", "set_text "), actions.calls)
+    }
+
+    @Test
+    fun `click_text and set_text check their args`() = runTest {
+        val d = dispatcher()
+        for (bad in listOf("""{}""", """{"text":"  "}""", """{"text":"x","index":-1}""", """{"text":"x","index":100}""")) {
+            assertEquals("bad_args", (run(d, "click_text", bad) as VerbResult.Failed).code)
+        }
+        assertEquals("bad_args", (run(d, "set_text", """{}""") as VerbResult.Failed).code)
+        assertTrue(actions.calls.isEmpty())
     }
 
     @Test

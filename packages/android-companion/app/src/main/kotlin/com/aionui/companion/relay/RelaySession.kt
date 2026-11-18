@@ -67,7 +67,8 @@ class RelaySession(
     private var running = false
     private var welcomed = false
     private var lastFrameAt = 0L
-    private val timers = mutableListOf<Cancellable>()
+    private var openTimer: Cancellable? = null
+    private var pingTimer: Cancellable? = null
     private var retry: Cancellable? = null
 
     var status: RelayStatus = RelayStatus.Stopped
@@ -86,6 +87,16 @@ class RelaySession(
         retry = null
         dropSocket(1000, "stopped")
         setStatus(RelayStatus.Stopped)
+    }
+
+    /** The phone's network changed or came back: dial again now, not after the backoff. */
+    fun redial(reason: String) = scheduler.post {
+        if (!running) return@post
+        retry?.cancel()
+        retry = null
+        dropSocket(1001, reason)
+        backoff.reset()
+        connect()
     }
 
     /** Something in the inventory changed (switch, name): tell core now. */
@@ -124,14 +135,14 @@ class RelaySession(
         }
         socket?.send(first)
         // No welcome within 5 s: give up on this socket.
-        timers += scheduler.schedule(Relay.OPEN_TIMEOUT_SECONDS * 1000) {
+        openTimer = scheduler.schedule(Relay.OPEN_TIMEOUT_SECONDS * 1000) {
             if (!welcomed) lost("no welcome")
         }
         schedulePing()
     }
 
     private fun schedulePing() {
-        timers += scheduler.schedule(Relay.PING_SECONDS * 1000) {
+        pingTimer = scheduler.schedule(Relay.PING_SECONDS * 1000) {
             if (scheduler.now() - lastFrameAt >= Relay.IDLE_CLOSE_SECONDS * 1000) {
                 lost("silent for ${Relay.IDLE_CLOSE_SECONDS} s")
                 return@schedule
@@ -221,8 +232,10 @@ class RelaySession(
     }
 
     private fun dropSocket(code: Int, reason: String) {
-        timers.forEach { it.cancel() }
-        timers.clear()
+        openTimer?.cancel()
+        openTimer = null
+        pingTimer?.cancel()
+        pingTimer = null
         generation += 1
         welcomed = false
         socket?.close(code, reason.take(120))
